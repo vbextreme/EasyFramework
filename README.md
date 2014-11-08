@@ -1,35 +1,30 @@
-+++++++++++++++
-+EasyFramework+
-+++++++++++++++
-
+EasyFramework
+=============
 Little framework created during the study of language c.
 
-++++++++
-+state:+
-++++++++
-+Create documentation
-+other libraries:
-++easycrypto? only upload
-++easymath? only upload
-++easysocket? clean && upload
-++easyuser? clean && upload
-++easybenchmark? only upload
-++easycml? only upload
-++easyguiconsole? to finish
-++easygraphic? to finish
+State:
+======
+* Create documentation
+* other libraries:
+ 1. easycrypto? only upload
+ 2. easymath? only upload
+ 3. easysocket? clean && upload
+ 4. easyuser? clean && upload
+ 5. easybenchmark? only upload
+ 6. easycml? only upload
+ 7. easyguiconsole? to finish
+ 8. easygraphic? to finish
 
-++++++
-+bug:+
-++++++
+Bug:
+====
 none reported.
 
-++++++++++
-+require:+
-++++++++++
+Require:
+========
 libpthread.so
 
-++++++++++++++++
-+To install it:+
-++++++++++++++++
+To install it:
+==============
 $./configure
 $ sudo ./install
+
