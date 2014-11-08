@@ -1,0 +1,172 @@
+#!/bin/bash
+
+##################
+#default makefile#
+##################
+echo "create default makefile"
+echo "#def var" > makefile_nv
+echo "APPIPATH   = /usr/bin/" >> makefile_nv
+echo "LIBIPATH   = /usr/lib/" >> makefile_nv
+echo "IHPATH     = /usr/include/" >> makefile_nv
+echo "APPCFLAGS  = -Wall -g" >> makefile_nv
+echo "APPDFLAGS  = -Wall -g" >> makefile_nv
+echo "LIBCFLAGS  = -Wall -O2" >> makefile_nv 
+echo "LIBDFLAGS  = -O2" >> makefile_nv
+echo "APPDEFINE  = -D_APP" >> makefile_nv
+echo "LIBDEFINE  = -D_LIB" >> makefile_nv
+echo "APPCC      = gcc" >> makefile_nv
+echo "APPLK      = gcc" >> makefile_nv
+echo "LIBCC      = gcc" >> makefile_nv
+echo "LIBLK      = ld" >> makefile_nv
+echo "CFILE      = \$(shell echo *.c)" >> makefile_nv
+echo "HFILE      = \$(shell echo *.h)" >> makefile_nv
+echo "APPOBJPATH = ./obj/" >> makefile_nv
+echo "LIBOBJPATH = ./oobj/" >> makefile_nv
+echo "APPOFILE   = \$(patsubst %.c,\$(APPOBJPATH)%.o,\$(CFILE))" >> makefile_nv 
+echo "LIBOFILE   = \$(patsubst %.c,\$(LIBOBJPATH)%.o,\$(CFILE))" >> makefile_nv
+echo "" >> makefile_nv
+echo "all:" >> makefile_nv
+echo "	@echo use app or lib" >> makefile_nv
+echo "" >> makefile_nv
+echo "app: \$(APPPRJNAME)" >> makefile_nv
+echo "	@echo end make \$(APPPRJNAME)" >> makefile_nv
+echo "" >> makefile_nv
+echo "\$(APPPRJNAME): \$(APPOFILE)" >> makefile_nv
+echo "	\$(APPLK) \$(APPDFLAGS) -o \$(APPPRJNAME) \$(APPOFILE) \$(LIBA) \$(LIBSO)" >> makefile_nv
+echo "" >> makefile_nv
+echo "\$(APPOBJPATH)%.o: %.c \$(HFILE)" >> makefile_nv
+echo "	\$(APPCC) \$(APPCFLAGS) -c \$< -o \$@ \$(APPDEFINE)" >> makefile_nv
+echo "" >> makefile_nv
+echo "lib: \$(LIBPRJNAME)" >> makefile_nv
+echo "	@echo end make \$(LIBPRJNAME)" >> makefile_nv
+echo "" >> makefile_nv
+echo "\$(LIBPRJNAME): \$(LIBOFILE)" >> makefile_nv
+echo "	\$(LIBLK) \$(LIBDFLAGS) -shared -o \$(LIBPRJNAME) \$(LIBOFILE) \$(LIBA) \$(LIBSO)" >> makefile_nv
+echo "" >> makefile_nv
+echo "\$(LIBOBJPATH)%.o: %.c \$(HFILE)" >> makefile_nv
+echo "	\$(LIBCC) \$(LIBCFLAGS) -fpic -c \$< -o \$@ \$(LIBDEFINE)" >> makefile_nv
+echo "" >> makefile_nv
+echo "appclean:" >> makefile_nv
+echo "	rm -rf \$(APPOBJPATH)*.o" >> makefile_nv
+echo "	rm -rf ./\$(APPPRJNAME)" >> makefile_nv
+echo "" >> makefile_nv
+echo "libclean:" >> makefile_nv
+echo "	rm -rf \$(LIBOBJPATH)*.o" >> makefile_nv
+echo "	rm -rf ./\$(LIBPRJNAME)" >> makefile_nv
+echo "" >> makefile_nv
+echo "appinstall:" >> makefile_nv
+echo "	cp ./\$(APPPRJNAME) \$(APPIPATH)\$(APPPRJNAME)" >> makefile_nv
+echo "" >> makefile_nv
+echo "libinstall:" >> makefile_nv
+echo "	cp ./\$(LIBPRJNAME) \$(LIBIPATH)\$(LIBPRJNAME)" >> makefile_nv
+echo "	cp ./\$(HMASTER) \$(IHPATH)\$(HMASTER)" >> makefile_nv
+
+##########
+#easytype#
+##########
+echo "create makefikle easytype"
+cd ./easytype
+echo "#auto easy" > ./makefile_auto
+echo "APPPRJNAME = " >> ./makefile_auto
+echo "LIBPRJNAME = " >> ./makefile_auto
+echo "HMASTER    = easytype.h" >> ./makefile_auto
+echo "LIBSO      = " >> ./makefile_auto
+echo "LIBA       = " >> ./makefile_auto
+
+cd ..
+cat ./makefile_nv >> ./easyconsole/makefile_auto
+
+#############
+#easyconsole#
+#############
+echo "create makefile easyconsole"
+cd ./easyconsole
+echo "#auto easy" > ./makefile_auto
+echo "APPPRJNAME = console" >> ./makefile_auto
+echo "LIBPRJNAME = libeasyconsole.so" >> ./makefile_auto
+echo "HMASTER    = easyconsole.h" >> ./makefile_auto
+echo "LIBSO      = " >> ./makefile_auto
+echo "LIBA       = " >> ./makefile_auto
+cd ..
+cat ./makefile_nv >> ./easyconsole/makefile_auto
+
+echo "generate lib"
+cd ./easyconsole
+mkdir -p ./oobj
+mkdir -p ./obj
+make -f ./makefile_auto lib
+cd .. 
+
+############
+#easyserial#
+############
+echo "create makefile easyserial"
+cd ./easyserial
+echo "#auto easy" > ./makefile_auto
+echo "APPPRJNAME = serial" >> ./makefile_auto
+echo "LIBPRJNAME = libeasyserial.so" >> ./makefile_auto
+echo "HMASTER    = easyserial.h" >> ./makefile_auto
+echo "LIBSO      = " >> ./makefile_auto
+echo "LIBA       = " >> ./makefile_auto
+cd ..
+cat ./makefile_nv >> ./easyserial/makefile_auto
+
+echo "generate lib"
+cd ./easyserial
+mkdir -p ./oobj
+mkdir -p ./obj
+make -f ./makefile_auto lib
+cd .. 
+
+############
+#easythread#
+############
+echo "create makefile easythread"
+cd ./easythread
+echo "#auto easy" > ./makefile_auto
+echo "APPPRJNAME = thr" >> ./makefile_auto
+echo "LIBPRJNAME = libeasythread.so" >> ./makefile_auto
+echo "HMASTER    = easythread.h" >> ./makefile_auto
+echo "LIBSO      = -lpthread" >> ./makefile_auto
+echo "LIBA       = " >> ./makefile_auto
+cd ..
+cat ./makefile_nv >> ./easythread/makefile_auto
+
+echo "generate lib"
+cd ./easythread
+mkdir -p ./oobj
+mkdir -p ./obj
+make -f ./makefile_auto lib
+cd .. 
+
+
+##############
+#file install#
+##############
+echo "create install file"
+echo "#!/bin/bash" > install
+
+echo "echo \"install easytype\"" >> install
+echo "cp ./easytype/easytype.h /usr/include/easytype.h" >> install
+
+echo "echo \"install easyconsole\"" >> install
+echo "cd ./easyconsole" >> install
+echo "make -f makefile_auto libinstall" >> install
+echo "cd .." >> install
+
+echo "echo \"install easyserial\"" >> install
+echo "cd ./easyserial" >> install
+echo "make -f makefile_auto libinstall" >> install
+echo "cd .." >> install
+
+echo "echo \"install easythread\"" >> install
+echo "cd ./easythread" >> install
+echo "make -f makefile_auto libinstall" >> install
+echo "cd .." >> install
+
+chmod +x ./install
+
+#####
+#end#
+#####
+echo "for install all \$sudo ./install"
