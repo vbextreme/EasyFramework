@@ -236,6 +236,10 @@ VOID thr_muten_free(MUTEN mx)
 	free(mx);
 }
 
+inline UINT32 thr_muten_sz()
+{
+	return sizeof(_MUTEN);
+}
 /// /////// ///
 /// BARRIER ///
 /// /////// ///

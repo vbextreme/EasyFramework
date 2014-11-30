@@ -57,6 +57,7 @@ inline VOID thr_muten_unlock(MUTEN m);
 VOID thr_muten_destroy(MUTEN mx);
 VOID thr_muten_release(MUTEN mx);
 VOID thr_muten_free(MUTEN mx);
+inline UINT32 thr_muten_sz();
 /// BARRIER ///
 BARRIER thr_barrier_new(int nthread);
 inline VOID thr_barrier_enter(BARRIER b);
