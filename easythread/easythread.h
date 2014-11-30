@@ -29,6 +29,7 @@
 
 
 typedef struct __MUTEX* MUTEX;
+typedef struct __MUTEN* MUTEN;
 typedef struct __BARRIER* BARRIER;
 typedef struct __EVENT* EVENT;
 typedef struct __MESSAGE* MESSAGE;
@@ -49,6 +50,12 @@ MUTEX thr_mutex_new();
 inline VOID thr_mutex_lock(MUTEX m);
 inline VOID thr_mutex_unlock(MUTEX m);
 VOID thr_mutex_free(MUTEX m);
+/// MUTEN ///
+MUTEN thr_muten_new(CHAR *phname);
+inline VOID thr_muten_lock(MUTEN m);
+inline VOID thr_muten_unlock(MUTEN m);
+VOID thr_muten_release(MUTEN mx);
+VOID thr_muten_free(MUTEN mx);
 /// BARRIER ///
 BARRIER thr_barrier_new(int nthread);
 inline VOID thr_barrier_enter(BARRIER b);

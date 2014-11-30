@@ -11,11 +11,23 @@
 #include <sys/sysctl.h>
 #include <sched.h>
 #include <pthread.h>
+#include <sys/shm.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
 
 typedef struct __MUTEX
 {
     pthread_mutex_t mutex;
 }_MUTEX;
+
+typedef struct __MUTEN
+{
+	INT32 idsh;
+	CHAR* base;
+	pthread_mutex_t* mx;
+	pthread_mutexattr_t* att;
+}_MUTEN;
 
 typedef struct __BARRIER
 {
@@ -159,6 +171,65 @@ VOID thr_mutex_free(MUTEX m)
 {
     pthread_mutex_destroy(&m->mutex);
     free(m);
+}
+
+/// ///// ///
+/// MUTEN ///
+/// ///// ///
+
+MUTEN thr_muten_new(CHAR *phname)
+{
+	_MUTEN* mx = malloc(sizeof(_MUTEN));
+	
+	key_t k = ftok(phname,'M');
+	if ( k < 0 ) {free(mx); return NULL;}
+	
+	UINT32 shsz = sizeof(pthread_mutex_t) + sizeof(pthread_mutexattr_t);
+	
+	if ( (mx->idsh = shmget(k,shsz,IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR)) < 0 )
+	{
+		if ( (mx->idsh = shmget(k,shsz,S_IRUSR | S_IWUSR)) < 0 ) {free(mx); return NULL;}
+		mx->base = shmat(mx->idsh, (void *)0, 0);
+		if (mx->base == (char *)(-1)) {free(mx); return NULL;}
+		mx->mx =(pthread_mutex_t*) mx->base;
+		mx->att =(pthread_mutexattr_t*)( mx->base + sizeof(pthread_mutex_t));
+		return mx; 
+	}
+	
+	mx->base = shmat(mx->idsh, (void *)0, 0);
+	if (mx->base == (char *)(-1)) {free(mx);return NULL;}
+	mx->mx =(pthread_mutex_t*) mx->base;
+	mx->att =(pthread_mutexattr_t*)( mx->base + sizeof(pthread_mutex_t));
+	
+	pthread_mutexattr_init(mx->att);
+	pthread_mutexattr_setpshared(mx->att, PTHREAD_PROCESS_SHARED);
+	pthread_mutex_init(mx->mx,mx->att);
+	return mx; 
+}
+
+inline VOID thr_muten_lock(MUTEN m)
+{
+    pthread_mutex_lock(m->mx);
+}
+
+inline VOID thr_muten_unlock(MUTEN m)
+{
+    pthread_mutex_unlock(m->mx);
+}
+
+VOID thr_muten_release(MUTEN mx)
+{
+	pthread_mutex_destroy(mx->mx);
+	pthread_mutexattr_destroy(mx->att); 
+	shmdt(mx->base);
+	shmctl(mx->idsh,IPC_RMID,0);
+	free(mx);
+}
+
+VOID thr_muten_free(MUTEN mx)
+{
+	shmdt(mx->base);
+	free(mx);
 }
 
 /// /////// ///

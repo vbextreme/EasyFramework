@@ -902,7 +902,7 @@ INT32 con_printfk(const CHAR* format,...)
 		
 		strncpy(pk.conv,stf,format-stf);
 		pk.conv[format-stf] = '\0';
-		errorblock( !_pkmap[(BYTE)pk.k](&pk,&ap) );
+		//errorblock( !_pkmap[(BYTE)pk.k](&pk,&ap) );
 	}
     
     va_end(ap);
