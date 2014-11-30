@@ -51,9 +51,10 @@ inline VOID thr_mutex_lock(MUTEX m);
 inline VOID thr_mutex_unlock(MUTEX m);
 VOID thr_mutex_free(MUTEX m);
 /// MUTEN ///
-MUTEN thr_muten_new(CHAR *phname);
+MUTEN thr_muten_new(CHAR *phname,UINT32 offset);
 inline VOID thr_muten_lock(MUTEN m);
 inline VOID thr_muten_unlock(MUTEN m);
+VOID thr_muten_destroy(MUTEN mx);
 VOID thr_muten_release(MUTEN mx);
 VOID thr_muten_free(MUTEN mx);
 /// BARRIER ///

@@ -177,7 +177,7 @@ VOID thr_mutex_free(MUTEX m)
 /// MUTEN ///
 /// ///// ///
 
-MUTEN thr_muten_new(CHAR *phname)
+MUTEN thr_muten_new(CHAR *phname, UINT32 offset)
 {
 	_MUTEN* mx = malloc(sizeof(_MUTEN));
 	
@@ -191,15 +191,15 @@ MUTEN thr_muten_new(CHAR *phname)
 		if ( (mx->idsh = shmget(k,shsz,S_IRUSR | S_IWUSR)) < 0 ) {free(mx); return NULL;}
 		mx->base = shmat(mx->idsh, (void *)0, 0);
 		if (mx->base == (char *)(-1)) {free(mx); return NULL;}
-		mx->mx =(pthread_mutex_t*) mx->base;
-		mx->att =(pthread_mutexattr_t*)( mx->base + sizeof(pthread_mutex_t));
+		mx->mx =(pthread_mutex_t*)(mx->base + offset);
+		mx->att =(pthread_mutexattr_t*)( mx->base + sizeof(pthread_mutex_t) + offset);
 		return mx; 
 	}
 	
 	mx->base = shmat(mx->idsh, (void *)0, 0);
 	if (mx->base == (char *)(-1)) {free(mx);return NULL;}
-	mx->mx =(pthread_mutex_t*) mx->base;
-	mx->att =(pthread_mutexattr_t*)( mx->base + sizeof(pthread_mutex_t));
+	mx->mx =(pthread_mutex_t*)(mx->base + offset);
+	mx->att =(pthread_mutexattr_t*)( mx->base + sizeof(pthread_mutex_t) + offset);
 	
 	pthread_mutexattr_init(mx->att);
 	pthread_mutexattr_setpshared(mx->att, PTHREAD_PROCESS_SHARED);
@@ -217,10 +217,14 @@ inline VOID thr_muten_unlock(MUTEN m)
     pthread_mutex_unlock(m->mx);
 }
 
-VOID thr_muten_release(MUTEN mx)
+VOID thr_muten_destroy(MUTEN mx)
 {
 	pthread_mutex_destroy(mx->mx);
 	pthread_mutexattr_destroy(mx->att); 
+}
+
+VOID thr_muten_release(MUTEN mx)
+{
 	shmdt(mx->base);
 	shmctl(mx->idsh,IPC_RMID,0);
 	free(mx);
