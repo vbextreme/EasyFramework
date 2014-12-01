@@ -177,14 +177,14 @@ VOID thr_mutex_free(MUTEX m)
 /// MUTEN ///
 /// ///// ///
 
-MUTEN thr_muten_new(CHAR *phname, UINT32 offset)
+MUTEN thr_muten_new(CHAR *phname, UINT32 offset, UINT32 n)
 {
 	_MUTEN* mx = malloc(sizeof(_MUTEN));
 	
 	key_t k = ftok(phname,'M');
 	if ( k < 0 ) {free(mx); return NULL;}
 	
-	UINT32 shsz = sizeof(pthread_mutex_t) + sizeof(pthread_mutexattr_t);
+	UINT32 shsz = (sizeof(pthread_mutex_t) + sizeof(pthread_mutexattr_t)) * n;
 	
 	if ( (mx->idsh = shmget(k,shsz,IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR)) < 0 )
 	{
