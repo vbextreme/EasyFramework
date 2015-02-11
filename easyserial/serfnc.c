@@ -32,18 +32,26 @@ HSRL srl_open(CHAR* p, SRLMODE m, UINT32 baund, UINT32 bit, UINT32 parity, UINT3
 	tcgetattr(h->f,&h->oldsetting);
 	bzero(&h->newsetting, sizeof(struct termios));
 	
-	UINT32 fbit;
-	
-	if ( bit == 8 && parity == 0 && bstop == 1 )
-	{
-		fbit = CS8;
-	}
-	else
-	{
-		///no else mode for now
-		free(h);
-		return NULL;
-	}
+	switch (bit)
+    {
+		case 8: default: bit = CS8; break;
+        case 7: bit = CS7; break;
+        case 6: bit = CS6; break;
+        case 5: bit = CS5; break;
+    }  
+    
+    switch (bstop)
+    {
+		case 1: default: bstop = 0; break;
+        case 2: bstop = CSTOPB; break;
+    }
+    
+    switch (parity)
+    {
+		case 0: default: parity = 0; break;
+        case 1: parity = PARENB | PARODD; break;
+        case 2: parity = PARENB; break;
+    }
 	
 	switch (baund)
 	{
@@ -53,10 +61,23 @@ HSRL srl_open(CHAR* p, SRLMODE m, UINT32 baund, UINT32 bit, UINT32 parity, UINT3
 		case 38400: baund = B38400; break;
 		case 57600: baund = B57600; break;
 		case 115200: baund = B115200; break;
+		case 230400: baund = B230400; break;
+		case 460800: baund = B460800; break;
+		case 500000: baund = B500000; break;
+		case 576000: baund = B576000; break;
+		case 921600: baund = B921600; break;
+		case 1000000: baund = B1000000; break;
+		case 1152000: baund = B1152000; break;
+		case 1500000: baund = B1500000; break;
+		case 2000000: baund = B2000000; break;
+		case 2500000: baund = B2500000; break;
+		case 3000000: baund = B3000000; break;
+		case 3500000: baund = B3500000; break;
+		case 4000000: baund = B4000000; break;
 		default: free(h); return NULL;
 	}
 	
-	h->newsetting.c_cflag = baund | CRTSCTS | fbit | CLOCAL | CREAD;
+	h->newsetting.c_cflag = baund | CRTSCTS | bit | baund | parity | bstop| CLOCAL | CREAD;
 	
 	if ( m == SRL_CANONICAL || m == SRL_ACANONICAL)
 	{
@@ -103,7 +124,7 @@ UINT32 srl_read(HSRL h,VOID* data,UINT32 sz)
 	return read(h->f,data,sz);
 }
 
-UINT32 srl_write(HSRL h,VOID* data,UINT32 sz)
+UINT32 srl_write(HSRL h,const VOID* data,UINT32 sz)
 {
 	return ( write(h->f,data,sz) < 0 ) ? 0 : 1;
 }

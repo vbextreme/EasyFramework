@@ -16,6 +16,9 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 
+#define sizeal(TY) (sizeof(TY) + sizeof(TY) % sizeof(INT32)) 
+#define tooffset(M,OF) ((BYTE*)(M) + (OF))
+
 typedef struct __MUTEX
 {
     pthread_mutex_t mutex;
@@ -23,8 +26,9 @@ typedef struct __MUTEX
 
 typedef struct __MUTEN
 {
-	INT32 idsh;
-	CHAR* base;
+	INT32 memid;
+	CHAR* membase;
+	CHAR* memname;
 	pthread_mutex_t* mx;
 	pthread_mutexattr_t* att;
 }_MUTEN;
@@ -62,6 +66,43 @@ typedef struct __MSGQUEUE
     EVENT havemsg;
     INT32 szcoda;
 }_MSGQUEUE;
+
+typedef struct _TALKASK
+{
+	INT32 idreply;
+	INT32 sz;
+	BYTE  question[THR_TALK_MSG_SZ];
+}TALKASK;
+
+typedef struct _TALKREPLY
+{
+	BOOL inuse;
+	pthread_mutex_t lock;
+	pthread_mutexattr_t alock;
+	INT32 sz;
+	BYTE  answer[THR_TALK_MSG_SZ];
+}TALKREPLY;
+
+typedef struct __TALKQUEUE
+{
+	INT32 memid;
+	INT32 memsz;
+	VOID* memadr;
+		
+	pthread_mutex_t* lock;
+	pthread_mutexattr_t* alock;
+	pthread_mutex_t* submit;
+	pthread_mutexattr_t* asubmit;
+	
+	INT32* askin;
+	INT32* askou;
+	INT32  askco;
+	TALKASK* ask;
+	
+	TALKREPLY* reply;
+	INT32 replyco;
+}_TALKQUEUE;
+
 
 typedef struct __WORKER
 {
@@ -177,34 +218,84 @@ VOID thr_mutex_free(MUTEX m)
 /// MUTEN ///
 /// ///// ///
 
-MUTEN thr_muten_new(CHAR *phname, UINT32 offset, UINT32 n)
-{
-	_MUTEN* mx = malloc(sizeof(_MUTEN));
+MUTEN thr_muten_new(CHAR* filenamespace, CHAR* name)
+{	
 	
-	key_t k = ftok(phname,'M');
-	if ( k < 0 ) {free(mx); return NULL;}
+	///printf("Page size: 4096\nmx+att = %d\n",sizeal(pthread_mutex_t) + sizeal(pthread_mutexattr_t));
+	///printf("max muten = 4096 / mx+att+name = %d\n",4096 / (sizeal(pthread_mutex_t) + sizeal(pthread_mutexattr_t) + THR_MUTEN_NAME_MAX));
 	
-	UINT32 shsz = (sizeof(pthread_mutex_t) + sizeof(pthread_mutexattr_t)) * n;
-	
-	if ( (mx->idsh = shmget(k,shsz,IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR)) < 0 )
+	FILE* tst = fopen(filenamespace,"r");
+	if ( !tst )
 	{
-		if ( (mx->idsh = shmget(k,shsz,S_IRUSR | S_IWUSR)) < 0 ) {free(mx); return NULL;}
-		mx->base = shmat(mx->idsh, (void *)0, 0);
-		if (mx->base == (char *)(-1)) {free(mx); return NULL;}
-		mx->mx =(pthread_mutex_t*)(mx->base + offset);
-		mx->att =(pthread_mutexattr_t*)( mx->base + sizeof(pthread_mutex_t) + offset);
-		return mx; 
+		tst = fopen(filenamespace,"w");
+			if ( !tst ) return NULL;
+		fprintf(tst,"named mutex %s\n%d",filenamespace,THR_MUTEN_MAX);
+		fclose(tst);
 	}
 	
-	mx->base = shmat(mx->idsh, (void *)0, 0);
-	if (mx->base == (char *)(-1)) {free(mx);return NULL;}
-	mx->mx =(pthread_mutex_t*)(mx->base + offset);
-	mx->att =(pthread_mutexattr_t*)( mx->base + sizeof(pthread_mutex_t) + offset);
+	key_t k = ftok(filenamespace,'M');
+		if ( k < 0 ) {return NULL;}
+		
+	_MUTEN* h = malloc(sizeof(_MUTEN));
 	
-	pthread_mutexattr_init(mx->att);
-	pthread_mutexattr_setpshared(mx->att, PTHREAD_PROCESS_SHARED);
-	pthread_mutex_init(mx->mx,mx->att);
-	return mx; 
+	UINT32 sz = sizeal(pthread_mutex_t) + sizeal(pthread_mutexattr_t);
+	UINT32 ofch = sz;
+	sz += THR_MUTEN_MAX * THR_MUTEN_NAME_MAX;
+	UINT32 ofmu = sz;
+	sz += THR_MUTEN_MAX * ( sizeal(pthread_mutex_t) + sizeal(pthread_mutexattr_t) );
+	
+	BOOL nw = FALSE;
+	if ( (h->memid = shmget(k,sz,IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR)) < 0 )
+	{
+		if ( (h->memid = shmget(k,sz,S_IRUSR | S_IWUSR)) < 0 ) {free(h); return NULL;} 
+	}
+	else
+		nw = TRUE;
+	
+	h->membase = shmat(h->memid, (void *)0, 0);
+		if (h->membase == (char *)(-1)) {free(h); return NULL;}
+		
+	pthread_mutex_t* lkm = (pthread_mutex_t*) h->membase;
+	pthread_mutexattr_t* alkm = (pthread_mutexattr_t*) tooffset(h->membase,sizeal(pthread_mutex_t));
+	
+	CHAR* pn;
+	INT32 i;
+	
+	if ( nw )
+	{
+		pthread_mutexattr_init(alkm);
+		pthread_mutexattr_setpshared(alkm, PTHREAD_PROCESS_SHARED);
+		pthread_mutex_init(lkm,alkm);
+		
+		pn = (CHAR*) tooffset(h->membase,ofch);
+		for (i = 0; i < THR_MUTEN_MAX; ++i, pn += THR_MUTEN_NAME_MAX)
+			*pn = '\0';
+	}
+	pthread_mutex_lock(lkm);
+	
+	for (pn = (CHAR*) tooffset(h->membase,ofch), i = 0; i < THR_MUTEN_MAX && strcmp(pn,name); ++i, pn += THR_MUTEN_NAME_MAX);
+	
+	if ( i >= THR_MUTEN_MAX )
+	{
+		for (pn = (CHAR*) tooffset(h->membase,ofch), i = 0; i < THR_MUTEN_MAX && *pn; ++i, pn += THR_MUTEN_NAME_MAX);
+		if ( i >= THR_MUTEN_MAX ) { free(h); return NULL;}
+		
+		strcpy(pn,name);
+		h->memname = pn;
+		h->mx =(pthread_mutex_t*) tooffset(h->membase,ofmu + ((sizeal(pthread_mutex_t) + sizeal(pthread_attr_t)) * i));
+		h->att = (pthread_mutexattr_t*) tooffset(h->mx,sizeal(pthread_mutex_t));
+		pthread_mutexattr_init(h->att);
+		pthread_mutexattr_setpshared(h->att, PTHREAD_PROCESS_SHARED);
+		pthread_mutex_init(h->mx,h->att);
+	}
+	else
+	{
+		h->mx =(pthread_mutex_t*) tooffset(h->membase,ofmu + ((sizeal(pthread_mutex_t) + sizeal(pthread_attr_t)) * i));
+		h->att = (pthread_mutexattr_t*) tooffset(h->mx,sizeal(pthread_mutex_t));
+	}
+	pthread_mutex_unlock(lkm);
+	
+	return h;
 }
 
 inline VOID thr_muten_lock(MUTEN m)
@@ -217,29 +308,23 @@ inline VOID thr_muten_unlock(MUTEN m)
     pthread_mutex_unlock(m->mx);
 }
 
-VOID thr_muten_destroy(MUTEN mx)
+VOID thr_muten_destroy(CHAR* filenamespace, MUTEN m)
 {
-	pthread_mutex_destroy(mx->mx);
-	pthread_mutexattr_destroy(mx->att); 
+	INT32 memid = m->memid;
+	thr_muten_free(m);
+	shmctl(memid,IPC_RMID,0);
+	unlink(filenamespace);
 }
 
-VOID thr_muten_release(MUTEN mx)
+VOID thr_muten_free(MUTEN m)
 {
-	shmdt(mx->base);
-	shmctl(mx->idsh,IPC_RMID,0);
-	free(mx);
+	pthread_mutex_destroy(m->mx);
+	pthread_mutexattr_destroy(m->att);
+	m->memname = '\0';
+	shmdt(m->membase);
+	free(m);
 }
 
-VOID thr_muten_free(MUTEN mx)
-{
-	shmdt(mx->base);
-	free(mx);
-}
-
-inline UINT32 thr_muten_sz()
-{
-	return sizeof(_MUTEN);
-}
 /// /////// ///
 /// BARRIER ///
 /// /////// ///
@@ -482,6 +567,285 @@ MESSAGE thr_queue_getmessage(MSGQUEUE q, UINT32 waitms)
 
     return r;
 }
+
+/// ///////// ///
+/// TALKQUEUE ///
+/// ///////// ///
+
+TALKQUEUE thr_talk_new(CHAR* tpath, INT32 maxask, INT32 maxreply)
+{
+	_TALKQUEUE* t = malloc( sizeof( _TALKQUEUE ) );
+	
+	t->askco = maxask;
+	t->replyco = maxreply;
+	
+	INT32 asksz = maxask * sizeal(TALKASK);
+	INT32 replysz = maxreply * sizeal(TALKREPLY);
+	
+	t->memsz = sizeal(pthread_mutex_t) * 2 + sizeal(pthread_attr_t) * 2;
+	t->memsz += asksz + replysz + sizeof(INT32) * 2;
+	
+	if ( !tpath )
+	{
+		t->memid = 0;
+		t->memadr = malloc(t->memsz);
+			if ( !t->memadr ) return NULL;
+	}
+	else
+	{
+		FILE* ft = fopen(tpath,"r");
+			if ( ft ) { fclose(ft); free(t); return NULL;}
+	
+		ft = fopen(tpath,"w");
+			if ( !ft ) { free(t); return NULL;}
+		fprintf(ft,"TalkQueue %s\n%d\n%d\n%d",tpath,t->askco,t->replyco,t->memsz);
+		fclose(ft);
+	
+		key_t k = ftok(tpath,'T');
+			if ( k < 0 ) { free(t); return NULL;}
+	
+		if ( (t->memid = shmget(k,t->memsz,IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR)) < 0 )
+		{
+			free(t);
+			unlink(tpath);
+			return NULL;
+		}
+		
+		t->memadr = shmat(t->memid, (void *)0, 0);
+			if (t->memadr == (char *)(-1)) {free(t); unlink(tpath); return NULL;}
+	}
+	
+	t->lock = (pthread_mutex_t*) t->memadr;
+	t->alock = (pthread_mutexattr_t*) tooffset(t->lock, sizeal(pthread_mutex_t));
+	t->submit = (pthread_mutex_t*) tooffset(t->alock, sizeal(pthread_mutexattr_t));
+	t->asubmit = (pthread_mutexattr_t*) tooffset(t->submit, sizeal(pthread_mutex_t));
+	
+	pthread_mutexattr_init(t->alock);
+	pthread_mutexattr_setpshared(t->alock, PTHREAD_PROCESS_SHARED);
+	pthread_mutex_init(t->lock,t->alock);
+	
+	pthread_mutexattr_init(t->asubmit);
+	pthread_mutexattr_setpshared(t->asubmit, PTHREAD_PROCESS_SHARED);
+	pthread_mutex_init(t->submit,t->asubmit);
+	///init
+	pthread_mutex_lock(t->lock);
+		///alloc shm
+		t->askin = (INT32*) tooffset(t->asubmit, sizeal(pthread_mutexattr_t));
+		t->askou = (INT32*) tooffset(t->askin, sizeof(INT32));
+		t->ask   = (TALKASK*) tooffset(t->askou, sizeof(INT32));
+		t->reply = (TALKREPLY*) tooffset(t->ask, asksz);
+		
+		///reset;
+		INT32 i;
+		for ( i = 0; i < t->askco; ++i )
+		{
+			t->ask[i].idreply = -1;
+			t->ask[i].sz = 0;
+		}
+		*t->askin = *t->askou = 0;
+		
+		for ( i = 0; i < t->replyco; ++i )
+		{
+			t->reply[i].inuse = FALSE;
+			pthread_mutexattr_init(&t->reply[i].alock);
+			pthread_mutexattr_setpshared(&t->reply[i].alock, PTHREAD_PROCESS_SHARED);
+			pthread_mutex_init(&t->reply[i].lock,&t->reply[i].alock);
+			t->reply[i].sz = 0;
+		}
+		
+		pthread_mutex_lock(t->submit);
+	pthread_mutex_unlock(t->lock);
+	
+	return t;
+}  
+
+VOID thr_talk_free(TALKQUEUE t, CHAR* tpath)
+{
+	pthread_mutex_lock(t->lock);
+	pthread_mutex_unlock(t->lock);
+	
+	if (tpath) unlink(tpath);
+	
+	INT32 i;
+	for ( i = 0; i < t->replyco; ++i )
+	{
+		pthread_mutexattr_destroy(&t->reply[i].alock); 
+		pthread_mutex_destroy(&t->reply[i].lock);
+	}
+		
+	pthread_mutexattr_destroy(t->alock); 
+	pthread_mutex_destroy(t->lock);
+	pthread_mutexattr_destroy(t->asubmit); 
+	pthread_mutex_destroy(t->submit);
+	
+	if ( tpath )
+	{
+		shmdt(t->memadr);
+		shmctl(t->memid,IPC_RMID,0);
+	}
+	else
+	{
+		free(t->memadr);
+	}
+	
+	free(t);
+}  
+
+TALKQUEUE thr_talk_hook(CHAR* tpath)
+{
+	if ( !tpath ) return NULL;
+	
+	_TALKQUEUE* t = malloc( sizeof( _TALKQUEUE ) );
+	
+	FILE* ft = fopen(tpath,"r");
+		if ( !ft ) { free(t); return NULL;}
+		CHAR buf[256];
+		fgets(buf,256,ft);
+		fgets(buf,256,ft);
+		t->askco = atoi(buf);
+		fgets(buf,256,ft);
+		t->replyco = atoi(buf);
+		fgets(buf,256,ft);
+		t->memsz = atoi(buf);
+	fclose(ft);
+	
+	key_t k = ftok(tpath,'T');
+		if ( k < 0 ) { free(t); return NULL;}
+	
+	if ( (t->memid = shmget(k,t->memsz,S_IRUSR | S_IWUSR)) < 0 ) {free(t); return NULL;} 
+		
+	t->memadr = shmat(t->memid, (void *)0, 0);
+		if (t->memadr == (char *)(-1)) {free(t); return NULL;}
+	
+	t->lock = (pthread_mutex_t*) t->memadr;
+	t->alock = (pthread_mutexattr_t*) tooffset(t->lock, sizeal(pthread_mutex_t));
+	t->submit = (pthread_mutex_t*) tooffset(t->alock, sizeal(pthread_mutexattr_t));
+	t->asubmit = (pthread_mutexattr_t*) tooffset(t->submit, sizeal(pthread_mutex_t));
+	
+	t->askin = (INT32*) tooffset(t->asubmit, sizeal(pthread_mutexattr_t));
+	t->askou = (INT32*) tooffset(t->askin, sizeof(INT32));
+	t->ask   = (TALKASK*) tooffset(t->askou, sizeof(INT32));
+	t->reply = (TALKREPLY*) tooffset(t->ask, t->askco * sizeal(TALKASK) );
+	
+	return t;
+}  
+
+VOID thr_talk_unhook(TALKQUEUE t)
+{
+	shmdt(t->memadr);
+}
+
+BOOL _talk_askfull(_TALKQUEUE* t)
+{
+	if ( *t->askin + 1 == *t->askou ) return TRUE;
+	if ( *t->askin + 1 >= t->askco && !*t->askou ) return TRUE;
+	return FALSE;
+}
+
+INT32 _talk_requestreply(_TALKQUEUE* t)
+{
+	INT32 i;
+	for ( i = 0; i < t->replyco; ++i )
+		if ( !t->reply[i].inuse ) return i;
+	return -1;
+}
+
+INT32 thr_talk_ask(TALKQUEUE t, VOID* question, INT32 sz, BOOL wantanswer, BOOL forcequestion)
+{
+	INT32 idr = -1;
+	
+	pthread_mutex_lock(t->lock);
+		do
+		{
+			if ( _talk_askfull(t) || ( wantanswer && (idr = _talk_requestreply(t)) == -1 ) )
+			{ 
+				pthread_mutex_unlock(t->lock);
+					thr_msleep(1);
+				pthread_mutex_lock(t->lock);	
+			}
+			else
+			{
+				break;
+			}
+		}while(forcequestion);
+		 
+		t->ask[*t->askin].idreply = idr;
+		t->ask[*t->askin].sz = sz;
+		memcpy(t->ask[*t->askin].question,question,sz);
+		
+		if (wantanswer)
+		{
+			t->reply[idr].inuse = TRUE;
+			pthread_mutex_lock(&t->reply[idr].lock);
+			t->reply[idr].sz = 0;
+		}
+		
+		++(*t->askin);
+		if ( *t->askin >= t->askco ) *t->askin = 0;
+		
+	pthread_mutex_unlock(t->lock);
+	pthread_mutex_unlock(t->submit);
+	
+	return idr;
+}
+
+INT32 thr_talk_reply(TALKQUEUE t, INT32 idr, VOID* answer, INT32 sz)
+{
+	pthread_mutex_lock(t->lock);
+		memcpy(t->reply[idr].answer,answer,sz);
+		t->reply[idr].sz = sz;
+	pthread_mutex_unlock(t->lock);
+	
+	pthread_mutex_unlock(&t->reply[idr].lock);
+	
+	return 0;
+}
+
+INT32 thr_talk_waitask(TALKQUEUE t, VOID* question, INT32* sz)
+{
+	pthread_mutex_lock(t->submit);
+
+	INT32 idr;
+	
+	pthread_mutex_lock(t->lock);
+		idr = t->ask[*t->askou].idreply;
+		*sz = t->ask[*t->askou].sz;
+		memcpy(question,t->ask[*t->askou].question,*sz);
+		
+		++(*t->askou);
+		if ( *t->askou >= t->askco ) *t->askou = 0;
+	pthread_mutex_unlock(t->lock);
+	
+	return idr;
+}
+
+INT32 thr_talk_waitanswer(TALKQUEUE t, INT32 idr, VOID* answer, INT32* sz)
+{
+	pthread_mutex_lock(&t->reply[idr].lock);
+	pthread_mutex_unlock(&t->reply[idr].lock);
+	
+	*sz = t->reply[idr].sz;
+	memcpy(answer,t->reply[idr].answer,*sz);
+	
+	pthread_mutex_lock(t->lock);
+		t->reply[idr].inuse = FALSE;
+	pthread_mutex_unlock(t->lock);
+	
+	return 0;
+}
+
+
+VOID thr_talk_arforsize(INT32* nask, INT32* nreply, UINT32 sz)
+{	
+	UINT32 ps = 4096 * (sz / 4096); //sysconf(_SC_PAGESIZE) * (sz / sysconf(_SC_PAGESIZE));
+	
+	ps -= sizeal(pthread_mutex_t) * 2 + sizeal(pthread_attr_t) * 2 + sizeof(INT32) * 2  ;
+	ps >>= 1;
+	
+	*nask = ps / sizeal(TALKASK);
+	*nreply = ps / sizeal(TALKREPLY);
+}
+
 
 /// ////// ///
 /// WORKER ///

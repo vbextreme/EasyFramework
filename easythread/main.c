@@ -10,6 +10,7 @@
 
 #define _dbgd(VAR) printf( #VAR ":=%d\n",VAR)
 
+/*
 VOID* test(VOID* val)
 {
 	THREAD_START(val,INT32*,id);
@@ -26,8 +27,113 @@ VOID* test(VOID* val)
 	THREAD_ONEXIT
 	return NULL;
 }
+*/
+
+/*
+INT32 talk(CHAR* name, INT32 sza, INT32 szr)
+{
+	TALKQUEUE t = thr_talk_new(name,sza,szr);
+		if ( !t ) return -1;
+	
+	CHAR msg[THR_TALK_MSG_SZ];
+	INT32 sz;
+	INT32 idr;
+	UINT32 count = 0;
+	
+	while ( 1 )
+	{
+		idr = thr_talk_waitask(t,msg,&sz);
+		msg[sz] = '\0';
+		
+		printf("ask%d:%s\n",count++,msg);
+		
+		if ( idr >= 0 )
+		{
+			if ( !strcmp("nop",msg) )
+			{
+				thr_talk_reply(t,idr,"nop",4);
+			}
+			else
+			{
+				thr_talk_reply(t,idr,"ok",3);
+			}
+		}
+		
+		if ( !strcmp(msg,"exit") ) break;
+		
+		fflush(stdout);
+	}
+	
+	thr_talk_free(t,name);
+	return 0;
+}
+
+INT32 ask(CHAR* name, CHAR* msg)
+{
+	TALKQUEUE t = thr_talk_hook(name);
+		if ( !t ) return -1;
+		
+	CHAR m[THR_TALK_MSG_SZ];
+	INT32 sz;
+	INT32 idr;
+	
+	UINT32 count = 0;
+	
+	INFL:
+	
+	idr = thr_talk_ask(t,msg,strlen(msg)+1,TRUE,TRUE);
+	if ( idr < 0) 
+	{ 
+		printf("error on ask:%d\n",idr);
+		thr_talk_unhook(t);
+		return idr;
+	}
+	
+	thr_talk_waitanswer(t,idr,m,&sz);
+	
+	m[sz] = '\0';
+	
+	if ( !(count % 100) )
+		printf("answer%d:%s\n",count,m);
+	++count;
+	
+	if ( !strcmp(m,"nop") ) goto INFL;
+	
+	
+	thr_talk_unhook(t);
+	
+	return 0;
+}
+*/
 
 
+INT32 main(INT32 argc, CHAR** argv)
+{
+	if ( argc == 2 )
+	{
+		MUTEN m = thr_muten_new("test","uno");
+		thr_muten_destroy("test",m);
+		return 0;
+	}
+		
+	MUTEN m = thr_muten_new("test","uno");
+	
+	thr_muten_lock(m);
+	puts("sleep");
+	fflush(stdout);
+	thr_sleep(10);
+	puts("wake");
+	fflush(stdout);
+	thr_muten_unlock(m);
+	
+	
+	return 0;
+}
+
+#endif
+
+
+/*
 INT32 main()
 {
 	
@@ -51,9 +157,8 @@ INT32 main()
 	
 	return 0;
 }
+*/
 
-
-#endif
 /*
 double start;
 

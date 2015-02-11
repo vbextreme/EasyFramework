@@ -20,6 +20,9 @@
 
 #define THR_AUTOCPU 0
 
+#define THR_MUTEN_NAME_MAX 64
+#define THR_MUTEN_MAX 43
+
 ///il ritorno > 0 è l'attesa in millisecondi
 #define THR_WORK_COMPLETE 0
 #define THR_WORK_CONTINUE -1
@@ -27,6 +30,7 @@
 #define THR_WORK_SKIP -7
 #define THR_WORK_PRIORITY_END -3
 
+#define THR_TALK_MSG_SZ 1024
 
 typedef struct __MUTEX* MUTEX;
 typedef struct __MUTEN* MUTEN;
@@ -34,6 +38,7 @@ typedef struct __BARRIER* BARRIER;
 typedef struct __EVENT* EVENT;
 typedef struct __MESSAGE* MESSAGE;
 typedef struct __MSGQUEUE* MSGQUEUE;
+typedef struct __TALKQUEUE* TALKQUEUE;
 typedef struct __WORKER* WORKER;
 typedef struct __WORK* WORK;
 typedef struct __THR* THR;
@@ -51,13 +56,11 @@ inline VOID thr_mutex_lock(MUTEX m);
 inline VOID thr_mutex_unlock(MUTEX m);
 VOID thr_mutex_free(MUTEX m);
 /// MUTEN ///
-MUTEN thr_muten_new(CHAR *phname, UINT32 offset, UINT32 n);
+MUTEN thr_muten_new(CHAR* filenamespace, CHAR* name);
 inline VOID thr_muten_lock(MUTEN m);
 inline VOID thr_muten_unlock(MUTEN m);
-VOID thr_muten_destroy(MUTEN mx);
-VOID thr_muten_release(MUTEN mx);
-VOID thr_muten_free(MUTEN mx);
-inline UINT32 thr_muten_sz();
+VOID thr_muten_destroy(CHAR* filenamespace, MUTEN m);
+VOID thr_muten_free(MUTEN m);
 /// BARRIER ///
 BARRIER thr_barrier_new(int nthread);
 inline VOID thr_barrier_enter(BARRIER b);
@@ -82,6 +85,17 @@ INT32 thr_queue_free(MSGQUEUE q);
 inline INT32 thr_queue_getsize(MSGQUEUE q);
 INT32 thr_queue_add(MSGQUEUE q, MESSAGE m);
 MESSAGE thr_queue_getmessage(MSGQUEUE q, UINT32 waitms);
+/// TALKQUEUE ///
+TALKQUEUE thr_talk_new(CHAR* tpath, INT32 maxask, INT32 maxreply);
+VOID thr_talk_free(TALKQUEUE t, CHAR* tpath);
+TALKQUEUE thr_talk_hook(CHAR* tpath);
+VOID thr_talk_unhook(TALKQUEUE t);
+INT32 thr_talk_ask(TALKQUEUE t, VOID* question, INT32 sz, BOOL wantanswer, BOOL forcequestion);
+INT32 thr_talk_reply(TALKQUEUE t, INT32 idr, VOID* answer, INT32 sz);
+INT32 thr_talk_waitask(TALKQUEUE t, VOID* question, INT32* sz);
+INT32 thr_talk_waitanswer(TALKQUEUE t, INT32 idr, VOID* answer, INT32* sz);
+VOID thr_talk_arforsize(INT32* nask, INT32* nreply, UINT32 sz);
+
 /// WORKER ///
 WORKER thr_worker_new(WORKCALL dowork, WORKCALL progress, WORKCALL complete, WORKCALL tofree, INT32 autofree, VOID* param, INT32 priority);
 /// WORK ///

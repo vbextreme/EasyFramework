@@ -1,4 +1,4 @@
- #include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
@@ -7,6 +7,8 @@
 #include <string.h>
 #include <errno.h>
 #include <linux/input.h>
+#include <dirent.h>
+#include <sys/stat.h>
 #include "easyconsole.h"
 
 #define   RD_EOF   -1
@@ -18,6 +20,54 @@ static int peek_character = -1;
 
 static PKFNC _pkmap[256];
 static BOOL _PKINIT = FALSE;
+
+
+INT32 _inodelist(CHAR* d,INT32 type, CHAR* path)
+{
+	static DIR* dir = NULL;
+	
+	if ( path )
+	{
+		struct stat info;
+			if (stat(path,&info) == -1) return 0;
+	
+		if ( !S_ISDIR(info.st_mode) ) return 0;
+		
+		dir = opendir(path);
+		if ( !dir ) return 0;
+	}
+	
+	struct dirent* dr;
+	while ( (dr = readdir(dir)) )
+	{
+		if ( !strcmp(dr->d_name,".") ) continue;
+		if ( !strcmp(dr->d_name,"..") ) continue;
+		if ( dr->d_type != type ) continue;
+		break;
+	}
+	
+	if ( !dr ) { closedir(dir); return 0;}
+	strcpy(d,dr->d_name);
+	return 1;
+}
+
+INT32 _idkey(CHAR* k)
+{
+	INT32 l = strlen(k);
+	if ( strncmp(&k[l-3],"kbd",3) ) return -1;
+	
+	CHAR* e = k + l;
+	while ( e > k && *e != '.' ) --e;
+	if ( e == k ) return -1;
+	++e;
+	
+	CHAR* ee = e;
+	while ( *ee && *ee != '-' ) ++ee;
+	if ( !*ee ) return -1;
+	*ee = '\0';
+	
+	return atoi(e);
+}
 
 VOID con_async(INT32 enable, CHAR* ofeventk)
 {
@@ -33,30 +83,29 @@ VOID con_async(INT32 enable, CHAR* ofeventk)
         new_settings.c_cc[VTIME] = 0;
         tcsetattr(0, TCSANOW, &new_settings);
         
+        CHAR ink[1024];
+        CHAR* ofk = ofeventk;
+        
         if ( ofeventk == NULL )
         {
-			CHAR buf[1024];
-			CHAR ph[1024];
-			register INT32 i = 0;
-			FILE* fk = NULL;
-			
-			sprintf(ph,"/sys/class/input/event%d/device/name",i);			
-			while ( (fk = fopen(ph,"r")) )
+			CHAR* fk = "/dev/input/by-path/";
+			if ( _inodelist(ink,DT_LNK,fk) ) 
 			{
-				fgets(buf,1024,fk);
-				if ( !strcmp(buf,"USB USB Keyboard\n") )
+				INT32 ret;
+				do
 				{
-					sprintf(ph,"/dev/input/event%d",i);
-					_fik = open("/dev/input/event0", O_RDONLY);
-					break;
-				}
-				sprintf(ph,"/sys/class/input/event%d/device/name",++i);
+					ret = _idkey(ink);
+				}while( ret == -1 && _inodelist(ink,DT_LNK,NULL) );
+				
+				if ( ret != -1 )
+				{
+					sprintf(ink,"/dev/input/event%d",ret);
+					ofk = ink;
+				} 
 			}
 		}
-		else
-		{
-			_fik = open(ofeventk, O_RDONLY);
-		}
+		
+		_fik = open(ofk, O_RDONLY);
     }
     else
     {
@@ -902,6 +951,7 @@ INT32 con_printfk(const CHAR* format,...)
 		
 		strncpy(pk.conv,stf,format-stf);
 		pk.conv[format-stf] = '\0';
+		_pkmap[(BYTE)pk.k](&pk,&ap);
 		//errorblock( !_pkmap[(BYTE)pk.k](&pk,&ap) );
 	}
     

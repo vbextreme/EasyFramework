@@ -35,13 +35,13 @@ VOID itob(CHAR* b, UINT32 v, INT32 sz)
 
 int main(int argc, char **argv)
 {	
-	con_printfk("%/%32b\n%@",0x03);
 	
-	return 0;
-	
-    
-    /*
     con_async(1,NULL);
+    
+    con_async(0,NULL);
+    
+    return 0;
+    
     
     CHAR c;
     while (1)
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 	}
     
     con_async(0,NULL);
-    */
+    
     return 0;
 }
 
