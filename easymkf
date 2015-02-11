@@ -1,0 +1,90 @@
+#!/bin/bash
+
+###############
+#easy makefile#
+###############
+# arg1 = dest arg2 = appprg arg3 = libprj arg4 = libmaseter.h arg5 = libso arg6 = liba 
+# arg7 = gccflag arg8 = ldd flag
+
+if [ $# -eq 0 ]; then
+	echo "easy makefile error, not arg"
+	exit 1
+fi
+
+if [ $# -gt 8 ]; then
+	echo "easy makefile error, not arg"
+	exit 1
+fi
+
+destmk=$1
+destmk+="makefile.auto"
+
+appprj=$2
+libprj=$3
+libmst=$4
+libso=$5
+liba=$6
+gccflg=$7
+ldflg=$8
+
+echo "#auto make" > $destmk
+echo "APPPRJNAME = $appprj" >> $destmk
+echo "LIBPRJNAME = $libprj" >> $destmk
+echo "HMASTER    = $libmst" >> $destmk
+echo "LIBSO      = $libso" >> $destmk
+echo "LIBA       = $liba" >> $destmk
+echo "APPIPATH   = /usr/bin/" >> $destmk
+echo "LIBIPATH   = /usr/lib/" >> $destmk
+echo "IHPATH     = /usr/include/" >> $destmk
+echo "APPCFLAGS  = $gccflg" >> $destmk
+echo "APPDFLAGS  = $ldflg" >> $destmk
+echo "LIBCFLAGS  = $gccflg" >> $destmk
+echo "LIBDFLAGS  = $ldflg" >> $destmk
+echo "APPDEFINE  = -D_APP" >> $destmk
+echo "LIBDEFINE  = -D_LIB" >> $destmk
+echo "APPCC      = gcc" >> $destmk
+echo "APPLK      = gcc" >> $destmk
+echo "LIBCC      = gcc" >> $destmk
+echo "LIBLK      = ld" >> $destmk
+echo "CFILE      = \$(shell echo *.c)" >> $destmk
+echo "HFILE      = \$(shell echo *.h)" >> $destmk
+echo "APPOBJPATH = ./obj/" >> $destmk
+echo "LIBOBJPATH = ./oobj/" >> $destmk
+echo "APPOFILE   = \$(patsubst %.c,\$(APPOBJPATH)%.o,\$(CFILE))" >> $destmk
+echo "LIBOFILE   = \$(patsubst %.c,\$(LIBOBJPATH)%.o,\$(CFILE))" >> $destmk
+echo "" >> $destmk
+echo "all:" >> $destmk
+echo "	@echo use app or lib" >> $destmk
+echo "" >> $destmk
+echo "app: \$(APPPRJNAME)" >> $destmk
+echo "	@echo end make \$(APPPRJNAME)" >> $destmk
+echo "" >> $destmk
+echo "\$(APPPRJNAME): \$(APPOFILE)" >> $destmk
+echo "	\$(APPLK) \$(APPDFLAGS) -o \$(APPPRJNAME) \$(APPOFILE) \$(LIBA) \$(LIBSO)" >> $destmk
+echo "" >> $destmk
+echo "\$(APPOBJPATH)%.o: %.c \$(HFILE)" >> $destmk
+echo "	\$(APPCC) \$(APPCFLAGS) -c \$< -o \$@ \$(APPDEFINE)" >> $destmk
+echo "" >> $destmk
+echo "lib: \$(LIBPRJNAME)" >> $destmk
+echo "	@echo end make \$(LIBPRJNAME)" >> $destmk
+echo "" >> $destmk
+echo "\$(LIBPRJNAME): \$(LIBOFILE)" >> $destmk
+echo "	\$(LIBLK) \$(LIBDFLAGS) -shared -o \$(LIBPRJNAME) \$(LIBOFILE) \$(LIBA) \$(LIBSO)" >> $destmk
+echo "" >> $destmk
+echo "\$(LIBOBJPATH)%.o: %.c \$(HFILE)" >> $destmk
+echo "	\$(LIBCC) \$(LIBCFLAGS) -fpic -c \$< -o \$@ \$(LIBDEFINE)" >> $destmk
+echo "" >> $destmk
+echo "appclean:" >> $destmk
+echo "	rm -rf \$(APPOBJPATH)*.o" >> $destmk
+echo "	rm -rf ./\$(APPPRJNAME)" >> $destmk
+echo "" >> $destmk
+echo "libclean:" >> $destmk
+echo "	rm -rf \$(LIBOBJPATH)*.o" >> $destmk
+echo "	rm -rf ./\$(LIBPRJNAME)" >> $destmk
+echo "" >> $destmk
+echo "appinstall:" >> $destmk
+echo "	cp ./\$(APPPRJNAME) \$(APPIPATH)\$(APPPRJNAME)" >> $destmk
+echo "" >> $destmk
+echo "libinstall:" >> $destmk
+echo "	cp ./\$(LIBPRJNAME) \$(LIBIPATH)\$(LIBPRJNAME)" >> $destmk
+echo "	cp ./\$(HMASTER) \$(IHPATH)\$(HMASTER)" >> $destmk

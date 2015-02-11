@@ -1,0 +1,95 @@
+#!/bin/bash
+
+echo "------------------------"
+echo "- Clean Easy Framework -"
+echo "------------------------"
+echo ""
+
+echo "------------"
+echo "- easytype -"
+echo "------------"
+echo ""
+
+echo "-------------"
+echo "- easyalloc -"
+echo "-------------"
+cd ./easyalloc
+make -f ./makefile.auto libclean
+echo ""
+cd ..
+
+echo "-----------------"
+echo "- easybenchmark -"
+echo "-----------------"
+cd ./easybenchmark
+make -f ./makefile.auto libclean
+echo ""
+cd ..
+
+echo "---------------"
+echo "- easyconsole -"
+echo "---------------"
+cd ./easyconsole
+make -f ./makefile.auto libclean
+echo ""
+cd ..
+
+echo "--------------"
+echo "- easycrypto -"
+echo "--------------"
+cd ./easycrypto
+make -f ./makefile.auto libclean
+echo ""
+cd ..
+
+echo "------------"
+echo "- easyfile -"
+echo "------------"
+cd ./easyfile
+make -f ./makefile.auto libclean
+echo ""
+cd ..
+
+echo "------------"
+echo "- easylist -"
+echo "------------"
+cd ./easylist
+make -f ./makefile.auto libclean
+echo ""
+cd ..
+
+echo "------------"
+echo "- easymath -"
+echo "------------"
+cd ./easymath
+make -f ./makefile.auto libclean
+echo ""
+cd ..
+
+echo "--------------"
+echo "- easyserial -"
+echo "--------------"
+cd ./easyserial
+make -f ./makefile.auto libclean
+echo ""
+cd ..
+
+echo "--------------"
+echo "- easythread -"
+echo "--------------"
+cd ./easythread
+make -f ./makefile.auto lib
+echo ""
+cd ..
+
+echo "--------------"
+echo "- easysocket -"
+echo "--------------"
+cd ./easysocket
+make -f ./makefile.auto libclean
+echo ""
+cd ..
+
+echo "------------"
+echo "- Complete -"
+echo "------------"
