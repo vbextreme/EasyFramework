@@ -38,11 +38,6 @@ int main(int argc, char **argv)
 	
     con_async(1,NULL);
     
-    con_async(0,NULL);
-    
-    return 0;
-    
-    
     CHAR c;
     while (1)
     {

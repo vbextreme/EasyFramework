@@ -37,10 +37,23 @@ make -f ./makefile.auto libinstall
 echo ""
 cd ..
 
+echo "------------"
+echo "- easyfile -"
+echo "------------"
+./easymkf ./easyfile/ "" libeasyfile.so easyfile.h "-lc" "" "-Wall -O3" "-O3"
+cd ./easyfile
+echo "compiling"
+mkdir ./oobj
+make -f ./makefile.auto lib
+echo "install"
+make -f ./makefile.auto libinstall
+echo ""
+cd ..
+
 echo "---------------"
 echo "- easyconsole -"
 echo "---------------"
-./easymkf ./easyconsole/ "" libeasyconsole.so easyconsole.h "" "" "-Wall -O3" "-O3"
+./easymkf ./easyconsole/ "" libeasyconsole.so easyconsole.h "-leasyfile" "" "-Wall -O3" "-O3"
 cd ./easyconsole
 echo "compiling"
 mkdir ./oobj
@@ -55,19 +68,6 @@ echo "- easycrypto -"
 echo "--------------"
 ./easymkf ./easycrypto/ "" libeasycrypto.so easycrypto.h "" "" "-Wall -O3" "-O3"
 cd ./easycrypto
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "------------"
-echo "- easyfile -"
-echo "------------"
-./easymkf ./easyfile/ "" libeasyfile.so easyfile.h "-lc" "" "-Wall -O3" "-O3"
-cd ./easyfile
 echo "compiling"
 mkdir ./oobj
 make -f ./makefile.auto lib

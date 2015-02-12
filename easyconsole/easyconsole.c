@@ -7,8 +7,10 @@
 #include <string.h>
 #include <errno.h>
 #include <linux/input.h>
-#include <dirent.h>
-#include <sys/stat.h>
+//#include <dirent.h>
+//#include <sys/stat.h>
+#include <easyfile.h>
+
 #include "easyconsole.h"
 
 #define   RD_EOF   -1
@@ -21,52 +23,10 @@ static int peek_character = -1;
 static PKFNC _pkmap[256];
 static BOOL _PKINIT = FALSE;
 
-
-INT32 _inodelist(CHAR* d,INT32 type, CHAR* path)
-{
-	static DIR* dir = NULL;
-	
-	if ( path )
-	{
-		struct stat info;
-			if (stat(path,&info) == -1) return 0;
-	
-		if ( !S_ISDIR(info.st_mode) ) return 0;
-		
-		dir = opendir(path);
-		if ( !dir ) return 0;
-	}
-	
-	struct dirent* dr;
-	while ( (dr = readdir(dir)) )
-	{
-		if ( !strcmp(dr->d_name,".") ) continue;
-		if ( !strcmp(dr->d_name,"..") ) continue;
-		if ( dr->d_type != type ) continue;
-		break;
-	}
-	
-	if ( !dr ) { closedir(dir); return 0;}
-	strcpy(d,dr->d_name);
-	return 1;
-}
-
-INT32 _idkey(CHAR* k)
+INT32 _iskey(CHAR* k)
 {
 	INT32 l = strlen(k);
-	if ( strncmp(&k[l-3],"kbd",3) ) return -1;
-	
-	CHAR* e = k + l;
-	while ( e > k && *e != '.' ) --e;
-	if ( e == k ) return -1;
-	++e;
-	
-	CHAR* ee = e;
-	while ( *ee && *ee != '-' ) ++ee;
-	if ( !*ee ) return -1;
-	*ee = '\0';
-	
-	return atoi(e);
+	return (strncmp(&k[l-3],"kbd",3)) ? 0 : 1;
 }
 
 VOID con_async(INT32 enable, CHAR* ofeventk)
@@ -83,25 +43,28 @@ VOID con_async(INT32 enable, CHAR* ofeventk)
         new_settings.c_cc[VTIME] = 0;
         tcsetattr(0, TCSANOW, &new_settings);
         
-        CHAR ink[1024];
+        CHAR ink[512];
+        CHAR nd[512];
         CHAR* ofk = ofeventk;
         
         if ( ofeventk == NULL )
         {
 			CHAR* fk = "/dev/input/by-path/";
-			if ( _inodelist(ink,DT_LNK,fk) ) 
+			if ( dir_list(nd,TRUE,FT_LINK,fk) ) 
 			{
 				INT32 ret;
 				do
 				{
-					ret = _idkey(ink);
-				}while( ret == -1 && _inodelist(ink,DT_LNK,NULL) );
+					ret = _iskey(nd);
+				}while( !ret && dir_list(nd,TRUE,FT_LINK,NULL) != -1 );
 				
-				if ( ret != -1 )
-				{
-					sprintf(ink,"/dev/input/event%d",ret);
-					ofk = ink;
-				} 
+				if ( !ret ) return;
+				
+				sprintf(ink,"/dev/input/by-path/%s",nd);
+				if ((ret = readlink(ink, nd, 511)) == -1) return;
+				nd[ret] = '\0';
+				sprintf(ink,"/dev/input/%s",&nd[3]);
+				ofk = ink; 
 			}
 		}
 		
