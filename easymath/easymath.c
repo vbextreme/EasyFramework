@@ -3,6 +3,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "easymath.h"
 
 float mth_gtor(float gradi)
@@ -136,6 +137,121 @@ VOID mth_date_timettodate(time_t s,DATE* d)
     d->mm = timeinfo->tm_min;
     d->ss = timeinfo->tm_sec;
 }
+
+VOID mth_date_timespectodate(struct timespec* s,DATE* d)
+{
+    struct tm* timeinfo;
+    timeinfo = localtime (&s->tv_sec);
+    d->y = timeinfo->tm_year + 1900;
+    d->m = timeinfo->tm_mon + 1;
+    d->d = timeinfo->tm_mday;
+    d->hh = timeinfo->tm_hour;
+    d->mm = timeinfo->tm_min;
+    d->ss = timeinfo->tm_sec;
+}
+
+VOID mth_date_totimet(DATE* s,time_t* d)
+{
+    time_t raw;
+    struct tm* ti;
+    time (&raw);
+    ti = localtime(&raw);
+    ti->tm_year = s->y - 1900;
+    ti->tm_mon = s->m - 1;
+    ti->tm_mday = s->d;
+    ti->tm_hour = s->hh;
+    ti->tm_min = s->mm;
+    ti->tm_sec = s->ss;
+    *d = mktime(ti);
+}
+
+INT32 mth_date_cmp(DATE* a, DATE* b)
+{
+	if( a->y < b->y ) return -1;
+	if( a->y > b->y ) return 1;
+	if( a->m < b->m ) return -1;
+	if( a->m > b->m ) return 1;
+	if( a->d < b->d ) return -1;
+	if( a->d > b->d ) return 1;
+	if( a->hh < b->hh ) return -1;
+	if( a->hh > b->hh ) return 1;
+	if( a->mm < b->mm ) return -1;
+	if( a->mm > b->mm ) return 1;
+	if( a->ss < b->ss ) return -1;
+	if( a->ss > b->ss ) return 1;
+	return 0;
+}
+
+VOID mth_date_diff(DATE* d, DATE* a, DATE* b)
+{
+	DATE* mj;
+	DATE* mi;
+	
+	switch (mth_date_cmp(a,b))
+	{
+		case 0:	memset(d,0,sizeof(DATE)); return;
+		case -1: mi = a; mj = b; break;
+		case 1:	mi = b;	mj = a;	break;
+		default: return;
+	}
+	
+	d->y = mj->y - mi->y;
+	d->m = mj->m - mi->m;
+	d->d = mj->d - mi->d;
+	d->hh = mj->hh - mi->hh;
+	d->mm = mj->mm - mi->mm;
+	d->ss = mj->ss - mi->ss;
+}
+
+CHAR* mth_date_tostring(CHAR* s, DATE* d)
+{
+	sprintf(s,"%d/%d/%d %d:%d:%d",d->d,d->m,d->y,d->hh,d->mm,d->ss);
+	return s;
+}
+
+VOID mth_date_fromstring(DATE* d, CHAR* s)
+{
+	memset(d,0,sizeof(DATE));
+	
+	CHAR part[5];
+	
+	CHAR* cp =part;
+	while ( *s && *s != '/' ) *cp++ = *s++;
+	*cp = '\0';
+	d->d = atoi(part);
+	if ( !*s++ ) return;
+	
+	cp = part;
+	while ( *s && *s != '/' ) *cp++ = *s++;
+	*cp = '\0';
+	d->m = atoi(part);
+	if ( !*s++ ) return;
+	
+	cp = part;
+	while ( *s && *s != ' ' ) *cp++ = *s++;
+	*cp = '\0';
+	d->y = atoi(part);
+	if ( !*s++ ) return;
+	
+	cp = part;
+	while ( *s && *s != ':' ) *cp++ = *s++;
+	*cp = '\0';
+	d->hh = atoi(part);
+	if ( !*s++ ) return;
+	
+	cp = part;
+	while ( *s && *s != ':' ) *cp++ = *s++;
+	*cp = '\0';
+	d->mm = atoi(part);
+	if ( !*s++ ) return;
+	
+	cp = part;
+	while ( *s && *s != ' ') *cp++ = *s++;
+	*cp = '\0';
+	d->ss = atoi(part);
+}
+
+
 
 int mth_date_isbise(int year)
 {

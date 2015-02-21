@@ -114,6 +114,15 @@ typedef struct _CONPK
 	CHAR k;
 }CONPK;
 
+typedef struct _CONMSG
+{
+	UINT32 x;
+	UINT32 y;
+	UINT32 ex;
+	UINT32 ey;
+	INT32 st;
+}CONMSG;
+
 typedef INT32(*PKFNC)(CONPK*, va_list*);
 
 VOID con_async(INT32 enable, CHAR* ofeventk);
@@ -150,5 +159,6 @@ CHAR con_getchex();
 void con_getpassword(char* psw,int sz,char mask);
 VOID con_printfk_reg(BYTE k,PKFNC fnc);
 INT32 con_printfk(const CHAR* format,...);
+VOID con_msg(CONMSG* m, CHAR* msg, INT32 status);
 
 #endif

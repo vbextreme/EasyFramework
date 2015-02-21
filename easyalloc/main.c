@@ -213,7 +213,7 @@ VOID shm_print(SHM h)
 }	
 */
 
-void alc_freem(void **b,UINT32 y)
+VOID alc_freem(VOID **b,UINT32 y)
 {
     int i;
     for (i=0; i<y ; i++)
@@ -222,21 +222,21 @@ void alc_freem(void **b,UINT32 y)
     free(b);
 }
 
-void** alc_mallocm(UINT32 y, UINT32 x,size_t st)
+VOID** alc_mallocm(UINT32 y, UINT32 x,SIZET st)
 {
-    void **b;
+    VOID **b;
 
-    b=(void**)malloc(y*sizeof(void*));
-    if (b==NULL)return NULL;
+    b=(VOID**)malloc(y * sizeof(VOID*));
+		if ( NULL == b )return NULL;
 
-    int i,ii;
+    INT32 i,ii;
 
-    for (i=0; i<y ;i++)
+    for ( i = 0; i < y; ++i)
     {
-        b[i]=(void*)malloc(x * st);
-        if (b[i] == NULL)
+        b[i]=(VOID*)malloc(x * st);
+        if ( NULL == b[i] )
         {
-            for (ii=0; ii < i ;ii++)
+            for (ii = 0; ii < i; ++ii)
                 free(b[ii]);
             free(b);
             return NULL;
@@ -246,19 +246,19 @@ void** alc_mallocm(UINT32 y, UINT32 x,size_t st)
     return b;
 }
 
-void** alc_reallocm(void **b,int oldy,int oldx,int newy,int newx,size_t st)
+VOID** alc_reallocm(VOID **b,INT32 oldy,INT32 oldx,INT32 newy,INT32 newx,SIZET st)
 {
-    int i;
-    void **tmp,*stmp;
+    INT32 i;
+    VOID**tmp,*stmp;
 
     if (newy != ALC_NOT_REALLOC)
     {
-        tmp=(void**)realloc(b,sizeof(void*)*newy);
-            if (tmp == NULL) return NULL;
+        tmp = (VOID**)realloc(b,sizeof(VOID*) * newy);
+            if ( NULL == tmp ) return NULL;
 
         if (newy > oldy)
         {
-            for (i=oldy; i < newy ;i++)
+            for (i=oldy; i < newy ; ++i)
                 b[i]=(void*)malloc(oldx*st);
             oldy=newy;
         }

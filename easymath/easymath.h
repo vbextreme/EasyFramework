@@ -48,6 +48,13 @@ void mth_randomstrnum(char *s,int nc);
 float mth_randomgauss(float media, float stddeviation);
 float mth_randomf01();
 
+VOID mth_date_timespectodate(struct timespec* s,DATE* d);
+VOID mth_date_totimet(DATE* s,time_t* d);
+INT32 mth_date_cmp(DATE* a, DATE* b);
+VOID mth_date_diff(DATE* d, DATE* a, DATE* b);
+CHAR* mth_date_tostring(CHAR* s, DATE* d);
+VOID mth_date_fromstring(DATE* d, CHAR* s);
+
 int mth_date_isbise(int year);
 int mth_date_nday(int month,int year);
 void mth_date_julianjodate(TIMEPLACE* now, double jd);

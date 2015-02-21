@@ -19,6 +19,7 @@
 static int _fik = -1;
 static struct termios initial_settings, new_settings;
 static int peek_character = -1;
+static BOOL asyncmode = FALSE;
 
 static PKFNC _pkmap[256];
 static BOOL _PKINIT = FALSE;
@@ -33,6 +34,7 @@ VOID con_async(INT32 enable, CHAR* ofeventk)
 {
     if (enable)
     {
+		asyncmode = TRUE;
         tcgetattr(0,&initial_settings);
         new_settings = initial_settings;
         new_settings.c_lflag &= ~ICANON;
@@ -68,10 +70,11 @@ VOID con_async(INT32 enable, CHAR* ofeventk)
 			}
 		}
 		
-		_fik = open(ofk, O_RDONLY);
+		_fik = open(ofk, O_RDONLY | O_NONBLOCK);
     }
     else
     {
+		asyncmode = FALSE;
         tcsetattr(0, TCSANOW, &initial_settings);
         if (_fik > 0) close(_fik);
     }
@@ -209,8 +212,7 @@ inline VOID con_gotorc(UINT32 r, UINT32 c)
 
 VOID con_getrc(UINT32* r, UINT32* c)
 {
-    fflush(stdout);
-
+	con_flush();
     CDIRECTRW dc;
 
     if ( con_dopen(&dc) ) return;
@@ -922,3 +924,35 @@ INT32 con_printfk(const CHAR* format,...)
     
     return 0;
 }
+
+VOID con_msg(CONMSG* m, CHAR* msg, INT32 status)
+{	
+	if ( msg )
+	{
+		con_getrc(&m->y,&m->x);
+		con_printfk("[%0.97k..%0.0k]%s",msg);
+		
+		con_flush();
+		return;
+	}
+	
+	UINT32 ox,oy;
+	con_getrc(&oy,&ox);
+	con_gotorc(m->y,m->x+1);
+	
+	if ( status > 99 ) 
+		con_printfk("%0.32kOK%0.0k");
+	else if ( status < 0 )  
+		con_printfk("%0.31kEE%0.0k");
+	else
+		con_printfk("%0.97k%2d%0.0k",status);
+	
+	con_gotorc(oy,ox);	
+	con_flush();
+}
+
+
+
+
+
+

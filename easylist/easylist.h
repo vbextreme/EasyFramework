@@ -3,116 +3,103 @@
 
 #include <easytype.h>
 
-typedef VOID(*ELEFREE)(VOID* s);
-typedef INT32(*ELEFIND)(VOID* d,VOID* s);
-typedef INT32(*ELEORDER)(VOID* a, VOID* b); // a < b = -1 ; a > b = 1 ; a == b = 0;
+///STD NAMESPACE head,tail,next,prev,hmap
+///USE VAR FOR PELE AND NOT PASS &lst.head || &lst.tail 
 
-typedef enum{IFIRST, ILAST, IAFTER, IBEFORE, ILEFT, IRIGHT}IMODE;
+typedef enum{LFIRST, LLAST, LAFTER, LBEFORE} LSTMODE;
+#define LLEFT LAFTER
+#define LRIGHT LBEFORE
 
-typedef struct _ELE
-{
-    VOID* s;
-    struct _ELE* next;
-    struct _ELE* prev;
-    struct _ELE* inode;
-}ELE;
+#define lst_next(PELE) PELE = PELE->next
+#define lst_prev(PELE) PELE = PELE->prev
+#define lst_after(PELE) lst_prev(PELE)
+#define lst_before(PELE) lst_before(PELE)
 
-typedef struct _LST
-{
-    ELE* first;
-    ELE* last;
-    ELE* current;
-    BOOL autofree;
-    ELEFREE clbkf;
-}LST;
+#define forlst(PLST,PELE) for(PELE = (PLST)->head; PELE; lst_next(PELE) ) 
 
-typedef struct _LST LSK;
-typedef struct _LST LTR;
+#define forlstfree(PLST,PELE) while( (PELE = (PLST)->head) && ((PLST)->head = PELE->next) != PELE ) 
 
+#define ele_init(PELE) PELE->next = PELE->prev = NULL										
+#define lst_init(PLST) (PLST)->head = (PLST)->tail = NULL
 
-typedef struct _LHS
-{
-    LST* mp;
-    UINT32 maxmap;
-}LHS;
+#define lst_add(PLST,PNEW,MODE,PCUR) PPC_MULTILINE_START \
+										if ( !((PLST)->head) )\
+										{\
+											(PLST)->head = (PLST)->tail = PNEW;\
+											break;\
+										}\
+										\
+										switch(MODE)\
+										{\
+											default:case LFIRST:\
+												PNEW->next = (PLST)->head;\
+												(PLST)->head->prev = PNEW;\
+												(PLST)->head = PNEW;\
+											break;\
+											case LLAST:\
+												PNEW->prev = (PLST)->tail;\
+												(PLST)->tail->next = PNEW;\
+												(PLST)->tail = PNEW;\
+											break;\
+											case LAFTER:\
+												if ( !PCUR )\
+												{\
+													PNEW->next = (PLST)->head;\
+													(PLST)->head->prev = PNEW;\
+													(PLST)->head = PNEW;\
+													break;\
+												}\
+												if ( PCUR->prev )\
+												{\
+													PNEW->prev = PCUR->prev;\
+													PNEW->prev->next = PNEW;\
+												}\
+												PCUR->prev = PNEW;\
+												PNEW->next = PCUR;\
+												if ( (PLST)->head == PCUR ) (PLST)->head = PNEW;\
+											break;\
+											case LBEFORE:\
+												if ( !PCUR ) \
+												{\
+													PNEW->prev = (PLST)->tail;\
+													(PLST)->tail->next = PNEW;\
+													(PLST)->tail = PNEW;\
+												}\
+												if ( PCUR->next )\
+												{\
+													PNEW->next = PCUR->next;\
+													PNEW->next->prev = PNEW;\
+												}\
+												PCUR->next = PNEW;\
+												PNEW->prev = PCUR;\
+												if ( (PLST)->tail == PCUR ) (PLST)->tail = PNEW;\
+											break;\
+										}\
+									PPC_MULTILINE_END
+										
+#define lst_remove(PLST,PELE)	PPC_MULTILINE_START \
+									if ( (PLST)->head == PELE && (PLST)->tail == PELE  )\
+									{\
+										(PLST)->head = (PLST)->tail = NULL;\
+										PELE->prev = NULL;\
+										PELE->next = NULL;\
+										break;\
+									}\
+									\
+									if ( PELE->prev )\
+										PELE->prev->next = PELE->next;\
+									else \
+										(PLST)->head = (PLST)->head->next;\
+									\
+									if ( PELE->next )\
+										PELE->next->prev = PELE->prev;\
+									else \
+										(PLST)->tail = (PLST)->tail->prev;\
+									\
+									PELE->prev = NULL;\
+									PELE->next = NULL;\
+								PPC_MULTILINE_END
 
-
-typedef enum {DNO,DFW,DBK} DARC;
-
-typedef struct _ARC
-{
-    INT32 w;
-    DARC d;
-}ARC;
-
-typedef struct _NOD
-{
-    void* s;
-    LST c;
-}NOD;
-
-typedef struct _LGR
-{
-    LST n;
-    BOOL autofree;
-    ELEFREE clbkf;
-}LGR;
-
-UINT32 fast_hash(char * data, INT32 len);
-UINT32 lhs_hash(LHS* h, CHAR* val, INT32 len);
-
-ELE* ele_new(VOID* st);
-VOID ele_free(LST* l, ELE* e);
-
-NOD* nod_new(VOID* st);
-VOID nod_free(LGR* g, NOD* n);
-VOID nod_con_add(NOD* n, NOD* add);
-VOID nod_con_remove(NOD* n,NOD* rem);
-
-VOID lst_init(LST* l, BOOL autofree, ELEFREE clbkf);
-#define lsk_init( PTRL, AF, CLBKF ) lst_init(PTRL,AF,CLBKF)
-#define ltr_init( PTRL, AF, CLBKF ) lst_init(PTRL,AF,CLBKF)
-VOID lhs_init(LHS* h, UINT32 maxmap, BOOL autofree, ELEFREE clbkf);
-VOID lgr_init(LGR* g, BOOL autofree, ELEFREE clbkf);
-
-VOID lst_free(LST* l);
-#define lsk_free( PTRL ) lst_free(PTRL)
-VOID ltr_free(LTR* t);
-VOID lhs_free(LHS* h);
-VOID lgr_free(LGR* g);
-
-VOID lst_add(LST* l, ELE* e, IMODE m);
-#define lsk_push( PTRL, E) lst_add(PTRL,E,ILAST)
-VOID ltr_add(LTR* t, ELE* e, IMODE m, BOOL flleft);
-VOID lhs_add(LHS* h, ELE* e, UINT32 hash);
-VOID lgr_add(LGR* g, NOD* n);
-
-ELE* lst_extract(LST* l, ELE* e);
-#define lsk_pop( PTRL ) lst_extract(PTRL,(PTRL)->last)
-ELE* ltr_extract(LTR* t, ELE* e);
-
-VOID lst_remove(LST* l,ELE* e);
-VOID ltr_remove(LTR* t, ELE* e);
-
-VOID lst_swap(LST* l, ELE* a, ELE* b);
-VOID ltr_swap(LTR* t, ELE* a, ELE* b);
-
-VOID lst_find(LST* l,VOID* data, ELEFIND fncf);
-LST* lhs_find(LHS* h, VOID* data, ELEFIND fncf, INT32 hash);
-
-VOID lst_sort(LST* l, ELEORDER fnco, BOOL ascen);
-
-VOID lst_reset(LST* l);
-#define ltr_reset( PTRL ) lst_reset(PTRL)
-
-BOOL lst_next(LST* l);
-#define ltr_right( PTRL ) lst_next(PTRL)
-
-BOOL lst_prev(LST* l);
-#define ltr_left( PTRL ) lst_prev(PTRL)
-
-VOID lst_debug(LST* l);
-#define lsk_debug( PTRL ) lst_debug( PTRL )
-VOID lhs_debug(LHS* h);
+#define lst_debug_print(PELE) printf("<%7p>%7p<%7p>",PELE->prev,PELE,PELE->next)
 
 #endif // EASYLIST_H_INCLUDED

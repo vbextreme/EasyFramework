@@ -6,9 +6,9 @@
 
 #define ALC_NOT_REALLOC -1
 
-#define alc_new(var,n) (var*)malloc(sizeof(var)*n)
-#define alc_free(var) do{free(var);var=NULL;}while(1)
-#define alc_neww(var,y,x) (var**)alc_mallocm(y,x,sizeof(var))
+#define alc_new(TYPE,N) (TYPE*)malloc(sizeof(TYPE)*N)
+#define alc_free(VAR) do{free(VAR);VAR=NULL;}while(1)
+#define alc_neww(TYPE,NY,NX) (TYPE**)alc_mallocm(NY,NX,sizeof(TYPE))
 
 /*
 typedef struct __SHM* SHM;
@@ -24,8 +24,8 @@ VOID shm_unlock(SHM h);
 UINT32 shm_realsize(SHM h);
 */
 
-VOID alc_freem(void **b,UINT32 y);
-void** alc_mallocm(UINT32 y,UINT32 x,size_t st);
-void** alc_reallocm(void **b,int oldy,int oldx,int newy,int newx,size_t st);
+VOID alc_freem(VOID **b,UINT32 y);
+VOID** alc_mallocm(UINT32 y,UINT32 x,SIZET st);
+VOID** alc_reallocm(VOID **b,INT32 oldy,INT32 oldx,INT32 newy,INT32 newx,SIZET st);
 
 #endif

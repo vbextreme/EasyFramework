@@ -1,7 +1,7 @@
 #ifndef EASYCRYPTO_H_INCLUDED
 #define EASYCRYPTO_H_INCLUDED
 
-#define EASYCRYPTO_V a
+#include <easytype.h>
 
 #define CRY_MD5_OUTSIZE 33
 
@@ -25,6 +25,9 @@ typedef struct CRYAES
     unsigned long int drk[64];
     int nr;
 }CRYAES;
+
+UINT32 cry_fasthash(CHAR* data, INT32 len);
+UINT32 cry_hash(CHAR* val, INT32 len, UINT32 maxmap);
 
 //inizializzare ogni volta che si vuole generare una nuova chiave
 void cry_md5_init(CRYMD5* ctx);

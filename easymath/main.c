@@ -38,7 +38,16 @@ int main()
     }
 
     printf("moon phase:%lf\n",mth_moonphase(19,11,1980));
-
+	
+	DATE d = {1980,11,19,20,11,30};
+	
+	CHAR dts[100];
+	mth_date_tostring(dts,&d);
+	printf("datetostring:%s\n",dts);
+	
+	mth_date_fromstring(&d,dts);
+	printf("date::%d %d %d %d %d %d\n",d.y,d.m,d.d,d.hh,d.mm,d.ss);
+	
     return 0;
 }
 #endif

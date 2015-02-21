@@ -13,6 +13,8 @@
 
 #define forever() for(;;)
 
+typedef void VOID;
+typedef void* VARIANT;
 typedef unsigned char BYTE;
 typedef char CHAR;
 typedef short int INT16;
@@ -28,17 +30,14 @@ typedef uint64_t UINT64;
 typedef float FLOAT32;
 typedef double FLOAT64;
 
-typedef void VOID;
-typedef void* VARIANT;
-
 typedef UINT16  WORD;
 typedef UINT32 DWORD;
 typedef INT64  QWORD;
+typedef DWORD FLAG;
 
-typedef INT32 BOOL;
-#define FALSE 0
-#define TRUE 1
+typedef enum { FALSE, TRUE } BOOL;
 
+typedef size_t SIZET;
 
 typedef struct _DATE
 {
