@@ -24,6 +24,20 @@ make -f ./makefile.auto libinstall
 echo ""
 cd ..
 
+echo "-------------"
+echo "- easystring -"
+echo "-------------"
+./easymkf ./easystring/ "" libeasystring.so easystring.h "" "" "-Wall -O3" "-O3"
+cd ./easystring
+echo "compiling"
+mkdir ./oobj
+make -f ./makefile.auto lib
+echo "install"
+make -f ./makefile.auto libinstall
+echo ""
+cd ..
+
+
 echo "-----------------"
 echo "- easybenchmark -"
 echo "-----------------"
