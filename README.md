@@ -12,7 +12,7 @@ State:
 
 Bug:
 ====
-(easyalloc     0.0)No Bug Reported
+(easyalloc     0.0)No Bug Reported<br/>
 (easybenchmark 0.0)No Bug Reported
 (easyconsole   0.1)con_async not get Ctrl key for all
 (easycrypto    0.0)No Bug Reported
