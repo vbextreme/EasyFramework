@@ -2,26 +2,24 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "easystring.h"
-#include <easyconsole.h>
-
-
-struct option long_options[] = {
-								{"verbose"    , no_argument      , &verbose, 'v'},
-								{"expression" , required_argument, 0, 'e'},
-								{"selmatch"   , required_argument, 0, 's'},
-								{"help"       , no_argument      , 0, 'h'},
-								{0, 0, 0, 0}
-							   };
-
-VOID usage()
-{
-	puts("usage rex [--Help] [--Verbose] --Expression=\"rexex\" [--Selmatch=N\"]");
-}
+#include "easyopt.h"
 
 int main(int argc, char** argv)
 {
+	
+	MYOPT o = opt_new(3,"Verbose,Expression:,selMatch::");
+	opt_usage("test",o);
+	
+	INT32 c;
+	CHAR* arg;
+	
+	while ( -1 != (c = opt_parse(&arg,o,argc,argv)) )
+		printf("arg:%c%s%s\n",c,(arg) ? " = " : " ",(arg) ? arg : " ");
+	
+		
+	opt_free(o);
+
+/*
 	INT32 optindex = 0;
 	
 	CHAR p[512];
@@ -132,7 +130,7 @@ int main(int argc, char** argv)
 		printf(":(%d)",ret);
 		rex_perror(ret,&rex);
 	}
-	
+*/
 	return 0;
 }
 
