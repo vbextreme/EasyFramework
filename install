@@ -24,6 +24,19 @@ make -f ./makefile.auto libinstall
 echo ""
 cd ..
 
+echo "-----------"
+echo "- easyopt -"
+echo "-----------"
+./easymkf ./easyopt/ "" libeasyopt.so easyopt.h "" "" "-Wall -O3" "-O3"
+cd ./easyopt
+echo "compiling"
+mkdir ./oobj
+make -f ./makefile.auto lib
+echo "install"
+make -f ./makefile.auto libinstall
+echo ""
+cd ..
+
 echo "-------------"
 echo "- easystring -"
 echo "-------------"
@@ -36,7 +49,6 @@ echo "install"
 make -f ./makefile.auto libinstall
 echo ""
 cd ..
-
 
 echo "-----------------"
 echo "- easybenchmark -"
