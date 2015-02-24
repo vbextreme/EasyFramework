@@ -5,132 +5,66 @@
 
 #include "easystring.h"
 #include <easyconsole.h>
-
-
-struct option long_options[] = {
-								{"verbose"    , no_argument      , &verbose, 'v'},
-								{"expression" , required_argument, 0, 'e'},
-								{"selmatch"   , required_argument, 0, 's'},
-								{"help"       , no_argument      , 0, 'h'},
-								{0, 0, 0, 0}
-							   };
-
-VOID usage()
-{
-	puts("usage rex [--Help] [--Verbose] --Expression=\"rexex\" [--Selmatch=N\"]");
-}
+#include <easyopt.h>
 
 int main(int argc, char** argv)
 {
-	INT32 optindex = 0;
-	
-	CHAR p[512];
 	INT32 c;
 	CHAR* carg;
+	MYOPT opt = opt_new(4,"eXpression:,Startmatch:,Endmatch:,Listmode,Help");
 	
-	while ( -1 != (c = getopt_long (argc, argv, "hve:s:", long_options, &optindex)) )
+	CHAR exp[2048];
+	INT32 stm = 0;
+	INT32 enm = -1;
+	BOOL listmode = FALSE;
+	
+	while ( -1 != (c = opt_parse(&carg,opt,argc, argv)) )
     {
-		if ( optarg )
-		{
-			if (optarg[0] == '=' )
-				carg = &optarg[1];
-			else
-				carg = &optarg[0];
-			carg = str_skipspace(carg);
-		}
-		else
-		{
-			carg = NULL;
-		}
-		
 		switch (c)
 		{
-			default: case '?': case ':':case 'h': usage(); break;
+			default: case 'h': opt_usage("rex",opt); return 0;
 			
-			case 'v': verbose = TRUE; break;
-			case 'p': port = atoi(optarg);	break;
-			case 's':
-				if ( carg )
-				{
-					if ( server_new(&irc,carg,port) )
-						{if ( verbose ) puts("ok");}
-					else
-						{if ( verbose ) puts("error on create new server");}
-					break;
-				}
-				view_dir(irc.path,TRUE);
+			case 'x':
+				if ( str_empty(carg) ) { opt_usage("rex",opt);break;}
+				strcpy(exp,carg);
 			break;
 			
-			case 'n':
-				if ( carg )
-				{
-					nick_set(&irc,carg,irc.user);
-					if ( !verbose ) break;
-				}
-				printf("<%s>\n",irc.nick);
-			break;
-			
-			case 'u':
-				if ( carg )
-				{
-					nick_set(&irc,irc.nick,carg);
-					if ( !verbose ) break;
-				}
-				printf("<!%s>\n",irc.user);
-			break;
-			
-			case 'd':
-				con_cls();
-				debug(&irc);
-				con_gets(p,512);
-			break;
+			case 's': stm = atoi(carg); if ( stm < 0 ) stm = 0; break;
+			case 'e': enm = atoi(carg);	break;
+			case 'l': listmode = TRUE; break;
+				
 		}
 	}
 	
+	REGEX rex;
+	INT32 ret = rex_mk(&rex,exp);
+		if ( ret ) { rex_perror(ret,&rex); return 0; }
+	
 	CHAR inp[2048];
+	CHAR* sto;
+	CHAR* eno;
+	CHAR* f;
+	INT32 i=0;
 	
 	while( fgets(inp,2048,stdin) )
 	{
+		f = inp;
+		while ( 0 == (ret = rex_exec(&sto,&eno,&f,&rex)) )
+		{
+			++i;
+			if ( i < stm ) continue;
+			if (listmode)
+				printf("%.*s\n",eno-sto,sto);
+			else
+				printf("%.*s",eno-sto,sto);
+			if ( enm > 0 && i >= enm) return 0;	
+		}
 		
-		
-	}
-	
-	
-	puts("Regular expression:");
-	
-	CHAR* s = "if ( \'ciao mondo\' )";
-	
-	printf("expression:\"%s\"\n",s);
-	printf("regex:");
-	con_flush();
-	CHAR inp[1024];
-	con_gets(inp,1024);
-	if ( !inp[0] ) return 0;
-	
-	REGEX rex;
-	
-	INT32 ret = rex_mk(&rex,inp);
-		if ( ret ) { rex_perror(ret,&rex); return 0; }
-	
-	CHAR* sto;
-	CHAR* eno;
-	CHAR* f = s;
-	
-	puts("match:");
-	
-	while ( 0 == (ret = rex_exec(&sto,&eno,&f,&rex)) )
-	{
-		printf("(%p)\'%.*s\'\n",sto,eno-sto,sto);
-	}
-	
-	if ( REX_NOMATCH == ret )
-	{
-		puts(":end");
-	}
-	else
-	{
-		printf(":(%d)",ret);
-		rex_perror(ret,&rex);
+		if ( REX_NOMATCH != ret )
+		{
+			rex_perror(ret,&rex);
+			return 0;
+		}
 	}
 	
 	return 0;
