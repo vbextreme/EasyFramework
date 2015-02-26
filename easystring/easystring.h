@@ -23,6 +23,7 @@ typedef regex_t REGEX;
 /// {min,max} ripetizioni
 /// | or
 
+typedef struct __EDIT* EDIT;
 
 #define str_cmp(A,OP,B) (strcmp(A,B) OP 0)
 #define ifstr(A,OP,B) if ( strcmp(A,B) OP 0 )
@@ -43,6 +44,7 @@ CHAR* str_firstvalidchar(CHAR* s);
 CHAR* str_toend(CHAR* s);
 CHAR* str_insc(CHAR* d, CHAR c);
 CHAR* str_inss(CHAR* d, CHAR* s);
+CHAR* str_del(CHAR* d, UINT32 n);
 BOOL str_empty(CHAR* s);
 
 #define rex_mk(REX,PAT) regcomp(REX,PAT,REG_EXTENDED)
