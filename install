@@ -155,6 +155,19 @@ echo ""
 cd ..
 
 echo "--------------"
+echo "- easyprocess -"
+echo "--------------"
+./easymkf ./easyprocess/ "" libeasyprocess.so easyprocess.h "-leasythread -leasystring -leasyfile" "" "-Wall -O3" "-O3"
+cd ./easyprocess
+echo "compiling"
+mkdir ./oobj
+make -f ./makefile.auto lib
+echo "install"
+make -f ./makefile.auto libinstall
+echo ""
+cd ..
+
+echo "--------------"
 echo "- easysocket -"
 echo "--------------"
 ./easymkf ./easysocket/ "" libeasysocket.so easysocket.h "-leasythread" "" "-Wall -O3" "-O3"

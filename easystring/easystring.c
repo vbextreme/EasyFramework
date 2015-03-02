@@ -69,9 +69,6 @@ EDIT edt_new(UINT32 szb)
 
 
 
-
-
-
 CHAR* str_skipspace(CHAR* s)
 {
 	while ( *s && (*s == ' ' || *s == '\t') ) ++s;

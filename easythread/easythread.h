@@ -129,7 +129,5 @@ VOID thr_job_free(JOB j);
 VOID thr_job_wait(JOB j);
 INT32 thr_job_stop(JOB j, UINT32 ms, INT32 forceclose);
 VOID thr_job_setparam(JOB j, UINT32 index, VOID* p);
-/// PROCESS ///
-FLOAT64 pro_cpu_usage(INT32 idcpu, FLOAT64 tscan);
 
 #endif // EASYTHREAD_H_INCLUDED
