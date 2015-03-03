@@ -24,6 +24,29 @@ VOID printinfo(PISTAT* pi)
 
 int main(int argc, char** argv)
 {
+	
+	PIMODULE pi;
+	if ( !pro_info_modules(&pi) ) { puts("error 0"); return 0;}
+	
+	INT32 i;
+	for ( i = 0; i < pi.count; ++i)
+	{
+		printf("%s sz:%u us:%u ",pi.name[i],pi.size[i],pi.nused[i]);
+		INT32 k;
+		for ( k = 0; k < pi.nused[i]; ++k )
+		{
+			printf("%s ",pi.from[i][k]);
+		}
+		printf("\n");
+	}
+	return 0;
+	/*
+	PIMEMI pi;
+	if ( !pro_info_meminfo(&pi) ) { puts("error 0"); return 0;}
+	printf("total:%u free:%u vmt:%u vmu:%u\n",pi.total,pi.free,pi.vmalloctotal,pi.vmallocused);
+	return 0;
+	*/
+	/*
 	PICPU cpu;
 	
 	if ( !pro_info_cpu(&cpu) ) { puts("error 0"); return 0;}
@@ -37,7 +60,7 @@ int main(int argc, char** argv)
 	}
 	printf("hw:%s rv:%s se:%s\n",cpu.hardware,cpu.revision,cpu.serial);
 	return 0;
-	
+	*/
 	/*
 	PISTAT pi;
 	PIMEM mm;

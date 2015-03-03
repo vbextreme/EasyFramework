@@ -119,7 +119,70 @@ typedef struct _PICPU
 	CHAR revision[64];
 	CHAR serial[64];
 }PICPU;
-	
+
+typedef struct _PIMEMI
+{
+	UINT32 total;
+	UINT32 free;
+    UINT32 buffers;
+    UINT32 cached;
+    UINT32 swapcached;
+    UINT32 active;
+    UINT32 inactive;
+    UINT32 activeanon;
+    UINT32 inactiveanon;
+    UINT32 activefile;
+    UINT32 inactivefile;
+    UINT32 unevictable;
+    UINT32 mlocked;
+    UINT32 hightotal;
+    UINT32 highfree;
+    UINT32 lowtotal;
+    UINT32 lowfree;
+    UINT32 mmapcopy;
+    UINT32 swaptotal;
+    UINT32 swapfree;
+    UINT32 dirty;
+    UINT32 writeback;
+    UINT32 anonpages;
+    UINT32 mapped;
+    UINT32 shmem;
+    UINT32 slab;
+    UINT32 sreclaimable;
+    UINT32 sunreclaim;
+    UINT32 kernelstack;
+    UINT32 pagetables;
+    UINT32 quicklists;
+    UINT32 nfsunstable;
+    UINT32 bounce;
+    UINT32 writebacktmp;
+    UINT32 commitlimit;
+    UINT32 committedas;
+    UINT32 vmalloctotal;
+    UINT32 vmallocused;
+    UINT32 vmallocchunk;
+    UINT32 hardwarecorrupted;
+    UINT32 anonhugepages;
+    UINT32 hugepagestotal;
+    UINT32 hugepagesfree;
+    UINT32 hugepagesrsvd;
+    UINT32 hugepagessurp;
+    UINT32 hugepagesize;
+}PIMEMI;
+
+typedef struct PIMODULE
+{
+	UINT32 count;
+	CHAR name[128][128];
+	UINT32 size[128];
+	UINT32 nused[128];
+	CHAR from[128][128][128];
+}PIMODULE;
+
+//proc/stat
+//proc/net/arp
+//./dev
+//(connection) tcp udp unix
 
 typedef VOID(*SIGCALL)(INT32);
 
@@ -128,6 +191,8 @@ BOOL pro_info_stat(PISTAT* pi, PID pid);
 BOOL pro_info_mem(PIMEM* pi, PID pid);
 PID pro_pid_lst(BOOL reset);
 BOOL pro_info_cpu(PICPU* pi);
+BOOL pro_info_meminfo(PIMEMI* pi);
+BOOL pro_info_modules(PIMODULE* pi);
 
 #define sig_wait() pause()
 BOOL sig_set(SIG* old, INT32 sig, SIGCALL fnc, BOOL restart, BOOL restore);

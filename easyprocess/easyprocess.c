@@ -284,6 +284,107 @@ BOOL pro_info_cpu(PICPU* pi)
 	return TRUE;
 }
 
+BOOL pro_info_meminfo(PIMEMI* pi)
+{
+	static CHAR *ln[] = { "MemTotal", "MemFree", "Buffers", "Cached", "SwapCached",
+						  "Active", "Inactive", "Active(anon)", "Inactive(anon)", "Active(file)",
+						  "Inactive(file)", "Unevictable", "Mlocked","HighTotal","HighFree",
+						  "LowTotal", "LowFree", "MmapCopy", "SwapTotal", "SwapFree",
+						  "Dirty", "Writeback", "AnonPages", "Mapped", "Shmem",
+						  "Slab", "SReclaimable", "SUnreclaim", "KernelStack", "PageTables",
+						  "Quicklists", "NFS_Unstable", "Bounce", "WritebackTmp", "CommitLimit",
+						  "Committed_AS", "VmallocTotal", "VmallocUsed", "VmallocChunk", "HardwareCorrupted",
+						  "AnonHugePages", "HugePages_Total", "HugePages_Free", "HugePages_Rsvd", "HugePages_Surp",
+						  "Hugepagesize" };
+	BOOL ck[46] = {FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,
+				   FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,
+				   FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,
+				   FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,
+				   FALSE,FALSE,FALSE,FALSE,FALSE,FALSE};
+	UINT32 *lv[46];
+	lv[0] = &pi->total;	lv[1] = &pi->free; lv[2] = &pi->buffers; lv[3] = &pi->cached; lv[4] = &pi->swapcached;
+	lv[5] = &pi->active; lv[6] = &pi->inactive; lv[7] = &pi->activeanon; lv[8] = &pi->inactiveanon; lv[9] = &pi->activefile;
+    lv[10] = &pi->inactivefile; lv[11] = &pi->unevictable; lv[12] = &pi->mlocked; lv[13] = &pi->hightotal; lv[14] = &pi->highfree;
+    lv[15] = &pi->lowtotal; lv[16] = &pi->lowfree; lv[17] = &pi->mmapcopy; lv[18] = &pi->swaptotal; lv[19] = &pi->swapfree;
+    lv[20] = &pi->dirty; lv[21] = &pi->writeback; lv[22] = &pi->anonpages; lv[23] = &pi->mapped; lv[24] = &pi->shmem;
+    lv[25] = &pi->slab; lv[26] = &pi->sreclaimable; lv[27] = &pi->sunreclaim; lv[28] = &pi->kernelstack; lv[29] = &pi->pagetables;
+    lv[30] = &pi->quicklists; lv[31] = &pi->nfsunstable; lv[32] = &pi->bounce; lv[33] = &pi->writebacktmp; lv[34] = &pi->commitlimit;
+    lv[35] = &pi->committedas; lv[36] = &pi->vmalloctotal; lv[37] = &pi->vmallocused; lv[38] = &pi->vmallocchunk; lv[39] = &pi->hardwarecorrupted;
+    lv[40] = &pi->anonhugepages; lv[41] = &pi->hugepagestotal; lv[42] = &pi->hugepagesfree; lv[43] = &pi->hugepagesrsvd; lv[44] = &pi->hugepagessurp;
+    lv[45] = &pi->hugepagesize;
+	
+	CHAR buf[1024];
+	CHAR* n = NULL;
+	CHAR* v = NULL;
+	
+	FILE* f = fopen("/proc/meminfo","r");
+		if ( !f ) return FALSE;
+	
+	INT32 i;
+	while ( _infoparse(&n,&v,buf,1024,f) )
+	{
+		for ( i = 0; i < 46; ++i )
+		{
+			if ( ck[i] ) continue;
+			if ( !strcmp(ln[i],n) )
+			{
+				 *lv[i] = strtoul(v,NULL,10);
+				 ck[i] = TRUE;
+				 break;
+			}
+		}
+	}
+	
+	for ( i = 0; i < 46; ++i )
+	{
+		if ( ck[i] ) continue;
+		*lv[i] = 0;
+		ck[i] = TRUE;
+	}
+	
+	fclose(f);	
+	return TRUE;
+}
+
+VOID _parse_mod(PIMODULE* pi,INT32 id, CHAR* line)
+{
+	CHAR* p;
+	
+	line = str_copytoc(pi->name[id],line,' ');
+	++line;
+	pi->size[id] = strtoul(line,&p,10); line = p+1;
+	pi->nused[id] = strtoul(line,&p,10); line = p+1;
+	if ( *line == '-' )
+	{
+		pi->from[id][0][0] = '\0';
+		return;
+	}
+	pi->from[id][pi->nused[id]][0] = '\0';
+	INT32 i;
+	for ( i = 0; i < pi->nused[id]; ++i)
+	{	
+		line = str_copytoc(pi->from[id][i],line,',');
+		++line;
+		if ( *line == ' ') break;
+	}
+	
+}
+
+BOOL pro_info_modules(PIMODULE* pi)
+{
+	CHAR buf[1024];
+	
+	FILE* f = fopen("/proc/modules","r");
+		if ( !f ) return FALSE;
+	
+	pi->count = 0;
+	while ( fgets(buf,1024,f) )
+	{
+		_parse_mod(pi,pi->count,buf);
+		++pi->count;
+	}
+	return TRUE;
+}
 
 PROSTATE pro_pid_state(INT32* ex, PID p, BOOL async)
 {
