@@ -24,7 +24,31 @@ VOID printinfo(PISTAT* pi)
 
 int main(int argc, char** argv)
 {
+	FLOAT64 us[5];
+	if ( !pro_cpu_usage(us,1.0) ) { puts("error 0"); return 0;}
 	
+	printf("coreA:%.1f\n",us[0]);
+	printf("core1:%.1f\n",us[1]);
+	printf("core2:%.1f\n",us[2]);
+	printf("core3:%.1f\n",us[3]);
+	printf("core4:%.1f\n",us[4]);
+	return 0;
+	
+	/*
+	PIKCPU pi;
+	if ( !pro_info_kcpu(&pi) ) { puts("error 0"); return 0;}
+	
+	INT32 i;
+	for ( i = 0; i < pi.ncpu; ++i)
+	{
+		printf("cpu%d %u %u %u\n",i,pi.user[i],pi.softirq[i],pi.guestnice[i]);
+	}
+	printf("boot:%u\n",pi.boottime);
+	printf("blk:%u\n",pi.pblk);
+	return 0;
+	*/
+	
+	/*
 	PIMODULE pi;
 	if ( !pro_info_modules(&pi) ) { puts("error 0"); return 0;}
 	
@@ -40,6 +64,7 @@ int main(int argc, char** argv)
 		printf("\n");
 	}
 	return 0;
+	*/
 	/*
 	PIMEMI pi;
 	if ( !pro_info_meminfo(&pi) ) { puts("error 0"); return 0;}

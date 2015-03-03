@@ -383,6 +383,90 @@ BOOL pro_info_modules(PIMODULE* pi)
 		_parse_mod(pi,pi->count,buf);
 		++pi->count;
 	}
+	
+	fclose(f);
+	return TRUE;
+}
+
+BOOL pro_info_kcpu(PIKCPU* pi)
+{
+	CHAR buf[2048];
+	CHAR* b;
+	CHAR* eb;
+	
+	FILE* f = fopen("/proc/stat","r");
+		if ( !f ) return FALSE;
+	
+	pi->ncpu = 0;
+	while ( fgets(buf,2048,f) )
+	{
+		b = buf;
+		if ( strncmp(b,"cpu",3) ) break;
+		b = str_movetoc(b,' ');
+		b = str_skipspace(b);
+		pi->user[pi->ncpu] = strtoul(b,&eb,10); b = eb+1;
+		pi->nice[pi->ncpu] = strtoul(b,&eb,10); b = eb+1;
+		pi->system[pi->ncpu] = strtoul(b,&eb,10); b = eb+1;
+		pi->idle[pi->ncpu] = strtoul(b,&eb,10); b = eb+1;
+		pi->iowait[pi->ncpu] = strtoul(b,&eb,10); b = eb+1;
+		pi->irq[pi->ncpu] = strtoul(b,&eb,10); b = eb+1;
+		pi->softirq[pi->ncpu] = strtoul(b,&eb,10); b = eb+1;
+		pi->steal[pi->ncpu] = strtoul(b,&eb,10); b = eb+1;
+		pi->guest[pi->ncpu] = strtoul(b,&eb,10); b = eb+1;
+		pi->guestnice[pi->ncpu] = strtoul(b,&eb,10); b = eb+1;
+		++pi->ncpu;
+	}
+	
+	while ( fgets(buf,2048,f) )
+	{
+		if ( !strncmp(buf,"btime",5) )
+		{
+			b = &buf[6];
+			pi->boottime = strtoul(b,NULL,10);
+		}
+		else if ( !strncmp(buf,"processes",9) )
+		{
+			b = &buf[10];
+			pi->processes = strtoul(b,NULL,10);
+		}
+		else if ( !strncmp(buf,"procs_running",13) )
+		{
+			b = &buf[14];
+			pi->prunning = strtoul(b,NULL,10);
+		}
+		else if ( !strncmp(buf,"procs_blocked",13) )
+		{
+			b = &buf[14];
+			pi->pblk = strtoul(b,NULL,10);
+		}
+	}
+	
+	fclose(f);	
+	
+	return TRUE;
+}
+
+BOOL pro_cpu_usage(FLOAT64* ret, FLOAT64 secscan)
+{
+	PIKCPU spi;
+	PIKCPU epi;
+	if ( !pro_info_kcpu(&spi) ) return FALSE;
+	thr_sleep(secscan);
+	if ( !pro_info_kcpu(&epi) ) return FALSE;
+	
+	UINT32 sttick;
+	UINT32 entick;
+	UINT32 idle;
+	INT32 i;
+	for ( i = 0; i < spi.ncpu; ++i)
+	{
+		sttick = spi.user[i] + spi.nice[i] + spi.system[i] + spi.idle[i] + spi.iowait[i] + spi.irq[i] + spi.softirq[i] + spi.steal[i] + spi.guest[i] + spi.guestnice[i];
+		entick = epi.user[i] + epi.nice[i] + epi.system[i] + epi.idle[i] + epi.iowait[i] + epi.irq[i] + epi.softirq[i] + epi.steal[i] + epi.guest[i] + epi.guestnice[i];
+		entick -= sttick;
+		idle = epi.idle[i] - spi.idle[i];
+		*ret++ = ((FLOAT64)(entick - idle) / (FLOAT64) entick) * 100.0;
+	}
+	
 	return TRUE;
 }
 
@@ -487,74 +571,4 @@ PID pro_sh(CHAR* cmd, PIPE* pi, PIPE* po)
 		return ret;
 	}
 	return -1;
-}
-
-static INT32 _procstat_getbufferfields (FILE *fp, CHAR* buffer, UINT32 bf_sz, INT32 idcpu)
-{
-	fseek (fp, 0, SEEK_SET);
-    fflush (fp);
-    *buffer = '\0';
-	INT32 i;
-	for ( i = -1; i < idcpu; ++i)
-		if ( !fgets(buffer, bf_sz, fp) ) return 0;
-	return 1;
-}
-
-static VOID _procstat_fields (CHAR* buffer, UINT32 *user, UINT32* nice, UINT32* system, UINT32* idle, UINT32* iowait,UINT32* irq, UINT32* softirq, UINT32* steal, UINT32* guest, UINT32* guest_nice)
-{
-	CHAR* tk = strtok(buffer," ");
-	tk = strtok(NULL, " ");
-	*user = (UINT32)atoll(tk);
-	tk = strtok(NULL," ");
-	*nice = (UINT32)atoll(tk);
-	tk = strtok(NULL," ");
-	*system = (UINT32)atoll(tk);
-	tk = strtok(NULL," ");
-	*idle = (UINT32)atoll(tk);
-	tk = strtok(NULL," ");
-	*iowait = (UINT32)atoll(tk);
-	tk = strtok(NULL," ");
-	*irq = (UINT32)atoll(tk);
-	tk = strtok(NULL," ");
-	*softirq = (UINT32)atoll(tk);
-	tk = strtok(NULL," ");
-	*steal = (UINT32)atoll(tk);
-	tk = strtok(NULL," ");
-	*guest = (UINT32)atoll(tk);
-	tk = strtok(NULL," ");
-	*guest_nice =(UINT32)atoll(tk);
-}
-
-FLOAT64 pro_cpu_usage(INT32 idcpu, FLOAT64 tscan)
-{
-	FILE *fp;
-	
-	UINT32 us,ni,sy,idle,io,ir,si,st,gu,gn;
-	UINT32 st_tick,en_tick,st_idle,en_idle;
-	
-	fp = fopen ("/proc/stat", "r");
-		if (fp == NULL) return -1.0;
-	
-	CHAR buf[1024];
-	
-	if ( !_procstat_getbufferfields(fp,buf,1024,idcpu) ) {fclose(fp); return -2.0;}
-	
-	_procstat_fields(buf,&us,&ni,&sy,&idle,&io,&ir,&si,&st,&gu,&gn);
-	st_idle = idle;
-	st_tick = us + ni + sy + idle + io + ir + si + st + gu + gn;
-	
-	thr_sleep(tscan);
-	
-	if ( !_procstat_getbufferfields(fp,buf,1024,idcpu) ) {fclose(fp); return -2.0;}
-	
-	_procstat_fields(buf,&us,&ni,&sy,&idle,&io,&ir,&si,&st,&gu,&gn);
-	en_idle = idle;
-	en_tick = us + ni + sy + idle + io + ir + si + st + gu + gn;
-	
-	en_tick -= st_tick;
-	en_idle -= st_idle;
-	
-	fclose(fp);
-	
-	return ((en_tick - en_idle) / (FLOAT64) en_tick) * 100.0;
 }

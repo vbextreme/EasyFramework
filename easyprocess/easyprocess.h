@@ -179,7 +179,25 @@ typedef struct PIMODULE
 	CHAR from[128][128][128];
 }PIMODULE;
 
-//proc/stat
+typedef struct _PIKCPU
+{
+	UINT32 ncpu;
+	UINT32 user[128];
+	UINT32 nice[128];
+	UINT32 system[128];
+	UINT32 idle[128];
+	UINT32 iowait[128];
+	UINT32 irq[128];
+	UINT32 softirq[128];
+	UINT32 steal[128];
+	UINT32 guest[128];
+	UINT32 guestnice[128];
+	UINT32 boottime;
+	UINT32 processes;
+	UINT32 prunning;
+	UINT32 pblk;
+}PIKCPU;
+
 //proc/net/arp
 //./dev
 //(connection) tcp udp unix
@@ -193,6 +211,8 @@ PID pro_pid_lst(BOOL reset);
 BOOL pro_info_cpu(PICPU* pi);
 BOOL pro_info_meminfo(PIMEMI* pi);
 BOOL pro_info_modules(PIMODULE* pi);
+BOOL pro_info_kcpu(PIKCPU* pi);
+BOOL pro_cpu_usage(FLOAT64* ret, FLOAT64 secscan);
 
 #define sig_wait() pause()
 BOOL sig_set(SIG* old, INT32 sig, SIGCALL fnc, BOOL restart, BOOL restore);
@@ -206,6 +226,5 @@ VOID pro_initpiperead(PIPE* p, INT32 fi);
 VOID pro_initpipewrite(PIPE* p, INT32 fo, INT32 efo);
 PID pro_sh(CHAR* cmd, PIPE* pi, PIPE* po);
 PROSTATE pro_pidstate(INT32* ex, PID p, BOOL async);
-FLOAT64 pro_cpu_usage(INT32 idcpu, FLOAT64 tscan);
 
 #endif // EASYSTRING_H_INCLUDED
