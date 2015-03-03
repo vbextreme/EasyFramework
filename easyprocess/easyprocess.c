@@ -470,6 +470,125 @@ BOOL pro_cpu_usage(FLOAT64* ret, FLOAT64 secscan)
 	return TRUE;
 }
 
+BOOL pro_info_netarp(PINETARP* pi)
+{	
+	CHAR buf[1024];
+	CHAR* v;
+	CHAR* b;
+	
+	FILE* f = fopen("/proc/net/arp","r");
+		if ( !f ) return FALSE;
+	
+	if ( !fgets(buf,1024,f) ) {fclose(f);return FALSE;}
+	
+	pi->count = 0;
+	while ( fgets(buf,1024,f) )
+	{
+		b = str_copytos(pi->ip[pi->count],buf," \t");
+		b = str_skipspace(b);
+		
+		pi->hwtype[pi->count] = strtoul(b,&v,10) ; b = v+1;
+		b = str_skipspace(b);
+		
+		pi->flags[pi->count] = strtoul(b,&v,10) ; b = v+1;
+		b = str_skipspace(b);
+		
+		b = str_copytos(pi->hw[pi->count],b," \t");
+		b = str_skipspace(b);
+		
+		b = str_copytos(pi->mask[pi->count],b," \t");
+		b = str_skipspace(b);
+		
+		b = str_copytos(pi->dev[pi->count],b," \t\n");
+		
+		++pi->count;
+	}
+	
+	fclose(f);	
+	return TRUE;
+}
+
+BOOL pro_info_net(PINET* pi)
+{	
+	CHAR buf[1024];
+	CHAR* eb;
+	CHAR* b;
+	
+	FILE* f = fopen("/proc/net/dev","r");
+		if ( !f ) return FALSE;
+	
+	if ( !fgets(buf,1024,f) ) {fclose(f);return FALSE;}
+	if ( !fgets(buf,1024,f) ) {fclose(f);return FALSE;}
+	
+	pi->count = 0;
+	while ( fgets(buf,1024,f) )
+	{
+		b = str_skipspace(buf);
+		b = str_copytoc(pi->face[pi->count],b,':');
+		++b;
+		b = str_skipspace(b);
+		pi->recvbyte[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->recvpck[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->recverr[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->recvdrop[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->recvfifo[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->recvframe[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->recvcompressed[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->recvmulticast[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		
+		pi->sendbyte[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->sendpck[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->senderr[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->senddrop[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->sendfifo[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->sendcolls[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->sendcarrier[pi->count] = strtoul(b,&eb,10) ; b = eb + 1;
+		b = str_skipspace(b);
+		pi->sendcompressed[pi->count] = strtoul(b,&eb,10) ;
+		++pi->count;
+	}
+	
+	fclose(f);	
+	return TRUE;
+}
+
+BOOL pro_net_speed( FLOAT64* dw, FLOAT64* up, CHAR* face, FLOAT64 secscan)
+{
+	PINET spi;
+	PINET epi;
+	if ( !pro_info_net(&spi) ) return FALSE;
+	thr_sleep(secscan);
+	if ( !pro_info_net(&epi) ) return FALSE;
+	
+	INT32 i;
+	for ( i = 0; i < spi.count; ++i)
+	{
+		if ( strcmp(face,spi.face[i]) ) continue;
+		
+		*dw = epi.recvbyte[i] - spi.recvbyte[i];
+		*dw = ((1.0 / secscan) * *dw)/1024.0;
+		*up = epi.sendbyte[i] - spi.sendbyte[i];
+		*up = ((1.0 / secscan) * *up)/1024.0;
+		break;
+	}
+	
+	return TRUE;
+}
+
 PROSTATE pro_pid_state(INT32* ex, PID p, BOOL async)
 {
 	

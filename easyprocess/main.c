@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "easyprocess.h"
+#include <easyconsole.h>
 
 VOID sh(INT32 s)
 {
@@ -24,6 +25,36 @@ VOID printinfo(PISTAT* pi)
 
 int main(int argc, char** argv)
 {
+	FLOAT64 d,u;
+	puts("Internet speed Download, Upload");
+	UINT32 y,x;
+	con_getrc(&y,&x);
+	
+	while(1)
+	{
+		if ( pro_net_speed(&d,&u,"wlan12",0.2) )
+		{
+			con_gotorc(y,x);
+			printf("%8.2fkb %8.2fkb",d,u);
+			con_flush();
+		}
+	}
+	
+	
+	/*
+	PINET pi;
+	if ( !pro_info_net(&pi) ) { puts("error 0"); return 0;}
+	if ( pi.count == 0 ) {puts("no network"); return 0;}
+	
+	INT32 i;
+	for ( i = 0; i < pi.count; ++i)
+	{
+		printf("%s %u %u\n",pi.face[i],pi.recvbyte[i],pi.sendbyte[i]);
+	}
+	
+	return 0;
+	*/
+	/*
 	FLOAT64 us[5];
 	if ( !pro_cpu_usage(us,1.0) ) { puts("error 0"); return 0;}
 	
@@ -33,7 +64,7 @@ int main(int argc, char** argv)
 	printf("core3:%.1f\n",us[3]);
 	printf("core4:%.1f\n",us[4]);
 	return 0;
-	
+	*/
 	/*
 	PIKCPU pi;
 	if ( !pro_info_kcpu(&pi) ) { puts("error 0"); return 0;}

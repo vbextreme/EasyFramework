@@ -198,6 +198,40 @@ typedef struct _PIKCPU
 	UINT32 pblk;
 }PIKCPU;
 
+typedef struct _PINETARP
+{
+	UINT32 count;
+	CHAR ip[128][16];
+	UINT32 hwtype[128];
+	UINT32 flags[128];
+	CHAR hw[128][18];
+	CHAR mask[128][16];
+	CHAR dev[128][128];
+}PINETARP;
+
+typedef struct _PINET
+{
+	UINT32 count;
+	CHAR face[128][128];
+	UINT32 recvbyte[128];
+	UINT32 recvpck[128];
+	UINT32 recverr[128];
+	UINT32 recvdrop[128];
+	UINT32 recvfifo[128];
+	UINT32 recvframe[128];
+	UINT32 recvcompressed[128];
+	UINT32 recvmulticast[128];
+	UINT32 sendbyte[128];
+	UINT32 sendpck[128];
+	UINT32 senderr[128];
+	UINT32 senddrop[128];
+	UINT32 sendfifo[128];
+	UINT32 sendcolls[128];
+	UINT32 sendcarrier[128];
+	UINT32 sendcompressed[128];
+}PINET;
+
+
 //proc/net/arp
 //./dev
 //(connection) tcp udp unix
@@ -213,6 +247,9 @@ BOOL pro_info_meminfo(PIMEMI* pi);
 BOOL pro_info_modules(PIMODULE* pi);
 BOOL pro_info_kcpu(PIKCPU* pi);
 BOOL pro_cpu_usage(FLOAT64* ret, FLOAT64 secscan);
+BOOL pro_info_netarp(PINETARP* pi);
+BOOL pro_info_net(PINET* pi);
+BOOL pro_net_speed( FLOAT64* dw, FLOAT64* up, CHAR* face, FLOAT64 secscan);
 
 #define sig_wait() pause()
 BOOL sig_set(SIG* old, INT32 sig, SIGCALL fnc, BOOL restart, BOOL restore);
