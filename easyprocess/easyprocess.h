@@ -28,6 +28,16 @@ typedef struct _PIPE
 #define IPS_STOP     'T'
 #define IPS_PAGING   'W'
 #define IPS_KILLED   'X'
+#define PI_SCK_CONTINUE 0
+#define PI_SCK_TCP 1
+#define PI_SCK_TCP6 2
+#define PI_SCK_UDP 3
+#define PI_SCK_UNIX 4
+
+typedef enum {	PI_SCK_TCP_ESTABLISHED = 1, PI_SCK_TCP_SYN_SENT, PI_SCK_TCP_SYN_RECV,
+				PI_SCK_TCP_FIN_WAIT1, PI_SCK_TCP_FIN_WAIT2,	PI_SCK_TCP_TIME_WAIT,
+				PI_SCK_TCP_CLOSE, PI_SCK_TCP_CLOSE_WAIT, PI_SCK_TCP_LAST_ACK, PI_SCK_TCP_LISTEN,
+				PI_SCK_TCP_CLOSING, PI_SCK_TCP_MAX_STATES} TCPSTATUS;
 
 typedef struct _PIIO
 {
@@ -231,10 +241,30 @@ typedef struct _PINET
 	UINT32 sendcompressed[128];
 }PINET;
 
-
-//proc/net/arp
-//./dev
-//(connection) tcp udp unix
+typedef union _PISCK
+{
+	struct {
+		UINT32 slot;
+		CHAR lip[40];
+		UINT32 lport;
+		CHAR rip[40];
+		UINT32 rport;
+		UINT32 status;
+		UINT32 qtx;
+		UINT32 qrx;
+	}tcp,udp;
+	
+	struct {
+		UINT32 num;
+		UINT32 refcount;
+		UINT32 protocol;
+		UINT32 flags;
+		UINT32 type;
+		UINT32 status;
+		UINT32 inode;
+		CHAR path[512];
+	}nx;
+}PISCK;
 
 typedef VOID(*SIGCALL)(INT32);
 
@@ -250,6 +280,8 @@ BOOL pro_cpu_usage(FLOAT64* ret, FLOAT64 secscan);
 BOOL pro_info_netarp(PINETARP* pi);
 BOOL pro_info_net(PINET* pi);
 BOOL pro_net_speed( FLOAT64* dw, FLOAT64* up, CHAR* face, FLOAT64 secscan);
+BOOL pro_info_sck(PISCK* pi, UINT32 model);
+CHAR* pro_tcp_status(UINT32 status);
 
 #define sig_wait() pause()
 BOOL sig_set(SIG* old, INT32 sig, SIGCALL fnc, BOOL restart, BOOL restore);

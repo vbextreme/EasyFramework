@@ -7,6 +7,16 @@
 #include <easystring.h>
 #include <easyfile.h>
 
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+				
+static CHAR tcpstatus[PI_SCK_TCP_MAX_STATES][15] = { "nostate","established","synsent","synrecv",
+											         "finwait1","finwait2","timewait",
+												     "close","closewait","lastack","listen",
+												     "closing"};
+
 /// ////// ///
 /// SIGNAL ///
 /// ////// ///
@@ -587,6 +597,132 @@ BOOL pro_net_speed( FLOAT64* dw, FLOAT64* up, CHAR* face, FLOAT64 secscan)
 	}
 	
 	return TRUE;
+}
+
+BOOL pro_info_sck(PISCK* pi, UINT32 model)
+{
+	static FILE* f = NULL;
+	static UINT32 stmod;
+	CHAR buf[1024];
+	CHAR* eb;
+	CHAR* b;
+	
+	switch ( model )
+	{
+		case PI_SCK_TCP:
+			if ( f ) fclose(f);
+			f = fopen("/proc/net/tcp","r");
+				if ( !f ) return FALSE;
+			if ( !fgets(buf,1024,f) ) { fclose(f); f = NULL; return FALSE; }
+			stmod = PI_SCK_TCP;
+		break;
+		
+		case PI_SCK_TCP6:
+			if ( f ) fclose(f);
+			f = fopen("/proc/net/tcp6","r");
+				if ( !f ) return FALSE;
+			if ( !fgets(buf,1024,f) ) { fclose(f); f = NULL; return FALSE; }
+			stmod = PI_SCK_TCP6;
+		break;
+		
+		case PI_SCK_UDP:
+			if ( f ) fclose(f);
+			f = fopen("/proc/net/udp","r");
+				if ( !f ) return FALSE;
+			if ( !fgets(buf,1024,f) ) { fclose(f); f = NULL; return FALSE; }
+			stmod = PI_SCK_UDP;
+		break;
+		
+		case PI_SCK_UNIX:
+			if ( f ) fclose(f);
+			f = fopen("/proc/net/unix","r");
+				if ( !f ) return FALSE;
+			if ( !fgets(buf,1024,f) ) { fclose(f); f = NULL; return FALSE; }
+			stmod = PI_SCK_UNIX;
+		break;
+		
+		default: case PI_SCK_CONTINUE:
+			if ( !f ) return FALSE;
+		break;
+	}
+	
+	if ( !fgets(buf,1024,f) ) { fclose(f); f = NULL; return FALSE; }
+	
+	if ( stmod == PI_SCK_UNIX)
+	{
+		
+		b = str_skipspace(buf);
+		pi->nx.num = strtoul(b,&eb,10); b = eb+2;
+		pi->nx.refcount = strtoul(b,&eb,10); b = eb+1;
+		pi->nx.protocol = strtoul(b,&eb,10); b = eb+1;
+		pi->nx.flags = strtoul(b,&eb,10); b = eb+1;
+		pi->nx.type = strtoul(b,&eb,10); b = eb+1;
+		pi->nx.status = strtoul(b,&eb,10); b = eb+1;
+		b = str_skipspace(b);
+		pi->nx.inode = strtoul(b,&eb,10); b = eb+1;
+		str_copytos(pi->nx.path,b," \n\t");
+		return TRUE;
+	}
+	
+	struct in_addr iat;
+	struct in6_addr i6at;
+	
+	b = str_skipspace(buf);
+	pi->tcp.slot = strtoul(b,&eb,10); b = eb+1;
+	b = str_skipspace(b);
+	
+	if ( stmod == PI_SCK_TCP6 )
+	{
+		CHAR hex[3] = {0,0,0};
+		INT32 i;
+		for ( i = 0; i < 16; ++i )
+		{
+			hex[0] = *b++;
+			hex[1] = *b++;
+			i6at.__in6_u.__u6_addr8[i] = strtoul(hex,NULL,16);
+		}
+		inet_ntop(AF_INET6,&i6at,pi->tcp.lip,40);
+		++b;
+	}
+	else
+	{
+		iat.s_addr = strtoul(b,&eb,16); b = eb+1;
+		inet_ntop(AF_INET,&iat,pi->tcp.lip,40);
+	}
+	
+	pi->tcp.lport = strtoul(b,&eb,16); b = eb+1;
+	
+	if ( stmod == PI_SCK_TCP6 )
+	{
+		CHAR hex[3] = {0,0,0};
+		INT32 i;
+		for ( i = 0; i < 16; ++i )
+		{
+			hex[0] = *b++;
+			hex[1] = *b++;
+			i6at.__in6_u.__u6_addr8[i] = strtoul(hex,NULL,16);
+		}
+		inet_ntop(AF_INET6,&i6at,pi->tcp.rip,40);
+		++b;
+	}
+	else
+	{
+		iat.s_addr = strtoul(b,&eb,16); b = eb+1;
+		inet_ntop(AF_INET,&iat,pi->tcp.rip,40);
+	}
+	
+	pi->tcp.rport = strtoul(b,&eb,16); b = eb+1;
+	pi->tcp.status = strtoul(b,&eb,16); b = eb+1;
+	pi->tcp.qtx = strtoul(b,&eb,16); b = eb+1;
+	pi->tcp.qrx = strtoul(b,&eb,16);
+	
+	return TRUE;
+}
+
+CHAR* pro_tcp_status(UINT32 status)
+{
+	if ( status == 0 || status >= PI_SCK_TCP_MAX_STATES ) return NULL;
+	return tcpstatus[status];
 }
 
 PROSTATE pro_pid_state(INT32* ex, PID p, BOOL async)

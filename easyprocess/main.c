@@ -25,6 +25,24 @@ VOID printinfo(PISTAT* pi)
 
 int main(int argc, char** argv)
 {
+	PISCK pi;
+	
+	if ( !pro_info_sck(&pi,PI_SCK_UNIX) )
+	{
+		puts("no sck");
+		return 0;
+	}
+	
+	//printf("sl(%2d) ip(%s)(%s) port(%u)(%u) state(%s)\n",pi.tcp.slot,pi.tcp.lip,pi.tcp.rip,pi.tcp.lport,pi.tcp.rport, pro_tcp_status(pi.tcp.status));
+	printf("sl(%2d) ref(%u) state(%s) path(%s)\n",pi.nx.num,pi.nx.refcount,pro_tcp_status(pi.nx.status),pi.nx.path);
+	while ( pro_info_sck(&pi,PI_SCK_CONTINUE) )
+	{
+		//printf("sl(%2d) ip(%s)(%s) port(%u)(%u) state(%s)\n",pi.tcp.slot,pi.tcp.lip,pi.tcp.rip,pi.tcp.lport,pi.tcp.rport, pro_tcp_status(pi.tcp.status));
+		printf("sl(%2d) ref(%u) state(%s) path(%s)\n",pi.nx.num,pi.nx.refcount,pro_tcp_status(pi.nx.status),pi.nx.path);
+	}
+	
+	return 0;
+	/*
 	FLOAT64 d,u;
 	puts("Internet speed Download, Upload");
 	UINT32 y,x;
@@ -39,7 +57,7 @@ int main(int argc, char** argv)
 			con_flush();
 		}
 	}
-	
+	*/
 	
 	/*
 	PINET pi;
