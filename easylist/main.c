@@ -7,6 +7,7 @@
 #include "easylist.h"
 #include <easyalloc.h>
 
+/*
 typedef struct _NODE
 {
 	struct _NODE* next;
@@ -20,9 +21,14 @@ typedef struct _LST
 	NODE* tail;
 }LST;
 
-
+*/
 int main()
 {
+	
+	
+	return 0;
+	
+	/*
 	LST l;
 	
 	lst_init(&l);
@@ -65,6 +71,7 @@ int main()
 	
 	
 	return 0;
+	*/
 }
 
 #endif
