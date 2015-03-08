@@ -28,9 +28,11 @@ typedef struct _TIMEPLACE
 {
     int year,month,day;
     double hour;
-} TIMEPLACE;
+}TIMEPLACE;
 
 
+UINT32 mth_fasthash(CHAR* data, INT32 len);
+UINT32 mth_hash(CHAR* val, INT32 len, UINT32 max);
 
 float mth_gtor(float gradi);
 void mth_rotate(float *x,float *y,float centerx,float centery,float rad);

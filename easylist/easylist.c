@@ -604,10 +604,10 @@ VOID lhs_remove(HASHL* h, UINT32 hash, ELEMENT* e)
 		element_free(e);
 }
 
-ELEMENT* lhs_find(HASHL* h, UINT32 hash, ELEMENT* e, INT32 type, VOID* data, CBKLSTFIND fncf)
+ELEMENT* lhs_find(HASHL* h, UINT32 hash, INT32 type, VOID* data, CBKLSTFIND fncf)
 {
 	if ( !fncf ) return NULL;
-	e = lst_find(h->tbl[hash].first,type,data,fncf);
+	ELEMENT* e = lst_find(h->tbl[hash].first,type,data,fncf);
 	return e;
 }
 
@@ -762,4 +762,9 @@ PELEMENT* lqu_pull(QUEUEL* q)
     ret->next = NULL;
 	--q->count;
     return ret;
+}
+
+BOOL lqu_empty(QUEUEL* q)
+{
+	return !q->first;
 }

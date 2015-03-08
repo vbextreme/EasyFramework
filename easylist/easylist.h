@@ -119,7 +119,7 @@ VOID lhs_free(HASHL* h);
 VOID lhs_add(HASHL* h, UINT32 hash, ELEMENT* e);
 ELEMENT* lhs_pull(HASHL* l, UINT32 hash, ELEMENT* e);
 VOID lhs_remove(HASHL* h, UINT32 hash, ELEMENT* e);
-ELEMENT* lhs_find(HASHL* h, UINT32 hash, ELEMENT* e, INT32 type, VOID* data, CBKLSTFIND fncf);
+ELEMENT* lhs_find(HASHL* h, UINT32 hash, INT32 type, VOID* data, CBKLSTFIND fncf);
 ///pelement
 PELEMENT* pelement_new(INT32 pri, INT32 type, VOID* st, BOOL autofree, CBKLSTFREE fncf);
 VOID pelement_free(PELEMENT* e);
@@ -130,5 +130,6 @@ VOID lqu_clear(QUEUEL* q);
 VOID lqu_free(QUEUEL* q);
 VOID lqu_push(QUEUEL* q, UINT32 pri, PELEMENT* e);
 PELEMENT* lqu_pull(QUEUEL* q);
+BOOL lqu_empty(QUEUEL* q);
 
 #endif // EASYLIST_H_INCLUDED

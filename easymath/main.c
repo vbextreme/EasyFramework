@@ -7,7 +7,14 @@
 int main()
 {
     printf("Debug Math!\n");
-
+	
+	CHAR test[] = "ciao come va";
+	
+	UINT32 h = mth_hash(test,strlen(test),2);
+	printf("%d\n",h);
+	
+	return 0;
+	
     mth_initrandom();
 
     int n = mth_random(10);
