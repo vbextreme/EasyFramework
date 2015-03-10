@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <errno.h>
+#include <semaphore.h>
 #include <sys/sysctl.h>
 #include <sched.h>
 #include <pthread.h>
@@ -18,6 +19,11 @@
 
 #define sizeal(TY) (sizeof(TY) + sizeof(TY) % sizeof(INT32)) 
 #define tooffset(M,OF) ((BYTE*)(M) + (OF))
+
+typedef struct __SEMAPHORE
+{
+	sem_t s;
+}_SEMAPHORE;
 
 typedef struct __MUTEX
 {
@@ -185,6 +191,40 @@ static cpu_set_t* _setcpu(UINT32 mcpu)
 	}
 	
 	return &cpu;
+}
+
+/// ///////// ///
+/// SEMAPHORE ///
+/// ///////// ///
+
+SEMAPHORE thr_semaphore_new(UINT32 stval)
+{
+	_SEMAPHORE* s = malloc(sizeof(_SEMAPHORE));
+	if ( sem_init(&s->s,0,stval) ) {free(s); return NULL;}
+	return s;
+}
+
+inline VOID thr_semaphore_wait(SEMAPHORE s)
+{
+	sem_wait(&s->s);
+}
+
+inline VOID thr_semaphore_post(SEMAPHORE s)
+{
+	sem_post(&s->s);
+}
+
+inline INT32 thr_semaphore_get(SEMAPHORE s)
+{
+	INT32 ret;
+	sem_getvalue(&s->s,&ret);
+	return ret;
+}
+
+VOID thr_semaphore_free(SEMAPHORE s)
+{
+	sem_destroy(&s->s);
+	free(s);
 }
 
 /// ///// ///
@@ -1182,6 +1222,7 @@ inline VOID* thr_getparam(THR t)
 
 VOID* thr_waitthr(THR t)
 {
+	if ( !t ) return NULL;
     void* ret;
     pthread_join(t->id,&ret);
     return ret;

@@ -33,7 +33,7 @@ typedef double FLOAT64;
 typedef UINT16  WORD;
 typedef UINT32 DWORD;
 typedef INT64  QWORD;
-typedef DWORD FLAG;
+typedef DWORD FLAGS;
 
 typedef enum { FALSE, TRUE } BOOL;
 
@@ -49,10 +49,10 @@ typedef struct _DATE
     BYTE ss;
 }DATE;
 
-#define DWBYTE0(VAL) ((VAL << 24) >> 24)
-#define DWBYTE1(VAL) ((VAL << 16) >> 24)
-#define DWBYTE2(VAL) ((VAL << 8) >> 24)
-#define DWBYTE3(VAL) (VAL >> 24)
+#define DWBYTE0(VAL) ((VAL) & 0xFF)
+#define DWBYTE1(VAL) (((VAL) >> 8) & 0xFF)
+#define DWBYTE2(VAL) (((VAL) >> 16) & 0xFF)
+#define DWBYTE3(VAL) ((VAL) >> 24)
 
 #define UNIONBYTE(A,B) (((UINT32)(A)<<8) | (BYTE)(B))
 

@@ -1,6 +1,14 @@
 #ifndef EASYTHREAD_H_INCLUDED
 #define EASYTHREAD_H_INCLUDED
 
+///Aggiungere
+//thr_semaphorn
+///Togliere
+//message
+//queue
+///Modificare 
+//talk
+
 #include <easytype.h>
 
 #define THREAD_START(VOIDPARAMNAME,TYPE,NAMEVAR)    THR _this = (THR) VOIDPARAMNAME;\
@@ -32,6 +40,7 @@
 
 #define THR_TALK_MSG_SZ 1024
 
+typedef struct __SEMAPHORE* SEMAPHORE;
 typedef struct __MUTEX* MUTEX;
 typedef struct __MUTEN* MUTEN;
 typedef struct __BARRIER* BARRIER;
@@ -50,6 +59,12 @@ typedef INT32(*WORKCALL)(WORK, VOID*);
 typedef enum {T_CREATE = 0,T_RUN,T_PAUSE,T_END,T_REQUESTEXIT} THRMODE;
 typedef enum {M_CHAR = 0,M_UCHAR,M_PCHAR,M_INT16,M_UINT16,M_PINT16,M_INT32,M_UINT32,M_PINT32,M_DOUBLE,M_PDOUBLE,M_USER} THRMESSAGE;
 
+/// SEMAPHORE ///
+SEMAPHORE thr_semaphore_new(UINT32 stval);
+inline VOID thr_semaphore_wait(SEMAPHORE s);
+inline VOID thr_semaphore_post(SEMAPHORE s);
+inline INT32 thr_semaphore_get(SEMAPHORE s);
+VOID thr_semaphore_free(SEMAPHORE s);
 /// MUTEX ///
 MUTEX thr_mutex_new();
 inline VOID thr_mutex_lock(MUTEX m);
