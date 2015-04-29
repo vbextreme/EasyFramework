@@ -32,165 +32,181 @@ VOID itob(CHAR* b, UINT32 v, INT32 sz)
 #include <unistd.h>
 #include <stdio_ext.h>
 #include <linux/input.h>
-#include <easyfile.h>
+#include <easythread.h>
 
-
-BOOL directkey(CHAR* d, CHAR* p)
+typedef struct _COLORIZED
 {
-	CHAR lk[512];
-	INT32 ret;
-	if ( (ret = readlink(p, lk, 511) ) == -1) return FALSE;
-	lk[ret] = '\0';
-	sprintf(d,"/dev/input/%s",&lk[3]);
-	return TRUE;
-}
+	UINT32 sxw;
+	UINT32 syw;
+	CHAR word[128];
+	UINT32 color;
+}COLORIZED;
 
-BOOL testkey(CHAR* dev)
+
+INT32 prew(UINT32* szb, CHAR** b, CHAR** cbu, INT32* c, UINT32* sty, UINT32 stx, UINT32 scrh, UINT32 scrw)
 {
-	CONMSG m;
+	COLORIZED col[1024];
+	static UINT32 ncol = 0;
+	static CHAR* cu = NULL;
+	static UINT32 insty;
+	static UINT32 instx;
 	
-	con_msg(&m,"Test keyboard ",0);
-	printf("(%s) ",dev);
-	printf("Press \'Ctrl\' or wait to exit");
-	con_flush();
+	if (cu == NULL )
+	{
+		cu = col[0].word;
+		insty = *sty;
+		instx = stx;
+	}
+		
 	
-	INT32 autoexit = 120;
+	CHAR* buf = *b;
+	CHAR* cbuf = *cbu;
 	
-	con_async(1,dev);
+	UINT32 cb = cbuf - buf;
+	UINT32 cy,cx;
+	UINT32 i;
 	
-	CHAR c;
-	while(1)
-	{	
-		while (!con_kbhit() && autoexit-- ){ msleep(50);}
-		if ( autoexit <= 0 ) {c = 'q'; break;}
-		c = con_getchex();
-		break;
+	cy = *sty + ( cb + stx -1) / scrw;
+	if ( cy == *sty ) 
+		cx =  (cb + stx) % scrw;
+	else
+		cx = (cb - (scrw - stx)) % scrw;
+		
+	if (!cx ) cx = scrw;
+	
+	if ( insty != *sty )
+	{
+		insty = *sty;
+		for ( i = 0; i < ncol; ++i)
+			col[i].syw = insty;
 	}
 	
-	con_async(0,NULL);
-	
-	if ( c == 'q' ) 
+	if ( *c != ' ' )
 	{
-		con_msg(&m,NULL,-1);
-		puts("\n\tforce quit");
-		return FALSE;
-	}
-	else if ( c == CON_KEY_CTRL )
-	{
-		con_msg(&m,NULL,100);
-		puts("\n\tfound \'Ctrl\'");
-		return TRUE;
-	}
-	
-	con_msg(&m,NULL,-1);
-	printf("\n\tkeymap not found %d\n", c);
-	return FALSE;
-}
-
-
-int main(int argc, char **argv)
-{	
-	CONMSG m;
-	
-	con_msg(&m,"Search input device ",0);
-	
-	CHAR allinput[512][512];
-	CHAR d[512];
-	UINT32 countd = 0;
-	
-	FILETYPE ft = dir_list(d,TRUE,FT_LINK,"/dev/input/by-path/");
-		if ( ft < 0 ) { puts("no device"); con_msg(&m,NULL,-1); return 0;}
-	
-	do
-	{
-		sprintf(allinput[countd++],"/dev/input/by-path/%s",d);
-		ft = dir_list(d,TRUE,FT_LINK,NULL);
-	}while( ft != -1);
-	
-	con_msg(&m,NULL,100);
-	printf("found %d input device\n",countd);
-	
-	INT32 i;
-	for ( i = 0; i < countd; ++i)
-	{
-		printf("(%d)%s\n",i,allinput[i]);
-	}
-	
-	con_msg(&m,"Search Keyboard input ",0);
-	
-	INT32 idk = -1;
-	for ( i = 0; i < countd; ++i)
-	{
-		INT32 l = strlen(allinput[i]);
-		if ( !strncmp(&allinput[i][l-3],"kbd",3) ) 
+		for ( i = 0; i < ncol; ++i)
 		{
-			idk = i;
-			break;
+			con_gotorc(col[i].syw,col[i].sxw);
+			con_setcolor(0,col[i].color);
+			printf("%s",col[i].word);
 		}
-		con_msg(&m,NULL,(100*i)/countd);
+		*cu++ = *c;
+		con_setcolor(0,0);
+		con_gotorc(cy,cx);
+		con_flush();
+		return CON_INPEX_NONE;
 	}
 	
-	if ( idk == -1 || idk >= countd )
+    *cu = '\0';
+	
+	if ( !strcmp(col[ncol].word,"con") )
 	{
-		idk = -1;
-		con_msg(&m,NULL,-1);
-		puts("not found keyboard");
+		col[ncol].syw = cy;
+		col[ncol].sxw = cx - (( cu - col[ncol].word) + 1);
+		col[ncol].color = CON_COLOR_RED;
+		++ncol;
+		cu = col[ncol].word;
 	}
 	else
 	{
-		con_msg(&m,NULL,100);
-		printf("found id(%d)\n",idk);
-		
-		if ( !directkey(d,allinput[idk]) )
-		{
-			puts("Error to open link keyboard");
-			return 0;
-		}
-		
-		if ( testkey(d) )
-		{
-			puts("con_async() wotk fine");
-			return 0;
-		}
+		cu = col[ncol].word;
 	}
 	
-	for ( i = 0; i < countd; ++i)
+	for ( i = 0; i < ncol; ++i)
 	{
-		printf("Debug Input device:%d...",i);
-		if ( !directkey(d,allinput[i]) )
+		con_gotorc(col[i].syw,col[i].sxw);
+		con_setcolor(0,col[i].color);
+		printf("%s",col[i].word);
+	}
+	con_setcolor(0,0);
+	con_gotorc(cy,cx);
+	con_flush();
+	
+	return CON_INPEX_NONE;
+}
+
+int main(int argc, char **argv)
+{		
+	
+	printf("input$ ");
+	con_flush();
+	CHAR* r = con_input(NULL,NULL,FALSE,NULL,0);
+	
+	printf("\n[%s]\n",r);
+	
+	free(r);
+	return 0;
+	
+	
+	/*
+	CONMSG cm;
+	con_msg(&cm,"init",0);
+		con_printfk_reg('a',pk_sum);
+	con_msg(&cm,NULL,100);
+	
+	con_printfk("5 + 5 = %5.5a\n");
+	
+	INT32 a = 13;
+	INT32 b = 37;
+	con_printfk("%d + %d = %*.*a\n%@",a,b,a,b);
+	
+	
+	con_msg(&cm,"press any key to continue...",0);
+		con_async(1,NULL);
+			while(!con_kbhit());
+			CHAR c = con_getchex();
+		con_async(0,NULL);
+		if ( c == 27 ) 
 		{
-			puts("Error to open link input");
-			continue;
-		}
-		
-		puts("open input");
-		if ( testkey(d) )
-		{
-			printf("Correct input device at:%d\n",i);
+			con_msg(&cm,NULL,-1);
 			return 0;
 		}
-	}
+	con_msg(&cm,NULL,100);
 	
-	printf("No input device found\n");
-	/*
-    con_async(1,NULL);
+	con_cls();
+	UINT32 sw,sh;
+	con_getmaxrc(&sh,&sw);
+	
+	
+	con_rect(1,1,sh,sw);
+	con_circle(sh/2+1,sw/2,sh/2 - 1,'.');
+	
+	con_line(sh/2 + 1, sw/2 - sw/4, sh/2 + 1, sw/2 + sw/4, '-');
+	con_line(sh/2 - sh/3 + 1, sw/2 - sw/4, sh/2 + sh/3 + 1, sw/2 + sw/4, '\\');
+	con_line(sh/2 + sh/3 + 1, sw/2 - sw/4, sh/2 - sh/3 + 1, sw/2 + sw/4, '/');
+	
+	con_gotorc(2,2);
+	con_printfk("press any key to continue...%@");
+	con_async(1,NULL);
+		while(!con_kbhit());
+		c = con_getchex();
+	con_async(0,NULL);
+	
+	con_cls();
+	
+	return 0;
+	*/
+	
+	
+    con_async(1);
     
-    CHAR c;
+    INT32 c;
     while (1)
     {
 		printf("wait kb\n");
 		con_flush();
-		while(!con_kbhit());
+		while(!con_kbhit()) thr_sleep(0.001);
 		printf("get kb\n");	
 		con_flush();
 		c = con_getchex();
-		printf("%d\n",c);
+		printf("[%d(%c)]",c,c);
+			
 		con_flush();
-		if ( c == 27 ) break;
+		
+		if ( c == 'q' ) break;
 	}
     
-    con_async(0,NULL);
-    */
+    con_async(0);
+    
     return 0;
 }
 

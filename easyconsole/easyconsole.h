@@ -5,37 +5,47 @@
 #include <termios.h>
 #include <stdarg.h>
 
-#define CON_KEY_SUPER  252
-#define CON_KEY_CTRL   253
-#define CON_KEY_ALT    254
-#define CON_KEY_ALTGR  255
-#define CON_KEY_F1     200 //default used
-#define CON_KEY_F2     201
-#define CON_KEY_F3     202
-#define CON_KEY_F4     203
-#define CON_KEY_F5     204
-#define CON_KEY_F6     205
-#define CON_KEY_F7     206
-#define CON_KEY_F8     207
-#define CON_KEY_F9     208
-#define CON_KEY_F10    209 //default used
-#define CON_KEY_F11    210 //default used
-#define CON_KEY_F12    211
-#define CON_KEY_UP     230
-#define CON_KEY_DOWN   231
-#define CON_KEY_RIGHT  232
-#define CON_KEY_LEFT   233
-#define CON_KEY_CANC   234 
-#define CON_KEY_BACK   127 
-#define CON_KEY_PGUP   236 
-#define CON_KEY_PGDW   237 
-#define CON_KEY_FINE   238
-#define CON_KEY_HOME   239
-#define CON_KEY_INS    240
+#define CON_KEY_WAIT    0.001
 
-#define CON_CLLS_RIGHT 0
-#define CON_CLLS_LEFT  1
-#define CON_CLLS_ALL   2
+#define CON_KEY_NONE   '\0'
+#define CON_KEY_ESC      27
+#define CON_KEY_ENTER  '\n'
+#define CON_KEY_CARR   '\r'
+#define CON_KEY_TAB    '\t'
+#define CON_KEY_BACK    127
+
+#define CON_KEY_F1      0x00010000
+#define CON_KEY_F2      0x00020000
+#define CON_KEY_F3      0x00030000
+#define CON_KEY_F4      0x00040000
+#define CON_KEY_F5      0x00050000
+#define CON_KEY_F6      0x00060000
+#define CON_KEY_F7      0x00070000
+#define CON_KEY_F8      0x00080000
+#define CON_KEY_F9      0x00090000
+#define CON_KEY_F10     0x000A0000
+#define CON_KEY_F11     0x000B0000
+#define CON_KEY_F12     0x000C0000
+#define CON_KEY_UP      0x000D0000
+#define CON_KEY_DOWN    0x000E0000
+#define CON_KEY_SX      0x000F0000
+#define CON_KEY_DX      0x00100000
+#define CON_KEY_CANC    0x00110000
+#define CON_KEY_PGUP    0x00120000
+#define CON_KEY_PGDW    0x00130000
+#define CON_KEY_FINE    0x00140000
+#define CON_KEY_HOME    0x00150000
+#define CON_KEY_INS     0x00160000
+#define CON_KEY_SUPER_R 0x00170000
+#define CON_KEY_CTRL    0x01000000
+#define CON_KEY_ALT     0x02000000
+#define CON_KEY_SHIFT   0x04000000
+
+#define CON_CLLS_RIGHT "0K"
+#define CON_CLLS_LEFT  "1K"
+#define CON_CLLS_ALL   "2K"
+#define CON_CLLS_DOWN  "J"
+#define CON_CLLS_UP    "1J"
 
 #define CON_COLOR_RESET    0
 #define CON_COLOR_BK       10
@@ -89,8 +99,6 @@
 #define DRD_EOF   -1
 #define DRD_EIO   -2
 
-#include <easytype.h>
-
 typedef struct _CDIRECTRW
 {
     int fd;
@@ -124,8 +132,13 @@ typedef struct _CONMSG
 }CONMSG;
 
 typedef INT32(*PKFNC)(CONPK*, va_list*);
+#define CON_INPEX_NONE     0x00
+#define CON_INPEX_EOF      0x10
+#define CON_INPEX_DRAW     0x20
+#define CON_INPEX_DISCARGE 0x40
+typedef INT32(*INPEX)(UINT32* szb, CHAR** buf, CHAR** cbuf, INT32* c, UINT32* sty, UINT32 stx, UINT32 scrh, UINT32 scrw);
 
-VOID con_async(INT32 enable, CHAR* ofeventk);
+VOID con_async(INT32 enable);
 
 inline int con_drd(CDIRECTRW* dc);
 inline int con_dwr(CDIRECTRW* dc, const char *const data, const size_t bytes);
@@ -133,13 +146,11 @@ inline void con_dsrwhyde(CDIRECTRW* dc);
 inline int con_dsetting(CDIRECTRW* dc);
 inline int con_drestore(CDIRECTRW* dc);
 int con_dopen(CDIRECTRW* dc);
-
 #define con_flush() fflush(stdout)
-
 inline VOID con_gotorc(UINT32 r, UINT32 c);
 VOID con_getrc(UINT32* r, UINT32* c);
 inline void con_cls();
-inline void con_clsline(int mode);
+inline VOID con_clsline(CHAR* mode);
 void con_setcolor(unsigned char b,unsigned char f);
 void con_setcolor256(unsigned char b,unsigned char f);
 inline void con_special(char v);
@@ -153,12 +164,29 @@ inline void con_resize(unsigned int h,unsigned int w);
 CHAR* con_newbuffer(UINT32* sz,UINT32 page);
 inline VOID con_setbuf(CHAR* buf,UINT32 sz);
 char* con_gets(char* d,int max);
-int con_kbhit();
-char con_getch();
-CHAR con_getchex();
+INT32 con_kbhit();
+VOID con_sigsize();
+BOOL con_haveresize();
+INT32 con_getch();
+INT32 con_getchex();
 void con_getpassword(char* psw,int sz,char mask);
 VOID con_printfk_reg(BYTE k,PKFNC fnc);
 INT32 con_printfk(const CHAR* format,...);
 VOID con_msg(CONMSG* m, CHAR* msg, INT32 status);
+VOID con_carret_up(UINT32 n);
+VOID con_carret_down(UINT32 n);
+VOID con_carret_next(UINT32 n);
+VOID con_carret_prev(UINT32 n);
+VOID con_carret_home();
+VOID con_carret_end();
+VOID con_carret_save();
+VOID con_carret_restore();
+VOID con_scrool_up();
+VOID con_scrool_down();
+VOID con_carret_delete(UINT32 n);
+VOID con_mode_ins(BOOL enable);
+VOID con_linewrap(BOOL enable);
+VOID con_vt100_reset();
+CHAR* con_input(CHAR* inp, INPEX fprew, BOOL allpreview, INPEX finp, UINT32 max);
 
 #endif

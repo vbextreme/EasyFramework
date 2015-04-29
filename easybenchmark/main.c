@@ -4,37 +4,58 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "easybenchmark.h"
+
+BCH_PERF_GLOBAL;
+
+
+void test1()
+{
+	BCH_PERF_START;
+	
+	INT32 i;
+	UINT32 ni = 0;
+	for ( i = 0; i < 1000000; ++i )
+		ni += i;
+	
+	BCH_PERF_STOP;
+}
+
+void test2()
+{
+	BCH_PERF_START;
+	
+	INT32 i;
+	UINT32 ni = 0;
+	for ( i = 0; i < 1000000; ++i )
+		ni += i;
+	
+	BCH_PERF_STOP;
+}
+
+
 int main()
 {
-    printf("Hello world!\n");
-
-
-    double st = bch_get();
-
-    usleep(10*1000);
-
-    double en = bch_get();
-
-    printf("%lf",bch_clc(st,en));
-
+    
+    BCH_PERF_INIT;
+    
+    BCH_PERF_START;
+    
+    test1();
+    
+    
+    BCH_PERF_PAUSE;
+    INT32 i,ni;
+    for ( i = 0; i < 1000000; ++i )
+		ni += i;
+	BCH_PERF_START;
+        
+    test2();
+    
+    BCH_PERF_STOP;
+    
+    bch_perf(stdout,__perf__);
+    
     return 0;
 }
 
 #endif
-
-#include <sys/time.h>
-#include <sys/resource.h>
-#include "easybenchmark.h"
-
-FLOAT64 bch_get()
-{
-    struct timeval t;
-    struct timezone tzp;
-    gettimeofday(&t, &tzp);
-    return t.tv_sec + t.tv_usec*1e-6;
-}
-
-FLOAT64 bch_clc(FLOAT64 st, FLOAT64 en)
-{
-    return en-st;
-}

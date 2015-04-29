@@ -725,6 +725,120 @@ CHAR* pro_tcp_status(UINT32 status)
 	return tcpstatus[status];
 }
 
+/// //////////////////////////////////////////////////////////////////////////////////////////
+
+INT32 pro_pipe(PIPE* p)
+{
+	INT32 fp[2];
+	INT32 ret;
+	if ( (ret = pipe(fp)) < 0 ) return -1;
+	p->inp = fp[0];
+	p->out = fp[1];
+	p->finp = fdopen(p->inp, "r");
+	p->fout = fdopen(p->inp, "w");
+	return 0;
+}
+
+VOID pro_pipe_closeread(PIPE* p)
+{
+	if (p->finp) fclose(p->finp);
+	if (p->inp != -1 ) close(p->inp);
+	p->inp = -1;
+	p->finp = NULL;
+}
+
+VOID pro_pipe_closewrite(PIPE* p)
+{
+	if ( p->fout ) fclose(p->fout);
+	if ( p->out != -1 ) close(p->out);
+	p->out = -1;
+	p->fout = NULL;
+}
+
+VOID pro_pipe_close(PIPE* p)
+{
+	pro_pipe_closeread(p);
+	pro_pipe_closewrite(p);
+}
+
+VOID pro_pipe_cpr_pipetofd(PIPE* p, INT32 fd)
+{
+	dup2(p->inp,fd);
+}
+
+VOID pro_pipe_cpr_fdtopipe(PIPE* p, INT32 fd)
+{
+	fclose(p->finp);
+	dup2(fd,p->inp);
+	p->finp = fdopen(p->inp, "r");
+}
+
+VOID pro_pipe_cpw_pipetofd(PIPE* p, INT32 fd)
+{
+	dup2(p->out,fd);
+}
+
+VOID pro_pipe_cpw_fdtopipe(PIPE* p, INT32 fd)
+{
+	fclose(p->fout);
+	dup2(fd,p->out);
+	p->fout = fdopen(p->out, "w");
+}
+
+
+PID pro_bash(CHAR* cmd, PIPE* p, INT32 mode)
+{
+	INT32 ret;
+	switch ( (ret = pro_fork()) )
+	{
+		case PRO_ERROR:	return -1;
+		
+		case PRO_CHILD:
+			if ( p )
+			{
+				if ( mode & PRO_PIPE_RED_INP ) pro_pipe_cpr_pipetofd(p,STDIN_FILENO);
+				if ( mode & PRO_PIPE_RED_OUT ) pro_pipe_cpw_pipetofd(p,STDOUT_FILENO);
+				if ( mode & PRO_PIPE_RED_ERR ) pro_pipe_cpw_pipetofd(p,STDERR_FILENO);
+				pro_pipe_close(p);
+			}	
+			execl("/bin/bash", "bash", "-c", cmd, (char *)0);
+			_exit(-1);
+		break;
+		
+		default: 
+			if ( mode & ~PRO_PIPE_RED_INP ) pro_pipe_closewrite(p);
+			if ( mode & ~PRO_PIPE_RED_OUT && mode & ~PRO_PIPE_RED_ERR ) pro_pipe_closeread(p);
+		return ret;
+	}
+	return -1;
+}
+
+PID pro_execvp(CHAR* app, CHAR** argv, PIPE* p, INT32 mode)
+{
+	INT32 ret;
+	switch ( (ret = pro_fork()) )
+	{
+		case PRO_ERROR:	return -1;
+		
+		case PRO_CHILD:
+			if ( p )
+			{
+				if ( mode & PRO_PIPE_RED_INP ) pro_pipe_cpr_pipetofd(p,STDIN_FILENO);
+				if ( mode & PRO_PIPE_RED_OUT ) pro_pipe_cpw_pipetofd(p,STDOUT_FILENO);
+				if ( mode & PRO_PIPE_RED_ERR ) pro_pipe_cpw_pipetofd(p,STDERR_FILENO);
+				pro_pipe_close(p);
+			}	
+			execvp(app, argv);
+			_exit(-1);
+		break;
+		
+		default: 
+			if ( mode & ~PRO_PIPE_RED_INP ) pro_pipe_closewrite(p);
+			if ( mode & ~PRO_PIPE_RED_OUT && mode & ~PRO_PIPE_RED_ERR ) pro_pipe_closeread(p);
+		return ret;
+	}
+	return -1;
+}
 PROSTATE pro_pid_state(INT32* ex, PID p, BOOL async)
 {
 	
@@ -759,71 +873,4 @@ PROSTATE pro_pid_state(INT32* ex, PID p, BOOL async)
 	}
 		
 	return P_RUN;
-}
-
-INT32 pro_pipe(PIPE* p)
-{
-	INT32 fp[2];
-	INT32 ret;
-	if ( (ret = pipe(fp)) < 0 ) return -1;
-	p->inp = fp[0];
-	p->out = fp[1];
-	return 0;
-}
-
-VOID pro_initpiperead(PIPE* p, INT32 fi)
-{
-	close(p->out);
-	if ( fi > -1 ) 
-	{
-		dup2(p->inp,fi);
-		close(p->inp);
-	}
-	else
-	{
-		p->f = fdopen(p->inp, "r");
-	}
-}
-
-
-VOID pro_initpipewrite(PIPE* p, INT32 fo, INT32 efo)
-{
-	close(p->inp);
-	if ( fo > -1 ) 
-	{
-		dup2(p->out,fo);
-		if ( efo > -1 ) dup2(p->out,efo);
-		close(p->out);
-	}
-	else
-	{
-		p->f = fdopen(p->out, "w");
-	}
-}
-
-PID pro_sh(CHAR* cmd, PIPE* pi, PIPE* po)
-{
-	INT32 ret;
-	switch ( (ret = pro_fork()) )
-	{
-		case PRO_ERROR:	return -1;
-		
-		case PRO_CHILD:
-			if ( pi )
-				pro_initpipewrite(pi,STDOUT_FILENO,STDERR_FILENO);
-			if ( po )
-				pro_initpiperead(po,STDIN_FILENO);
-				
-			execl("/bin/sh", "sh", "-c", cmd, (char *)0);
-			_exit(-1);
-		break;
-		
-		default: 
-			if ( pi )
-				pro_initpiperead(pi,-1);
-			if ( po )
-				pro_initpipewrite(po,-1,-1);
-		return ret;
-	}
-	return -1;
 }

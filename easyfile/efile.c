@@ -329,6 +329,7 @@ FILETYPE dir_list(CHAR* d, BOOL filter, FILETYPE ftype, CHAR* path)
 }
 
 #define skipspace(C) while ( *C && *C == ' ' ) ++C;
+#define copyto(D,S,T) for (; *S && *S != T; *D++=*S++ ) 
 #define copyto2(D,S,T,TT) for (; *S && *S != T && *S != TT; *D++=*S++ ) 
 #define moveto(S,T) for (; *S && *S != T; ++S )
 #define moveto2(S,T,TT) for (; *S && *S != T && *S != TT; ++S )
@@ -392,7 +393,7 @@ BOOL cfg_read(CHAR* d,CHAR* v, FILE* f)
 	
 	++c;
 	skipspace(c);
-	copyto2(v,c,' ','\n');
+	copyto(v,c,'\n');
 	*v = '\0';
 	
 	return TRUE;
@@ -427,4 +428,5 @@ VOID cfg_write(CHAR* n,CHAR* v, FILE* f)
 	fwrite(b,1,r,f);
 	pos = ftell(f);
 	ftruncate(fileno(f),pos);
+	free(b);
 }

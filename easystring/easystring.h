@@ -32,20 +32,24 @@ typedef struct __EDIT* EDIT;
 #define str_ncpy(D,S,N) strncpy(D,S,N);
 #define str_len(S) strlen(S);
 
-CHAR* str_skipspace(CHAR* s);
-CHAR* str_skipline(CHAR* s);
-CHAR* str_skipc(CHAR* s, CHAR skip);
-CHAR* str_skips(CHAR* s, CHAR* skip);
-CHAR* str_movetoc(CHAR* s, CHAR delimiter);
-CHAR* str_movetos(CHAR* s, CHAR* delimiter);
-CHAR* str_copytoc(CHAR* d, CHAR* s, CHAR delimiter);
-CHAR* str_copytos(CHAR* d, CHAR* s, CHAR* delimiter);
-CHAR* str_firstvalidchar(CHAR* s);
-CHAR* str_toend(CHAR* s);
-CHAR* str_insc(CHAR* d, CHAR c);
-CHAR* str_inss(CHAR* d, CHAR* s);
-CHAR* str_del(CHAR* d, UINT32 n);
-BOOL str_empty(CHAR* s);
+CHAR* str_skipspace(register CHAR* s);
+CHAR* str_skipline(register CHAR* s);
+CHAR* str_skipc(register CHAR* s, register CHAR skip);
+CHAR* str_skips(register CHAR* s, register CHAR* skip);
+CHAR* str_movetoc(register CHAR* s, register CHAR delimiter);
+CHAR* str_movetos(register CHAR* s, register CHAR* delimiter);
+CHAR* str_copytoc(register CHAR* d, register CHAR* s, register CHAR delimiter);
+CHAR* str_copytos(register CHAR* d, register CHAR* s, register CHAR* delimiter);
+CHAR* str_firstvalidchar(register CHAR* s);
+CHAR* str_toend(register CHAR* s);
+CHAR* str_insc(register CHAR* d, register CHAR c);
+CHAR* str_inss(register CHAR* d, register CHAR* s);
+CHAR* str_del(register CHAR* d, register UINT32 n);
+BOOL str_empty(register CHAR* s);
+INT32 str_isvoc(register INT32 c);
+CHAR* str_ltrim(register CHAR* s);
+CHAR* str_rtrim(register CHAR* s);
+CHAR* str_trim(register CHAR* s);
 
 #define rex_mk(REX,PAT) regcomp(REX,PAT,REG_EXTENDED)
 #define rex_free(REX) regfree(REX)

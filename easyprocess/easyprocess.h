@@ -18,8 +18,15 @@ typedef struct _PIPE
 {
 	INT32 inp;
 	INT32 out;
-	FILE* f;
+	FILE* finp;
+	FILE* fout;
 }PIPE;
+
+#define PRO_PIPE_RED_NON 0x00
+#define PRO_PIPE_RED_INP 0x01
+#define PRO_PIPE_RED_OUT 0x02
+#define PRO_PIPE_RED_ERR 0x04
+#define PRO_PIPE_RED_ALL 0x0F
 
 #define IPS_SLEEP    'S'
 #define IPS_RUN      'R'
@@ -291,9 +298,14 @@ BOOL sig_set(SIG* old, INT32 sig, SIGCALL fnc, BOOL restart, BOOL restore);
 #define pro_parent_pid() getppid()
 
 INT32 pro_pipe(PIPE* p);
-VOID pro_initpiperead(PIPE* p, INT32 fi);
-VOID pro_initpipewrite(PIPE* p, INT32 fo, INT32 efo);
-PID pro_sh(CHAR* cmd, PIPE* pi, PIPE* po);
+VOID pro_pipe_closeread(PIPE* p);
+VOID pro_pipe_closewrite(PIPE* p);
+VOID pro_pipe_close(PIPE* p);
+VOID pro_pipe_cpr_pipetofd(PIPE* p, INT32 fd);
+VOID pro_pipe_cpw_pipetofd(PIPE* p, INT32 fd);
+VOID pro_pipe_cpw_fdtopipe(PIPE* p, INT32 fd);
+PID pro_bash(CHAR* cmd, PIPE* p, INT32 mode);
+PID pro_execvp(CHAR* app, CHAR** argv, PIPE* p, INT32 mode);
 PROSTATE pro_pidstate(INT32* ex, PID p, BOOL async);
 
 #endif // EASYSTRING_H_INCLUDED

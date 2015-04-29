@@ -59,6 +59,14 @@ typedef struct _DATE
 #define HIDWORD(l) *((UINT32*)&(l))
 #define LODWORD(l) *((UINT32*)&(l) + 1)
 
+#define DBGC(V) printf(#V "=%c",V)
+#define DBGD(V) printf(#V "=%d",V)
+#define DBGS(V) printf(#V "=%s",V)
+#define DBGF(V) printf(#V "=%d",V)
+#define DBGM(T,V) printf(#V "=%" T ,V)
+
+
+
 typedef void* TUPLE;
 
 

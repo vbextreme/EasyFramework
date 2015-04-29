@@ -3,29 +3,6 @@
 ###############
 #easy makefile#
 ###############
-# arg1 = dest arg2 = appprg arg3 = libprj arg4 = libmaseter.h arg5 = libso arg6 = liba 
-# arg7 = gccflag arg8 = ldd flag
-
-if [ $# -eq 0 ]; then
-	echo "easy makefile error, not arg"
-	exit 1
-fi
-
-if [ $# -gt 8 ]; then
-	echo "easy makefile error, not arg"
-	exit 1
-fi
-
-destmk=$1
-destmk+="makefile.auto"
-
-appprj=$2
-libprj=$3
-libmst=$4
-libso=$5
-liba=$6
-gccflg=$7
-ldflg=$8
 
 echo "#auto make" > $destmk
 echo "APPPRJNAME = $appprj" >> $destmk
@@ -40,8 +17,8 @@ echo "APPCFLAGS  = $gccflg" >> $destmk
 echo "APPDFLAGS  = $ldflg" >> $destmk
 echo "LIBCFLAGS  = $gccflg" >> $destmk
 echo "LIBDFLAGS  = $ldflg" >> $destmk
-echo "APPDEFINE  = -D_APP" >> $destmk
-echo "LIBDEFINE  = -D_LIB" >> $destmk
+echo "APPDEFINE  = -D_APP $appdef" >> $destmk
+echo "LIBDEFINE  = -D_LIB $libdef" >> $destmk
 echo "APPCC      = gcc" >> $destmk
 echo "APPLK      = gcc" >> $destmk
 echo "LIBCC      = gcc" >> $destmk
@@ -85,6 +62,15 @@ echo "" >> $destmk
 echo "appinstall:" >> $destmk
 echo "	cp ./\$(APPPRJNAME) \$(APPIPATH)\$(APPPRJNAME)" >> $destmk
 echo "" >> $destmk
+echo "appuninstall:" >> $destmk
+echo "	rm \$(APPIPATH)\$(APPPRJNAME)" >> $destmk
+echo "" >> $destmk
 echo "libinstall:" >> $destmk
 echo "	cp ./\$(LIBPRJNAME) \$(LIBIPATH)\$(LIBPRJNAME)" >> $destmk
 echo "	cp ./\$(HMASTER) \$(IHPATH)\$(HMASTER)" >> $destmk
+echo "	$extrai" >> $destmk
+echo "" >> $destmk
+echo "libuninstall:" >> $destmk
+echo "	rm \$(LIBIPATH)\$(LIBPRJNAME)" >> $destmk
+echo "	rm \$(IHPATH)\$(HMASTER)" >> $destmk
+echo "	$extrau" >> $destmk

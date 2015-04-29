@@ -25,6 +25,28 @@ VOID printinfo(PISTAT* pi)
 
 int main(int argc, char** argv)
 {
+	PIPE p;
+	
+	pro_pipe(&p);
+	pro_bash("ls",&p,PRO_PIPE_RED_OUT);
+	//CHAR* args[]= {"/bin/bash","-c","ls",NULL};
+	
+	//pro_execvp("bash",args,&p,PRO_PIPE_RED_OUT);
+	
+	CHAR rd[512];
+	INT32 nr;
+	
+	while ( (nr = fread(rd,1,512,p.finp)) > 0 )
+	{
+		printf("[%s]",rd);
+	}
+	
+	printf("%d",rd[strlen(rd)-1]);
+	
+	pro_pipe_close(&p);
+	printf("\nEXIT\n");
+	return 0;
+	/*
 	PISCK pi;
 	
 	if ( !pro_info_sck(&pi,PI_SCK_UNIX) )
@@ -42,6 +64,7 @@ int main(int argc, char** argv)
 	}
 	
 	return 0;
+	*/
 	/*
 	FLOAT64 d,u;
 	puts("Internet speed Download, Upload");

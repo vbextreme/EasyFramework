@@ -43,7 +43,7 @@ int main()
         cry_md5_out(&ctx,output);
         printf(" %s ",output);
 
-        if( memcmp( output, val[i], 32 ) )
+        if( memcmp( output, val[i], CRY_MD5_OUTSIZE - 1  ) )
         {
             printf( "failed!\n" );
             return( 1 );

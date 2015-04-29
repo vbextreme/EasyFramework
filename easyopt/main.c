@@ -5,16 +5,15 @@
 #include "easyopt.h"
 
 int main(int argc, char** argv)
-{
-	
-	MYOPT o = opt_new(3,"Verbose,Expression:,selMatch::");
+{	
+	MYOPT o = opt_new("Verbose,Expression:,selMatch::(with optiona arg),~Maxim,nothing");
 	opt_usage("test",o);
 	
 	INT32 c;
 	CHAR* arg;
 	
 	while ( -1 != (c = opt_parse(&arg,o,argc,argv)) )
-		printf("arg:%c%s%s\n",c,(arg) ? " = " : " ",(arg) ? arg : " ");
+		printf("[%s] arg:%c%s%s\n",opt_fromc(o,c),c,(arg) ? " = " : " ",(arg) ? arg : " ");
 	
 		
 	opt_free(o);

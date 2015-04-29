@@ -1,184 +1,34 @@
 #!/bin/bash
 
+
+#Order
+elst="easyalloc easybenchmark easyconsole easycrypto easyfile easylist easymath easyserial easystring"
+elst="$elst easythread easyopt easymarklang easysocket easyprocess easyhttp"
+
 echo "--------------------------"
 echo "- Install Easy Framework -"
 echo "--------------------------"
 echo ""
 
-echo "------------"
-echo "- easytype -"
-echo "------------"
+./easystatus easytype
 cp ./easytype/easytype.h /usr/include/easytype.h
-echo ""
+./easystatus -o
 
-echo "-------------"
-echo "- easyalloc -"
-echo "-------------"
-./easymkf ./easyalloc/ "" libeasyalloc.so easyalloc.h "" "" "-Wall -O3" "-O3"
-cd ./easyalloc
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
+for e in ${elst[@]}; do
+	cd "./$e"
+	make -f ./makefile.auto libinstall
+	if [[ $? != 0 ]]; then
+		cd ..
+		out="$e report error on https://github.com/vbextreme/EasyFramework/issues"
+		./easystatus $out
+		./easystatus -e
+		exit 1
+	fi
+	cd ..
+	./easystatus "$e"
+	./easystatus -o
+done
 
-echo "-----------"
-echo "- easyopt -"
-echo "-----------"
-./easymkf ./easyopt/ "" libeasyopt.so easyopt.h "" "" "-Wall -O3" "-O3"
-cd ./easyopt
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "-------------"
-echo "- easystring -"
-echo "-------------"
-./easymkf ./easystring/ "" libeasystring.so easystring.h "" "" "-Wall -O3" "-O3"
-cd ./easystring
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "-----------------"
-echo "- easybenchmark -"
-echo "-----------------"
-./easymkf ./easybenchmark/ "" libeasybenchmark.so easybenchmark.h "" "" "-Wall -O3" "-O3"
-cd ./easybenchmark
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "------------"
-echo "- easyfile -"
-echo "------------"
-./easymkf ./easyfile/ "" libeasyfile.so easyfile.h "-lc" "" "-Wall -O3" "-O3"
-cd ./easyfile
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "---------------"
-echo "- easyconsole -"
-echo "---------------"
-./easymkf ./easyconsole/ "" libeasyconsole.so easyconsole.h "-leasyfile" "" "-Wall -O3" "-O3"
-cd ./easyconsole
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "--------------"
-echo "- easycrypto -"
-echo "--------------"
-./easymkf ./easycrypto/ "" libeasycrypto.so easycrypto.h "" "" "-Wall -O3" "-O3"
-cd ./easycrypto
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "------------"
-echo "- easylist -"
-echo "------------"
-./easymkf ./easylist/ "" libeasylist.so easylist.h "" "" "-Wall -O3" "-O3"
-cd ./easylist
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "------------"
-echo "- easymath -"
-echo "------------"
-./easymkf ./easymath/ "" libeasymath.so easymath.h "" "" "-Wall -O3" "-O3"
-cd ./easymath
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "--------------"
-echo "- easyserial -"
-echo "--------------"
-./easymkf ./easyserial/ "" libeasyserial.so easyserial.h "" "" "-Wall -O3" "-O3"
-cd ./easyserial
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "--------------"
-echo "- easythread -"
-echo "--------------"
-./easymkf ./easythread/ "" libeasythread.so easythread.h "-lpthread" "" "-Wall -O3" "-O3"
-cd ./easythread
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "--------------"
-echo "- easyprocess -"
-echo "--------------"
-./easymkf ./easyprocess/ "" libeasyprocess.so easyprocess.h "-leasythread -leasystring -leasyfile" "" "-Wall -O3" "-O3"
-cd ./easyprocess
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
-
-echo "--------------"
-echo "- easysocket -"
-echo "--------------"
-./easymkf ./easysocket/ "" libeasysocket.so easysocket.h "-leasythread" "" "-Wall -O3" "-O3"
-cd ./easysocket
-echo "compiling"
-mkdir ./oobj
-make -f ./makefile.auto lib
-echo "install"
-make -f ./makefile.auto libinstall
-echo ""
-cd ..
 
 echo "------------"
 echo "- Complete -"
