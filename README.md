@@ -1,10 +1,26 @@
 EasyFramework v0.4
 ==================
-Little framework created during the study of language c.
+Little framework created during the study of language c.<br/>
+easyalloc......: Manager Memory and Customize thread safe malloc<br/>
+easybenchmark..: Measures the time code<br/>
+easyconsole....: Large number of functions for the management of the terminal<br/>
+easycrypto.....: Hash, MD5, AES<br/>
+easyfile.......: Management file<br/>
+easyhttp.......: Http get/post, Ftp, Imap<br/>
+easylist.......: List, Code with priority, Tree<br/>
+easymarklang...: special xml<br/>
+easymath.......: Date, Matrix, FFT, etc<br/>
+easyopt........: Easy way opt<br/>
+easyprocess....: Info of process,processor,inet etc, easy way pipe,system, cpu speed, internet speed,etc<br/>
+easyserial.....: Serial port<br/>
+easysocket.....: Server and client and working for ssl<br/>
+easystring.....: Working with string<br/>
+easythread.....: Working with thread, and named mutex<br/>
+easytype.......: Var type<br/>
 
 State:
 ======
-* Create documentation
+* Create man documentation (easyframework easytype easyalloc easybenchmark easyconsole easycrypto)
 * other libraries:
  1. easyuser? clean && upload
  2. easyguiconsole? to finish
@@ -37,8 +53,12 @@ $ sudo ./install<br/>
 (easyconsole   )con_input() for now not support resize screen<br/>
 (easycrypto    )No Bug Reported<br/>
 (easyfile      )No Bug Reported<br/>
+(easyhttp      )No Bug Reported<br/>
 (easylist      )No Bug Reported<br/>
+(easymarklang  )No Bug Reported<br/>
 (easymath      )No Bug Reported<br/>
+(easyopt       )No Bug Reported<br/>
+(easyprocess   )No Bug Reported<br/>
 (easyserial    )No Bug Reported<br/>
 (easysocket    )No Bug Reported<br/>
 (easystring    )No Bug Reported<br/>
