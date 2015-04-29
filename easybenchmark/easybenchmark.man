@@ -1,0 +1,188 @@
+.\" man page 8/2/2015 vbextreme 
+.\" source www.github.vbextreme/easyframework
+.\"
+
+.TH man 3 "27 april 2015" "1.0" "easybenchmark man page"
+
+.SH NAME
+easybenchmark
+
+.SH SYNOPSIS
+#include <easybenchmark\.h>
+.br
+
+.br
+#define BCH_FLAG_START 0x01
+.br
+.br
+#define BCH_FLAG_PAUSE 0x02
+.br
+#define BCH_FLAG_STOP  0x04
+.br
+#define BCH_PERF_GLOBAL BCHPERF __perf__
+.br
+#define BCH_PERF_INIT __perf__ = bch_perf_init()
+.br
+#define BCH_PERF_START bch_perf_add(__perf__,__FUNCTION__,BCH_FLAG_START)
+.br
+#define BCH_PERF_PAUSE bch_perf_add(__perf__,__FUNCTION__,BCH_FLAG_PAUSE)
+.br
+#define BCH_PERF_STOP  bch_perf_add(__perf__,__FUNCTION__,BCH_FLAG_STOP)
+.br
+#define BCH_PERF_SAVE(FILENAME)  bch_perf(fopen(FILENAME,"w"),__perf__)
+.br
+
+.br
+typedef struct __BCHPERF* BCHPERF;
+.br
+
+.br
+FLOAT64 bch_get();
+.br
+FLOAT64 bch_clc(FLOAT64 st, FLOAT64 en);
+.br
+BCHPERF bch_perf_init();
+.br
+VOID bch_perf_add(BCHPERF p,const CHAR* fname, BYTE flags);
+.br
+BOOL bch_perf(FILE* out, BCHPERF p);
+.br
+
+.SH DESCRIPTION
+These functions help to code benchmark.
+
+.SH EXTENDED DESCRIPTION
+.B bch_get();
+.R return FLOAT64 time in second
+.br
+
+.br
+.B bch_clc(FLOAT64 st, FLOAT64 en);
+.R return en - st, time elapse.
+.br
+
+.br
+.B bch_perf_init();
+.R initialize structure performance.
+.br
+
+.br
+.B bch_perf_add(BCHPERF p,const CHAR* fname, BYTE flags);
+.R add performance to structure, flags specific status performance BCH_FLAG_
+.br
+
+
+.SH EXAMPLE
+#include <stdio.h>
+.br
+#include <stdlib.h>
+.br
+#include <unistd.h>
+.br
+#include <easybenchmark.h>
+.br
+
+.br
+BCH_PERF_GLOBAL;
+.br
+
+.br
+void test1()
+.br
+{
+.br
+	BCH_PERF_START;
+.br
+
+.br
+	INT32 i;
+.br
+	UINT32 ni = 0;
+.br
+	for ( i = 0; i < 1000000; ++i )
+.br
+		ni += i;
+.br
+	BCH_PERF_STOP;
+.br
+}
+.br
+
+.br
+void test2()
+.br
+{
+.br
+	BCH_PERF_START;
+.br
+	INT32 i;
+.br
+	UINT32 ni = 0;
+.br
+	for ( i = 0; i < 1000000; ++i )
+.br
+		ni += i;
+.br
+
+.br
+	BCH_PERF_STOP;
+.br
+}
+.br
+
+.br
+int main()
+.br
+{
+.br 
+    BCH_PERF_INIT;
+.br
+
+.br 
+    BCH_PERF_START;
+.br
+
+.br    
+    test1();
+.br
+
+.br  
+    BCH_PERF_PAUSE;
+.br
+
+.br
+    INT32 i,ni;
+.br 
+    for ( i = 0; i < 1000000; ++i )
+.br
+		ni += i;
+.br
+
+.br
+	BCH_PERF_START;
+.br     
+    test2();
+.br    
+    BCH_PERF_STOP;
+.br
+
+.br    
+    bch_perf(stdout,__perf__);
+.br
+
+.br 
+    return 0;
+.br
+}
+.br
+
+.br
+
+.SH SEE ALSO
+easyframework(3)
+
+.SH LICENSE
+gpl
+
+.SH AUTHORS
+vbextreme

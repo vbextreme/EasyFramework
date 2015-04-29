@@ -1,0 +1,126 @@
+.\" man page 8/2/2015 vbextreme 
+.\" source www.github.vbextreme/easyframework
+.\"
+
+.TH man 3 "08 March 2015" "1.0" "easytype man page"
+
+.SH NAME
+easytype
+
+.SH SYNOPSIS
+#include <easytype\.h>
+.br
+
+
+.SH DESCRIPTION
+all kinds used by the framework, are declared in uppercase in order to give greater visibility.
+.br
+The names are explicit.
+
+.SH EXTENDED DESCRIPTION
+.BI PPC_MULTILINE_START 
+.R macro for safe block define
+.br
+.BI PPC_MULTILINE_END 
+.R end block
+.br
+.BI forever() 
+.R infinite loop
+.br
+.BI VOID
+.R void
+.br
+.BI VARIANT
+.R void*
+.br 
+.BI BYTE
+.R unsigned char
+.br
+.BI CHAR
+.R char
+.br
+.BI INT16
+.R short int
+.br
+.BI UINT16
+.R unsigned short int
+.br
+.BI INT32
+.R int
+.br
+.BI UINT32
+.R unsigned int
+.br
+.BI INT64
+.R int64_t
+.br
+.BI UINT64
+.R uint64_t
+.br
+.BI S64(V)
+.R use 64bit on 32
+.br
+.BI PRId64
+.R macro for printf 64 bit value
+.br
+.BI FLOAT32
+.R float
+.br
+.BI FLOAT64
+.R double
+.br
+.BI WORD
+.R UINT16
+.br
+.BI DWORD
+.R UINT32
+.br
+.BI QWORD
+.R INT64
+.br
+.BI FLAGS
+.R DWORD
+.br
+.BI BOOL
+.R enum{FALSE,TRUE}
+.br
+.BI SIZET
+.R size_t
+.br
+.BI DATE
+.R struct _date {INT16 y; BYTE m; BYTE dd; BYTE hh; BYTE mm; BYTE ss}
+.br
+.BI DWBYTE0(VAL)
+.R macro extract first byte ,second,etc
+.br
+.BI UNIONBYTE(A,B)
+.R union two byte in sigle var
+.br
+.B DBGc(V)
+.R print char (v)alue
+.br
+.B DBGd(V)
+.R print integer (v)alue
+.br
+.B DBGs(V)
+.R print string (v)alue
+.br
+.B DBGf(V)
+.R print double (v)value
+.br
+.B DBGm(T,V)
+.R print (value) format with (t)ype is char format example "u"
+.br
+
+.SH NOTES
+all library include easytype, There are other macro developing undocumented
+
+.SH SEE ALSO
+easyframework(3) easyalloc(3) easybenchmark(3) easyconsole(3) easycrypto(3) easyfile(3) easylist(3) easymath(3) easyopt(3)
+easyprocess(3) easyserial(3) easysocket(3) easystring(3) easythread(3)
+
+.SH LICENSE
+gpl
+
+.SH AUTHORS
+vbextreme

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+##########
+#easy man#
+##########
+
+../easystatus "man"
+cp -f "./$1.man" "/usr/local/man/man$2/$1.$2"
+gzip -f "/usr/local/man/man$2/$1.$2"
+../easystatus -o

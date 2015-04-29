@@ -1,0 +1,35 @@
+#!/bin/bash
+
+###############
+#easy generate#
+###############
+#rq:
+#   easytype
+#	easyalloc easytye
+#	easybenchmark easytype
+#   easyconsole easytype bug:/usr/lib/gcc/arm-linux-gnueabihf/4.8/libgcc.a
+#   easycrypto easytype
+#	easyfile easytype bug:-lc
+#	easylist easytype
+#	easymath easytype -lm bug:/usr/lib/gcc/arm-linux-gnueabihf/4.8/libgcc.a
+#	easyserial easytype
+#	easystring easytype
+#	easythread easytype -lpthread
+#	easyopt easytype easystring easyconsole
+#	easymarklang easytype easystring
+#	easysocket easytype easythread
+#	easyprocess easytype easystring easyfile easythread
+#	easyhttp easytype easystring easythread easybenchmark -lcurl
+
+#Order
+elst="easyalloc easybenchmark easyconsole easycrypto easyfile easylist easymath easyserial easystring"
+elst="$elst easythread easyopt easymarklang easysocket easyprocess easyhttp"
+
+for e in ${elst[@]}; do
+	cd "./$e"
+	make -f ./makefile.auto libclean 
+	if [[ $? != 0 ]]; then
+		exit 1
+	fi
+	cd ..
+done

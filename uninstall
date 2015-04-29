@@ -6,30 +6,22 @@ elst="easyalloc easybenchmark easyconsole easycrypto easyfile easylist easymath 
 elst="$elst easythread easyopt easymarklang easysocket easyprocess easyhttp"
 
 echo "--------------------------"
-echo "- Install Easy Framework -"
+echo "- Uinstall Easy Framework -"
 echo "--------------------------"
 echo ""
 
 ./easystatus easytype
-cp ./easytype/easytype.h /usr/include/easytype.h
+rm -f /usr/include/easytype.h
 ./easystatus -o
 
 for e in ${elst[@]}; do
 	cd "./$e"
-	make -f ./makefile.auto libinstall
-	if [[ $? != 0 ]]; then
-		cd ..
-		out="$e report error on https://github.com/vbextreme/EasyFramework/issues"
-		./easystatus $out
-		./easystatus -e
-		exit 1
-	fi
+	make -f ./makefile.auto libuninstall
 	cd ..
 	./easystatus "$e"
 	./easystatus -o
 done
 
-./easyman easyframework 3
 
 echo "------------"
 echo "- Complete -"

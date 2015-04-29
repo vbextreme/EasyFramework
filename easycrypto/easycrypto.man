@@ -1,0 +1,254 @@
+.\" man page 8/2/2015 vbextreme 
+.\" source www.github.vbextreme/easyframework
+.\"
+
+.TH man 3 "25 March 2015" "1.0" "easycrypto man page"
+
+.SH NAME
+easycrypro
+
+.SH SYNOPSIS
+#include <easycrypto\.h>
+.br
+
+.br
+UINT32 cry_fasthash(CHAR* data, INT32 len);
+.br
+UINT32 cry_hash(CHAR* val, INT32 len, UINT32 maxmap);
+.br
+
+.br
+void cry_md5_init(CRYMD5* ctx);
+.br
+void cry_md5_calcolate(CRYMD5 *ctx, unsigned char* input, unsigned long int length );
+.br
+void cry_md5_out( CRYMD5 *ctx ,char* d);
+.br
+
+.br
+int  cry_aes_setkey( CRYAES* ctx, unsigned char* secretkey, int tkey );
+.br
+void cry_aes_encrypt( CRYAES* ctx, unsigned char *s, unsigned long int len );
+.br
+void cry_aes_decrypt( CRYAES* ctx, unsigned char *s, unsigned long int len );
+.br
+
+.br
+
+.SH DESCRIPTION
+These functions help to generate hash,md5 value and crypt,decrypt with aes.
+
+.SH EXTENDED DESCRIPTION
+.B cry_fasthash(CHAR* data, INT32 len);
+.R return (0 to UINT32 max val) hash value from (data) with (len). 
+.br
+
+.br
+.B cry_hash(CHAR* val, INT32 len, UINT32 maxmap);
+.R return (0 to maxmap-1) hash value from (val) with (len). 
+.br
+
+.br
+.B cry_md5_init(CRYMD5* ctx);
+.R call every time you want to generate a new key md5.
+.br
+
+.br
+.B cry_md5_calcolate(CRYMD5 *ctx, unsigned char* input, unsigned long int length );
+.R pass init (ctx) and (input) whith (lenght) for md5.
+.br
+
+.br
+.B cry_md5_out( CRYMD5 *ctx ,char* d);
+.R get md5 value size (d) is CRY_MD5_OUTPUT with NULL terminator char
+.br
+
+.br
+.B cry_aes_setkey( CRYAES* ctx, unsigned char* secretkey, int tkey );
+.R you can generate three (tkey)
+.br
+CRY_AES_KEY_EASY (secretkey) size 16, 128 bit 
+.br
+CRY_AES_KEY_NORMAL (secretkey) size 24, 192 bit
+.br
+CRY_AES_KEY_HARD (secretkey) size 32, 256 bit
+.br
+return 0 for ok
+.br
+
+.br
+.B cry_aes_encrypt( CRYAES* ctx, unsigned char *s, unsigned long int len );
+.R encrypt (s) data with size (len), if the date is not a multiple of the carrier 16 will be reallocated
+.br
+
+.br
+.B cry_aes_decrypt( CRYAES* ctx, unsigned char *s, unsigned long int len );
+.R decript (s) data with size (len)
+.br
+
+.SH EXAMPLE
+#include <stdio.h>
+.br
+#include <stdlib.h>
+.br
+#include <string.h>
+.br
+#include <easycrypto.h>
+.br
+
+.br
+static char *msg[] =
+.br
+{
+.br
+    "",
+.br
+    "a",
+.br
+    "abc",
+.br
+    "message digest",
+.br
+    "abcdefghijklmnopqrstuvwxyz",
+.br
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+.br
+    "12345678901234567890123456789012345678901234567890123456789012" \
+.br
+        "345678901234567890"
+.br
+};
+.br
+
+.br
+static char *val[] =
+.br
+{
+.br
+    "d41d8cd98f00b204e9800998ecf8427e",
+.br
+    "0cc175b9c0f1b6a831c399e269772661",
+.br
+    "900150983cd24fb0d6963f7d28e17f72",
+.br
+    "f96b697d7cb7938d525a2f31aaf161d0",
+.br
+    "c3fcd3d76192e4007dfb496cca67e13b",
+.br
+    "d174ab98d277d9f5a5611c2c9f419d9f",
+.br
+    "57edf4a22be3c955ac49da2e2107b67a"
+.br
+};
+.br
+
+.br
+int main()
+.br
+{
+.br
+    ///MD5 USED
+.br
+    char output[CRY_MD5_OUTSIZE];
+.br
+    CRYMD5 ctx;
+.br
+
+.br
+    printf( "\\n MD5 Validation Tests:\n\n" );
+.br
+
+.br
+    int i;
+.br
+    for( i = 0; i < 7; i++ )
+.br
+    {
+.br
+        cry_md5_init(&ctx);
+.br
+        cry_md5_calcolate(&ctx,(unsigned char*)msg[i],strlen(msg[i]));
+.br
+        cry_md5_out(&ctx,output);
+.br
+        printf(" %s ",output);
+.br
+
+.br
+        if( memcmp( output, val[i], CRY_MD5_OUTSIZE - 1  ) )
+.br
+        {
+.br
+            printf( "failed!\\n" );
+.br
+            return 1;
+.br
+        }
+.br
+
+.br
+        printf( "passed.\\n" );
+.br
+    }
+.br
+
+.br
+    printf( "\\n" );
+.br
+    printf( "\\n" );
+.br
+
+.br
+    ///AES USED
+.br
+
+.br
+    unsigned char secretkey[CRY_AES_KEY_EASY] = {'a','z','9','q','1','r','g','h',
+.br
+                                                 'j','A','P','k','M','0','O','v',
+.br
+                                                };
+.br
+    CRYAES act;
+.br
+    cry_aes_setkey(&act,secretkey,CRY_AES_KEY_EASY);
+.br
+
+.br
+    char* msg = malloc (10);
+.br
+    strcpy(msg,"ciao");
+.br
+
+.br
+    printf("Test AES:\\n");
+.br
+    printf("cript:%s\\n",msg);
+.br
+
+.br
+    cry_aes_encrypt(&act,(unsigned char*)msg,strlen(msg)+1);
+.br
+    printf("->%s\n",msg);
+.br
+
+.br
+    cry_aes_decrypt(&act,(unsigned char*)msg,strlen(msg)+1);
+.br
+    printf("->%s\n",msg);
+.br
+
+.br
+    return 0;
+.br
+}
+.br
+
+.SH SEE ALSO
+easyframework(3)
+
+.SH LICENSE
+gpl
+
+.SH AUTHORS
+vbextreme

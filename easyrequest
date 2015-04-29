@@ -1,0 +1,25 @@
+#!/bin/bash
+
+##############
+#easy request#
+##############
+
+vec=$2
+te=$1
+if [ $te = "-a" ]; then
+	for t in ${vec[@]}; do
+		./easystatus $t
+		command -v $tes >/dev/null 2>&1 || { ./easystatus -e; exit 1; }
+		./easystatus -o
+	done
+else
+	for t in ${vec[@]}; do
+		./easystatus $t
+		ret=$(find $te -name $t)
+		if [[ $ret = "" ]]; then
+			./easystatus -e
+			exit 1
+		fi
+		./easystatus -o
+	done
+fi

@@ -1,0 +1,174 @@
+#!/bin/bash
+
+###############
+#easy generate#
+###############
+#rq:
+#   easytype
+#	easyalloc easytye
+#	easybenchmark easytype
+#   easyconsole easytype bug:/usr/lib/gcc/arm-linux-gnueabihf/4.8/libgcc.a
+#   easycrypto easytype
+#	easyfile easytype bug:-lc
+#	easylist easytype
+#	easymath easytype -lm bug:/usr/lib/gcc/arm-linux-gnueabihf/4.8/libgcc.a
+#	easyserial easytype
+#	easystring easytype
+#	easythread easytype -lpthread
+#	easyopt easytype easystring easyconsole
+#	easymarklang easytype easystring
+#	easysocket easytype easythread
+#	easyprocess easytype easystring easyfile easythread
+#	easyhttp easytype easystring easythread easybenchmark -lcurl
+
+#Order
+elst="easyalloc easybenchmark easyconsole easycrypto easyfile easylist easymath easyserial easystring"
+elst="$elst easythread easyopt easymarklang easysocket easyprocess easyhttp"
+#Header
+eh="stdio.h stdlib.h string.h memory.h unistd.h fcntl.h ioctl.h sched.h"
+eh="$eh malloc.h time.h resource.h errno.h input.h termios.h types.h"
+eh="$eh stat.h time.h dirent.h utime.h pwd.h curl.h complex.h"
+eh="$eh math.h ctype.h getopt.h signal.h wait.h socket.h inet.h"
+eh="$eh in.h tcp.h netdb.h regex.h semaphore.h"
+eh="$eh sysctl.h shm.h ipc.h inttypes.h"
+#Lib
+el="libcurl.so libm.so"
+#Man
+eman="easyalloc easybenchmark easyconsole easycrypto"
+#App
+eapp="gcc make"
+
+
+#check
+./easyrequest -a "$eapp"
+if [[ $? = 1 ]]; then
+	exit 1 
+fi
+
+./easyrequest "/usr/include" "$eh"
+if [[ $? = 1 ]]; then
+	exit 1
+fi
+
+./easyrequest "/usr/lib" "$el"
+if [[ $? = 1 ]]; then
+	exit 1
+fi
+
+declare -A cflagsex=([easyalloc]="" [easybenchmark]="" [easyconsole]="" [easycrypto]="" 
+					 [easyfile]="" [easylist]="" [easymath]="" [easyserial]="" [easystring]=""
+					 [easythread]=""
+					 [easyopt]="-I../easystring -I../easyconsole" 
+					 [easymarklang]="-I../easystring" 
+					 [easysocket]="-I../easythread"
+					 [easyprocess]="-I../easystring -I../easyfile -I../easythread" 
+					 [easyhttp]="-I../easystring -I../easybenchmark -I../easythread"
+					)
+					
+declare -A dflagsex=([easyalloc]="" [easybenchmark]="" [easyconsole]="" [easycrypto]=""
+					 [easyfile]=""  [easylist]="" [easymath]="" [easyserial]=""
+					 [easystring]="" [easythread]=""
+					 [easyopt]="-L../easystring -L../easyconsole" 
+					 [easymarklang]="-L../easystring" 
+					 [easysocket]="-L../easythread"
+					 [easyprocess]="-L../easystring -L../easyfile -L../easythread" 
+					 [easyhttp]="-L../easystring -L../easybenchmark -L../easythread"
+					) 
+		 	 
+declare -A libsoex=([easyalloc]="" [easybenchmark]="" [easyconsole]="" [easycrypto]="" 
+				    [easyfile]=""  
+				    [easylist]="" 
+					[easymath]="-lm" 
+					[easyserial]="" [easystring]="" 
+					[easythread]="-lpthread"
+					[easyopt]="-leasystring -leasyconsole" 
+					[easymarklang]="-leasystring" 
+					[easysocket]="-leasythread"
+					[easyprocess]="-leasystring -leasyfile -leasythread" 
+					[easyhttp]="-leasystring -leasybenchmark -leasythread -lcurl"
+				   )
+		
+declare -A libaex=([easyalloc]="" [easybenchmark]="" 
+				   [easyconsole]="" 
+				   [easycrypto]="" [easyfile]="" [easylist]="" 
+				   [easymath]="" 
+				   [easyserial]="" [easystring]="" [easythread]="" [easyopt]="" 
+				   [easymarklang]="" [easysocket]="" [easyprocess]="" [easyhttp]=""
+				  )
+
+declare -A libdefex=([easyalloc]="" [easybenchmark]="" [easyconsole]="" [easycrypto]="" 
+					 [easyfile]="" [easylist]="" [easymath]="" [easyserial]="" [easystring]="" 
+					 [easythread]="" [easyopt]="" [easymarklang]="" [easysocket]=""
+					 [easyprocess]="" [easyhttp]=""
+					)
+
+declare -A extraiex=([easyalloc]="../easyman easyalloc 3" 
+					 [easybenchmark]="../easyman easybenchmark 3" 
+					 [easyconsole]="../easyman easyconsole 3" 
+					 [easycrypto]="../easyman easycrypto 3" 
+					 [easyfile]="" [easylist]="" [easymath]="" [easyserial]="" 
+					 [easystring]="" [easythread]="" [easyopt]="" [easymarklang]=""
+					 [easysocket]="" [easyprocess]="" [easyhttp]=""
+					)
+	     
+declare -A extrauex=([easyalloc]="rm -f /usr/local/man/man3/easyalloc.3.gz"
+					 [easybenchmark]="rm -f /usr/local/man/man3/easybenchmark.3.gz" 
+					 [easyconsole]="rm -f /usr/local/man/man3/easyconsole.3.gz" 
+					 [easycrypto]="rm -f /usr/local/man/man3/easycrypto.3.gz" 
+					 [easyfile]=""
+					 [easylist]="" [easymath]="" [easyserial]="" [easystring]="" 
+					 [easythread]="" [easyopt]="" [easymarklang]="" [easysocket]=""
+					 [easyprocess]="" [easyhttp]=""
+					)
+
+declare -a array=(cflagsex dflagsex libsoex libaex libdefex extraiex extrauex)
+
+for e in ${elst[@]}; do
+	./easystatus $e
+	cex=cflagsex[$e]
+	dex=dflagsex[$e]
+	sex=libsoex[$e]
+	aex=libaex[$e]
+	ldex=libdefex[$e]
+	iex=extraiex[$e]
+	uex=extrauex[$e]
+	export destmk="./$e/makefile.auto"
+	export libprj="lib$e.so"
+	export libmst="$e.h"
+	export gccflg="-Wall -O3 -I../easytype ${!cex}"
+	export ldflg="-O3 ${!dex}"
+	export libso="${!sex}"
+	export liba="${!aex}"
+	export libdef="${!ldex}"
+	export extrai="${!iex}"
+	export extrau="${!uex}"
+	./easymkf
+	cd "./$e"
+	rm -rf ./oobj
+	mkdir ./oobj
+	cd ..
+	./easystatus -o
+done
+
+
+for e in ${elst[@]}; do
+	cd "./$e"
+	make -f ./makefile.auto lib 
+	if [[ $? != 0 ]]; then
+		cd ..
+		out="$e report error on https://github.com/vbextreme/EasyFramework/issues"
+		./easystatus $out
+		./easystatus -e
+		exit 1
+	fi
+	cd ..
+	out="make $e"
+	./easystatus $out
+	./easystatus -o
+done
+
+echo ""
+out="Generate Easy Framework"
+./easystatus $out
+./easystatus -o
+echo ""

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#############
+#easy status#
+#############
+
+function onstatus(){
+	printf "\033[s"
+	printf "[..]%s" $1
+}
+function okstatus(){
+	printf "\033[u\033[1C"
+	printf "\033[92m"
+	printf "OK"
+	printf "\033[m"
+	printf "\n"
+}
+function errstatus(){
+	printf "\033[u"
+	printf "\033[1C"
+	printf "\033[31m"
+	printf "ER"
+	printf "\033[m"
+	printf "\n"
+}
+
+te=$1
+if [ $te = "-o" ]; then
+	okstatus
+elif [ $te == "-e" ]; then
+	errstatus
+else
+	onstatus $te
+fi
