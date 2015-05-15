@@ -4,7 +4,23 @@
 #easy man#
 ##########
 
-../easystatus "man"
+if [[ $# -eq 3 ]]; then
+	./easystatus "man"
+else
+	../easystatus "man"
+fi
+
+destman="/usr/local/man/man$2"
+
+if [ ! -d $destman ]; then
+	mkdir $destman
+fi
+
 cp -f "./$1.man" "/usr/local/man/man$2/$1.$2"
 gzip -f "/usr/local/man/man$2/$1.$2"
-../easystatus -o
+
+if [[ $# -eq 3 ]]; then
+	./easystatus -o
+else
+	../easystatus -o
+fi

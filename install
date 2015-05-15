@@ -29,7 +29,7 @@ for e in ${elst[@]}; do
 	./easystatus -o
 done
 
-./easyman easyframework 3
+./easyman easyframework 3 --local
 
 echo "------------"
 echo "- Complete -"
