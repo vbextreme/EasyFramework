@@ -38,6 +38,27 @@ eman="easyalloc easybenchmark easyconsole easycrypto"
 #App
 eapp="gcc make"
 
+#fix
+selld="ld"
+phlibgcc=""
+manuallibc=""
+
+while [[ $# != 0 ]]; do
+	te="$1"
+	case $te in
+		--gcc-linker)
+			selld="gcc"
+		;;
+		
+		--fix-dso)
+			manuallibc="-lc"
+			phlibgcc="$2"
+			shift
+		;;
+		
+	esac
+	shift
+done
 
 #check
 ./easyrequest -a "$eapp"
@@ -76,7 +97,7 @@ declare -A dflagsex=([easyalloc]="" [easybenchmark]="" [easyconsole]="" [easycry
 					) 
 		 	 
 declare -A libsoex=([easyalloc]="" [easybenchmark]="" [easyconsole]="" [easycrypto]="" 
-				    [easyfile]=""  
+				    [easyfile]="$manuallibc"  
 				    [easylist]="" 
 					[easymath]="-lm" 
 					[easyserial]="" [easystring]="" 
@@ -89,9 +110,9 @@ declare -A libsoex=([easyalloc]="" [easybenchmark]="" [easyconsole]="" [easycryp
 				   )
 		
 declare -A libaex=([easyalloc]="" [easybenchmark]="" 
-				   [easyconsole]="" 
+				   [easyconsole]="$phlibgcc" 
 				   [easycrypto]="" [easyfile]="" [easylist]="" 
-				   [easymath]="" 
+				   [easymath]="$phlibgcc" 
 				   [easyserial]="" [easystring]="" [easythread]="" [easyopt]="" 
 				   [easymarklang]="" [easysocket]="" [easyprocess]="" [easyhttp]=""
 				  )
@@ -142,6 +163,8 @@ for e in ${elst[@]}; do
 	export libdef="${!ldex}"
 	export extrai="${!iex}"
 	export extrau="${!uex}"
+	export ldapp="$selld"
+	
 	./easymkf
 	cd "./$e"
 	rm -rf ./oobj
