@@ -1,5 +1,5 @@
-EasyFramework v0.4
-==================
+EasyFramework v0.4.2
+====================
 Little framework created during the study of language c.<br/>
 easyalloc......: Manager Memory and Customize thread safe malloc<br/>
 easybenchmark..: Measures the time code<br/>
@@ -20,33 +20,19 @@ easytype.......: Var type<br/>
 
 State:
 ======
-* Create man documentation (easyframework easytype easyalloc easybenchmark easyconsole easycrypto)
-* other libraries:
- 1. easyuser? clean && upload
- 2. easyguiconsole? to finish
- 3. easygraphic? to finish
+* Create man documentation (easyframework easytype easyalloc easybenchmark easyconsole easycrypto)(0.4)
+* resolve man (0.4.1)
+* add fix gcc bug (0.4.2)
 
 Bug:
 ====
-Strange errors ld.<br/>
-The bug is not Easy Framework but is caused by a bad compilation of general gcc.<br/>
-In some systems, such as in xubuntu 13.04 armhf various symbols like stat they are not 
-exported correctly, and this causes errors during the link libraries.<br/>
-How to fix :<br/>
-Open file "generate"<br/>"
-go to "declare -A libaex=(" at line 91<br/>
-go to '[easyconsole]=""' at line 92<br/>
-replace with '[easyconsole]="/usr/lib/gcc/arm-linux-gnueabihf/4.8/libgcc.a"'<br/>
-or your directory where is ubicate libgcc.a<br/>
-go to '[easymath]=""' at line 94<br/>
-replace with '[easymath]="/usr/lib/gcc/arm-linux-gnueabihf/4.8/libgcc.a"'<br/>
-or your directory where is ubicate libgcc.a<br/>
-go to "declare -A libsoex=(" at line 78<br/>
-go to '[easyfile]=""' at line 79<br/>
-replace with '[easyfile]="-lc"'<br/>
-$ ./generate<br/>
-$ sudo ./install<br/>
-
+GCC version 4.8 could not export some symbols to solve use --fix-dso option with path where
+ ubicate libgcc.a for example<br/>
+$ ./generate --fix-dso /usr/lib/gcc/arm-linux-gnueabihf/4.8/libgcc.a<br/>
+<br/>
+In some machines linking with ld not working properly causing the error:"hidden symbol '__stack_chk_fail_local' isn't defined" to solve use --gcc-linker for example<br/>
+$ ./generate --gcc-linker<br/>
+<br/>
 <br/>
 (easyalloc     )No Bug Reported<br/>
 (easybenchmark )No Bug Reported<br/>
