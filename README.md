@@ -1,4 +1,4 @@
-EasyFramework v0.4.2
+EasyFramework v0.4.3
 ====================
 Little framework created during the study of language c.<br/>
 easyalloc......: Manager Memory and Customize thread safe malloc<br/>
