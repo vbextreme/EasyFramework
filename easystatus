@@ -4,10 +4,6 @@
 #easy status#
 #############
 
-function onstatus(){
-	printf "\033[s"
-	printf "[..]%s" $1
-}
 function okstatus(){
 	printf "\033[u\033[1C"
 	printf "\033[92m"
@@ -25,10 +21,12 @@ function errstatus(){
 }
 
 te=$1
-if [ $te = "-o" ]; then
+
+if [[ $te = "-o" ]]; then
 	okstatus
-elif [ $te == "-e" ]; then
+elif [[ $te == "-e" ]]; then
 	errstatus
 else
-	onstatus $te
+	printf "\033[s"
+	printf "[..]$te"
 fi
