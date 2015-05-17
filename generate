@@ -21,6 +21,14 @@
 #	easyprocess easytype easystring easyfile easythread
 #	easyhttp easytype easystring easythread easybenchmark -lcurl
 
+#+x
+chmod +x ./easystatus
+chmod +x ./easyrequest
+chmod +x ./easymkf
+chmod +x ./easyman
+chmod +x ./install
+chmod +x ./uninstall
+
 #Order
 elst="easyalloc easybenchmark easyconsole easycrypto easyfile easylist easymath easyserial easystring"
 elst="$elst easythread easyopt easymarklang easysocket easyprocess easyhttp"
@@ -179,19 +187,16 @@ for e in ${elst[@]}; do
 	make -f ./makefile.auto lib 
 	if [[ $? != 0 ]]; then
 		cd ..
-		out="$e report error on https://github.com/vbextreme/EasyFramework/issues"
-		./easystatus $out
+		./easystatus "$e report error on https://github.com/vbextreme/EasyFramework/issues"
 		./easystatus -e
 		exit 1
 	fi
 	cd ..
-	out="make $e"
-	./easystatus $out
+	./easystatus "make $e"
 	./easystatus -o
 done
 
 echo ""
-out="Generate Easy Framework"
-./easystatus $out
+./easystatus "Generate Easy Framework"
 ./easystatus -o
 echo ""

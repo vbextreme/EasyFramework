@@ -19,8 +19,7 @@ for e in ${elst[@]}; do
 	make -f ./makefile.auto libinstall
 	if [[ $? != 0 ]]; then
 		cd ..
-		out="$e report error on https://github.com/vbextreme/EasyFramework/issues"
-		./easystatus $out
+		./easystatus "$e report error on https://github.com/vbextreme/EasyFramework/issues"
 		./easystatus -e
 		exit 1
 	fi
