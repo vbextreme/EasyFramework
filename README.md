@@ -35,6 +35,12 @@ $ ninja
 $ sudo ninja install
 ```
 
+Doc:
+================
+```
+$ ./gendoc
+```
+
 To uninstall it:
 ==============
 
