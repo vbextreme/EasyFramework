@@ -1,0 +1,266 @@
+.TH "include/ef/proc.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/proc.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/vector\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBmemInfo\fP"
+.br
+.ti -1c
+.RI "struct \fBnetDev\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBPATH_PROC\fP   '/proc'"
+.br
+.ti -1c
+.RI "#define \fBPATH_PROC_STAT\fP   \fBPATH_PROC\fP '/stat'"
+.br
+.ti -1c
+.RI "#define \fBPATH_PROC_MEM\fP   \fBPATH_PROC\fP '/meminfo'"
+.br
+.ti -1c
+.RI "#define \fBPATH_PROC_NET_DEV\fP   \fBPATH_PROC\fP '/net/dev'"
+.br
+.ti -1c
+.RI "#define \fBPATHF_PROC_PID_FD\fP   \fBPATH_PROC\fP '/%d/fd'"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBmemInfo\fP \fBmemInfo_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBnetDev\fP \fBnetDev_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBcputime_e\fP { \fBCPU_USER\fP, \fBCPU_NICE\fP, \fBCPU_SYSTEM\fP, \fBCPU_IDLE\fP, \fBCPU_IOWAIT\fP, \fBCPU_IRQ\fP, \fBCPU_SOFTIRQ\fP, \fBCPU_STEAL\fP, \fBCPU_GUEST\fP, \fBCPU_GUEST_NICE\fP, \fBCPU_TIME_COUNT\fP }"
+.br
+.ti -1c
+.RI "enum \fBnetDev_e\fP { \fBND_BYTES\fP, \fBND_PACKETS\fP, \fBND_ERRS\fP, \fBND_DROP\fP, \fBND_FIFO\fP, \fBND_FRAME\fP, \fBND_COMPRESSED\fP, \fBND_MULTICAST\fP, \fBND_COUNT\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBcpu_core_count\fP (void)"
+.br
+.ti -1c
+.RI "size_t * \fBcpu_tick_new\fP (void)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBcpu_tick_get\fP (size_t *tick, int ncores)"
+.br
+.ti -1c
+.RI "size_t \fBcpu_time_tick\fP (size_t *tick)"
+.br
+.ti -1c
+.RI "double \fBcpu_load_average\fP (size_t *tickS, size_t *tickE, unsigned core, int ncores)"
+.br
+.ti -1c
+.RI "void \fBcpu_auto_load_average_begin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBcpu_auto_load_average_end\fP (void)"
+.br
+.ti -1c
+.RI "double \fBcpu_auto_load_average\fP (unsigned core)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBmeminfo_read\fP (\fBmemInfo_s\fP *mem)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBnet_device\fP (\fBnetDev_s\fP *net, const char *device)"
+.br
+.ti -1c
+.RI "int * \fBproc_pid_fd\fP (pid_t pid)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define PATH_PROC   '/proc'"
+
+.PP
+Definition at line 7 of file proc\&.h\&.
+.SS "#define PATH_PROC_MEM   \fBPATH_PROC\fP '/meminfo'"
+
+.PP
+Definition at line 9 of file proc\&.h\&.
+.SS "#define PATH_PROC_NET_DEV   \fBPATH_PROC\fP '/net/dev'"
+
+.PP
+Definition at line 10 of file proc\&.h\&.
+.SS "#define PATH_PROC_STAT   \fBPATH_PROC\fP '/stat'"
+
+.PP
+Definition at line 8 of file proc\&.h\&.
+.SS "#define PATHF_PROC_PID_FD   \fBPATH_PROC\fP '/%d/fd'"
+
+.PP
+Definition at line 11 of file proc\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBmemInfo\fP \fBmemInfo_s\fP"
+
+.SS "typedef struct \fBnetDev\fP \fBnetDev_s\fP"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBcputime_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fICPU_USER \fP\fP
+.TP
+\fB\fICPU_NICE \fP\fP
+.TP
+\fB\fICPU_SYSTEM \fP\fP
+.TP
+\fB\fICPU_IDLE \fP\fP
+.TP
+\fB\fICPU_IOWAIT \fP\fP
+.TP
+\fB\fICPU_IRQ \fP\fP
+.TP
+\fB\fICPU_SOFTIRQ \fP\fP
+.TP
+\fB\fICPU_STEAL \fP\fP
+.TP
+\fB\fICPU_GUEST \fP\fP
+.TP
+\fB\fICPU_GUEST_NICE \fP\fP
+.TP
+\fB\fICPU_TIME_COUNT \fP\fP
+.PP
+Definition at line 16 of file proc\&.h\&.
+.SS "enum \fBnetDev_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIND_BYTES \fP\fP
+.TP
+\fB\fIND_PACKETS \fP\fP
+.TP
+\fB\fIND_ERRS \fP\fP
+.TP
+\fB\fIND_DROP \fP\fP
+.TP
+\fB\fIND_FIFO \fP\fP
+.TP
+\fB\fIND_FRAME \fP\fP
+.TP
+\fB\fIND_COMPRESSED \fP\fP
+.TP
+\fB\fIND_MULTICAST \fP\fP
+.TP
+\fB\fIND_COUNT \fP\fP
+.PP
+Definition at line 33 of file proc\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "double cpu_auto_load_average (unsigned core)"
+get load average for cpu, if time ellapsed < 500ms delay 500ms 
+.SS "void cpu_auto_load_average_begin (void)"
+enable auto get average 
+.SS "void cpu_auto_load_average_end (void)"
+disable auto get average 
+.SS "int cpu_core_count (void)"
+return numbers of cores 
+.SS "double cpu_load_average (size_t * tickS, size_t * tickE, unsigned core, int ncores)"
+return load average 
+.PP
+\fBParameters\fP
+.RS 4
+\fItickS\fP start tick 
+.br
+\fItickE\fP end tick 
+.br
+\fIcore\fP the core to view, 0 is all core 
+.br
+\fIncores\fP count core, if 0 call cpu_core_count 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+load average 
+.RE
+.PP
+
+.SS "\fBerr_t\fP cpu_tick_get (size_t * tick, int ncores)"
+get tick of cpu 
+.PP
+\fBParameters\fP
+.RS 4
+\fItick\fP is array of size CPU_TIME_COUNT * (ncores+1) 
+.br
+\fIncores\fP number of core, if 0 call cpu_core_count 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull; -1 error 
+.RE
+.PP
+
+.SS "size_t* cpu_tick_new (void)"
+allocate memory for use with other tick function 
+.SS "size_t cpu_time_tick (size_t * tick)"
+return sum of tick 
+.SS "\fBerr_t\fP meminfo_read (\fBmemInfo_s\fP * mem)"
+read \fBmemInfo\fP 
+.PP
+\fBParameters\fP
+.RS 4
+\fImem\fP struct contains memory info 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP net_device (\fBnetDev_s\fP * net, const char * device)"
+fill netdev structure 
+.SS "int* proc_pid_fd (pid_t pid)"
+get list of fd open in pid 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpid\fP the pid 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+vector or NULL for error 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

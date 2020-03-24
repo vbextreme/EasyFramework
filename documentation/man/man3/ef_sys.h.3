@@ -1,0 +1,220 @@
+.TH "include/ef/sys.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/sys.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/vector\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBpowerstate\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBSYS_CPUFREQ_SCALING_CURFQ\fP   0"
+.br
+.ti -1c
+.RI "#define \fBSYS_CPUFREQ_SCALING_MINFQ\fP   1"
+.br
+.ti -1c
+.RI "#define \fBSYS_CPUFREQ_SCALING_MAXFQ\fP   2"
+.br
+.ti -1c
+.RI "#define \fBSYS_CPUFREQ_CPUINFO_MINFQ\fP   3"
+.br
+.ti -1c
+.RI "#define \fBSYS_CPUFREQ_CPUINFO_MAXFQ\fP   4"
+.br
+.ti -1c
+.RI "#define \fBSYS_CPUFREQ_GOV\fP   5"
+.br
+.ti -1c
+.RI "#define \fBSYS_CPUFREQ_GOV_AV\fP   6"
+.br
+.ti -1c
+.RI "#define \fBcpufreq_property_get\fP(OUT,  CPU,  PROPERTY)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBpowerstate\fP \fBpowerstate_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBerr_t\fP \fBcpufreq_begin\fP (void)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBcpufreq_end\fP (void)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBcpufreq_property_long_get\fP (long *out, const size_t cpu, const size_t property)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBcpufreq_property_string_get\fP (char **out, const size_t cpu, const size_t property)"
+.br
+.ti -1c
+.RI "char ** \fBcpufreq_property_vector_string_get\fP (const size_t cpu, const size_t property)"
+.br
+.ti -1c
+.RI "void \fBpowerstate_begin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBpowerstate_end\fP (void)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBpowerstate_get\fP (\fBpowerstate_s\fP *ps, const char *device)"
+.br
+.ti -1c
+.RI "ssize_t \fBthermal_get\fP (unsigned thermalzone)"
+.br
+.ti -1c
+.RI "ssize_t \fBthermal_critic_get\fP (unsigned hwmon, unsigned temp)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define cpufreq_property_get(OUT, CPU, PROPERTY)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic(OUT,\
+        long*: cpufreq_property_long_get,\
+        char**: cpufreq_property_string_get,\
+        vector_s*: cpufreq_property_vector_string_get\
+)(OUT, CPU, PROPERTY)
+.fi
+.PP
+Definition at line 59 of file sys\&.h\&.
+.SS "#define SYS_CPUFREQ_CPUINFO_MAXFQ   4"
+cpufreq property 
+.PP
+Definition at line 27 of file sys\&.h\&.
+.SS "#define SYS_CPUFREQ_CPUINFO_MINFQ   3"
+cpufreq property 
+.PP
+Definition at line 25 of file sys\&.h\&.
+.SS "#define SYS_CPUFREQ_GOV   5"
+cpufreq property 
+.PP
+Definition at line 29 of file sys\&.h\&.
+.SS "#define SYS_CPUFREQ_GOV_AV   6"
+cpufreq property 
+.PP
+Definition at line 31 of file sys\&.h\&.
+.SS "#define SYS_CPUFREQ_SCALING_CURFQ   0"
+cpufreq property 
+.PP
+Definition at line 19 of file sys\&.h\&.
+.SS "#define SYS_CPUFREQ_SCALING_MAXFQ   2"
+cpufreq property 
+.PP
+Definition at line 23 of file sys\&.h\&.
+.SS "#define SYS_CPUFREQ_SCALING_MINFQ   1"
+cpufreq property 
+.PP
+Definition at line 21 of file sys\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBpowerstate\fP \fBpowerstate_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "\fBerr_t\fP cpufreq_begin (void)"
+
+.SS "\fBerr_t\fP cpufreq_end (void)"
+
+.SS "\fBerr_t\fP cpufreq_property_long_get (long * out, const size_t cpu, const size_t property)"
+read long property of cpufreq 
+.PP
+\fBParameters\fP
+.RS 4
+\fIout\fP out value 
+.br
+\fIcpu\fP cpu to read 
+.br
+\fIproperty\fP property of cpufreq 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP cpufreq_property_string_get (char ** out, const size_t cpu, const size_t property)"
+read string property of cpufreq 
+.PP
+\fBParameters\fP
+.RS 4
+\fIout\fP value, remember to free 
+.br
+\fIcpu\fP cpu to read 
+.br
+\fIproperty\fP property of cpufreq 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SS "char** cpufreq_property_vector_string_get (const size_t cpu, const size_t property)"
+read string list separated of space on cpufreq 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcpu\fP cpu to read 
+.br
+\fIproperty\fP property name of cpufreq 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+vector of char*, free each element of vector, NULL for error 
+.RE
+.PP
+
+.SS "void powerstate_begin (void)"
+begin powerstate, call this before get 
+.SS "void powerstate_end (void)"
+powerstate end, call when not need more data 
+.SS "\fBerr_t\fP powerstate_get (\fBpowerstate_s\fP * ps, const char * device)"
+get powerstate structure 
+.PP
+\fBParameters\fP
+.RS 4
+\fIps\fP powerstate structure 
+.br
+\fIdevice\fP name, /sys/class/power_supply/ 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successful -1 error 
+.RE
+.PP
+
+.SS "ssize_t thermal_critic_get (unsigned hwmon, unsigned temp)"
+get thermal critic from /sys/class/hwmon/hwmon<HWMON>/temp<TEMP>_crit 
+.SS "ssize_t thermal_get (unsigned thermalzone)"
+get thermal from /sys/class/thermal/thermal_zone<N>/temp 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

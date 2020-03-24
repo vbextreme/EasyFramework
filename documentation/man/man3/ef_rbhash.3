@@ -1,0 +1,86 @@
+.TH "rbhash" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+rbhash
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <rbhash\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "\fBrbhashElement_s\fP * \fBtable\fP"
+.br
+.ti -1c
+.RI "size_t \fBsize\fP"
+.br
+.ti -1c
+.RI "size_t \fBelementSize\fP"
+.br
+.ti -1c
+.RI "size_t \fBcount\fP"
+.br
+.ti -1c
+.RI "size_t \fBmin\fP"
+.br
+.ti -1c
+.RI "size_t \fBmaxdistance\fP"
+.br
+.ti -1c
+.RI "size_t \fBkeySize\fP"
+.br
+.ti -1c
+.RI "\fBrbhashfree_f\fP \fBdel\fP"
+.br
+.ti -1c
+.RI "\fBrbhash_f\fP \fBhashing\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 18 of file rbhash\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "size_t rbhash::count"
+bucket used 
+.PP
+Definition at line 22 of file rbhash\&.h\&.
+.SS "\fBrbhashfree_f\fP rbhash::del"
+function free data 
+.PP
+Definition at line 26 of file rbhash\&.h\&.
+.SS "size_t rbhash::elementSize"
+sizeof \fBrbhashElement\fP 
+.PP
+Definition at line 21 of file rbhash\&.h\&.
+.SS "\fBrbhash_f\fP rbhash::hashing"
+function calcolate hash 
+.PP
+Definition at line 27 of file rbhash\&.h\&.
+.SS "size_t rbhash::keySize"
+key size 
+.PP
+Definition at line 25 of file rbhash\&.h\&.
+.SS "size_t rbhash::maxdistance"
+max distance from hash 
+.PP
+Definition at line 24 of file rbhash\&.h\&.
+.SS "size_t rbhash::min"
+percentage of free bucket 
+.PP
+Definition at line 23 of file rbhash\&.h\&.
+.SS "size_t rbhash::size"
+total bucket of table 
+.PP
+Definition at line 20 of file rbhash\&.h\&.
+.SS "\fBrbhashElement_s\fP* rbhash::table"
+hash table 
+.PP
+Definition at line 19 of file rbhash\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

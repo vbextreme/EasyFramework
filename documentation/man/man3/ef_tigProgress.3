@@ -1,0 +1,65 @@
+.TH "tigProgress" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+tigProgress
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <tig\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "\fBtigStatusProgress_e\fP \fBstatus\fP"
+.br
+.ti -1c
+.RI "size_t \fBnum\fP"
+.br
+.ti -1c
+.RI "size_t \fBnumTotal\fP"
+.br
+.ti -1c
+.RI "const char * \fBstr\fP"
+.br
+.ti -1c
+.RI "\fBtigProgress_f\fP \fBprogress\fP"
+.br
+.ti -1c
+.RI "void * \fBuserdata\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 22 of file tig\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "size_t tigProgress::num"
+current value 
+.PP
+Definition at line 24 of file tig\&.h\&.
+.SS "size_t tigProgress::numTotal"
+total data 
+.PP
+Definition at line 25 of file tig\&.h\&.
+.SS "\fBtigProgress_f\fP tigProgress::progress"
+private 
+.PP
+Definition at line 27 of file tig\&.h\&.
+.SS "\fBtigStatusProgress_e\fP tigProgress::status"
+status of progress 
+.PP
+Definition at line 23 of file tig\&.h\&.
+.SS "const char* tigProgress::str"
+string contains info 
+.PP
+Definition at line 26 of file tig\&.h\&.
+.SS "void* tigProgress::userdata"
+userdata for callback 
+.PP
+Definition at line 28 of file tig\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

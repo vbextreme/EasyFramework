@@ -1,0 +1,405 @@
+.TH "include/ef/vector.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/vector.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/memory\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBvector\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBVECTOR\fP(V)   ((\fBvector_s\fP*)(\fBADDR\fP(V)\-sizeof(\fBvector_s\fP)) )"
+.br
+.ti -1c
+.RI "#define \fBvector_new\fP(T,  S,  M)   (T*)\fBvector_new_raw\fP(sizeof(T), S, M)"
+.br
+.ti -1c
+.RI "#define \fBvector_count\fP(V)   \fBVECTOR\fP(V)\->count"
+.br
+.ti -1c
+.RI "#define \fBvector_size\fP(V)   \fBVECTOR\fP(V)\->size"
+.br
+.ti -1c
+.RI "#define \fBvector_minimal\fP(V)   \fBVECTOR\fP(V)\->minimal"
+.br
+.ti -1c
+.RI "#define \fBvector_sizeof\fP(V)   \fBVECTOR\fP(V)\->sof"
+.br
+.ti -1c
+.RI "#define \fB__vector_free\fP   \fB__cleanup\fP(\fBvector_free_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fBvector_clear\fP(M)   (\fBvector_count\fP(M) = 0)"
+.br
+.ti -1c
+.RI "#define \fBvector_isempty\fP(M)   (\fBvector_count\fP(M)==0)"
+.br
+.ti -1c
+.RI "#define \fBvector_add\fP(M,  I,  E)"
+.br
+.ti -1c
+.RI "#define \fBvector_get_push_back\fP(M)"
+.br
+.ti -1c
+.RI "#define \fBvector_push_back\fP(M,  ELEMENT)"
+.br
+.ti -1c
+.RI "#define \fBvector_pull_back\fP(M)   (M)[\-\-\fBvector_count\fP(M)]"
+.br
+.ti -1c
+.RI "#define \fBvector_foreach\fP(M,  I)   for(size_t I = 0; I < \fBvector_count\fP(M); ++I )"
+.br
+.ti -1c
+.RI "#define \fBvector_qsort\fP(M,  CMPFN)   qsort(M, \fBvector_count\fP(M), \fBvector_sizeof\fP(M), CMPFN)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBvector\fP \fBvector_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void * \fBvector_new_raw\fP (size_t sof, size_t size, size_t minimal)"
+.br
+.ti -1c
+.RI "void \fBvector_free\fP (void *v)"
+.br
+.ti -1c
+.RI "void \fBvector_free_auto\fP (void *v)"
+.br
+.ti -1c
+.RI "void * \fBvector_resize\fP (void *mem, size_t size)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBvector_upsize\fP (void *ptrmem, size_t count)"
+.br
+.ti -1c
+.RI "void \fBvector_remove\fP (void *m, const size_t index)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBvector_add_raw\fP (void *ptrmem, const size_t index)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBvector_fitting\fP (void *ptrmem)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __vector_free   \fB__cleanup\fP(\fBvector_free_auto\fP)"
+for cleanup 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.PP
+Definition at line 58 of file vector\&.h\&.
+.SS "#define VECTOR(V)   ((\fBvector_s\fP*)(\fBADDR\fP(V)\-sizeof(\fBvector_s\fP)) )"
+
+.PP
+Definition at line 15 of file vector\&.h\&.
+.SS "#define vector_add(M, I, E)"
+\fBValue:\fP
+.PP
+.nf
+  do{\
+    if( !vector_add_raw(&(M), I) ){\
+        (M)[I] = E;\
+    }\
+}while(0)
+.fi
+add element in position I, warning address of M can change 
+.PP
+\fBParameters\fP
+.RS 4
+\fIM\fP mem of vector 
+.br
+\fII\fP index 
+.br
+\fIE\fP element 
+.RE
+.PP
+
+.PP
+Definition at line 102 of file vector\&.h\&.
+.SS "#define vector_clear(M)   (\fBvector_count\fP(M) = 0)"
+clear vector, set count to 0 
+.PP
+\fBParameters\fP
+.RS 4
+\fIM\fP mem of vector 
+.RE
+.PP
+
+.PP
+Definition at line 77 of file vector\&.h\&.
+.SS "#define vector_count(V)   \fBVECTOR\fP(V)\->count"
+get vector count 
+.PP
+Definition at line 34 of file vector\&.h\&.
+.SS "#define vector_foreach(M, I)   for(size_t I = 0; I < \fBvector_count\fP(M); ++I )"
+foreach element of vector 
+.PP
+\fBParameters\fP
+.RS 4
+\fIM\fP mem of vector 
+.br
+\fII\fP iterator name 
+.RE
+.PP
+
+.PP
+Definition at line 138 of file vector\&.h\&.
+.SS "#define vector_get_push_back(M)"
+\fBValue:\fP
+.PP
+.nf
+ ({\
+    void* _ret_ = NULL;\
+    if( !vector_upsize(&(M), 1) )\
+        _ret_ = &(M)[vector_count(M)++];\
+    _ret_;\
+})
+.fi
+get a ptr of new last element of vector 
+.PP
+\fBParameters\fP
+.RS 4
+\fIM\fP mem of vector 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+prt of new element 
+.RE
+.PP
+
+.PP
+Definition at line 112 of file vector\&.h\&.
+.SS "#define vector_isempty(M)   (\fBvector_count\fP(M)==0)"
+check id vector is empty 
+.PP
+\fBParameters\fP
+.RS 4
+\fIM\fP mem of vector 1 empty 0 no 
+.RE
+.PP
+
+.PP
+Definition at line 83 of file vector\&.h\&.
+.SS "#define vector_minimal(V)   \fBVECTOR\fP(V)\->minimal"
+get vector minimal 
+.PP
+Definition at line 40 of file vector\&.h\&.
+.SS "#define vector_new(T, S, M)   (T*)\fBvector_new_raw\fP(sizeof(T), S, M)"
+create new vector 
+.PP
+\fBParameters\fP
+.RS 4
+\fIT\fP type vector 
+.br
+\fIS\fP begine element size 
+.br
+\fIM\fP minimal count of elements 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+memory or NULL for error 
+.RE
+.PP
+
+.PP
+Definition at line 31 of file vector\&.h\&.
+.SS "#define vector_pull_back(M)   (M)[\-\-\fBvector_count\fP(M)]"
+extract last element of vector, warning not check if vector is empty 
+.PP
+\fBParameters\fP
+.RS 4
+\fIM\fP mem of vector 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+ELEMENT element to copy 
+.RE
+.PP
+
+.PP
+Definition at line 132 of file vector\&.h\&.
+.SS "#define vector_push_back(M, ELEMENT)"
+\fBValue:\fP
+.PP
+.nf
+ do{\
+    if( !vector_upsize(&M, 1) )\
+        (M)[vector_count(M)++] = ELEMENT;\
+}while(0)
+.fi
+copy element to new last element in vector 
+.PP
+\fBParameters\fP
+.RS 4
+\fIM\fP mem of vector 
+.br
+\fIELEMENT\fP element to copy 
+.RE
+.PP
+
+.PP
+Definition at line 123 of file vector\&.h\&.
+.SS "#define vector_qsort(M, CMPFN)   qsort(M, \fBvector_count\fP(M), \fBvector_sizeof\fP(M), CMPFN)"
+qsort vector 
+.PP
+\fBParameters\fP
+.RS 4
+\fIM\fP mem of vector 
+.br
+\fICMPFN\fP compare function 
+.RE
+.PP
+
+.PP
+Definition at line 144 of file vector\&.h\&.
+.SS "#define vector_size(V)   \fBVECTOR\fP(V)\->size"
+get vector size 
+.PP
+Definition at line 37 of file vector\&.h\&.
+.SS "#define vector_sizeof(V)   \fBVECTOR\fP(V)\->sof"
+get sizeof 
+.PP
+Definition at line 43 of file vector\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBvector\fP \fBvector_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "\fBerr_t\fP vector_add_raw (void * ptrmem, const size_t index)"
+add space in index position for setting new value 
+.PP
+\fBParameters\fP
+.RS 4
+\fIptrmem\fP pointer to mem of vector 
+.br
+\fIindex\fP position where add new space 
+.RE
+.PP
+
+.SS "\fBerr_t\fP vector_fitting (void * ptrmem)"
+resize vector to count object 
+.PP
+\fBParameters\fP
+.RS 4
+\fIptrmem\fP pointer to mem of vector 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error 0 successfull 
+.RE
+.PP
+
+.SS "void vector_free (void * v)"
+free memory allocate inside vector 
+.PP
+\fBParameters\fP
+.RS 4
+\fIv\fP vector 
+.RE
+.PP
+
+.SS "void vector_free_auto (void * v)"
+for cleanup 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.SS "void* vector_new_raw (size_t sof, size_t size, size_t minimal)"
+create new vector 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsof\fP sizeof element 
+.br
+\fIsize\fP begine element size 
+.br
+\fIminimal\fP minimal count of elements 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+memory or NULL for error 
+.RE
+.PP
+
+.SS "void vector_remove (void * m, const size_t index)"
+remove element from index 
+.PP
+\fBParameters\fP
+.RS 4
+\fIm\fP vector mem 
+.br
+\fIindex\fP element to remove 
+.RE
+.PP
+
+.SS "void* vector_resize (void * mem, size_t size)"
+resize of vector 
+.PP
+\fBParameters\fP
+.RS 4
+\fImem\fP vector 
+.br
+\fIsize\fP elements 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+NULL error, or new mem addr 
+.RE
+.PP
+
+.SS "\fBerr_t\fP vector_upsize (void * ptrmem, size_t count)"
+increase size of vector of count element if need 
+.PP
+\fBParameters\fP
+.RS 4
+\fIptrmem\fP pointer to vector mem 
+.br
+\fIcount\fP elements to upsize 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error 0 ok 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

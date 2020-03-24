@@ -1,0 +1,95 @@
+.TH "include/ef/fzs.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/fzs.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/vector\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBfzsElement\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBfzsElement\fP \fBfzsElement_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "size_t \fBfzs_levenshtein\fP (const char *a, const size_t lena, const char *b, const size_t lenb)"
+.br
+.ti -1c
+.RI "ssize_t \fBfzs_vector_find\fP (char **v, const char *str, size_t lens)"
+.br
+.ti -1c
+.RI "void \fBfzs_qsort\fP (\fBfzsElement_s\fP *fzse, const char *str, size_t lens)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBfzsElement\fP \fBfzsElement_s\fP"
+structure to use in vector for fzs qsort 
+.SH "Function Documentation"
+.PP 
+.SS "size_t fzs_levenshtein (const char * a, const size_t lena, const char * b, const size_t lenb)"
+calcolate levenshtein 
+.PP
+\fBParameters\fP
+.RS 4
+\fIa\fP 
+.br
+\fIlena\fP if 0 calcolate strlen a 
+.br
+\fIb\fP 
+.br
+\fIlenb\fP if 0 calcolate strlen b 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a size_t, depicting the difference between \fCa\fP and \fCb\fP, See https://en.wikipedia.org/wiki/Levenshtein_distance for more information\&. 
+.RE
+.PP
+
+.SS "void fzs_qsort (\fBfzsElement_s\fP * fzse, const char * str, size_t lens)"
+reorder vector of fzse to distance of str 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfzse\fP vector of fzsElement_s 
+.br
+\fIstr\fP string to reordering distance 
+.br
+\fIlens\fP len of string, if 0 auto strlen 
+.RE
+.PP
+
+.SS "ssize_t fzs_vector_find (char ** v, const char * str, size_t lens)"
+find a element with minimal distance 
+.PP
+\fBParameters\fP
+.RS 4
+\fIv\fP char** vector 
+.br
+\fIstr\fP string to search 
+.br
+\fIlens\fP len of string, if 0 auto strlen 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

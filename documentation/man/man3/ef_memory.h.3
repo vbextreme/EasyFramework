@@ -1,0 +1,553 @@
+.TH "include/ef/memory.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/memory.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/mth\&.h>\fP
+.br
+\fC#include <fcntl\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBMEM_PROTECT_DISABLED\fP   0"
+.br
+.ti -1c
+.RI "#define \fBMEM_PROTECT_WRITE\fP   PKEY_DISABLE_WRITE"
+.br
+.ti -1c
+.RI "#define \fBMEM_PROTECT_RW\fP   PKEY_DISABLE_ACCESS"
+.br
+.ti -1c
+.RI "#define \fBmem_new\fP(TYPE)   (TYPE*)malloc(sizeof(TYPE))"
+.br
+.ti -1c
+.RI "#define \fBmem_many\fP(TYPE,  COUNT)   (TYPE*)malloc(sizeof(TYPE)*(COUNT))"
+.br
+.ti -1c
+.RI "#define \fBmem_many_aligned\fP(TYPE,  PTRCOUNT,  ALIGNED)"
+.br
+.ti -1c
+.RI "#define \fBmem_zero\fP(TYPE)   (TYPE*)calloc(1,sizeof(TYPE))"
+.br
+.ti -1c
+.RI "#define \fBmem_zero_many\fP(TYPE,  COUNT)   (TYPE*)calloc(COUNT,sizeof(TYPE))"
+.br
+.ti -1c
+.RI "#define \fBmem_flexible_structure_new\fP(TYPESTRUCT,  SOF,  COUNT)   (TYPESTRUCT*)malloc(\fBROUND_UP\fP(sizeof(TYPESTRUCT) + SOF * (COUNT), sizeof(void*)))"
+.br
+.ti -1c
+.RI "#define \fBmem_free\fP(OBJ)   free(OBJ)"
+.br
+.ti -1c
+.RI "#define \fBmem_free_safe\fP(OBJ)   do{free(OBJ); OBJ=NULL;}while(0)"
+.br
+.ti -1c
+.RI "#define \fB__mem_free\fP   \fB__cleanup\fP(\fBmem_free_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fBmem_new_or_die\fP(TYPE)   (TYPE*)\fBmalloc_or_die\fP(sizeof(TYPE))"
+.br
+.ti -1c
+.RI "#define \fBmem_many_or_die\fP(TYPE)   (TYPE*)\fBmalloc_or_die\fP(sizeof(TYPE)*(COUNT))"
+.br
+.ti -1c
+.RI "#define \fBmem_clear\fP(T,  M)   do{memset(M,0,sizeof(T));}while(0)"
+.br
+.ti -1c
+.RI "#define \fBmem_clear_many\fP(T,  M,  N)   do{memset(M,0,sizeof(T)*(N));}while(0)"
+.br
+.ti -1c
+.RI "#define \fBmem_resize\fP(VAR,  TYPE,  N)   \fBmem_resize_raw\fP((void**)&(VAR), sizeof(TYPE) * (N))"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef int \fBpkey_t\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void * \fBmem_many_aligned_raw\fP (size_t *size, size_t alignedto)"
+.br
+.ti -1c
+.RI "void \fBmem_free_auto\fP (void *mem)"
+.br
+.ti -1c
+.RI "void * \fBmalloc_or_die\fP (size_t sz)"
+.br
+.ti -1c
+.RI "void * \fBmem_matrix_new\fP (size_t y, size_t sz)"
+.br
+.ti -1c
+.RI "void \fBmem_matrix_free\fP (void *b, size_t y)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBmem_resize_raw\fP (void **mem, const size_t size)"
+.br
+.ti -1c
+.RI "void * \fBmem_shared_create\fP (const char *name, int privilege, size_t size)"
+.br
+.ti -1c
+.RI "void * \fBmem_shared_open\fP (const char *name)"
+.br
+.ti -1c
+.RI "void * \fBmem_shared_create_or_map\fP (const char *name, int priv, size_t size)"
+.br
+.ti -1c
+.RI "size_t \fBmem_shared_size\fP (const char *name)"
+.br
+.ti -1c
+.RI "void \fBmem_shared_close\fP (void *mem, size_t size)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBmem_shared_delete\fP (const char *name)"
+.br
+.ti -1c
+.RI "void * \fBmem_shared_alloc_ptr\fP (void **mem, size_t size)"
+.br
+.ti -1c
+.RI "void \fBmem_heap_close\fP (void *mem, size_t size)"
+.br
+.ti -1c
+.RI "void * \fBmem_heap_alloc\fP (size_t *size)"
+.br
+.ti -1c
+.RI "\fBpkey_t\fP \fBmem_pkey_new\fP (unsigned int mode)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBmem_protect\fP (\fBpkey_t\fP *key, void *addr, size_t size, unsigned int mode)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBmem_protect_change\fP (\fBpkey_t\fP key, unsigned int mode, void *addr)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __mem_free   \fB__cleanup\fP(\fBmem_free_auto\fP)"
+attribute for auto free memory when exit from scope 
+.PP
+.nf
+{
+ __mem_free int* mem = mem_many(int, 5);
+}
+
+.fi
+.PP
+ memory is automatic free 
+.PP
+Definition at line 96 of file memory\&.h\&.
+.SS "#define mem_clear(T, M)   do{memset(M,0,sizeof(T));}while(0)"
+set memory to 0 
+.PP
+\fBParameters\fP
+.RS 4
+\fIT\fP is type 
+.br
+\fIM\fP is ptr 
+.PP
+.nf
+int i;
+mem_clear(int, &i);
+
+.fi
+.PP
+ 
+.RE
+.PP
+
+.PP
+Definition at line 134 of file memory\&.h\&.
+.SS "#define mem_clear_many(T, M, N)   do{memset(M,0,sizeof(T)*(N));}while(0)"
+set memory to 0 
+.PP
+\fBParameters\fP
+.RS 4
+\fIT\fP is type 
+.br
+\fIM\fP is ptr 
+.br
+\fIN\fP is count of object 
+.PP
+.nf
+int i[5];
+mem_clear_many(int, i, 5);
+
+.fi
+.PP
+ 
+.RE
+.PP
+
+.PP
+Definition at line 145 of file memory\&.h\&.
+.SS "#define mem_flexible_structure_new(TYPESTRUCT, SOF, COUNT)   (TYPESTRUCT*)malloc(\fBROUND_UP\fP(sizeof(TYPESTRUCT) + SOF * (COUNT), sizeof(void*)))"
+allocate memory for flexible structure, do not use clang, this is only for scanbuild fail 
+.PP
+Definition at line 74 of file memory\&.h\&.
+.SS "#define mem_free(OBJ)   free(OBJ)"
+only for even mem 
+.PP
+Definition at line 78 of file memory\&.h\&.
+.SS "#define mem_free_safe(OBJ)   do{free(OBJ); OBJ=NULL;}while(0)"
+set a NULL pointer after free 
+.PP
+Definition at line 81 of file memory\&.h\&.
+.SS "#define mem_many(TYPE, COUNT)   (TYPE*)malloc(sizeof(TYPE)*(COUNT))"
+allocate many memory 
+.PP
+\fBParameters\fP
+.RS 4
+\fITYPE\fP is type 
+.br
+\fICOUNT\fP how many type 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer of type 
+.PP
+.nf
+int* = mem_many(int,5);
+
+.fi
+.PP
+ 
+.RE
+.PP
+
+.PP
+Definition at line 40 of file memory\&.h\&.
+.SS "#define mem_many_aligned(TYPE, PTRCOUNT, ALIGNED)"
+\fBValue:\fP
+.PP
+.nf
+      ({\
+        size_t n = *(PTRCOUNT)*sizeof(TYPE);\
+        (TYPE*)mem_many_aligned_raw(&n,ALIGNED);\
+    })
+.fi
+allocate memory aligne, wrap of raw version for use same mem_many 
+.PP
+\fBParameters\fP
+.RS 4
+\fITYPE\fP is type 
+.br
+\fIPTRCOUNT\fP how many type 
+.br
+\fIALIGNED\fP is size of aligned 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer of type 
+.RE
+.PP
+
+.PP
+Definition at line 55 of file memory\&.h\&.
+.SS "#define mem_many_or_die(TYPE)   (TYPE*)\fBmalloc_or_die\fP(sizeof(TYPE)*(COUNT))"
+same mem_many but die if fail 
+.PP
+\fBSee also\fP
+.RS 4
+\fBmem_many\fP 
+.PP
+\fBmalloc_or_die\fP 
+.RE
+.PP
+
+.PP
+Definition at line 111 of file memory\&.h\&.
+.SS "#define mem_new(TYPE)   (TYPE*)malloc(sizeof(TYPE))"
+allocate memory 
+.PP
+\fBParameters\fP
+.RS 4
+\fITYPE\fP is type 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer of type 
+.PP
+.nf
+int* = mem_new(int);
+
+.fi
+.PP
+ 
+.RE
+.PP
+
+.PP
+Definition at line 30 of file memory\&.h\&.
+.SS "#define mem_new_or_die(TYPE)   (TYPE*)\fBmalloc_or_die\fP(sizeof(TYPE))"
+same mem_new but die if fail 
+.PP
+\fBSee also\fP
+.RS 4
+\fBmem_new\fP 
+.PP
+\fBmalloc_or_die\fP 
+.RE
+.PP
+
+.PP
+Definition at line 105 of file memory\&.h\&.
+.SS "#define MEM_PROTECT_DISABLED   0"
+
+.PP
+Definition at line 10 of file memory\&.h\&.
+.SS "#define MEM_PROTECT_RW   PKEY_DISABLE_ACCESS"
+
+.PP
+Definition at line 16 of file memory\&.h\&.
+.SS "#define MEM_PROTECT_WRITE   PKEY_DISABLE_WRITE"
+
+.PP
+Definition at line 15 of file memory\&.h\&.
+.SS "#define mem_resize(VAR, TYPE, N)   \fBmem_resize_raw\fP((void**)&(VAR), sizeof(TYPE) * (N))"
+
+.PP
+Definition at line 154 of file memory\&.h\&.
+.SS "#define mem_zero(TYPE)   (TYPE*)calloc(1,sizeof(TYPE))"
+same mem_new buf set 0 
+.PP
+\fBSee also\fP
+.RS 4
+\fBmem_new\fP 
+.RE
+.PP
+
+.PP
+Definition at line 63 of file memory\&.h\&.
+.SS "#define mem_zero_many(TYPE, COUNT)   (TYPE*)calloc(COUNT,sizeof(TYPE))"
+same mem_many buf set 0 
+.PP
+\fBSee also\fP
+.RS 4
+\fBmem_many\fP 
+.RE
+.PP
+
+.PP
+Definition at line 68 of file memory\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef int \fBpkey_t\fP"
+
+.PP
+Definition at line 8 of file memory\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void* malloc_or_die (size_t sz)"
+same malloc but exit if not allocate memory 
+.SS "void mem_free_auto (void * mem)"
+function for cleanup 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.SS "void* mem_heap_alloc (size_t * size)"
+allocate memory in heap 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsize\fP sizeof memory, return new size rounded 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer to mem 
+.RE
+.PP
+
+.SS "void mem_heap_close (void * mem, size_t size)"
+release heap 
+.PP
+\fBParameters\fP
+.RS 4
+\fImem\fP pointer of memory 
+.br
+\fIsize\fP size of memory 
+.RE
+.PP
+
+.SS "void* mem_many_aligned_raw (size_t * size, size_t alignedto)"
+allocate memory aligned, raw version 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsize\fP is sizeof type 
+.br
+\fIalignedto\fP is size of aligned 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer of memory 
+.RE
+.PP
+
+.SS "void mem_matrix_free (void * b, size_t y)"
+free matrix 
+.PP
+\fBParameters\fP
+.RS 4
+\fIb\fP is ptr to mem 
+.br
+\fIy\fP is row 
+.RE
+.PP
+
+.SS "void* mem_matrix_new (size_t y, size_t sz)"
+allocate matrx 
+.PP
+\fBParameters\fP
+.RS 4
+\fIy\fP is row 
+.br
+\fIsz\fP id sizeof each row 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+ptr memory 
+.RE
+.PP
+
+.SS "\fBpkey_t\fP mem_pkey_new (unsigned int mode)"
+get new key 
+.SS "\fBerr_t\fP mem_protect (\fBpkey_t\fP * key, void * addr, size_t size, unsigned int mode)"
+protect memory 
+.SS "\fBerr_t\fP mem_protect_change (\fBpkey_t\fP key, unsigned int mode, void * addr)"
+changhe memory protection 
+.SS "\fBerr_t\fP mem_resize_raw (void ** mem, const size_t size)"
+realloc memory 
+.PP
+\fBParameters\fP
+.RS 4
+\fImem\fP address of memory, warning address can change 
+.br
+\fIsize\fP new size 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull; -1 error, err is pushed errno is setted 
+.RE
+.PP
+
+.SS "void* mem_shared_alloc_ptr (void ** mem, size_t size)"
+get ptr and increment address of mem 
+.PP
+\fBParameters\fP
+.RS 4
+\fImem\fP address 
+.br
+\fIsize\fP sizeof memory 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer to memory and increment mem 
+.RE
+.PP
+
+.SS "void mem_shared_close (void * mem, size_t size)"
+close a memory for this process 
+.PP
+\fBParameters\fP
+.RS 4
+\fImem\fP pointer to memory 
+.br
+\fIsize\fP size of memory 
+.RE
+.PP
+
+.SS "void* mem_shared_create (const char * name, int privilege, size_t size)"
+create shared memory 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP nameof memory, examples: /mymem 
+.br
+\fIprivilege\fP the memory privileges 
+.br
+\fIsize\fP size of memory 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer to mem 
+.RE
+.PP
+
+.SS "void* mem_shared_create_or_map (const char * name, int priv, size_t size)"
+open or create if not exists 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP nameof memory, examples: /mymem 
+.br
+\fIpriv\fP the memory privileges 
+.br
+\fIsize\fP size of memory 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer to mem 
+.RE
+.PP
+
+.SS "\fBerr_t\fP mem_shared_delete (const char * name)"
+delete a memory for all 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP nameof memory, examples: /mymem 
+.RE
+.PP
+
+.SS "void* mem_shared_open (const char * name)"
+open an exists shared memory 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP nameof memory, examples: /mymem 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer to mem 
+.RE
+.PP
+
+.SS "size_t mem_shared_size (const char * name)"
+get size of memory 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP nameof memory, examples: /mymem 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

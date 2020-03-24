@@ -1,0 +1,208 @@
+.TH "include/ef/vectorization.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/vectorization.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBvalign\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fB__vector4\fP   __attribute__((\fBvector_size\fP(4)))"
+.br
+.ti -1c
+.RI "#define \fB__vector8\fP   __attribute__((\fBvector_size\fP(8)))"
+.br
+.ti -1c
+.RI "#define \fB__vector16\fP   __attribute__((\fBvector_size\fP(16)))"
+.br
+.ti -1c
+.RI "#define \fB__vector32\fP   __attribute__((\fBvector_size\fP(32)))"
+.br
+.ti -1c
+.RI "#define \fB__vector64\fP   __attribute__((\fBvector_size\fP(64)))"
+.br
+.ti -1c
+.RI "#define \fB__vector_aligned\fP(N)   __attribute__((aligned(__BIGGEST_ALIGNMENT__)))"
+.br
+.ti -1c
+.RI "#define \fB__is_aligned\fP(EXP,  N)   __builtin_assume_aligned(EXP,N)"
+.br
+.ti -1c
+.RI "#define \fB__is_aligned_but\fP(EXP,  N,  UNALIGNED)   __builtin_assume_aligned(EXP,N,UNALIGNED)"
+.br
+.ti -1c
+.RI "#define \fBvectorize_loop\fP(VECTYPE,  TYPE,  PTR,  START,  END,  SCALARBODY,  VECTORBODY)"
+.br
+.ti -1c
+.RI "#define \fBvectorize_pair_loop\fP(VECTYPE,  TYPE,  PTRA,  STARTA,  ENDA,  PTRB,  STARTB,  ENDB,  SCALARBODY,  VECTORBODY)"
+.br
+.ti -1c
+.RI "#define \fBvector4_set_all\fP(VAL)   {VAL,VAL,VAL,VAL}"
+.br
+.ti -1c
+.RI "#define \fBvector16_set_all\fP(VAL)   {VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL}"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBvalign\fP \fBvalign_s\fP"
+.br
+.ti -1c
+.RI "typedef unsigned char uchar8_v \fB__vector8\fP"
+.br
+.ti -1c
+.RI "typedef unsigned char uchar16_v \fB__vector16\fP"
+.br
+.ti -1c
+.RI "typedef unsigned char uchar32_v \fB__vector32\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fB__vectorize_begin\fP (\fBvalign_s\fP *va, size_t const vsize, size_t const ssize)"
+.br
+.ti -1c
+.RI "void \fB__vectorize_pair_begin\fP (\fBvalign_s\fP *va, \fBvalign_s\fP *vb, size_t const vsize, size_t const ssize)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __is_aligned(EXP, N)   __builtin_assume_aligned(EXP,N)"
+
+.PP
+Definition at line 23 of file vectorization\&.h\&.
+.SS "#define __is_aligned_but(EXP, N, UNALIGNED)   __builtin_assume_aligned(EXP,N,UNALIGNED)"
+
+.PP
+Definition at line 24 of file vectorization\&.h\&.
+.SS "typedef float float4_v \fB__vector16\fP   __attribute__((\fBvector_size\fP(16)))"
+
+.PP
+Definition at line 19 of file vectorization\&.h\&.
+.SS "typedef float float8_v \fB__vector32\fP   __attribute__((\fBvector_size\fP(32)))"
+
+.PP
+Definition at line 20 of file vectorization\&.h\&.
+.SS "#define __vector4   __attribute__((\fBvector_size\fP(4)))"
+
+.PP
+Definition at line 17 of file vectorization\&.h\&.
+.SS "#define __vector64   __attribute__((\fBvector_size\fP(64)))"
+
+.PP
+Definition at line 21 of file vectorization\&.h\&.
+.SS "#define \fB__vector8\fP   __attribute__((\fBvector_size\fP(8)))"
+
+.PP
+Definition at line 18 of file vectorization\&.h\&.
+.SS "#define __vector_aligned(N)   __attribute__((aligned(__BIGGEST_ALIGNMENT__)))"
+
+.PP
+Definition at line 22 of file vectorization\&.h\&.
+.SS "#define vector16_set_all(VAL)   {VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL}"
+
+.PP
+Definition at line 80 of file vectorization\&.h\&.
+.SS "#define vector4_set_all(VAL)   {VAL,VAL,VAL,VAL}"
+
+.PP
+Definition at line 79 of file vectorization\&.h\&.
+.SS "#define vectorize_loop(VECTYPE, TYPE, PTR, START, END, SCALARBODY, VECTORBODY)"
+\fBValue:\fP
+.PP
+.nf
+  do{\
+    valign_s __va__ = {\
+        \&.start = START,\
+        \&.end = END,\
+        \&.scalarpre = PTR,\
+        \&.scalarpost = NULL,\
+        \&.vector = NULL\
+    };\
+    __vectorize_begin(&__va__, sizeof(VECTYPE), sizeof(TYPE));\
+    TYPE* scalar = __va__\&.scalarpre;\
+    for(unsigned __iterator__ = 0; __iterator__ < __va__\&.pre; ++__iterator__) SCALARBODY\
+    VECTYPE* vector = __is_aligned(__va__\&.vector,sizeof(VECTYPE));\
+    for(unsigned __iterator__ = 0; __iterator__ < __va__\&.aligned; ++__iterator__) VECTORBODY\
+    scalar = __va__\&.scalarpost;\
+    for(unsigned __iterator__ = 0; __iterator__ < __va__\&.post; ++__iterator__) SCALARBODY\
+}while(0)
+.fi
+vectorization loop 
+.PP
+Definition at line 35 of file vectorization\&.h\&.
+.SS "#define vectorize_pair_loop(VECTYPE, TYPE, PTRA, STARTA, ENDA, PTRB, STARTB, ENDB, SCALARBODY, VECTORBODY)"
+\fBValue:\fP
+.PP
+.nf
+  do{\
+    valign_s __va__ = {\
+        \&.start = STARTA,\
+        \&.end = ENDA,\
+        \&.scalarpre = PTRA,\
+        \&.scalarpost = NULL,\
+        \&.vector = NULL\
+    };\
+    valign_s __vb__ = {\
+        \&.start = STARTB,\
+        \&.end = ENDB,\
+        \&.scalarpre = PTRB,\
+        \&.scalarpost = NULL,\
+        \&.vector = NULL\
+    };\
+    __vectorize_pair_begin(&__va__, &__vb__, sizeof(VECTYPE), sizeof(TYPE));\
+    TYPE* Ascalar = __va__\&.scalarpre;\
+    TYPE* Bscalar = __vb__\&.scalarpre;\
+    for(unsigned __iterator__ = 0; __iterator__ < __va__\&.pre; ++__iterator__) SCALARBODY\
+    VECTYPE* Avector = __is_aligned(__va__\&.vector,sizeof(VECTYPE));\
+    VECTYPE* Bvector = __is_aligned(__vb__\&.vector,sizeof(VECTYPE));\
+    for(unsigned __iterator__ = 0; __iterator__ < __va__\&.aligned; ++__iterator__) VECTORBODY\
+    Ascalar = __va__\&.scalarpost;\
+    Bscalar = __vb__\&.scalarpost;\
+    for(unsigned __iterator__ = 0; __iterator__ < __va__\&.post; ++__iterator__) SCALARBODY\
+}while(0)
+.fi
+.PP
+Definition at line 52 of file vectorization\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef float float4_v \fB__vector16\fP"
+
+.PP
+Definition at line 27 of file vectorization\&.h\&.
+.SS "typedef float float8_v \fB__vector32\fP"
+
+.PP
+Definition at line 28 of file vectorization\&.h\&.
+.SS "typedef unsigned char uchar8_v \fB__vector8\fP"
+
+.PP
+Definition at line 26 of file vectorization\&.h\&.
+.SS "typedef struct \fBvalign\fP \fBvalign_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "void __vectorize_begin (\fBvalign_s\fP * va, size_t const vsize, size_t const ssize)"
+get aligned address 
+.SS "void __vectorize_pair_begin (\fBvalign_s\fP * va, \fBvalign_s\fP * vb, size_t const vsize, size_t const ssize)"
+get aligned address 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+rm -rf documentation/html
+rm -rf documentation/latex
+rm -rf documentation/man
+
+doxygen doxy.conf
+
+for M in documentation/man/man3/*; do
+	FN=$(basename $M)
+	DR=$(dirname $M)
+	mv $M $DR/ef_$FN
+done	

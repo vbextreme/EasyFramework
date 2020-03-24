@@ -1,0 +1,619 @@
+.TH "include/ef/threads.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/threads.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/list\&.h>\fP
+.br
+\fC#include <pthread\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBmutex\fP"
+.br
+.ti -1c
+.RI "struct \fBsemaphore\fP"
+.br
+.ti -1c
+.RI "struct \fBevent\fP"
+.br
+.ti -1c
+.RI "struct \fBmessage\fP"
+.br
+.ti -1c
+.RI "struct \fBqmessages\fP"
+.br
+.ti -1c
+.RI "struct \fBthr\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBfutex\fP(\fBADDR\fP,  OP,  VAL,  V2TO,  ADDR2,  VAL3)"
+.br
+.ti -1c
+.RI "#define \fBmessage_new\fP(TYPE,  CLEANUP)   \fBmessage_new_raw\fP(sizeof(TYPE), CLEANUP)"
+.br
+.ti -1c
+.RI "#define \fB__message_free\fP   \fB__cleanup\fP(\fBmessage_free_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fBthr_cleanup_push\fP(FNC,  ARG)   pthread_cleanup_push(FN, ARG)"
+.br
+.ti -1c
+.RI "#define \fBthr_cleanup_pop\fP(ALWAYSCALLFNC)   pthread_cleanup_pop(ALWAYSCALLFNC)"
+.br
+.ti -1c
+.RI "#define \fBthr_yield\fP()   pthread_yield()"
+.br
+.ti -1c
+.RI "#define \fBthr_exit\fP(RET)   pthread_exit(RET)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBmutex\fP \fBmutex_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBsemaphore\fP \fBsemaphore_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBevent\fP \fBevent_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBmessage\fP \fBmessage_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBqmessages\fP \fBqmessages_s\fP"
+.br
+.ti -1c
+.RI "typedef void *(* \fBthr_f\fP) (void *)"
+.br
+.ti -1c
+.RI "typedef struct \fBthr\fP \fBthr_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBfutex_to\fP (int *uaddr, int futex_op, int val, const struct timespec *timeout, int *uaddr2, int val3)"
+.br
+.ti -1c
+.RI "int \fBfutex_v2\fP (int *uaddr, int futex_op, int val, unsigned val2, int *uaddr2, int val3)"
+.br
+.ti -1c
+.RI "void \fBmutex_init\fP (\fBmutex_s\fP *mtx)"
+.br
+.ti -1c
+.RI "\fBmutex_s\fP * \fBmutex_new\fP ()"
+.br
+.ti -1c
+.RI "void \fBmutex_free\fP (\fBmutex_s\fP *mtx)"
+.br
+.ti -1c
+.RI "void \fBmutex_unlock\fP (\fBmutex_s\fP *mtx)"
+.br
+.ti -1c
+.RI "void \fBmutex_lock\fP (\fBmutex_s\fP *mtx)"
+.br
+.ti -1c
+.RI "int \fBmutex_trylock\fP (\fBmutex_s\fP *mtx)"
+.br
+.ti -1c
+.RI "int \fBmutex_fd_lock\fP (\fBmutex_s\fP *mtx)"
+.br
+.ti -1c
+.RI "int \fBmutex_fd_event\fP (\fBmutex_s\fP *mtx)"
+.br
+.ti -1c
+.RI "void \fBsemaphore_init\fP (\fBsemaphore_s\fP *sem, int val)"
+.br
+.ti -1c
+.RI "\fBsemaphore_s\fP * \fBsemaphore_new\fP (int val)"
+.br
+.ti -1c
+.RI "void \fBsemaphore_free\fP (\fBsemaphore_s\fP *sem)"
+.br
+.ti -1c
+.RI "void \fBsemaphore_post\fP (\fBsemaphore_s\fP *sem)"
+.br
+.ti -1c
+.RI "void \fBsemaphore_wait\fP (\fBsemaphore_s\fP *sem)"
+.br
+.ti -1c
+.RI "int \fBsemaphore_trywait\fP (\fBsemaphore_s\fP *sem)"
+.br
+.ti -1c
+.RI "int \fBsemaphore_fd_wait\fP (\fBsemaphore_s\fP *sem)"
+.br
+.ti -1c
+.RI "int \fBsemaphore_fd_event\fP (\fBsemaphore_s\fP *sem)"
+.br
+.ti -1c
+.RI "void \fBevent_init\fP (\fBevent_s\fP *ev)"
+.br
+.ti -1c
+.RI "\fBevent_s\fP * \fBevent_new\fP ()"
+.br
+.ti -1c
+.RI "void \fBevent_free\fP (\fBevent_s\fP *ev)"
+.br
+.ti -1c
+.RI "void \fBevent_raise\fP (\fBevent_s\fP *ev)"
+.br
+.ti -1c
+.RI "void \fBevent_wait\fP (\fBevent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBevent_fd_wait\fP (\fBevent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBevent_fd_event\fP (\fBevent_s\fP *ev)"
+.br
+.ti -1c
+.RI "void \fBqmessages_init\fP (\fBqmessages_s\fP *q, \fBsemaphore_s\fP *sem, \fBmutex_s\fP *mtx)"
+.br
+.ti -1c
+.RI "\fBqmessages_s\fP * \fBqmessages_new\fP ()"
+.br
+.ti -1c
+.RI "void \fBqmessage_free\fP (\fBqmessages_s\fP *q)"
+.br
+.ti -1c
+.RI "\fBmessage_s\fP * \fBqmessages_wait\fP (\fBqmessages_s\fP *q)"
+.br
+.ti -1c
+.RI "void \fBqmessages_send\fP (\fBqmessages_s\fP *q, \fBmessage_s\fP *msg)"
+.br
+.ti -1c
+.RI "\fBmessage_s\fP * \fBmessage_new_raw\fP (size_t size, \fBlistFree_f\fP cleanup)"
+.br
+.ti -1c
+.RI "void \fBmessage_free\fP (\fBmessage_s\fP *msg)"
+.br
+.ti -1c
+.RI "void \fBmessage_free_auto\fP (\fBmessage_s\fP **msg)"
+.br
+.ti -1c
+.RI "\fBthr_s\fP * \fBthr_new\fP (\fBthr_f\fP fn, void *arg, unsigned stackSize, unsigned oncpu, int detach)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBthr_cpu_set\fP (\fBthr_s\fP *\fBthr\fP, unsigned cpu)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBthr_wait\fP (\fBthr_s\fP *\fBthr\fP, void **out)"
+.br
+.ti -1c
+.RI "int \fBthr_check\fP (\fBthr_s\fP *\fBthr\fP, void **out)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBthr_wait_all\fP (\fBthr_s\fP **vthr)"
+.br
+.ti -1c
+.RI "\fBthr_s\fP * \fBthr_anyof\fP (\fBthr_s\fP **vthr, void **out)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBthr_cancel\fP (\fBthr_s\fP *\fBthr\fP)"
+.br
+.ti -1c
+.RI "void \fBthr_free\fP (\fBthr_s\fP *\fBthr\fP)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __message_free   \fB__cleanup\fP(\fBmessage_free_auto\fP)"
+cleanup 
+.PP
+Definition at line 213 of file threads\&.h\&.
+.SS "#define futex(\fBADDR\fP, OP, VAL, V2TO, ADDR2, VAL3)"
+\fBValue:\fP
+.PP
+.nf
+    _Generic((V2TO),\
+    const struct timespec*: futex_to,\
+    void*: futex_to,\
+    unsigned: futex_v2\
+)(ADDR, OP, VAL, V2TO, ADDR2, VAL3)
+.fi
+overloading for futex 
+.PP
+Definition at line 35 of file threads\&.h\&.
+.SS "#define message_new(TYPE, CLEANUP)   \fBmessage_new_raw\fP(sizeof(TYPE), CLEANUP)"
+create new message 
+.PP
+Definition at line 204 of file threads\&.h\&.
+.SS "#define thr_cleanup_pop(ALWAYSCALLFNC)   pthread_cleanup_pop(ALWAYSCALLFNC)"
+cleanup function autocall before exit from thread 
+.PP
+Definition at line 288 of file threads\&.h\&.
+.SS "#define thr_cleanup_push(FNC, ARG)   pthread_cleanup_push(FN, ARG)"
+cleanup function autocall before exit from thread 
+.PP
+Definition at line 285 of file threads\&.h\&.
+.SS "#define thr_exit(RET)   pthread_exit(RET)"
+exit from thread 
+.PP
+Definition at line 294 of file threads\&.h\&.
+.SS "#define thr_yield()   pthread_yield()"
+switch to other threads 
+.PP
+Definition at line 291 of file threads\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBevent\fP \fBevent_s\fP"
+
+.SS "typedef struct \fBmessage\fP \fBmessage_s\fP"
+
+.PP
+Definition at line 168 of file threads\&.h\&.
+.SS "typedef struct \fBmutex\fP \fBmutex_s\fP"
+
+.SS "typedef struct \fBqmessages\fP \fBqmessages_s\fP"
+
+.SS "typedef struct \fBsemaphore\fP \fBsemaphore_s\fP"
+
+.SS "typedef void*(* thr_f) (void *)"
+thread function 
+.PP
+Definition at line 220 of file threads\&.h\&.
+.SS "typedef struct \fBthr\fP \fBthr_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "int event_fd_event (\fBevent_s\fP * ev)"
+if wait over event, when event is raised on epoll call this function for check you can procede with event or need to reenter to epoll 
+.PP
+\fBParameters\fP
+.RS 4
+\fIev\fP event 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+fd for reenter to epoll, -1 event is raised 
+.RE
+.PP
+
+.SS "int event_fd_wait (\fBevent_s\fP * ev)"
+try to wait event in epoll if needed, call \fBevent_fd_event()\fP when event raised on epoll 
+.PP
+\fBParameters\fP
+.RS 4
+\fIev\fP event 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+fd or -1 acquired 
+.RE
+.PP
+
+.SS "void event_free (\fBevent_s\fP * ev)"
+free semaphore, only event create with semaphore_new 
+.SS "void event_init (\fBevent_s\fP * ev)"
+init a event if you have create without event_new 
+.SS "\fBevent_s\fP* event_new ()"
+create new event 
+.SS "void event_raise (\fBevent_s\fP * ev)"
+wake all thread that waited on this event 
+.SS "void event_wait (\fBevent_s\fP * ev)"
+wait a event raised 
+.SS "int futex_to (int * uaddr, int futex_op, int val, const struct timespec * timeout, int * uaddr2, int val3)"
+waiting until a certain condition becomes true 
+.PP
+\fBParameters\fP
+.RS 4
+\fIuaddr\fP argument points to the futex word 
+.br
+\fIfutex_op\fP operation perform on the futex 
+.br
+\fIval\fP is a value whose meaning and purpose depends on futex_op 
+.br
+\fItimeout\fP specifies a timeout for the operation 
+.br
+\fIuaddr2\fP Where it is required, is a pointer to a second futex word that is employed by the operation\&. 
+.br
+\fIval3\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 for error, 0 on FUTEX_WAIT, N waiters on FUTEX_WAKE, fd for FUTEX_FD, \&.\&.\&. 
+.RE
+.PP
+
+.SS "int futex_v2 (int * uaddr, int futex_op, int val, unsigned val2, int * uaddr2, int val3)"
+waiting until a certain condition becomes true 
+.PP
+\fBParameters\fP
+.RS 4
+\fIuaddr\fP argument points to the futex word 
+.br
+\fIfutex_op\fP operation perform on the futex 
+.br
+\fIval\fP is a value whose meaning and purpose depends on futex_op 
+.br
+\fIval2\fP depend on operation 
+.br
+\fIuaddr2\fP Where it is required, is a pointer to a second futex word that is employed by the operation\&. 
+.br
+\fIval3\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 for error, 0 on FUTEX_WAIT, N waiters on FUTEX_WAKE, fd for FUTEX_FD, \&.\&.\&. 
+.RE
+.PP
+
+.SS "void message_free (\fBmessage_s\fP * msg)"
+free message, this function is called from consumer 
+.SS "void message_free_auto (\fBmessage_s\fP ** msg)"
+cleanup 
+.SS "\fBmessage_s\fP* message_new_raw (size_t size, \fBlistFree_f\fP cleanup)"
+create a new message 
+.SS "int mutex_fd_event (\fBmutex_s\fP * mtx)"
+when exit fronm epoll call this, -1 acquire a lock, remember to unlock before reenter in epoll 
+.PP
+\fBParameters\fP
+.RS 4
+\fImtx\fP mutex 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+if locked is acquired return -1 otherwise return fd 
+.RE
+.PP
+
+.SS "int mutex_fd_lock (\fBmutex_s\fP * mtx)"
+lock and use fd for wait with epoll, when raised event call mutex_fd_event for complete operation 
+.PP
+\fBParameters\fP
+.RS 4
+\fImtx\fP mutex 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+fd or -1 acquired 
+.RE
+.PP
+
+.SS "void mutex_free (\fBmutex_s\fP * mtx)"
+free mutex, only mutex create with mutex new 
+.SS "void mutex_init (\fBmutex_s\fP * mtx)"
+init a mutex if you have create without mutex_new 
+.SS "void mutex_lock (\fBmutex_s\fP * mtx)"
+lock mutex 
+.SS "\fBmutex_s\fP* mutex_new ()"
+create new mutex 
+.SS "int mutex_trylock (\fBmutex_s\fP * mtx)"
+try to lock mutex 
+.PP
+\fBParameters\fP
+.RS 4
+\fImtx\fP mutex 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 if lock mutex, -1 if other thread have locked the mutex 
+.RE
+.PP
+
+.SS "void mutex_unlock (\fBmutex_s\fP * mtx)"
+unlock mutex 
+.SS "void qmessage_free (\fBqmessages_s\fP * q)"
+free queue messages 
+.SS "void qmessages_init (\fBqmessages_s\fP * q, \fBsemaphore_s\fP * sem, \fBmutex_s\fP * mtx)"
+init a queue if you have create without qmessages_new 
+.SS "\fBqmessages_s\fP* qmessages_new ()"
+create new queue messages 
+.SS "void qmessages_send (\fBqmessages_s\fP * q, \fBmessage_s\fP * msg)"
+send a message 
+.SS "\fBmessage_s\fP* qmessages_wait (\fBqmessages_s\fP * q)"
+wait for new messages 
+.PP
+\fBParameters\fP
+.RS 4
+\fIq\fP queue 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+messages, NULL for error 
+.RE
+.PP
+
+.SS "int semaphore_fd_event (\fBsemaphore_s\fP * sem)"
+if wait over semaphore, when event is raised on epoll call this function for check you can procede with semaphore or need to reenter to epoll 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsem\fP semaphore 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+fd for reenter to epoll, -1 you can continue 
+.RE
+.PP
+
+.SS "int semaphore_fd_wait (\fBsemaphore_s\fP * sem)"
+try to decrement semaphore but wait in epoll if needed, call \fBsemaphore_fd_event()\fP when event raised on epoll 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsem\fP semaphore 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+fd or -1 acquired 
+.RE
+.PP
+
+.SS "void semaphore_free (\fBsemaphore_s\fP * sem)"
+free semaphore, only semaphore create with semaphore_new 
+.SS "void semaphore_init (\fBsemaphore_s\fP * sem, int val)"
+init a semaphore if you have create without semaphore_new 
+.SS "\fBsemaphore_s\fP* semaphore_new (int val)"
+create new semaphore 
+.SS "void semaphore_post (\fBsemaphore_s\fP * sem)"
+increment by 1 the sempahore, if sem is 0 wake 1 thread 
+.SS "int semaphore_trywait (\fBsemaphore_s\fP * sem)"
+try to decrement semaphore, if semaphore is 0 return -1 and not wait 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsem\fP semaphore 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 if sem is decremented -1 otherwise 
+.RE
+.PP
+
+.SS "void semaphore_wait (\fBsemaphore_s\fP * sem)"
+decrement by 1 the semaphore, if sem is 0 call function started wait thread 
+.SS "\fBthr_s\fP* thr_anyof (\fBthr_s\fP ** vthr, void ** out)"
+wait any of vector thr 
+.PP
+\fBParameters\fP
+.RS 4
+\fIvthr\fP a vector of thr 
+.br
+\fIout\fP return value of thread 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+thread exited 
+.RE
+.PP
+
+.SS "\fBerr_t\fP thr_cancel (\fBthr_s\fP * thr)"
+cancel a thread 
+.PP
+\fBParameters\fP
+.RS 4
+\fIthr\fP thread to cancel 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull, -1 error 
+.RE
+.PP
+
+.SS "int thr_check (\fBthr_s\fP * thr, void ** out)"
+same wait but not wait, aka try join 
+.PP
+\fBParameters\fP
+.RS 4
+\fIthr\fP a thread 
+.br
+\fIout\fP return value of thread 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 thread end, 1 thread run, -1 error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP thr_cpu_set (\fBthr_s\fP * thr, unsigned cpu)"
+change thread cpu 
+.PP
+\fBParameters\fP
+.RS 4
+\fIthr\fP thread 
+.br
+\fIcpu\fP cpu 1 to N 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SS "void thr_free (\fBthr_s\fP * thr)"
+free thread, cancel if running 
+.PP
+\fBParameters\fP
+.RS 4
+\fIthr\fP thread 
+.RE
+.PP
+
+.SS "\fBthr_s\fP* thr_new (\fBthr_f\fP fn, void * arg, unsigned stackSize, unsigned oncpu, int detach)"
+create and run new thread 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfn\fP function where start new thread 
+.br
+\fIarg\fP argument passed to fn 
+.br
+\fIstackSize\fP the stacksize, 0 use default value 
+.br
+\fIoncpu\fP assign thread to cpu, 0 auto 
+.br
+\fIdetach\fP 1 set not joinable thread, 0 for joinable 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+thread or NULL for error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP thr_wait (\fBthr_s\fP * thr, void ** out)"
+wait, aka join, a thread and return value in out 
+.PP
+\fBParameters\fP
+.RS 4
+\fIthr\fP a thread 
+.br
+\fIout\fP return value of thread 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP thr_wait_all (\fBthr_s\fP ** vthr)"
+wait, aka join, a vector of threads 
+.PP
+\fBParameters\fP
+.RS 4
+\fIvthr\fP a vector of threads 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

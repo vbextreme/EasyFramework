@@ -1,0 +1,44 @@
+.TH "configTrie" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+configTrie
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <config\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "\fBconfig_f\fP \fBfn\fP"
+.br
+.ti -1c
+.RI "int \fBtype\fP"
+.br
+.ti -1c
+.RI "void * \fBuserdata\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 12 of file config\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "\fBconfig_f\fP configTrie::fn"
+
+.PP
+Definition at line 13 of file config\&.h\&.
+.SS "int configTrie::type"
+callback for each config, return CONFF_ERROR for terminate reading config file, return CONFF_GRAB_VALUE for not free a value 
+.PP
+Definition at line 14 of file config\&.h\&.
+.SS "void* configTrie::userdata"
+user type definition 
+.PP
+Definition at line 15 of file config\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

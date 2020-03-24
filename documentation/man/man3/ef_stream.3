@@ -1,0 +1,79 @@
+.TH "stream" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+stream
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <file\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "\fBstreamBuffer_s\fP \fBr\fP"
+.br
+.ti -1c
+.RI "\fBstreamBuffer_s\fP \fBw\fP"
+.br
+.ti -1c
+.RI "int \fBfd\fP"
+.br
+.ti -1c
+.RI "\fBcustomio_f\fP \fBread\fP"
+.br
+.ti -1c
+.RI "\fBcustomio_f\fP \fBwrite\fP"
+.br
+.ti -1c
+.RI "\fBcustomio_f\fP \fBkbhit\fP"
+.br
+.ti -1c
+.RI "void * \fBrwuserdata\fP"
+.br
+.ti -1c
+.RI "char \fBrwbuffer\fP []"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 379 of file file\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "int stream::fd"
+file descriptor 
+.PP
+Definition at line 382 of file file\&.h\&.
+.SS "\fBcustomio_f\fP stream::kbhit"
+function used for replace kbhit 
+.PP
+Definition at line 385 of file file\&.h\&.
+.SS "\fBstreamBuffer_s\fP stream::r"
+read buffer 
+.PP
+Definition at line 380 of file file\&.h\&.
+.SS "\fBcustomio_f\fP stream::read"
+function used for read 
+.PP
+Definition at line 383 of file file\&.h\&.
+.SS "char stream::rwbuffer[]"
+private buffer memory 
+.PP
+Definition at line 387 of file file\&.h\&.
+.SS "void* stream::rwuserdata"
+user data 
+.PP
+Definition at line 386 of file file\&.h\&.
+.SS "\fBstreamBuffer_s\fP stream::w"
+write buffer 
+.PP
+Definition at line 381 of file file\&.h\&.
+.SS "\fBcustomio_f\fP stream::write"
+function used for write 
+.PP
+Definition at line 384 of file file\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

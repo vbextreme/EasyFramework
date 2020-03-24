@@ -1,0 +1,17 @@
+#!/usr/bin/bash
+
+if [[ $# != 1 ]]; then
+	echo "usage: gentool <namecertkey>"
+	exit 0
+fi
+
+SRVFQDN=$1
+
+
+[[ ! -f ./ca-key.pem ]] &&  certtool --generate-privkey --outfile ca-key.pem
+[[ ! -f ./ca-cert.pem ]] &&  certtool --generate-self-signed --load-privkey ca-key.pem --outfile ca-cert.pem
+certtool --generate-privkey --outfile $SRVFQDN.key
+certtool --generate-certificate --load-privkey $SRVFQDN.key \
+ --outfile $SRVFQDN.crt --load-ca-certificate ca-cert.pem \
+ --load-ca-privkey ca-key.pem
+

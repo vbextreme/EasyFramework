@@ -1,0 +1,174 @@
+.TH "include/ef/regex.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/regex.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/vector\&.h>\fP
+.br
+\fC#include <ctype\&.h>\fP
+.br
+\fC#include <pcre2\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBregex\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBPCRE2_CODE_UNIT_WIDTH\fP   8"
+.br
+.ti -1c
+.RI "#define \fBREGEX_NEW\fP()"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBregex\fP \fBregex_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBregex_init\fP (\fBregex_s\fP *rx)"
+.br
+.ti -1c
+.RI "void \fBregex_set\fP (\fBregex_s\fP *rx, const char *match)"
+.br
+.ti -1c
+.RI "void \fBregex_text\fP (\fBregex_s\fP *rx, const char *txt, size_t len)"
+.br
+.ti -1c
+.RI "void \fBregex_match_delete\fP (\fBregex_s\fP *rx)"
+.br
+.ti -1c
+.RI "void \fBregex_free\fP (\fBregex_s\fP *rx)"
+.br
+.ti -1c
+.RI "int \fBregex_build\fP (\fBregex_s\fP *rx)"
+.br
+.ti -1c
+.RI "int \fBregex_match\fP (\fBregex_s\fP *rx)"
+.br
+.ti -1c
+.RI "int \fBregex_match_continue\fP (\fBregex_s\fP *rx)"
+.br
+.ti -1c
+.RI "size_t \fBregex_match_count\fP (\fBregex_s\fP *rx)"
+.br
+.ti -1c
+.RI "const char * \fBregex_match_get\fP (size_t *lenout, \fBregex_s\fP *rx, size_t index)"
+.br
+.ti -1c
+.RI "char ** \fBstr_regex\fP (const char *str, const char *\fBregex\fP, int global)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define PCRE2_CODE_UNIT_WIDTH   8"
+
+.PP
+Definition at line 7 of file regex\&.h\&.
+.SS "#define REGEX_NEW()"
+\fBValue:\fP
+.PP
+.nf
+  {\
+    \&.rx = NULL,\
+    \&.match = NULL,\
+    \&.offv = NULL,\
+    \&.offc = 0,\
+    \&.regex = NULL,\
+    \&.text = NULL,\
+    \&.lent = 0,\
+    \&.newline = 0,\
+    \&.utf8 = -1,\
+    \&.crlf = -1\
+}
+.fi
+for init new regex on stack 
+.PP
+Definition at line 24 of file regex\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBregex\fP \fBregex_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "int regex_build (\fBregex_s\fP * rx)"
+build a regex setted by regex_set, if error store in \fBef/err\&.h\fP 
+.SS "void regex_free (\fBregex_s\fP * rx)"
+delete regex, autocall regex_match_delete 
+.SS "void regex_init (\fBregex_s\fP * rx)"
+init regex 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrx\fP 
+.RE
+.PP
+
+.SS "int regex_match (\fBregex_s\fP * rx)"
+match regex, return 0 on match, -1 if no match or error 
+.SS "int regex_match_continue (\fBregex_s\fP * rx)"
+continue match, return 0 on match -1 if no match or error 
+.SS "size_t regex_match_count (\fBregex_s\fP * rx)"
+number of capture 
+.SS "void regex_match_delete (\fBregex_s\fP * rx)"
+delete match result 
+.SS "const char* regex_match_get (size_t * lenout, \fBregex_s\fP * rx, size_t index)"
+get capture 
+.PP
+\fBParameters\fP
+.RS 4
+\fIlenout\fP out value, pointer to size of capture, NULL if you not want a len 
+.br
+\fIrx\fP regex obj 
+.br
+\fIindex\fP index of capture < regex_match_count 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+capture 
+.RE
+.PP
+
+.SS "void regex_set (\fBregex_s\fP * rx, const char * match)"
+set regular expression 
+.SS "void regex_text (\fBregex_s\fP * rx, const char * txt, size_t len)"
+set text to match 
+.SS "char** str_regex (const char * str, const char * regex, int global)"
+execute regex on str and return capture in vector vector contain copy of capture, need to free each element before delete vector 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstr\fP string 
+.br
+\fIregex\fP regex 
+.br
+\fIglobal\fP continue after match 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+vector for captured string, free each element before free vector, NULL error or not match 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

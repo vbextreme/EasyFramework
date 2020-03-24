@@ -1,0 +1,65 @@
+.TH "imapMimeContent" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+imapMimeContent
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <imap\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "struct \fBimapMimeContent\fP * \fBnext\fP"
+.br
+.ti -1c
+.RI "char * \fBtype\fP"
+.br
+.ti -1c
+.RI "char * \fBfilename\fP"
+.br
+.ti -1c
+.RI "char * \fBdisposition\fP"
+.br
+.ti -1c
+.RI "void * \fBdata\fP"
+.br
+.ti -1c
+.RI "size_t \fBdataSize\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 17 of file imap\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "void* imapMimeContent::data"
+data of content 
+.PP
+Definition at line 22 of file imap\&.h\&.
+.SS "size_t imapMimeContent::dataSize"
+size of data 
+.PP
+Definition at line 23 of file imap\&.h\&.
+.SS "char* imapMimeContent::disposition"
+content-disposition, example attachment 
+.PP
+Definition at line 21 of file imap\&.h\&.
+.SS "char* imapMimeContent::filename"
+filename if exists 
+.PP
+Definition at line 20 of file imap\&.h\&.
+.SS "struct \fBimapMimeContent\fP* imapMimeContent::next"
+next mime 
+.PP
+Definition at line 18 of file imap\&.h\&.
+.SS "char* imapMimeContent::type"
+content-type 
+.PP
+Definition at line 19 of file imap\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

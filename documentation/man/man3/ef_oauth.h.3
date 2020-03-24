@@ -1,0 +1,159 @@
+.TH "include/ef/oauth.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/oauth.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/http\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBoauth2Authorization\fP"
+.br
+.ti -1c
+.RI "struct \fBoauth2\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBOAUTH_RND_STR_SIZE\fP   65"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBoauth2Authorization\fP \fBoauth2Authorization_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBoauth2\fP \fBoauth2_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBoauth2_s\fP * \fBoauth2_new\fP (\fBwwwProgress_s\fP *prog)"
+.br
+.ti -1c
+.RI "void \fBoauth2_free\fP (\fBoauth2_s\fP *oa)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBoauth2_athorization_browser\fP (\fBoauth2_s\fP *oa, \fBoauth2Authorization_s\fP *auth, const char *browser, long timeoutms)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBoauth2_authorization_token_get\fP (\fBoauth2_s\fP *oa, \fBoauth2Authorization_s\fP *auth)"
+.br
+.ti -1c
+.RI "long \fBoauth2_authorization_remaining_time\fP (\fBoauth2_s\fP *oa)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBoauth2_authorization_store\fP (\fBoauth2_s\fP *oa, \fBoauth2Authorization_s\fP *auth, const char *path)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBoauth2_authorization_load\fP (\fBoauth2_s\fP *oa, \fBoauth2Authorization_s\fP *auth, const char *path)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBoauth2_authorization_token_refresh\fP (\fBoauth2_s\fP *oa, \fBoauth2Authorization_s\fP *auth)"
+.br
+.ti -1c
+.RI "int \fBoauth2_authorization_ok\fP (\fBoauth2_s\fP *oa)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define OAUTH_RND_STR_SIZE   65"
+
+.PP
+Definition at line 7 of file oauth\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBoauth2\fP \fBoauth2_s\fP"
+
+.SS "typedef struct \fBoauth2Authorization\fP \fBoauth2Authorization_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "\fBerr_t\fP oauth2_athorization_browser (\fBoauth2_s\fP * oa, \fBoauth2Authorization_s\fP * auth, const char * browser, long timeoutms)"
+execute browser for authorizate application and give code, after show code need to set in \fBoauth2\&.codeReply\fP 
+.PP
+\fBParameters\fP
+.RS 4
+\fIoa\fP obj initializated 
+.br
+\fIauth\fP structure contain information user 
+.br
+\fIbrowser\fP browser name for execute 
+.br
+\fItimeoutms\fP timeout 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+token or NULL for error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP oauth2_authorization_load (\fBoauth2_s\fP * oa, \fBoauth2Authorization_s\fP * auth, const char * path)"
+load \fBoauth2\fP 
+.SS "int oauth2_authorization_ok (\fBoauth2_s\fP * oa)"
+return 1 if not need authorization browser, otherwise 0 
+.SS "long oauth2_authorization_remaining_time (\fBoauth2_s\fP * oa)"
+return remaning time in seconds before expire token 
+.SS "\fBerr_t\fP oauth2_authorization_store (\fBoauth2_s\fP * oa, \fBoauth2Authorization_s\fP * auth, const char * path)"
+save \fBoauth2\fP 
+.SS "\fBerr_t\fP oauth2_authorization_token_get (\fBoauth2_s\fP * oa, \fBoauth2Authorization_s\fP * auth)"
+get athorization token 
+.PP
+\fBParameters\fP
+.RS 4
+\fIoa\fP obj initializated 
+.br
+\fIauth\fP structure contain information user 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 succesfull -1 error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP oauth2_authorization_token_refresh (\fBoauth2_s\fP * oa, \fBoauth2Authorization_s\fP * auth)"
+refresh athorization token 
+.PP
+\fBParameters\fP
+.RS 4
+\fIoa\fP obj initializated 
+.br
+\fIauth\fP structure contain information user 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 succesfull -1 error 
+.RE
+.PP
+
+.SS "void oauth2_free (\fBoauth2_s\fP * oa)"
+free oauth 
+.PP
+\fBParameters\fP
+.RS 4
+\fIoa\fP obj 
+.RE
+.PP
+
+.SS "\fBoauth2_s\fP* oauth2_new (\fBwwwProgress_s\fP * prog)"
+create \fBoauth2\fP call mth_random_init before begin 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

@@ -1,0 +1,130 @@
+.TH "include/ef/gnn.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/gnn.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBgnn\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBGNN_RANDOM\fP()   (((double)rand())/RAND_MAX)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBgnn\fP \fBgnn_s\fP"
+.br
+.ti -1c
+.RI "typedef double(* \fBgnnAct_f\fP) (const \fBgnn_s\fP *ann, double a)"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBgnn_s\fP * \fBgnn_init\fP (int inputs, int hidden_layers, int hidden, int outputs)"
+.br
+.ti -1c
+.RI "\fBgnn_s\fP * \fBgnn_read\fP (FILE *in)"
+.br
+.ti -1c
+.RI "void \fBgnn_randomize\fP (\fBgnn_s\fP *ann)"
+.br
+.ti -1c
+.RI "\fBgnn_s\fP * \fBgnn_copy\fP (\fBgnn_s\fP const *ann)"
+.br
+.ti -1c
+.RI "void \fBgnn_free\fP (\fBgnn_s\fP *ann)"
+.br
+.ti -1c
+.RI "const double * \fBgnn_run\fP (\fBgnn_s\fP const *ann, double const *inputs)"
+.br
+.ti -1c
+.RI "void \fBgnn_train\fP (\fBgnn_s\fP const *ann, double const *desired_outputs, double learning_rate)"
+.br
+.ti -1c
+.RI "void \fBgnn_training\fP (\fBgnn_s\fP const *ann, double const *inputs, double const *desired_outputs, double learning_rate)"
+.br
+.ti -1c
+.RI "void \fBgnn_write\fP (\fBgnn_s\fP const *ann, FILE *out)"
+.br
+.ti -1c
+.RI "void \fBgnn_init_sigmoid_lookup\fP (const \fBgnn_s\fP *ann)"
+.br
+.ti -1c
+.RI "double \fBgnn_act_sigmoid\fP (const \fBgnn_s\fP *ann, double a)"
+.br
+.ti -1c
+.RI "double \fBgnn_act_sigmoid_cached\fP (const \fBgnn_s\fP *ann, double a)"
+.br
+.ti -1c
+.RI "double \fBgnn_act_threshold\fP (const \fBgnn_s\fP *ann, double a)"
+.br
+.ti -1c
+.RI "double \fBgnn_act_linear\fP (const \fBgnn_s\fP *ann, double a)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define GNN_RANDOM()   (((double)rand())/RAND_MAX)"
+We use the following for uniform random numbers between 0 and 1\&. If you have a better function, redefine this macro\&. 
+.PP
+Definition at line 37 of file gnn\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBgnn\fP \fBgnn_s\fP"
+
+.PP
+Definition at line 40 of file gnn\&.h\&.
+.SS "typedef double(* gnnAct_f) (const \fBgnn_s\fP *ann, double a)"
+
+.PP
+Definition at line 42 of file gnn\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "double gnn_act_linear (const \fBgnn_s\fP * ann, double a)"
+
+.SS "double gnn_act_sigmoid (const \fBgnn_s\fP * ann, double a)"
+
+.SS "double gnn_act_sigmoid_cached (const \fBgnn_s\fP * ann, double a)"
+
+.SS "double gnn_act_threshold (const \fBgnn_s\fP * ann, double a)"
+
+.SS "\fBgnn_s\fP* gnn_copy (\fBgnn_s\fP const * ann)"
+Returns a new copy of ann\&. 
+.SS "void gnn_free (\fBgnn_s\fP * ann)"
+Frees the memory used by an ann\&. 
+.SS "\fBgnn_s\fP* gnn_init (int inputs, int hidden_layers, int hidden, int outputs)"
+Creates and returns a new ann\&. 
+.SS "void gnn_init_sigmoid_lookup (const \fBgnn_s\fP * ann)"
+
+.SS "void gnn_randomize (\fBgnn_s\fP * ann)"
+Sets weights randomly\&. Called by init\&. 
+.SS "\fBgnn_s\fP* gnn_read (FILE * in)"
+Creates ANN from file saved with gnn_write\&. 
+.SS "const double* gnn_run (\fBgnn_s\fP const * ann, double const * inputs)"
+Runs the feedforward algorithm to calculate the ann's output\&. 
+.SS "void gnn_train (\fBgnn_s\fP const * ann, double const * desired_outputs, double learning_rate)"
+Does a single backprop update, gnn_run before train\&. 
+.SS "void gnn_training (\fBgnn_s\fP const * ann, double const * inputs, double const * desired_outputs, double learning_rate)"
+gnn_run and gnn_train 
+.SS "void gnn_write (\fBgnn_s\fP const * ann, FILE * out)"
+Saves the ann\&. 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

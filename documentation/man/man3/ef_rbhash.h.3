@@ -1,0 +1,432 @@
+.TH "include/ef/rbhash.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/rbhash.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBrbhashElement\fP"
+.br
+.ti -1c
+.RI "struct \fBrbhash\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fB__rbhash_free\fP   \fB__cleanup\fP(\fBrbhash_free_auto\fP)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef void(* \fBrbhashfree_f\fP) (uint32_t hash, const char *name, void *a)"
+.br
+.ti -1c
+.RI "typedef uint32_t(* \fBrbhash_f\fP) (const char *name, size_t len)"
+.br
+.ti -1c
+.RI "typedef int(* \fBrbhashcmp_f\fP) (void *a, size_t lenA, uint32_t hash, void *data, void *b, size_t lenB)"
+.br
+.ti -1c
+.RI "typedef struct \fBrbhashElement\fP \fBrbhashElement_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBrbhash\fP \fBrbhash_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBhash_seed\fP (uint32_t val)"
+.br
+.ti -1c
+.RI "uint32_t \fBhash_one_at_a_time\fP (const char *key, size_t len)"
+.br
+.ti -1c
+.RI "uint32_t \fBhash_fasthash\fP (const char *data, size_t len)"
+.br
+.ti -1c
+.RI "uint32_t \fBhash_kr\fP (const char *s, size_t len)"
+.br
+.ti -1c
+.RI "uint32_t \fBhash_sedgewicks\fP (const char *str, size_t len)"
+.br
+.ti -1c
+.RI "uint32_t \fBhash_sobel\fP (const char *str, size_t len)"
+.br
+.ti -1c
+.RI "uint32_t \fBhash_weinberger\fP (const char *str, size_t len)"
+.br
+.ti -1c
+.RI "uint32_t \fBhash_elf\fP (const char *str, size_t len)"
+.br
+.ti -1c
+.RI "uint32_t \fBhash_sdbm\fP (const char *str, size_t len)"
+.br
+.ti -1c
+.RI "uint32_t \fBhash_bernstein\fP (const char *str, size_t len)"
+.br
+.ti -1c
+.RI "uint32_t \fBhash_knuth\fP (const char *str, size_t len)"
+.br
+.ti -1c
+.RI "uint32_t \fBhash_partow\fP (const char *str, size_t len)"
+.br
+.ti -1c
+.RI "\fBrbhash_s\fP * \fBrbhash_new\fP (size_t size, size_t min, size_t keysize, \fBrbhash_f\fP hashing, \fBrbhashfree_f\fP del)"
+.br
+.ti -1c
+.RI "void \fBrbhash_free\fP (\fBrbhash_s\fP *rbh)"
+.br
+.ti -1c
+.RI "void \fBrbhash_free_auto\fP (\fBrbhash_s\fP **rbh)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBrbhash_add_hash\fP (\fBrbhash_s\fP *rbh, uint32_t hash, const char *key, size_t len, void *data)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBrbhash_add\fP (\fBrbhash_s\fP *rbh, const char *key, size_t len, void *data)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBrbhash_add_unique\fP (\fBrbhash_s\fP *rbh, const char *key, size_t len, void *data)"
+.br
+.ti -1c
+.RI "\fBrbhashElement_s\fP * \fBrbhash_find_hash_raw\fP (\fBrbhash_s\fP *rbh, uint32_t hash, const char *key, size_t len)"
+.br
+.ti -1c
+.RI "void * \fBrbhash_find_hash\fP (\fBrbhash_s\fP *rbh, uint32_t hash, const char *key, size_t len)"
+.br
+.ti -1c
+.RI "void * \fBrbhash_find\fP (\fBrbhash_s\fP *rbh, const char *key, size_t len)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBrbhash_remove_hash\fP (\fBrbhash_s\fP *rbh, uint32_t hash, const char *key, size_t len)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBrbhash_remove\fP (\fBrbhash_s\fP *ht, const char *key, size_t len)"
+.br
+.ti -1c
+.RI "size_t \fBrbhash_mem_total\fP (\fBrbhash_s\fP *rbh)"
+.br
+.ti -1c
+.RI "size_t \fBrbhash_bucket_used\fP (\fBrbhash_s\fP *rbh)"
+.br
+.ti -1c
+.RI "size_t \fBrbhash_collision\fP (\fBrbhash_s\fP *rbh)"
+.br
+.ti -1c
+.RI "size_t \fBrbhash_distance_max\fP (\fBrbhash_s\fP *rbh)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __rbhash_free   \fB__cleanup\fP(\fBrbhash_free_auto\fP)"
+cleanup 
+.PP
+Definition at line 68 of file rbhash\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef uint32_t(* rbhash_f) (const char *name, size_t len)"
+
+.PP
+Definition at line 7 of file rbhash\&.h\&.
+.SS "typedef struct \fBrbhash\fP \fBrbhash_s\fP"
+
+.SS "typedef int(* rbhashcmp_f) (void *a, size_t lenA, uint32_t hash, void *data, void *b, size_t lenB)"
+
+.PP
+Definition at line 8 of file rbhash\&.h\&.
+.SS "typedef struct \fBrbhashElement\fP \fBrbhashElement_s\fP"
+
+.SS "typedef void(* rbhashfree_f) (uint32_t hash, const char *name, void *a)"
+
+.PP
+Definition at line 6 of file rbhash\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "uint32_t hash_bernstein (const char * str, size_t len)"
+
+.SS "uint32_t hash_elf (const char * str, size_t len)"
+
+.SS "uint32_t hash_fasthash (const char * data, size_t len)"
+
+.SS "uint32_t hash_knuth (const char * str, size_t len)"
+
+.SS "uint32_t hash_kr (const char * s, size_t len)"
+
+.SS "uint32_t hash_one_at_a_time (const char * key, size_t len)"
+
+.SS "uint32_t hash_partow (const char * str, size_t len)"
+
+.SS "uint32_t hash_sdbm (const char * str, size_t len)"
+
+.SS "uint32_t hash_sedgewicks (const char * str, size_t len)"
+
+.SS "void hash_seed (uint32_t val)"
+
+.SS "uint32_t hash_sobel (const char * str, size_t len)"
+
+.SS "uint32_t hash_weinberger (const char * str, size_t len)"
+
+.SS "\fBerr_t\fP rbhash_add (\fBrbhash_s\fP * rbh, const char * key, size_t len, void * data)"
+add new element to hash table, call rbhash_add_hash calcolated hash with rbhash->hashing 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP hashtable 
+.br
+\fIkey\fP the key 
+.br
+\fIlen\fP len of key, 0 auto call strlen(key) 
+.br
+\fIdata\fP userdata associated to key 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error, fail if no space left on hash table, EFBIG if key > keysize, err is pushed and errno is setted 
+.RE
+.PP
+
+.SS "\fBerr_t\fP rbhash_add_hash (\fBrbhash_s\fP * rbh, uint32_t hash, const char * key, size_t len, void * data)"
+add new element to hash table 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP hashtable 
+.br
+\fIhash\fP the hash value of key 
+.br
+\fIkey\fP the key 
+.br
+\fIlen\fP len of key, 0 auto call strlen(key) 
+.br
+\fIdata\fP userdata associated to key 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error, fail if no space left on hash table, EFBIG if key > keysize, err is pushed and errno is setted 
+.RE
+.PP
+
+.SS "\fBerr_t\fP rbhash_add_unique (\fBrbhash_s\fP * rbh, const char * key, size_t len, void * data)"
+add new element to hash table only if key not exists, call rbhash_find and use rbhash->hashing 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP hashtable 
+.br
+\fIkey\fP the key 
+.br
+\fIlen\fP len of key, 0 auto call strlen(key) 
+.br
+\fIdata\fP userdata associated to key 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error, fail if no space left on hash table, EFBIG if key > keysize, err is pushed and errno is setted 
+.RE
+.PP
+
+.SS "size_t rbhash_bucket_used (\fBrbhash_s\fP * rbh)"
+count bucket 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+bucket count 
+.RE
+.PP
+
+.SS "size_t rbhash_collision (\fBrbhash_s\fP * rbh)"
+count number of collision, all hash with not have \&.distance == 0 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+total collision 
+.RE
+.PP
+
+.SS "size_t rbhash_distance_max (\fBrbhash_s\fP * rbh)"
+max distance of slot 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+distance 
+.RE
+.PP
+
+.SS "void* rbhash_find (\fBrbhash_s\fP * rbh, const char * key, size_t len)"
+find \fBrbhashElement\fP, use rbhash_find_hash called with rbhash->hashing 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP hashtable 
+.br
+\fIkey\fP key to find 
+.br
+\fIlen\fP len of key, 0 auto call strlen(key) 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+user data associated to key or NULL for error 
+.RE
+.PP
+
+.SS "void* rbhash_find_hash (\fBrbhash_s\fP * rbh, uint32_t hash, const char * key, size_t len)"
+find \fBrbhashElement\fP 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP hashtable 
+.br
+\fIhash\fP hash of key 
+.br
+\fIkey\fP key to find 
+.br
+\fIlen\fP len of key, 0 auto call strlen(key) 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+user data associated to key or NULL for error 
+.RE
+.PP
+
+.SS "\fBrbhashElement_s\fP* rbhash_find_hash_raw (\fBrbhash_s\fP * rbh, uint32_t hash, const char * key, size_t len)"
+find \fBrbhashElement\fP 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP hashtable 
+.br
+\fIhash\fP hash of key 
+.br
+\fIkey\fP key to find 
+.br
+\fIlen\fP len of key, 0 auto call strlen(key) 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+\fBrbhashElement\fP or NULL for error 
+.RE
+.PP
+
+.SS "void rbhash_free (\fBrbhash_s\fP * rbh)"
+delete all hash table, call delete function to user data 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP hash table 
+.RE
+.PP
+
+.SS "void rbhash_free_auto (\fBrbhash_s\fP ** rbh)"
+cleanup 
+.SS "size_t rbhash_mem_total (\fBrbhash_s\fP * rbh)"
+total memory usage 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+memory usage 
+.RE
+.PP
+
+.SS "\fBrbhash_s\fP* rbhash_new (size_t size, size_t min, size_t keysize, \fBrbhash_f\fP hashing, \fBrbhashfree_f\fP del)"
+create rbhash 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsize\fP number of starting element of table 
+.br
+\fImin\fP percentage min need to be available, if 0 the hash table is not automatic reallocated 
+.br
+\fIkeysize\fP the max size of key 
+.br
+\fIhashing\fP hash function 
+.br
+\fIdel\fP the function to delete each element 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error, err is pushed and errno is setted 
+.RE
+.PP
+
+.SS "\fBerr_t\fP rbhash_remove (\fBrbhash_s\fP * ht, const char * key, size_t len)"
+remove element from hash table, automatic call delete function to user data, call rbhash_remove_hash with rbhash->hashing 
+.PP
+\fBParameters\fP
+.RS 4
+\fIht\fP hashtable 
+.br
+\fIkey\fP key to find 
+.br
+\fIlen\fP len of key, 0 auto call strlen(key) 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP rbhash_remove_hash (\fBrbhash_s\fP * rbh, uint32_t hash, const char * key, size_t len)"
+remove element from hash table, automatic call delete function to user data 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrbh\fP hashtable 
+.br
+\fIhash\fP hash of key 
+.br
+\fIkey\fP key to find 
+.br
+\fIlen\fP len of key, 0 auto call strlen(key) 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

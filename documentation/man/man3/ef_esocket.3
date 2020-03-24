@@ -1,0 +1,101 @@
+.TH "esocket" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+esocket
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <socket\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "void * \fBuserdata\fP"
+.br
+.ti -1c
+.RI "\fBsocketEvent_f\fP \fBonread\fP"
+.br
+.ti -1c
+.RI "\fBsocketEvent_f\fP \fBonclose\fP"
+.br
+.ti -1c
+.RI "\fBsocketType_e\fP \fBtype\fP"
+.br
+.ti -1c
+.RI "int \fBfd\fP"
+.br
+.ti -1c
+.RI "\fBtlsSession_s\fP * \fBtls\fP"
+.br
+.ti -1c
+.RI "\fBstream_s\fP * \fBstream\fP"
+.br
+.ti -1c
+.RI "union {"
+.br
+.ti -1c
+.RI "   \fBesunix_s\fP \fBunixs\fP"
+.br
+.ti -1c
+.RI "   \fBesnet4_s\fP \fBnet4\fP"
+.br
+.ti -1c
+.RI "   \fBesnet6_s\fP \fBnet6\fP"
+.br
+.ti -1c
+.RI "}; "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 67 of file socket\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "union { \&.\&.\&. } "
+
+.SS "int esocket::fd"
+
+.PP
+Definition at line 72 of file socket\&.h\&.
+.SS "\fBesnet4_s\fP esocket::net4"
+
+.PP
+Definition at line 77 of file socket\&.h\&.
+.SS "\fBesnet6_s\fP esocket::net6"
+
+.PP
+Definition at line 78 of file socket\&.h\&.
+.SS "\fBsocketEvent_f\fP esocket::onclose"
+
+.PP
+Definition at line 70 of file socket\&.h\&.
+.SS "\fBsocketEvent_f\fP esocket::onread"
+
+.PP
+Definition at line 69 of file socket\&.h\&.
+.SS "\fBstream_s\fP* esocket::stream"
+
+.PP
+Definition at line 74 of file socket\&.h\&.
+.SS "\fBtlsSession_s\fP* esocket::tls"
+
+.PP
+Definition at line 73 of file socket\&.h\&.
+.SS "\fBsocketType_e\fP esocket::type"
+
+.PP
+Definition at line 71 of file socket\&.h\&.
+.SS "\fBesunix_s\fP esocket::unixs"
+
+.PP
+Definition at line 76 of file socket\&.h\&.
+.SS "void* esocket::userdata"
+
+.PP
+Definition at line 68 of file socket\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for M in documentation/man/man3/*; do
+	echo $M
+done	

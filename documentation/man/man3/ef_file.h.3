@@ -1,0 +1,1702 @@
+.TH "include/ef/file.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/file.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/rbuffer\&.h>\fP
+.br
+\fC#include <sys/types\&.h>\fP
+.br
+\fC#include <sys/stat\&.h>\fP
+.br
+\fC#include <dirent\&.h>\fP
+.br
+\fC#include <libtar\&.h>\fP
+.br
+\fC#include <sys/mman\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBfiletmp\fP"
+.br
+.ti -1c
+.RI "struct \fBstreamBuffer\fP"
+.br
+.ti -1c
+.RI "struct \fBstream\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBFILE_BUFFER\fP   4096"
+.br
+.ti -1c
+.RI "#define \fBFILE_CHUNK\fP   4096"
+.br
+.ti -1c
+.RI "#define \fB__file_close\fP   \fB__cleanup\fP(\fBfile_close_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fBpath_current_set\fP(PATH)   chdir(PATH)"
+.br
+.ti -1c
+.RI "#define \fBFILE_BLOCK_DEVICES\fP   DT_BLK"
+.br
+.ti -1c
+.RI "#define \fBFILE_CHARACTER_DEVICES\fP   DT_CHR"
+.br
+.ti -1c
+.RI "#define \fBFILE_DIRECTORY\fP   DT_DIR"
+.br
+.ti -1c
+.RI "#define \fBFILE_NAMED_PIPE\fP   DT_FIFO"
+.br
+.ti -1c
+.RI "#define \fBFILE_SYMBOLIC_LINK\fP   DT_LNK"
+.br
+.ti -1c
+.RI "#define \fBFILE_FILE\fP   DT_REG"
+.br
+.ti -1c
+.RI "#define \fBFILE_SOCKET\fP   DT_SOCK"
+.br
+.ti -1c
+.RI "#define \fBFILE_UNKNOWN\fP   DT_UNKNOWN"
+.br
+.ti -1c
+.RI "#define \fBdir_open\fP(PATH)   opendir(PATH)"
+.br
+.ti -1c
+.RI "#define \fBdir_close\fP(D)   closedir(D)"
+.br
+.ti -1c
+.RI "#define \fBdir_read\fP(D)   readdir(D)"
+.br
+.ti -1c
+.RI "#define \fB__dir_close\fP   \fB__cleanup\fP(\fBdir_close_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fBdirent_name\fP(ENT)   (ENT)\->d_name"
+.br
+.ti -1c
+.RI "#define \fBdirent_type\fP(ENT)   (ENT)\->d_type"
+.br
+.ti -1c
+.RI "#define \fBdir_foreach\fP(DR,  IT)   for( \fBdirent_s\fP* IT = \fBdir_read\fP(DR); IT; IT = \fBdir_read\fP(DR) )"
+.br
+.ti -1c
+.RI "#define \fBfile_stat\fP(PATH,  PTRSTAT_S)   stat(PATH, PTRSTAT_S)"
+.br
+.ti -1c
+.RI "#define \fBfd_close\fP(FD)   close(FD)"
+.br
+.ti -1c
+.RI "#define \fBfd_truncate\fP(FD,  SIZE)   ftruncate(FD, SIZE)"
+.br
+.ti -1c
+.RI "#define \fBfd_seek\fP(FD,  POS,  AT)   lseek(FD, POS, AT)"
+.br
+.ti -1c
+.RI "#define \fBfd_tell\fP(FD)   lseek(FD, 0, SEEK_CUR)"
+.br
+.ti -1c
+.RI "#define \fBfd_rewind\fP(FD)   lseek(FD,0,SEEK_SET)"
+.br
+.ti -1c
+.RI "#define \fBfd_toend\fP(FD)   lseek(FD, 0, SEEK_END)"
+.br
+.ti -1c
+.RI "#define \fBfd_mem_create\fP(NAME)   memfd_create(NAME,0)"
+.br
+.ti -1c
+.RI "#define \fBfd_stat\fP(FD,  PTRSTAT_S)   fstat(FD,PTRSTAT_S)"
+.br
+.ti -1c
+.RI "#define \fB__fd_close\fP   \fB__cleanup\fP(\fBfd_close_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fBftar_read\fP(T)   th_read(T)"
+.br
+.ti -1c
+.RI "#define \fBftar_close\fP(T)   tar_close(T)"
+.br
+.ti -1c
+.RI "#define \fB__ftar_close\fP   \fB__cleanup\fP(\fBftar_close_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fBftar_get_name\fP(T)   ((T)\->th_buf\&.name)"
+.br
+.ti -1c
+.RI "#define \fBftar_get_path\fP(T)   th_get_pathname(tar)"
+.br
+.ti -1c
+.RI "#define \fBftar_skip_reg\fP(T)   tar_skip_regfile(T)"
+.br
+.ti -1c
+.RI "#define \fBftar_isdir\fP(T)   TH_ISDIR(T)"
+.br
+.ti -1c
+.RI "#define \fBftar_isreg\fP(T)   TH_ISREG(tar)"
+.br
+.ti -1c
+.RI "#define \fBSTREAM_CHUNK\fP   4096"
+.br
+.ti -1c
+.RI "#define \fBSTREAM_STRING_CHUNK\fP   4096"
+.br
+.ti -1c
+.RI "#define \fBSTREAM_STRING_FIT_REALLOC\fP   \fB_Y_\fP"
+.br
+.ti -1c
+.RI "#define \fBSTREAM_NUM_MAX_DIGIT\fP   64"
+.br
+.ti -1c
+.RI "#define \fB__stream_close\fP   \fB__cleanup\fP(\fBstream_close_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fBstream_inp\fP(STREAM,  VAR,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fBstream_out\fP(STREAM,  VAR,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fBstream_skip_h\fP(STREAM)   \fBstream_skip_anyof\fP(STREAM, ' \\t')"
+.br
+.ti -1c
+.RI "#define \fBstream_skip_hnl\fP(STREAM)   \fBstream_skip_anyof\fP(STREAM, ' \\t\\n')"
+.br
+.ti -1c
+.RI "#define \fBstream_skip_w\fP(STREAM)   \fBstream_skip_anyof\fP(STREAM, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_')"
+.br
+.ti -1c
+.RI "#define \fBstream_skip_n\fP(STREAM)   \fBstream_skip_anyof\fP(STREAM, '0123456789abcdefxABCDEFX\&.')"
+.br
+.ti -1c
+.RI "#define \fBstream_skip_wn\fP(STREAM)   \fBstream_skip_anyof\fP(STREAM, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_\&.')"
+.br
+.ti -1c
+.RI "#define \fBstream_skip_line\fP(STREAM)   \fBstream_skip_next\fP(STREAM, '\\n')"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBfiletmp\fP \fBfiletmp_s\fP"
+.br
+.ti -1c
+.RI "typedef struct stat \fBstat_s\fP"
+.br
+.ti -1c
+.RI "typedef struct utimbuf \fButimbuf_s\fP"
+.br
+.ti -1c
+.RI "typedef FILE \fBfile_t\fP"
+.br
+.ti -1c
+.RI "typedef struct dirent \fBdirent_s\fP"
+.br
+.ti -1c
+.RI "typedef DIR \fBdir_s\fP"
+.br
+.ti -1c
+.RI "typedef TAR \fBtar_t\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBstream\fP \fBstream_s\fP"
+.br
+.ti -1c
+.RI "typedef ssize_t(* \fBcustomio_f\fP) (\fBstream_s\fP *, void *, size_t)"
+.br
+.ti -1c
+.RI "typedef struct \fBstreamBuffer\fP \fBstreamBuffer_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBpath_kill_back\fP (char *path)"
+.br
+.ti -1c
+.RI "void \fBpath_set_last\fP (char *path)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBpath_current\fP (char *path)"
+.br
+.ti -1c
+.RI "char * \fBpath_current_new\fP (void)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBpath_add\fP (char *path, const char *next)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBpath_home\fP (char *path)"
+.br
+.ti -1c
+.RI "char * \fBpath_resolve\fP (const char *path)"
+.br
+.ti -1c
+.RI "char * \fBpath_resolve_custom\fP (const char *path, const char *home, const char *current)"
+.br
+.ti -1c
+.RI "void \fBdir_close_auto\fP (\fBdir_s\fP **dir)"
+.br
+.ti -1c
+.RI "int \fBdirent_currentback\fP (\fBdirent_s\fP *ent)"
+.br
+.ti -1c
+.RI "char const  * \fBfile_extension\fP (char const *name)"
+.br
+.ti -1c
+.RI "int \fBfile_exists\fP (const char *path)"
+.br
+.ti -1c
+.RI "void \fBfile_close_auto\fP (\fBfile_t\fP **file)"
+.br
+.ti -1c
+.RI "FILE * \fBfile_dup\fP (FILE *file, char *mode)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBfile_rm\fP (const char *path)"
+.br
+.ti -1c
+.RI "void \fBfd_close_auto\fP (int *fd)"
+.br
+.ti -1c
+.RI "int \fBfd_open\fP (const char *path, const char *mode, int privileges)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBfd_open_tmp\fP (\fBfiletmp_s\fP *out, const char *path, int privileges)"
+.br
+.ti -1c
+.RI "ssize_t \fBfd_kbhit\fP (int fd)"
+.br
+.ti -1c
+.RI "ssize_t \fBfd_read\fP (int fd, void *buf, size_t size)"
+.br
+.ti -1c
+.RI "ssize_t \fBfd_read_chunk\fP (int fd, void *buf, size_t chunk)"
+.br
+.ti -1c
+.RI "void * \fBfd_slurp\fP (size_t *outlen, int fd, size_t chunk, int nullchar)"
+.br
+.ti -1c
+.RI "ssize_t \fBfd_write\fP (int fd, void *buf, size_t size)"
+.br
+.ti -1c
+.RI "size_t \fBfd_size\fP (int fd)"
+.br
+.ti -1c
+.RI "void * \fBfd_mmap\fP (int fd, size_t len, char *mode)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBfd_copy\fP (int fdo, int fdi)"
+.br
+.ti -1c
+.RI "ssize_t \fBfd_read_cb\fP (int fd, \fBrbuffer_s\fP *cb, void *out, size_t size)"
+.br
+.ti -1c
+.RI "char * \fBfd_read_cbline\fP (int fd, \fBrbuffer_s\fP *cb, int withnl)"
+.br
+.ti -1c
+.RI "int \fBfd_timeout\fP (int fd, long timeoutms)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBfgz_extract\fP (int fdout, int fdin)"
+.br
+.ti -1c
+.RI "\fBtar_t\fP * \fBftar_open\fP (const char *path, int orfd, const char *mode)"
+.br
+.ti -1c
+.RI "void \fBftar_close_auto\fP (\fBtar_t\fP **tar)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBftar_extract_reg\fP (\fBtar_t\fP *tar, int fdout)"
+.br
+.ti -1c
+.RI "\fBstream_s\fP * \fBstream_open_fd\fP (int fd, size_t chunk)"
+.br
+.ti -1c
+.RI "\fBstream_s\fP * \fBstream_open\fP (const char *path, const char *mode, int privileges, size_t chunk)"
+.br
+.ti -1c
+.RI "\fBstream_s\fP * \fBstream_open_tmp\fP (char *outpathmax, const char *path, int privileges, size_t chunk)"
+.br
+.ti -1c
+.RI "\fBstream_s\fP * \fBstream_open_mem\fP (const char *name, size_t chunk)"
+.br
+.ti -1c
+.RI "void \fBstream_replace_io\fP (\fBstream_s\fP *sm, \fBcustomio_f\fP r, \fBcustomio_f\fP w, \fBcustomio_f\fP kbhit, void *iouserdata)"
+.br
+.ti -1c
+.RI "void \fBstream_detach\fP (\fBstream_s\fP *sm)"
+.br
+.ti -1c
+.RI "void \fBstream_close\fP (\fBstream_s\fP *sm)"
+.br
+.ti -1c
+.RI "void \fBstream_close_auto\fP (\fBstream_s\fP **sm)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_size\fP (\fBstream_s\fP *sm)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_kbhit\fP (\fBstream_s\fP *sm)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_read\fP (\fBstream_s\fP *sm, void *buf, size_t size)"
+.br
+.ti -1c
+.RI "void \fBstream_rollback\fP (\fBstream_s\fP *sm, void *data, size_t size)"
+.br
+.ti -1c
+.RI "void * \fBstream_slurp\fP (size_t *outlen, \fBstream_s\fP *sm, int addNullChar)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_inp_char\fP (\fBstream_s\fP *sm, int *ch)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_inp_string\fP (\fBstream_s\fP *sm, char **out, char endch, int addch)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_inp_toanyof\fP (\fBstream_s\fP *sm, char **out, char *endch, int addch)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_inp_strstr\fP (\fBstream_s\fP *sm, char **out, char *endstr, int addch)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_inp_long\fP (\fBstream_s\fP *sm, long *num, int base)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_inp_ulong\fP (\fBstream_s\fP *sm, unsigned long *num, int base)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_inp_double\fP (\fBstream_s\fP *sm, double *num)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_inp_float\fP (\fBstream_s\fP *sm, float *num)"
+.br
+.ti -1c
+.RI "void \fBstream_flush\fP (\fBstream_s\fP *sm)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_write\fP (\fBstream_s\fP *sm, void *buf, size_t size)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBstream_out_char\fP (\fBstream_s\fP *sm, char ch)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBstream_out_string\fP (\fBstream_s\fP *sm, char *str, size_t len)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBstream_out_long\fP (\fBstream_s\fP *sm, long num, int base)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBstream_out_ulong\fP (\fBstream_s\fP *sm, unsigned long num, int base)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBstream_out_double\fP (\fBstream_s\fP *sm, double num, int dec)"
+.br
+.ti -1c
+.RI "\fB__printf\fP (2, 3) \fBerr_t\fP stream_printf(\fBstream_s\fP *sm"
+.br
+.ti -1c
+.RI "const char \fBerr_t\fP \fBstream_stat\fP (\fBstream_s\fP *sm, \fBstat_s\fP *stat)"
+.br
+.ti -1c
+.RI "ssize_t \fBstream_tell\fP (\fBstream_s\fP *sm)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBstream_seek\fP (\fBstream_s\fP *sm, ssize_t offset, int mode)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBstream_skip_anyof\fP (\fBstream_s\fP *sm, const char *lst)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBstream_skip_to\fP (\fBstream_s\fP *sm, const char *lst)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBstream_skip_next\fP (\fBstream_s\fP *sm, const char *lst)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "const char * \fBformat\fP"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __dir_close   \fB__cleanup\fP(\fBdir_close_auto\fP)"
+preperty for auto close dire when exit from scope 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.PP
+Definition at line 119 of file file\&.h\&.
+.SS "#define __fd_close   \fB__cleanup\fP(\fBfd_close_auto\fP)"
+for cleanup 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.PP
+Definition at line 293 of file file\&.h\&.
+.SS "#define __file_close   \fB__cleanup\fP(\fBfile_close_auto\fP)"
+
+.PP
+Definition at line 36 of file file\&.h\&.
+.SS "#define __ftar_close   \fB__cleanup\fP(\fBftar_close_auto\fP)"
+cleanup function 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.PP
+Definition at line 340 of file file\&.h\&.
+.SS "#define __stream_close   \fB__cleanup\fP(\fBstream_close_auto\fP)"
+cleanup 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.PP
+Definition at line 462 of file file\&.h\&.
+.SS "#define dir_close(D)   closedir(D)"
+only for conventions 
+.PP
+Definition at line 107 of file file\&.h\&.
+.SS "#define dir_foreach(DR, IT)   for( \fBdirent_s\fP* IT = \fBdir_read\fP(DR); IT; IT = \fBdir_read\fP(DR) )"
+foreach 
+.PP
+\fBParameters\fP
+.RS 4
+\fIDR\fP dir_s 
+.br
+\fIIT\fP dirent_s name 
+.RE
+.PP
+
+.PP
+Definition at line 133 of file file\&.h\&.
+.SS "#define dir_open(PATH)   opendir(PATH)"
+only for conventions 
+.PP
+Definition at line 105 of file file\&.h\&.
+.SS "#define dir_read(D)   readdir(D)"
+only for conventions 
+.PP
+Definition at line 109 of file file\&.h\&.
+.SS "#define dirent_name(ENT)   (ENT)\->d_name"
+entity name 
+.PP
+Definition at line 122 of file file\&.h\&.
+.SS "#define dirent_type(ENT)   (ENT)\->d_type"
+entity type 
+.PP
+Definition at line 124 of file file\&.h\&.
+.SS "#define fd_close(FD)   close(FD)"
+only for name conventions 
+.PP
+Definition at line 274 of file file\&.h\&.
+.SS "#define fd_mem_create(NAME)   memfd_create(NAME,0)"
+create fd from memory with pseudoname 
+.PP
+Definition at line 286 of file file\&.h\&.
+.SS "#define fd_rewind(FD)   lseek(FD,0,SEEK_SET)"
+only for name conventions 
+.PP
+Definition at line 282 of file file\&.h\&.
+.SS "#define fd_seek(FD, POS, AT)   lseek(FD, POS, AT)"
+only for name conventions 
+.PP
+Definition at line 278 of file file\&.h\&.
+.SS "#define fd_stat(FD, PTRSTAT_S)   fstat(FD,PTRSTAT_S)"
+only for name conventions 
+.PP
+Definition at line 288 of file file\&.h\&.
+.SS "#define fd_tell(FD)   lseek(FD, 0, SEEK_CUR)"
+only for name conventions 
+.PP
+Definition at line 280 of file file\&.h\&.
+.SS "#define fd_toend(FD)   lseek(FD, 0, SEEK_END)"
+only for name conventions 
+.PP
+Definition at line 284 of file file\&.h\&.
+.SS "#define fd_truncate(FD, SIZE)   ftruncate(FD, SIZE)"
+only for name conventions 
+.PP
+Definition at line 276 of file file\&.h\&.
+.SS "#define FILE_BLOCK_DEVICES   DT_BLK"
+file is block devices 
+.PP
+Definition at line 88 of file file\&.h\&.
+.SS "#define FILE_BUFFER   4096"
+
+.PP
+Definition at line 18 of file file\&.h\&.
+.SS "#define FILE_CHARACTER_DEVICES   DT_CHR"
+file is char device 
+.PP
+Definition at line 90 of file file\&.h\&.
+.SS "#define FILE_CHUNK   4096"
+
+.PP
+Definition at line 21 of file file\&.h\&.
+.SS "#define FILE_DIRECTORY   DT_DIR"
+file is directory 
+.PP
+Definition at line 92 of file file\&.h\&.
+.SS "#define FILE_FILE   DT_REG"
+file is regular file 
+.PP
+Definition at line 98 of file file\&.h\&.
+.SS "#define FILE_NAMED_PIPE   DT_FIFO"
+file is pipe or fifo 
+.PP
+Definition at line 94 of file file\&.h\&.
+.SS "#define FILE_SOCKET   DT_SOCK"
+file is socket 
+.PP
+Definition at line 100 of file file\&.h\&.
+.SS "#define file_stat(PATH, PTRSTAT_S)   stat(PATH, PTRSTAT_S)"
+only for conventions 
+.PP
+Definition at line 162 of file file\&.h\&.
+.SS "#define FILE_SYMBOLIC_LINK   DT_LNK"
+file is symbolic link 
+.PP
+Definition at line 96 of file file\&.h\&.
+.SS "#define FILE_UNKNOWN   DT_UNKNOWN"
+file is unknown 
+.PP
+Definition at line 102 of file file\&.h\&.
+.SS "#define ftar_close(T)   tar_close(T)"
+close a tar 
+.PP
+Definition at line 330 of file file\&.h\&.
+.SS "#define ftar_get_name(T)   ((T)\->th_buf\&.name)"
+get name of current tar 
+.PP
+Definition at line 343 of file file\&.h\&.
+.SS "#define ftar_get_path(T)   th_get_pathname(tar)"
+get path of current tar 
+.PP
+Definition at line 346 of file file\&.h\&.
+.SS "#define ftar_isdir(T)   TH_ISDIR(T)"
+check if tar is dir 
+.PP
+Definition at line 352 of file file\&.h\&.
+.SS "#define ftar_isreg(T)   TH_ISREG(tar)"
+check if tar is regular file 
+.PP
+Definition at line 355 of file file\&.h\&.
+.SS "#define ftar_read(T)   th_read(T)"
+reading a tar, 1 have read 0 no more data to read 
+.PP
+Definition at line 327 of file file\&.h\&.
+.SS "#define ftar_skip_reg(T)   tar_skip_regfile(T)"
+if you not extract regular file you need to skip him 
+.PP
+Definition at line 349 of file file\&.h\&.
+.SS "#define path_current_set(PATH)   chdir(PATH)"
+set current path 
+.PP
+Definition at line 59 of file file\&.h\&.
+.SS "#define STREAM_CHUNK   4096"
+
+.PP
+Definition at line 391 of file file\&.h\&.
+.SS "#define stream_inp(STREAM, VAR, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+    _Generic(VAR,\
+    int* : stream_inp_char,\
+    char**: stream_inp_string,\
+    long* : stream_inp_long,\
+    unsigned long* : stream_inp_ulong,\
+    size_t: stream_inp_long,\
+    double: stream_inp_double,\
+    float : stream_inp_float\
+)(STREAM, VAR, ## arg)
+.fi
+overloading stream_inp* 
+.PP
+Definition at line 564 of file file\&.h\&.
+.SS "#define STREAM_NUM_MAX_DIGIT   64"
+
+.PP
+Definition at line 403 of file file\&.h\&.
+.SS "#define stream_out(STREAM, VAR, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+  _Generic(VAR,\
+    char:  stream_out_char,\
+    char*: stream_out_string,\
+    int:   stream_out_long,\
+    long:  stream_out_long,\
+    unsigned int:  stream_out_ulong,\
+    unsigned long: stream_out_ulong,\
+    double: stream_out_double,\
+    float : stream_out_double\
+)(STREAM, VAR, ## arg)
+.fi
+overloading stream_out 
+.PP
+Definition at line 627 of file file\&.h\&.
+.SS "#define stream_skip_h(STREAM)   \fBstream_skip_anyof\fP(STREAM, ' \\t')"
+skip space and tab 
+.PP
+Definition at line 668 of file file\&.h\&.
+.SS "#define stream_skip_hnl(STREAM)   \fBstream_skip_anyof\fP(STREAM, ' \\t\\n')"
+skip space tab newline 
+.PP
+Definition at line 671 of file file\&.h\&.
+.SS "#define stream_skip_line(STREAM)   \fBstream_skip_next\fP(STREAM, '\\n')"
+skip a line 
+.PP
+Definition at line 689 of file file\&.h\&.
+.SS "#define stream_skip_n(STREAM)   \fBstream_skip_anyof\fP(STREAM, '0123456789abcdefxABCDEFX\&.')"
+skip numbers [0-9a-fA-FxX_\&.] 
+.PP
+Definition at line 677 of file file\&.h\&.
+.SS "#define stream_skip_w(STREAM)   \fBstream_skip_anyof\fP(STREAM, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_')"
+skip word [a-zA-Z_] 
+.PP
+Definition at line 674 of file file\&.h\&.
+.SS "#define stream_skip_wn(STREAM)   \fBstream_skip_anyof\fP(STREAM, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_\&.')"
+skip word and number [0-9a-zA-Z_] 
+.PP
+Definition at line 680 of file file\&.h\&.
+.SS "#define STREAM_STRING_CHUNK   4096"
+
+.PP
+Definition at line 395 of file file\&.h\&.
+.SS "#define STREAM_STRING_FIT_REALLOC   \fB_Y_\fP"
+
+.PP
+Definition at line 399 of file file\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef ssize_t(* customio_f) (\fBstream_s\fP *, void *, size_t)"
+
+.PP
+Definition at line 370 of file file\&.h\&.
+.SS "typedef DIR \fBdir_s\fP"
+
+.PP
+Definition at line 33 of file file\&.h\&.
+.SS "typedef struct dirent \fBdirent_s\fP"
+
+.PP
+Definition at line 32 of file file\&.h\&.
+.SS "typedef FILE \fBfile_t\fP"
+
+.PP
+Definition at line 31 of file file\&.h\&.
+.SS "typedef struct \fBfiletmp\fP \fBfiletmp_s\fP"
+
+.SS "typedef struct stat \fBstat_s\fP"
+
+.PP
+Definition at line 29 of file file\&.h\&.
+.SS "typedef struct \fBstream\fP \fBstream_s\fP"
+
+.PP
+Definition at line 368 of file file\&.h\&.
+.SS "typedef struct \fBstreamBuffer\fP \fBstreamBuffer_s\fP"
+
+.SS "typedef TAR \fBtar_t\fP"
+
+.PP
+Definition at line 34 of file file\&.h\&.
+.SS "typedef struct utimbuf \fButimbuf_s\fP"
+
+.PP
+Definition at line 30 of file file\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "__printf (2, 3)"
+printf to stream, sm stream object, format same printf, args 
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "void dir_close_auto (\fBdir_s\fP ** dir)"
+automatic close directory 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.SS "int dirent_currentback (\fBdirent_s\fP * ent)"
+return 1 if entity is dot or double dots 
+.SS "void fd_close_auto (int * fd)"
+auto close fd 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.SS "\fBerr_t\fP fd_copy (int fdo, int fdi)"
+copy files 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfdo\fP file output 
+.br
+\fIfdi\fP file input 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error or 0 for successfull 
+.RE
+.PP
+
+.SS "ssize_t fd_kbhit (int fd)"
+count buffer 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP file descriptor 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+how many char waiting for reads 
+.RE
+.PP
+
+.SS "void* fd_mmap (int fd, size_t len, char * mode)"
+map file in address of memory 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP to be mmap 
+.br
+\fIlen\fP len of file 
+.br
+\fImode\fP to be mapped, * for shared mem, w for enable write, r for enable read, e for enable execute, + for add w and r on the selected falgs 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+address or NULL for error, release memory with mem_shared_close 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBmem_shared_close\fP 
+.RE
+.PP
+
+.SS "int fd_open (const char * path, const char * mode, int privileges)"
+open new file descriptor 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP file to open 
+.br
+\fImode\fP select mode to open file, is the same of fopen r open for read, error if not exists r+ open for read write, error if not exists w open for write, create if not exists or truncate if exists w+ same w with read ! before w or r, add exclusive flags, with w fail if file exists & before w or r, add non block flags 
+.br
+\fIprivileges\fP privileges of file, only if you create new file, otherwise you can pass 0 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+new fd, -1 for error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP fd_open_tmp (\fBfiletmp_s\fP * out, const char * path, int privileges)"
+create a temporany file 
+.PP
+\fBParameters\fP
+.RS 4
+\fIout\fP struct filetmp contains opened fd with flags !w+, and filename 
+.br
+\fIpath\fP where to create path, the path need % char where create random value and size need less PATH_MAX-32 
+.br
+\fIprivileges\fP privileges for file 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SS "ssize_t fd_read (int fd, void * buf, size_t size)"
+read file 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP file descriptor 
+.br
+\fIbuf\fP where store data 
+.br
+\fIsize\fP size in byte of buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error or count of bytes readed 
+.RE
+.PP
+
+.SS "ssize_t fd_read_cb (int fd, \fBrbuffer_s\fP * cb, void * out, size_t size)"
+read data from ring buffer, fit from fd is cbuffer is empty 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP file descriptor to read data 
+.br
+\fIcb\fP ring buffer 
+.br
+\fIout\fP buffer to read 
+.br
+\fIsize\fP read all element setting by size, not exit before 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error or count of bytes readed 
+.RE
+.PP
+
+.SS "char* fd_read_cbline (int fd, \fBrbuffer_s\fP * cb, int withnl)"
+read line 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP file descriptor 
+.br
+\fIcb\fP ring bugger 
+.br
+\fIwithnl\fP add new line at end of string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+memory where stored string, you need to free this, otherwise return NULL 
+.RE
+.PP
+
+.SS "ssize_t fd_read_chunk (int fd, void * buf, size_t chunk)"
+read file untle have data or chunk is not full 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP file descriptor 
+.br
+\fIbuf\fP where store data 
+.br
+\fIchunk\fP size in byte of chunk 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error or count of bytes readed 
+.RE
+.PP
+
+.SS "size_t fd_size (int fd)"
+sizeof file 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP file descriptor 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+file size in bytes 
+.RE
+.PP
+
+.SS "void* fd_slurp (size_t * outlen, int fd, size_t chunk, int nullchar)"
+read all file 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP file descriptor 
+.br
+\fIoutlen\fP len of data readed, can pass NULL 
+.br
+\fIchunk\fP size of block to read 
+.br
+\fInullchar\fP if enabled add 0 to the end of buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer to mem where stored data, remember to free this, NULL for error 
+.RE
+.PP
+
+.SS "int fd_timeout (int fd, long timeoutms)"
+wait data to fd 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP fd to wait 
+.br
+\fItimeoutms\fP time to get timeout 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error, 0 data with no timeout, 1 timeout 
+.RE
+.PP
+
+.SS "ssize_t fd_write (int fd, void * buf, size_t size)"
+write file 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP file descriptor 
+.br
+\fIbuf\fP data to write 
+.br
+\fIsize\fP size in byte of buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error or count of bytes writed 
+.RE
+.PP
+
+.SS "\fBerr_t\fP fgz_extract (int fdout, int fdin)"
+extract file gz 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfdin\fP file input 
+.br
+\fIfdout\fP file output 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error 0 otherwise 
+.RE
+.PP
+
+.SS "void file_close_auto (\fBfile_t\fP ** file)"
+auto close file 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.SS "FILE* file_dup (FILE * file, char * mode)"
+duplicate FILE 
+.SS "int file_exists (const char * path)"
+check file exists 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP file to check 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+1 if file exists otherwise 0, no err is pushed, errno is setted 
+.RE
+.PP
+
+.SS "char const* file_extension (char const * name)"
+return pointer to file extension name 
+.SS "\fBerr_t\fP file_rm (const char * path)"
+remove file or directory with all file 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP to delete 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 for successfull; -1 for error, err is pushed errno is setted 
+.RE
+.PP
+
+.SS "void ftar_close_auto (\fBtar_t\fP ** tar)"
+cleanup function 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.SS "\fBerr_t\fP ftar_extract_reg (\fBtar_t\fP * tar, int fdout)"
+extract file 
+.PP
+\fBParameters\fP
+.RS 4
+\fItar\fP tar obj 
+.br
+\fIfdout\fP where write file 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SS "\fBtar_t\fP* ftar_open (const char * path, int orfd, const char * mode)"
+open a tar file 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP if orfd == -1 try to open filename 
+.br
+\fIorfd\fP fd where readind tar file, if -1 open and read from path 
+.br
+\fImode\fP only support r, w is a to do 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+NULL for error or tar object 
+.RE
+.PP
+
+.SS "\fBerr_t\fP path_add (char * path, const char * next)"
+add next to path, add / 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP destination path 
+.br
+\fInext\fP path to add a path 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 for successfull; -1 for error, err is pushed 
+.RE
+.PP
+
+.SS "\fBerr_t\fP path_current (char * path)"
+copy current path 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP a buffer with PATH_MAX size 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull, -1 error, err is pushed and errno is setted 
+.RE
+.PP
+
+.SS "char* path_current_new (void)"
+current path 
+.PP
+\fBReturns\fP
+.RS 4
+string allocated with new path, remember to free; NULL for error, no err is pushed errno is setted 
+.RE
+.PP
+
+.SS "\fBerr_t\fP path_home (char * path)"
+store home directory to path 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP a buffer with PATH_MAX size 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull, -1 error, err is pushed and errno is setted 
+.RE
+.PP
+
+.SS "void path_kill_back (char * path)"
+set 0 last 
+.SS "char* path_resolve (const char * path)"
+resolve path begin with spcial char 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP path need to be resolve 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+path allocate, remember to free; NULL for error, err is pushed 
+.RE
+.PP
+
+.SS "char* path_resolve_custom (const char * path, const char * home, const char * current)"
+same path_resolve but with custom path 
+.SS "void path_set_last (char * path)"
+copy last /name to begin of string 
+.SS "void stream_close (\fBstream_s\fP * sm)"
+close stream 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object to be close 
+.RE
+.PP
+
+.SS "void stream_close_auto (\fBstream_s\fP ** sm)"
+close stream for cleanup 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.SS "void stream_detach (\fBstream_s\fP * sm)"
+detach stream stream from fd, stream is free fd is not closed 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object to be close 
+.RE
+.PP
+
+.SS "void stream_flush (\fBstream_s\fP * sm)"
+flush output 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.RE
+.PP
+
+.SS "ssize_t stream_inp_char (\fBstream_s\fP * sm, int * ch)"
+input char 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fIch\fP pointer to store char, if no data left ch == -1 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+nemelemnt readed; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_inp_double (\fBstream_s\fP * sm, double * num)"
+input double 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fInum\fP pointer to output num 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+element readed; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_inp_float (\fBstream_s\fP * sm, float * num)"
+input float 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fInum\fP pointer to output num 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+nelement readed; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_inp_long (\fBstream_s\fP * sm, long * num, int base)"
+input long 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fInum\fP pointer to output num 
+.br
+\fIbase\fP base of number 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+nelement readed; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_inp_string (\fBstream_s\fP * sm, char ** out, char endch, int addch)"
+input string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fIout\fP string allocated, need to be free 
+.br
+\fIendch\fP char when end input 
+.br
+\fIaddch\fP add endch to the end string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+nelement readed, set NULL to out if no other data available; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_inp_strstr (\fBstream_s\fP * sm, char ** out, char * endstr, int addch)"
+input string with contains endstr 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fIout\fP string allocated, need to be free 
+.br
+\fIendstr\fP string for end input 
+.br
+\fIaddch\fP add string to the end string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+nelement readed, set NULL to out if no other data available; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_inp_toanyof (\fBstream_s\fP * sm, char ** out, char * endch, int addch)"
+input string contains anyof chars 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fIout\fP string allocated, need to be free 
+.br
+\fIendch\fP any char when end input 
+.br
+\fIaddch\fP add endch to the end string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+nelement readed, set NULL to out if no other data available; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_inp_ulong (\fBstream_s\fP * sm, unsigned long * num, int base)"
+input unsigned long 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fInum\fP pointer to output num 
+.br
+\fIbase\fP base of number 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+nelement readed; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_kbhit (\fBstream_s\fP * sm)"
+get size can be read from stream 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+size can be reading; -1 error, err is pushed errno is setted 
+.RE
+.PP
+
+.SS "\fBstream_s\fP* stream_open (const char * path, const char * mode, int privileges, size_t chunk)"
+open stream from path 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP file to open 
+.br
+\fImode\fP how open file 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBfd_open\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIprivileges\fP privileges of file 
+.br
+\fIchunk\fP size of buffe 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+stream successfull; NULL error, err is pushed errno is setted 
+.RE
+.PP
+
+.SS "\fBstream_s\fP* stream_open_fd (int fd, size_t chunk)"
+open stream from fd 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP fd to associate to stream 
+.br
+\fIchunk\fP size of buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+stream successfull; NULL error, err is pushed errno is setted 
+.RE
+.PP
+
+.SS "\fBstream_s\fP* stream_open_mem (const char * name, size_t chunk)"
+open stream from file in memory 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP filename to open 
+.br
+\fIchunk\fP size of buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+stream successfull; NULL error, err is pushed errno is setted 
+.RE
+.PP
+
+.SS "\fBstream_s\fP* stream_open_tmp (char * outpathmax, const char * path, int privileges, size_t chunk)"
+open stream from tmp file 
+.PP
+\fBParameters\fP
+.RS 4
+\fIoutpathmax\fP the output file name 
+.br
+\fIpath\fP file to open 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBfd_open_tmp\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIprivileges\fP privileges of file 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBfd_open\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIchunk\fP size of buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+stream successfull; NULL error, err is pushed errno is setted 
+.RE
+.PP
+
+.SS "\fBerr_t\fP stream_out_char (\fBstream_s\fP * sm, char ch)"
+output char 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fIch\fP char to write 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "\fBerr_t\fP stream_out_double (\fBstream_s\fP * sm, double num, int dec)"
+write double value to stream 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fInum\fP num to write 
+.br
+\fIdec\fP numbers to view after point 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "\fBerr_t\fP stream_out_long (\fBstream_s\fP * sm, long num, int base)"
+fork Lukas Chmela GPLv3, write long value to stream 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fInum\fP num to write 
+.br
+\fIbase\fP base of number 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "\fBerr_t\fP stream_out_string (\fBstream_s\fP * sm, char * str, size_t len)"
+output string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fIstr\fP string 
+.br
+\fIlen\fP len of string, if 0 len is setted to strlen(str) 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "\fBerr_t\fP stream_out_ulong (\fBstream_s\fP * sm, unsigned long num, int base)"
+fork Lukas Chmela GPLv3, write unsigned long value to stream 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fInum\fP num to write 
+.br
+\fIbase\fP base of number 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_read (\fBstream_s\fP * sm, void * buf, size_t size)"
+read from stream 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fIbuf\fP out buffer 
+.br
+\fIsize\fP size of data to be read 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+size of read; -1 error, err is pushed errno is setted 
+.RE
+.PP
+
+.SS "void stream_replace_io (\fBstream_s\fP * sm, \fBcustomio_f\fP r, \fBcustomio_f\fP w, \fBcustomio_f\fP kbhit, void * iouserdata)"
+replace read/write with custom read/write function 
+.SS "void stream_rollback (\fBstream_s\fP * sm, void * data, size_t size)"
+push back data to stream buffer 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fIdata\fP data 
+.br
+\fIsize\fP size of data to be rollback 
+.RE
+.PP
+
+.SS "\fBerr_t\fP stream_seek (\fBstream_s\fP * sm, ssize_t offset, int mode)"
+move stream to position 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fIoffset\fP to move 
+.br
+\fImode\fP SEEK_CUR SEEK_SET SEEK_END 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_size (\fBstream_s\fP * sm)"
+get size of all stream 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+size of stream; -1 error, err is pushed errno is setted 
+.RE
+.PP
+
+.SS "\fBerr_t\fP stream_skip_anyof (\fBstream_s\fP * sm, const char * lst)"
+skip anyof char in lst 
+.SS "\fBerr_t\fP stream_skip_next (\fBstream_s\fP * sm, const char * lst)"
+skip to next char on lst 
+.SS "\fBerr_t\fP stream_skip_to (\fBstream_s\fP * sm, const char * lst)"
+skip to any of char in lst 
+.SS "void* stream_slurp (size_t * outlen, \fBstream_s\fP * sm, int addNullChar)"
+read all stream 
+.PP
+\fBParameters\fP
+.RS 4
+\fIoutlen\fP optional pointer to len of data readed 
+.br
+\fIsm\fP stream object 
+.br
+\fIaddNullChar\fP add 0 to the end of read 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+memory allocated with all stream readed, remember to free; NULL for error, err is pushed errno is setted 
+.RE
+.PP
+
+.SS "const char \fBerr_t\fP stream_stat (\fBstream_s\fP * sm, \fBstat_s\fP * stat)"
+get stat structure from stream 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fIstat\fP stat_s 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_tell (\fBstream_s\fP * sm)"
+return position of stream 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 position; -1 error, err is pushed, ernno is setted 
+.RE
+.PP
+
+.SS "ssize_t stream_write (\fBstream_s\fP * sm, void * buf, size_t size)"
+write to stream 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsm\fP stream object 
+.br
+\fIbuf\fP buffer 
+.br
+\fIsize\fP size of data to be write 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+size of write; -1 error, err is pushed errno is setted 
+.RE
+.PP
+
+.SH "Variable Documentation"
+.PP 
+.SS "const char* format"
+
+.PP
+Definition at line 641 of file file\&.h\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

@@ -1,0 +1,170 @@
+.TH "include/ef/optex.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/optex.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'ef/type\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBargdef\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBopt_enabled\fP(ARGS,  ID)   (ARGS[ID]\&.hasset)"
+.br
+.ti -1c
+.RI "#define \fBopt_arg_str\fP(ARGS,  ID)   (const char*)(ARGS[ID]\&.autoset)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBargdef\fP \fBargdef_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBargdef_e\fP { \fBARGDEF_NOARG\fP, \fBARGDEF_SIGNED\fP, \fBARGDEF_UNSIGNED\fP, \fBARGDEF_DOUBLE\fP, \fBARGDEF_STR\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBopt_parse\fP (\fBargdef_s\fP *args, char **argv, int argc)"
+.br
+.ti -1c
+.RI "void \fBopt_errno\fP (int *ac, int *sub, int *info)"
+.br
+.ti -1c
+.RI "void \fBopt_error\fP (int argc, char **argv)"
+.br
+.ti -1c
+.RI "void \fBopt_usage\fP (\fBargdef_s\fP *args, char *argv0)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define opt_arg_str(ARGS, ID)   (const char*)(ARGS[ID]\&.autoset)"
+get str value automatic setted 
+.PP
+\fBParameters\fP
+.RS 4
+\fIARGS\fP structure argdef 
+.br
+\fIID\fP id of argument 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+const char* 
+.RE
+.PP
+
+.PP
+Definition at line 56 of file optex\&.h\&.
+.SS "#define opt_enabled(ARGS, ID)   (ARGS[ID]\&.hasset)"
+check if option is enabled 
+.PP
+\fBParameters\fP
+.RS 4
+\fIARGS\fP structure argdef 
+.br
+\fIID\fP id of argument 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+1 if set otherwise 0 
+.RE
+.PP
+
+.PP
+Definition at line 49 of file optex\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBargdef\fP \fBargdef_s\fP"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBargdef_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIARGDEF_NOARG \fP\fP
+no argument 
+.TP
+\fB\fIARGDEF_SIGNED \fP\fP
+long argument 
+.TP
+\fB\fIARGDEF_UNSIGNED \fP\fP
+unsigned long argument 
+.TP
+\fB\fIARGDEF_DOUBLE \fP\fP
+double argument 
+.TP
+\fB\fIARGDEF_STR \fP\fP
+.PP
+Definition at line 6 of file optex\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void opt_errno (int * ac, int * sub, int * info)"
+
+.SS "void opt_error (int argc, char ** argv)"
+print error on terminal 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargc\fP main argc 
+.br
+\fIargv\fP main argv 
+.RE
+.PP
+
+.SS "int opt_parse (\fBargdef_s\fP * args, char ** argv, int argc)"
+parse command line arguments 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP the structure argdef 
+.br
+\fIargv\fP the main argv 
+.br
+\fIargc\fP the main argc 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+last argument parsed or -1 for error 
+.RE
+.PP
+
+.SS "void opt_usage (\fBargdef_s\fP * args, char * argv0)"
+display opt usage 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP the structure argdef 
+.br
+\fIargv0\fP the software name 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

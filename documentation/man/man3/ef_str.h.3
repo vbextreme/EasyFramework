@@ -1,0 +1,323 @@
+.TH "include/ef/str.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/str.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBstr_ancmp\fP(A,  B)   strncmp(A,B,strlen(B))"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "char * \fBstr_dup\fP (const char *src, size_t optlen)"
+.br
+.ti -1c
+.RI "char * \fBstr_dup_ch\fP (const char *src, const char ch)"
+.br
+.ti -1c
+.RI "int \fBstr_equal\fP (char const *a, size_t lena, char const *b, size_t lenb)"
+.br
+.ti -1c
+.RI "const char * \fBstr_skip_h\fP (const char *str)"
+.br
+.ti -1c
+.RI "const char * \fBstr_skip_hn\fP (const char *str)"
+.br
+.ti -1c
+.RI "const char * \fBstr_next_line\fP (const char *str)"
+.br
+.ti -1c
+.RI "char * \fBstr_ncpy\fP (char *restrict dst, size_t lend, const char *restrict src, size_t lens)"
+.br
+.ti -1c
+.RI "char * \fBstr_cpy\fP (char *dst, size_t lend, const char *src)"
+.br
+.ti -1c
+.RI "const char * \fBstr_chr\fP (const char *str, const char ch)"
+.br
+.ti -1c
+.RI "char * \fBstring_append\fP (char *dst, size_t *len, size_t *size, const char *src, size_t lenSrc)"
+.br
+.ti -1c
+.RI "char * \fBstring_head\fP (char *dst, size_t *len, size_t *size, const char *src, size_t lenSrc)"
+.br
+.ti -1c
+.RI "char * \fBstr_vprintf\fP (const char *\fBformat\fP, va_list va1, va_list va2)"
+.br
+.ti -1c
+.RI "\fB__printf\fP (1, 2) char *str_printf(const char *\fBformat\fP"
+.br
+.ti -1c
+.RI "void \fBstr_swap\fP (char *restrict a, char *restrict b)"
+.br
+.ti -1c
+.RI "ssize_t \fBstr_chomp\fP (char *str)"
+.br
+.ti -1c
+.RI "char * \fBquote_printable_decode\fP (size_t *len, const char *str)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define str_ancmp(A, B)   strncmp(A,B,strlen(B))"
+strcmp auto strlen 
+.PP
+\fBParameters\fP
+.RS 4
+\fIA\fP string a 
+.br
+\fIB\fP string b where used strlen 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+same value of strncmp 
+.RE
+.PP
+
+.PP
+Definition at line 11 of file str\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "__printf (1, 2) const"
+create string from formst, remember to free 
+.SS "char* quote_printable_decode (size_t * len, const char * str)"
+decode a quote printable string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIlen\fP if len return len of string 
+.br
+\fIstr\fP string to decode 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+allocated string, need to free 
+.RE
+.PP
+
+.SS "ssize_t str_chomp (char * str)"
+remove enter to end line 
+.PP
+\fBReturns\fP
+.RS 4
+new string len or -1 if no enter on string 
+.RE
+.PP
+
+.SS "const char* str_chr (const char * str, const char ch)"
+find ch in string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstr\fP string 
+.br
+\fIch\fP char to search 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer to ch in str or pointer to \\0 in str 
+.RE
+.PP
+
+.SS "char* str_cpy (char * dst, size_t lend, const char * src)"
+copy n char to dest, safe version with 0 
+.PP
+\fBReturns\fP
+.RS 4
+end of dst 
+.RE
+.PP
+
+.SS "char* str_dup (const char * src, size_t optlen)"
+duplicate string in new memory 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsrc\fP string to copy 
+.br
+\fIoptlen\fP if 0 automatic strlen otherwise copy only optlen size and add 0 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+new memory, need to free 
+.RE
+.PP
+
+.SS "char* str_dup_ch (const char * src, const char ch)"
+duplicate string in new memory to ch 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsrc\fP string to copy 
+.br
+\fIch\fP copy to ch, ch is not copy 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+new memory, need to free 
+.RE
+.PP
+
+.SS "int str_equal (char const * a, size_t lena, char const * b, size_t lenb)"
+compare string is equal, before compare len and after use memcmp 
+.PP
+\fBParameters\fP
+.RS 4
+\fIa\fP string to compare 
+.br
+\fIlena\fP len of a, if 0 automatic strlen 
+.br
+\fIb\fP string to compare 
+.br
+\fIlenb\fP len of b, if 0 automatic strlen 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+same value of memcmp 
+.RE
+.PP
+
+.SS "char* str_ncpy (char *restrict dst, size_t lend, const char *restrict src, size_t lens)"
+copy n char to dest, safe version with 0 
+.PP
+\fBReturns\fP
+.RS 4
+end of dst 
+.RE
+.PP
+
+.SS "const char* str_next_line (const char * str)"
+go to next line 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstr\fP string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+first char in next line 
+.RE
+.PP
+
+.SS "const char* str_skip_h (const char * str)"
+skip space and tab from string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstr\fP string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+first char is not h 
+.RE
+.PP
+
+.SS "const char* str_skip_hn (const char * str)"
+skip space, tab and newline from string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstr\fP string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+first char is not hn 
+.RE
+.PP
+
+.SS "void str_swap (char *restrict a, char *restrict b)"
+swap two string content, the array of char need to have same size 
+.PP
+\fBParameters\fP
+.RS 4
+\fIa\fP 
+.br
+\fIb\fP 
+.RE
+.PP
+
+.SS "char* str_vprintf (const char * format, va_list va1, va_list va2)"
+create string from formst 
+.PP
+\fBParameters\fP
+.RS 4
+\fIformat\fP same printf 
+.br
+\fIva1\fP vaarg 
+.br
+\fIva2\fP copy of vaarg 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+allocated string, need to free 
+.RE
+.PP
+
+.SS "char* string_append (char * dst, size_t * len, size_t * size, const char * src, size_t lenSrc)"
+append string in dst, realloc if need 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdst\fP destination 
+.br
+\fIlen\fP len of dest 
+.br
+\fIsize\fP size of dest 
+.br
+\fIsrc\fP source 
+.br
+\fIlenSrc\fP len of src, 0 automatic strlen 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+dst or new address if need 
+.RE
+.PP
+
+.SS "char* string_head (char * dst, size_t * len, size_t * size, const char * src, size_t lenSrc)"
+append string in head of dst, realloc if need 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdst\fP destination 
+.br
+\fIlen\fP len of dest 
+.br
+\fIsize\fP size of dest 
+.br
+\fIsrc\fP source 
+.br
+\fIlenSrc\fP len of src, 0 automatic strlen 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+dst or new address if need 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

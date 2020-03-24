@@ -1,0 +1,236 @@
+.TH "include/ef/deadpoll.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/deadpoll.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/list\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBpollEvent\fP"
+.br
+.ti -1c
+.RI "struct \fBdeadpoll\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBDEADPOLL_ERROR\fP   \-1"
+.br
+.ti -1c
+.RI "#define \fBDEADPOLL_TIMEOUT\fP   1"
+.br
+.ti -1c
+.RI "#define \fBDEADPOLL_EVENT\fP   0"
+.br
+.ti -1c
+.RI "#define \fB__deadpoll_free\fP   \fB__cleanup\fP(\fBdeadpoll_free_auto\fP)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBdeadpoll\fP \fBdeadpoll_s\fP"
+.br
+.ti -1c
+.RI "typedef \fBerr_t\fP(* \fBpollCbk_f\fP) (\fBdeadpoll_s\fP *, int, void *)"
+.br
+.ti -1c
+.RI "typedef struct \fBpollEvent\fP \fBpollEvent_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBerr_t\fP \fBdeadpoll_unregister\fP (\fBdeadpoll_s\fP *dp, int fd)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBdeadpoll_register\fP (\fBdeadpoll_s\fP *dp, int fd, \fBpollCbk_f\fP cbk, void *arg, int onevents, \fBlistFree_f\fP cleanup)"
+.br
+.ti -1c
+.RI "void \fBdeadpoll_register_timeout\fP (\fBdeadpoll_s\fP *dp, \fBpollCbk_f\fP cbk, void *arg)"
+.br
+.ti -1c
+.RI "\fBdeadpoll_s\fP * \fBdeadpoll_new\fP (void)"
+.br
+.ti -1c
+.RI "void \fBdeadpoll_free\fP (\fBdeadpoll_s\fP *dp)"
+.br
+.ti -1c
+.RI "void \fBdeadpoll_free_auto\fP (\fBdeadpoll_s\fP **dp)"
+.br
+.ti -1c
+.RI "int \fBdeadpoll_event\fP (\fBdeadpoll_s\fP *dp, long *timems)"
+.br
+.ti -1c
+.RI "int \fBdeadpoll_loop\fP (\fBdeadpoll_s\fP *dp, long timems)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __deadpoll_free   \fB__cleanup\fP(\fBdeadpoll_free_auto\fP)"
+for cleanup 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.PP
+Definition at line 82 of file deadpoll\&.h\&.
+.SS "#define DEADPOLL_ERROR   \-1"
+an error is occured 
+.PP
+Definition at line 8 of file deadpoll\&.h\&.
+.SS "#define DEADPOLL_EVENT   0"
+event 
+.PP
+Definition at line 12 of file deadpoll\&.h\&.
+.SS "#define DEADPOLL_TIMEOUT   1"
+timeout 
+.PP
+Definition at line 10 of file deadpoll\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBdeadpoll\fP \fBdeadpoll_s\fP"
+
+.PP
+Definition at line 14 of file deadpoll\&.h\&.
+.SS "typedef \fBerr_t\fP(* pollCbk_f) (\fBdeadpoll_s\fP *, int, void *)"
+callback function when raised events 
+.PP
+\fBParameters\fP
+.RS 4
+\fI1\fP deadpoll 
+.br
+\fI2\fP event 
+.br
+\fI3\fP user data 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 ok otherwise deadpoll_event return DEADPOLL_ERROR 
+.RE
+.PP
+
+.PP
+Definition at line 22 of file deadpoll\&.h\&.
+.SS "typedef struct \fBpollEvent\fP \fBpollEvent_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "int deadpoll_event (\fBdeadpoll_s\fP * dp, long * timems)"
+waiting for an events, call callback function if event occurred 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdp\fP deadpoll 
+.br
+\fItimems\fP if NULL is passed, deadpoll infinite wait event, same if timems == -1, if timems == 0 return immediately, if timems > 0 wait time, if time ellapsed execute timeout callback if exists and timems is setted to 0\&. if event is occurred timems is setted to remaining time 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+DEADPOLL_ERROR for error, DEADPOLL_EVENT if one or more events is parsed, DEADPOLL_TIMEOUT if timeout is generate 
+.RE
+.PP
+
+.SS "void deadpoll_free (\fBdeadpoll_s\fP * dp)"
+free epoll, release all resource of deadpoll 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdp\fP deadpoll 
+.RE
+.PP
+
+.SS "void deadpoll_free_auto (\fBdeadpoll_s\fP ** dp)"
+for cleanup 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.SS "int deadpoll_loop (\fBdeadpoll_s\fP * dp, long timems)"
+infinite loop on event, timems -1 infinite wait 
+.SS "\fBdeadpoll_s\fP* deadpoll_new (void)"
+create new epoll 
+.PP
+\fBReturns\fP
+.RS 4
+deadpoll or null for error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP deadpoll_register (\fBdeadpoll_s\fP * dp, int fd, \fBpollCbk_f\fP cbk, void * arg, int onevents, \fBlistFree_f\fP cleanup)"
+register fd to epoll 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdp\fP deadpoll 
+.br
+\fIfd\fP fd to add 
+.br
+\fIcbk\fP callback function 
+.br
+\fIarg\fP userdata pass to callback 
+.br
+\fIonevents\fP if 0 set EPOLLIN | EPOLLET | EPOLLPRI 
+.br
+\fIcleanup\fP called cleanup function with argument pollEvent_s, use this for if need to clean void* arg 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SS "void deadpoll_register_timeout (\fBdeadpoll_s\fP * dp, \fBpollCbk_f\fP cbk, void * arg)"
+register timeout function event 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdp\fP deadpoll 
+.br
+\fIcbk\fP callback function 
+.br
+\fIarg\fP userdata pass to callback 
+.RE
+.PP
+
+.SS "\fBerr_t\fP deadpoll_unregister (\fBdeadpoll_s\fP * dp, int fd)"
+unregister fd from epoll 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdp\fP deadpoll 
+.br
+\fIfd\fP fd to remove 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 ok, -1 if fd not exists or error 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

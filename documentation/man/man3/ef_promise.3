@@ -1,0 +1,107 @@
+.TH "promise" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+promise
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <promise\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "struct \fBpromise\fP ** \fBawait\fP"
+.br
+.ti -1c
+.RI "struct \fBpromise\fP * \fBcaller\fP"
+.br
+.ti -1c
+.RI "ucontext_t \fBctx\fP"
+.br
+.ti -1c
+.RI "void * \fBstack\fP"
+.br
+.ti -1c
+.RI "size_t \fBsize\fP"
+.br
+.ti -1c
+.RI "int \fBprotect\fP"
+.br
+.ti -1c
+.RI "\fBpromise_f\fP \fBfn\fP"
+.br
+.ti -1c
+.RI "void * \fBarg\fP"
+.br
+.ti -1c
+.RI "void * \fBret\fP"
+.br
+.ti -1c
+.RI "int \fBpollev\fP"
+.br
+.ti -1c
+.RI "int \fBid\fP"
+.br
+.ti -1c
+.RI "int \fBstatus\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 17 of file promise\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "void* promise::arg"
+
+.PP
+Definition at line 25 of file promise\&.h\&.
+.SS "struct \fBpromise\fP** promise::await"
+
+.PP
+Definition at line 18 of file promise\&.h\&.
+.SS "struct \fBpromise\fP* promise::caller"
+
+.PP
+Definition at line 19 of file promise\&.h\&.
+.SS "ucontext_t promise::ctx"
+
+.PP
+Definition at line 20 of file promise\&.h\&.
+.SS "\fBpromise_f\fP promise::fn"
+
+.PP
+Definition at line 24 of file promise\&.h\&.
+.SS "int promise::id"
+promise id, main promise have id 1, and id 0 is for epoll promise 
+.PP
+Definition at line 28 of file promise\&.h\&.
+.SS "int promise::pollev"
+event epoll 
+.PP
+Definition at line 27 of file promise\&.h\&.
+.SS "int promise::protect"
+
+.PP
+Definition at line 23 of file promise\&.h\&.
+.SS "void* promise::ret"
+return value 
+.PP
+Definition at line 26 of file promise\&.h\&.
+.SS "size_t promise::size"
+
+.PP
+Definition at line 22 of file promise\&.h\&.
+.SS "void* promise::stack"
+
+.PP
+Definition at line 21 of file promise\&.h\&.
+.SS "int promise::status"
+
+.PP
+Definition at line 29 of file promise\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

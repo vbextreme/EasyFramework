@@ -1,0 +1,174 @@
+.TH "include/ef/promise.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/promise.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ucontext\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBpromise\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBPROMISE_STACK_DEFAULT\fP   (8UL * \fBMiB\fP)"
+.br
+.ti -1c
+.RI "#define \fBPROMISE_STATUS_IDLE\fP   0"
+.br
+.ti -1c
+.RI "#define \fBPROMISE_STATUS_STOPPED\fP   1"
+.br
+.ti -1c
+.RI "#define \fBPROMISE_STATUS_TERMINATED\fP   2"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef void *(* \fBpromise_f\fP) (void *)"
+.br
+.ti -1c
+.RI "typedef struct \fBpromise\fP \fBpromise_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBpromise_yield\fP (void)"
+.br
+.ti -1c
+.RI "\fBpromise_s\fP * \fBpromise_start\fP (int id, size_t stacksize, \fBpromise_f\fP fn, void *arg)"
+.br
+.ti -1c
+.RI "int \fBpromise_await_fd\fP (int fd, int events)"
+.br
+.ti -1c
+.RI "void \fBpromise_delay\fP (long ms)"
+.br
+.ti -1c
+.RI "\fBpromise_s\fP * \fBpromise_await\fP (\fBpromise_s\fP *co)"
+.br
+.ti -1c
+.RI "\fBpromise_s\fP * \fBpromise_anyof\fP (\fBpromise_s\fP **co)"
+.br
+.ti -1c
+.RI "void \fBpromise_begin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBpromise_end\fP (void)"
+.br
+.ti -1c
+.RI "void \fBpromise_finalize\fP (\fBpromise_s\fP *tsk)"
+.br
+.ti -1c
+.RI "\fBpromise_s\fP * \fBpromise_self\fP (void)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define PROMISE_STACK_DEFAULT   (8UL * \fBMiB\fP)"
+
+.PP
+Definition at line 8 of file promise\&.h\&.
+.SS "#define PROMISE_STATUS_IDLE   0"
+
+.PP
+Definition at line 11 of file promise\&.h\&.
+.SS "#define PROMISE_STATUS_STOPPED   1"
+
+.PP
+Definition at line 12 of file promise\&.h\&.
+.SS "#define PROMISE_STATUS_TERMINATED   2"
+
+.PP
+Definition at line 13 of file promise\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef void*(* promise_f) (void *)"
+
+.PP
+Definition at line 15 of file promise\&.h\&.
+.SS "typedef struct \fBpromise\fP \fBpromise_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "\fBpromise_s\fP* promise_anyof (\fBpromise_s\fP ** co)"
+wait any of promise 
+.PP
+\fBParameters\fP
+.RS 4
+\fIco\fP is vector of promise 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a promise finished 
+.RE
+.PP
+
+.SS "\fBpromise_s\fP* promise_await (\fBpromise_s\fP * co)"
+wait a promise 
+.PP
+\fBReturns\fP
+.RS 4
+a ended promise 
+.RE
+.PP
+
+.SS "int promise_await_fd (int fd, int events)"
+in promise wait event on fd 
+.PP
+\fBReturns\fP
+.RS 4
+event raised 
+.RE
+.PP
+
+.SS "void promise_begin (void)"
+before used promise 
+.SS "void promise_delay (long ms)"
+sleep in promise 
+.SS "void promise_end (void)"
+after end use promise 
+.SS "void promise_finalize (\fBpromise_s\fP * tsk)"
+when finish to use promise call finalize 
+.SS "\fBpromise_s\fP* promise_self (void)"
+return promise inside a promise 
+.SS "\fBpromise_s\fP* promise_start (int id, size_t stacksize, \fBpromise_f\fP fn, void * arg)"
+start new promise 
+.PP
+\fBParameters\fP
+.RS 4
+\fIid\fP id for promise, > 1 
+.br
+\fIstacksize\fP set stack size, 0 automatic set to default value 
+.br
+\fIfn\fP functon where start promise 
+.br
+\fIarg\fP argument to pass a function 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+.RE
+.PP
+
+.SS "void promise_yield (void)"
+change context to next promise 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

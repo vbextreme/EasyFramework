@@ -1,0 +1,100 @@
+.TH "include/ef/config.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/config.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/file\&.h>\fP
+.br
+\fC#include <ef/trie\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBconfigTrie\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBCONFF_ERROR\fP   0x01"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef int(* \fBconfig_f\fP) (int type, char **value, void *userdata)"
+.br
+.ti -1c
+.RI "typedef struct \fBconfigTrie\fP \fBconfigTrie_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBconfig_parse_line\fP (\fBtrie_s\fP *tr, \fBstream_s\fP *sm)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBconfig_parse\fP (\fBtrie_s\fP *tr, \fBstream_s\fP *sm)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define CONFF_ERROR   0x01"
+
+.PP
+Definition at line 8 of file config\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef int(* config_f) (int type, char **value, void *userdata)"
+
+.PP
+Definition at line 10 of file config\&.h\&.
+.SS "typedef struct \fBconfigTrie\fP \fBconfigTrie_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "\fBerr_t\fP config_parse (\fBtrie_s\fP * tr, \fBstream_s\fP * sm)"
+read all configuration file 
+.PP
+\fBParameters\fP
+.RS 4
+\fItr\fP a trie with endnode contains a configTrie_s 
+.br
+\fIsm\fP a stream 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull, -1 for error 
+.RE
+.PP
+
+.SS "int config_parse_line (\fBtrie_s\fP * tr, \fBstream_s\fP * sm)"
+read a config file, accept KEY KEY = VALUE KEY = 'VALUE' KEY = 'VALUE' 
+.PP
+\fBParameters\fP
+.RS 4
+\fItr\fP a trie with endnode contains a configTrie_s 
+.br
+\fIsm\fP a stream 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+1 if read one config, 0 no more config to read, -1 for error 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

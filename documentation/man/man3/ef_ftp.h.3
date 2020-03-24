@@ -1,0 +1,132 @@
+.TH "include/ef/ftp.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/ftp.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/www\&.h>\fP
+.br
+\fC#include <ef/vector\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBftpStat\fP"
+.br
+.ti -1c
+.RI "struct \fBftp\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBFTP_FTYPE_REG\fP   0"
+.br
+.ti -1c
+.RI "#define \fBFTP_FTYPE_LINK\fP   1"
+.br
+.ti -1c
+.RI "#define \fBFTP_FTYPE_DIR\fP   2"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBftpStat\fP \fBftpStat_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBftp\fP \fBftp_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBftp_s\fP * \fBftp_new\fP (size_t bufferupsize, int flags, \fBwwwProgress_s\fP *prog)"
+.br
+.ti -1c
+.RI "void \fBftp_free\fP (\fBftp_s\fP *\fBftp\fP)"
+.br
+.ti -1c
+.RI "void \fBftp_user_password\fP (\fBftp_s\fP *\fBftp\fP, const char *user, const char *pass)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBftp_site\fP (\fBftp_s\fP *\fBftp\fP, const char *url)"
+.br
+.ti -1c
+.RI "void \fBftp_cd\fP (\fBftp_s\fP *\fBftp\fP, const char *path)"
+.br
+.ti -1c
+.RI "\fBftpStat_s\fP * \fBftp_list\fP (\fBftp_s\fP *\fBftp\fP)"
+.br
+.ti -1c
+.RI "void \fBftp_stat_vector_free\fP (\fBftpStat_s\fP *v)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBftp_rename\fP (\fBftp_s\fP *\fBftp\fP, const char *from, const char *to)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBftp_unlink\fP (\fBftp_s\fP *\fBftp\fP, const char *fname)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBftp_mkdir\fP (\fBftp_s\fP *\fBftp\fP, const char *name)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBftp_rmdir\fP (\fBftp_s\fP *\fBftp\fP, const char *name)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define FTP_FTYPE_DIR   2"
+
+.PP
+Definition at line 10 of file ftp\&.h\&.
+.SS "#define FTP_FTYPE_LINK   1"
+
+.PP
+Definition at line 9 of file ftp\&.h\&.
+.SS "#define FTP_FTYPE_REG   0"
+
+.PP
+Definition at line 8 of file ftp\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBftp\fP \fBftp_s\fP"
+
+.SS "typedef struct \fBftpStat\fP \fBftpStat_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "void ftp_cd (\fBftp_s\fP * ftp, const char * path)"
+
+.SS "void ftp_free (\fBftp_s\fP * ftp)"
+
+.SS "\fBftpStat_s\fP* ftp_list (\fBftp_s\fP * ftp)"
+
+.SS "\fBerr_t\fP ftp_mkdir (\fBftp_s\fP * ftp, const char * name)"
+
+.SS "\fBftp_s\fP* ftp_new (size_t bufferupsize, int flags, \fBwwwProgress_s\fP * prog)"
+
+.SS "\fBerr_t\fP ftp_rename (\fBftp_s\fP * ftp, const char * from, const char * to)"
+
+.SS "\fBerr_t\fP ftp_rmdir (\fBftp_s\fP * ftp, const char * name)"
+
+.SS "\fBerr_t\fP ftp_site (\fBftp_s\fP * ftp, const char * url)"
+
+.SS "void ftp_stat_vector_free (\fBftpStat_s\fP * v)"
+
+.SS "\fBerr_t\fP ftp_unlink (\fBftp_s\fP * ftp, const char * fname)"
+
+.SS "void ftp_user_password (\fBftp_s\fP * ftp, const char * user, const char * pass)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

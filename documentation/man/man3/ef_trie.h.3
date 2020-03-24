@@ -1,0 +1,212 @@
+.TH "include/ef/trie.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/trie.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtrieElement\fP"
+.br
+.ti -1c
+.RI "struct \fBtrie\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fB__trie_free\fP   \fB__cleanup\fP(\fBtrie_free_auto\fP)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef void(* \fBtrieFree_f\fP) (void *)"
+.br
+.ti -1c
+.RI "typedef struct \fBtrieElement\fP \fBtrieElement_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtrie\fP \fBtrie_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBtrieStep_e\fP { \fBTRIE_STEP_ERROR\fP = -1, \fBTRIE_STEP_NEXT\fP, \fBTRIE_STEP_END_NODE\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBtrie_s\fP * \fBtrie_new\fP (\fBtrieFree_f\fP freefnc)"
+.br
+.ti -1c
+.RI "void \fBtrie_free\fP (\fBtrie_s\fP *\fBtrie\fP)"
+.br
+.ti -1c
+.RI "void \fBtrie_free_auto\fP (\fBtrie_s\fP **\fBtrie\fP)"
+.br
+.ti -1c
+.RI "\fBtrieElement_s\fP * \fBtrie_add\fP (\fBtrieElement_s\fP *node, char ch, void *data)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBtrie_insert\fP (\fBtrie_s\fP *\fBtrie\fP, const char *str, void *data)"
+.br
+.ti -1c
+.RI "\fBtrieStep_e\fP \fBtrie_step\fP (void **out, \fBtrieElement_s\fP **el, char ch)"
+.br
+.ti -1c
+.RI "void * \fBtrie_search\fP (\fBtrie_s\fP *\fBtrie\fP, const char *str)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __trie_free   \fB__cleanup\fP(\fBtrie_free_auto\fP)"
+cleanup 
+.PP
+Definition at line 40 of file trie\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBtrie\fP \fBtrie_s\fP"
+
+.SS "typedef struct \fBtrieElement\fP \fBtrieElement_s\fP"
+
+.SS "typedef void(* trieFree_f) (void *)"
+
+.PP
+Definition at line 6 of file trie\&.h\&.
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBtrieStep_e\fP"
+trie step state 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fITRIE_STEP_ERROR \fP\fP
+error on step 
+.TP
+\fB\fITRIE_STEP_NEXT \fP\fP
+can step next 
+.TP
+\fB\fITRIE_STEP_END_NODE \fP\fP
+can step next or end node 
+.PP
+Definition at line 20 of file trie\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "\fBtrieElement_s\fP* trie_add (\fBtrieElement_s\fP * node, char ch, void * data)"
+add node from current node 
+.PP
+\fBParameters\fP
+.RS 4
+\fInode\fP current node 
+.br
+\fIch\fP new char 
+.br
+\fIdata\fP if not null is an end node 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+next node 
+.RE
+.PP
+
+.SS "void trie_free (\fBtrie_s\fP * trie)"
+free trie, call free for each element 
+.PP
+\fBParameters\fP
+.RS 4
+\fItrie\fP trie 
+.RE
+.PP
+
+.SS "void trie_free_auto (\fBtrie_s\fP ** trie)"
+
+.SS "\fBerr_t\fP trie_insert (\fBtrie_s\fP * trie, const char * str, void * data)"
+insert string in trie 
+.PP
+\fBParameters\fP
+.RS 4
+\fItrie\fP 
+.br
+\fIstr\fP string to insert 
+.br
+\fIdata\fP userdata for end node 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull; -1 error 
+.RE
+.PP
+
+.SS "\fBtrie_s\fP* trie_new (\fBtrieFree_f\fP freefnc)"
+create a trie 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfreefnc\fP a free function called for each element 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+trie or NULL for error 
+.RE
+.PP
+
+.SS "void* trie_search (\fBtrie_s\fP * trie, const char * str)"
+search in trie 
+.PP
+\fBParameters\fP
+.RS 4
+\fItrie\fP 
+.br
+\fIstr\fP string to search 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+userdata if find endnode otherwise NULL 
+.RE
+.PP
+
+.SS "\fBtrieStep_e\fP trie_step (void ** out, \fBtrieElement_s\fP ** el, char ch)"
+step in trie 
+.PP
+\fBParameters\fP
+.RS 4
+\fIout\fP out userdata if is an end node 
+.br
+\fIel\fP current element 
+.br
+\fIch\fP char to check 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+trieStep 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBtrieStep_e\fP 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

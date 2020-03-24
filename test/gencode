@@ -1,0 +1,113 @@
+#!/usr/bin/env  perl
+
+=pod
+
+=head1 NAME
+
+=head2 SYNOPSIS
+
+=head2 USAGE
+
+=head2 COPYRIGHT
+
+Copyright vbextreme 2017
+License gplv3
+
+=cut
+
+use strict;
+use warnings;
+use lib '.' ;
+use File::Copy;
+
+die "usage:\ngencode <srcdir> <mesonpath>\n" if scalar(@ARGV) < 2;
+
+my ($basedir, $mesonpath) = @ARGV;
+
+my $outname = "$basedir/autogen.h";
+my $mesonfile = "$mesonpath/meson.build";
+my $tmpmeson = "/tmp/meson";
+
+unlink $outname;
+open my $fo, '>', $outname or die "error on create file $outname";
+print $fo "#ifndef _AUTOGEN_H_\n";
+print $fo "#define _AUTOGEN_H_\n";
+
+my @opts;
+my @fns;
+my @build;
+my $fnnext = 0;
+my @files = <$basedir/*>;
+foreach my $file (@files) {
+	open my $fd, '<', $file or die "no such file $file";
+	while( my $line = <$fd> ){
+		chomp $line;
+		if( $fnnext ){
+			(my $proto = $line) =~ s/\{$//;
+			$proto .= ";";
+			push @fns, $proto;
+			$fnnext = 0;
+		}
+		elsif( $line =~ /\/\*\@[ \t]*([^ \t\*]+)([^\*]*)/ ){
+			my $cmd = $1;
+			my $args = $2;
+			#print $cmd . "\n";
+			if( $cmd eq 'test' ){
+				my ($short, $long, $desc) = $args =~ /[ \t]*\-([a-zA-Z])[ \t]+\-\-([a-zA-Z-]+)[ \t]+'([^']+)/;
+				push @opts, { short => $short, long => $long, desc => $desc };
+				push @build, $file;
+			}
+			elsif( $cmd eq 'fn' ){
+				$fnnext = 1;
+			}
+		}
+	}
+}
+
+print $fo "#define AUTOGEN_OPT ";
+foreach my $refopt (@opts){	
+	print $fo "\\\n{ 0, '$refopt->{short}', \"$refopt->{long}\", ARGDEF_NOARG, NULL, \"$refopt->{desc}\"},";
+}
+print $fo "\n";
+
+print $fo "#define AUTOGEN_PROTO ";
+foreach my $proto (@fns){	
+	print $fo "\\\n$proto";
+}
+print $fo "\n";
+
+print $fo "#define AUTOGEN_FN ";
+foreach my $proto (@fns){
+	my ($fname) = $proto =~ /[ \t]*[^ \t]+[ \t]+([^ \t\(]+)/;
+	print $fo "\\\n$fname,";
+}
+print $fo "\n";
+
+print $fo "#endif\n";
+
+open my $fd, '<', $mesonfile or die "no such file $mesonfile";
+open my $fm, '>', $tmpmeson or die "no such file $tmpmeson";
+my $skip = 0;
+while( my $line = <$fd> ){
+	if( $skip ){
+		if( $line =~ /\#\@[ \t]*end/ ){
+			$skip = 0;
+			print $fm $line;
+		}
+	}
+	else{
+		print $fm $line;
+	}
+	if( $line =~ /\#\@[ \t]*src/ ){
+		$skip = 1;
+		foreach my $file (@build){
+			$file =~ s/^[\.\/]*//;
+			print $fm "src += [ '$file' ]\n";
+		}	
+	}
+}
+
+close $fd;
+close $fm;
+copy($tmpmeson,${mesonfile}) or die "fail copy";
+unlink $tmpmeson;

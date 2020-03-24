@@ -1,0 +1,184 @@
+.TH "include/ef/err.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/err.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <threads\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBeerr\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBERR_REALLOC\fP   32"
+.br
+.ti -1c
+.RI "#define \fBERR_ENABLED\fP   0x01"
+.br
+.ti -1c
+.RI "#define \fBERR_RESTORE_STACK_SIZE\fP   32"
+.br
+.ti -1c
+.RI "#define \fBerr_push\fP(F,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fBerr_pushno\fP(F,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fBerr_fail\fP(F,  arg\&.\&.\&.)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBeerr\fP \fBeerr_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBerr_begin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBerr_end\fP (void)"
+.br
+.ti -1c
+.RI "\fB__printf\fP (1, 2) void err_pushf(const char *\fBformat\fP"
+.br
+.ti -1c
+.RI "void \fBerr_disable\fP (void)"
+.br
+.ti -1c
+.RI "void \fBerr_enable\fP (void)"
+.br
+.ti -1c
+.RI "void \fBerr_store\fP (void)"
+.br
+.ti -1c
+.RI "void \fBerr_restore\fP (void)"
+.br
+.ti -1c
+.RI "const char * \fBerr_descript\fP (void)"
+.br
+.ti -1c
+.RI "void \fBerr_print\fP (void)"
+.br
+.ti -1c
+.RI "void \fBerr_clear\fP (void)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "thread_local \fBeerr_s\fP \fBgerr\fP"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define ERR_ENABLED   0x01"
+
+.PP
+Definition at line 18 of file err\&.h\&.
+.SS "#define err_fail(F, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+ do{\
+    if( gerr\&.descript && (gerr\&.flags & ERR_ENABLED) ){\
+        err_pushf("fail %s->%s(%u):: ", __FILE__, __FUNCTION__, __LINE__);\
+        err_pushf(F, ## arg);\
+        err_pushf("\n");\
+        err_print();\
+    }\
+    exit(1);\
+}while(0)
+.fi
+push error, print and exit 
+.PP
+Definition at line 53 of file err\&.h\&.
+.SS "#define err_push(F, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+      do{\
+    if( gerr\&.descript && (gerr\&.flags & ERR_ENABLED) ){\
+        err_pushf("error %s->%s(%u):: ", __FILE__, __FUNCTION__, __LINE__);\
+        err_pushf(F, ## arg);\
+        err_pushf("\n");\
+    }\
+}while(0)
+.fi
+push new error descript, call err_pushf with 'error: your error nl' 
+.PP
+Definition at line 35 of file err\&.h\&.
+.SS "#define err_pushno(F, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+    do{\
+    if( gerr\&.descript && (gerr\&.flags & ERR_ENABLED) ){\
+        err_pushf("error %s->%s(%u):: ", __FILE__, __FUNCTION__, __LINE__);\
+        err_pushf(F, ## arg);\
+        err_pushf("\nerrno(%d): %s\n", errno, strerror(errno));\
+    }\
+}while(0)
+.fi
+push new error with errno descript, call err_pushf with 'error: your error nl errno(N): descript nl' 
+.PP
+Definition at line 44 of file err\&.h\&.
+.SS "#define ERR_REALLOC   32"
+
+.PP
+Definition at line 17 of file err\&.h\&.
+.SS "#define ERR_RESTORE_STACK_SIZE   32"
+
+.PP
+Definition at line 19 of file err\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBeerr\fP \fBeerr_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "__printf (1, 2) const"
+push new error descript 
+.SS "void err_begin (void)"
+call before use error 
+.SS "void err_clear (void)"
+clear all error 
+.SS "const char* err_descript (void)"
+get string of error 
+.SS "void err_disable (void)"
+disable error, automatic store 
+.SS "void err_enable (void)"
+enable error, automatic store 
+.SS "void err_end (void)"
+call after end of use error 
+.SS "void err_print (void)"
+print error on stderr 
+.SS "void err_restore (void)"
+restore enable/disable error 
+.SS "void err_store (void)"
+store enable/disable error 
+.SH "Variable Documentation"
+.PP 
+.SS "thread_local \fBeerr_s\fP gerr"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

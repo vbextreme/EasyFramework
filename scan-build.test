@@ -1,0 +1,9 @@
+#!/bin/bash
+cd build
+ninja clean
+ninja scan-build
+REPORT=$(ls meson-logs/scanbuild)
+echo $REPORT
+[[ "$REPORT" != "" ]] && scan-view meson-logs/scanbuild/$REPORT
+
+

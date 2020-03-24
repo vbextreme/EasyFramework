@@ -1,0 +1,107 @@
+.TH "include/ef/spawn.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/spawn.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBSPAWN_SHELL_PATH\fP   '/bin/bash'"
+.br
+.ti -1c
+.RI "#define \fBSPAWN_ARGUMENT\fP   '\-c'"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "const char * \fBos_shell_get\fP (void)"
+.br
+.ti -1c
+.RI "void \fBspawn_disable_zombie\fP (void)"
+.br
+.ti -1c
+.RI "void \fBspawn_end\fP (void)"
+.br
+.ti -1c
+.RI "pid_t \fBspawn_shell\fP (const char *cmdline, int disableoutput)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBspawn_shell_slurp\fP (char **out, char **err, int *exitcode, const char *cmdline)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBspawn_wait\fP (pid_t pid, int *exitcode)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBspawn_check\fP (pid_t pid, int *exitcode)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define SPAWN_ARGUMENT   '\-c'"
+arg for exec 
+.PP
+Definition at line 10 of file spawn\&.h\&.
+.SS "#define SPAWN_SHELL_PATH   '/bin/bash'"
+if no $SHELL is find use bash 
+.PP
+Definition at line 8 of file spawn\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "const char* os_shell_get (void)"
+return shell path 
+.SS "\fBerr_t\fP spawn_check (pid_t pid, int * exitcode)"
+same wait pid but without wait 
+.SS "void spawn_disable_zombie (void)"
+disable zombie, warning, this disable get exit status 
+.SS "void spawn_end (void)"
+call whend end of use spawn, wait(NULL) 
+.SS "pid_t spawn_shell (const char * cmdline, int disableoutput)"
+execute command in shell 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcmdline\fP command to execute 
+.br
+\fIdisableoutput\fP disable stdout stderr 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pid of command or -1 
+.RE
+.PP
+
+.SS "\fBerr_t\fP spawn_shell_slurp (char ** out, char ** err, int * exitcode, const char * cmdline)"
+execute command in shell and slurp out/err 
+.PP
+\fBParameters\fP
+.RS 4
+\fIout\fP the stdout string, remember to free 
+.br
+\fIerr\fP the stderr string, remember to free 
+.br
+\fIexitcode\fP exit code if not null 
+.br
+\fIcmdline\fP cmdline command 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP spawn_wait (pid_t pid, int * exitcode)"
+wait a pid 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

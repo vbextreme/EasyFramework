@@ -1,0 +1,310 @@
+.TH "include/ef/www.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/www.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <curl/curl\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBwwwBuffer_s\fP"
+.br
+.ti -1c
+.RI "struct \fBwwwProgress\fP"
+.br
+.ti -1c
+.RI "struct \fBwww\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBWWW_FLAGS_SSL\fP   0x01"
+.br
+.ti -1c
+.RI "#define \fBWWW_FLAGS_APP_JSON\fP   0x02"
+.br
+.ti -1c
+.RI "#define \fBWWW_FLAGS_BODY\fP   0x04"
+.br
+.ti -1c
+.RI "#define \fBWWW_FLAGS_HEADER\fP   0x08"
+.br
+.ti -1c
+.RI "#define \fBWWW_FLAGS_FOLLOW\fP   0x10"
+.br
+.ti -1c
+.RI "#define \fBWWW_FLAGS_FD\fP   0x20"
+.br
+.ti -1c
+.RI "#define \fBWWW_FLAGS_SENDS\fP   0x40"
+.br
+.ti -1c
+.RI "#define \fBWWW_FLAGS_SEND_FD\fP   0x80"
+.br
+.ti -1c
+.RI "#define \fBwww_errno_str\fP()   curl_easy_strerror(errno)"
+.br
+.ti -1c
+.RI "#define \fBWWW_BUFFER_NEW\fP(UPSIZE)   { \&.buf = NULL, \&.size = 0, \&.len = 0, \&.upto = UPSIZE }"
+.br
+.ti -1c
+.RI "#define \fB__www_buffer_delete\fP   \fB__cleanup\fP(\fBwww_buffer_delete\fP)"
+.br
+.ti -1c
+.RI "#define \fB__www_delete\fP   \fB__cleanup\fP(\fBwww_delete\fP)"
+.br
+.ti -1c
+.RI "#define \fB__www_escape_free\fP   \fB__cleanup\fP(\fBwww_curl_free\fP)"
+.br
+.ti -1c
+.RI "#define \fBwww_uri_escape\fP(WWW,  STR,  LEN)   curl_easy_escape((WWW)\->h, STR, LEN)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBwwwBuffer_s\fP \fBwwwBuffer_s\fP"
+.br
+.ti -1c
+.RI "typedef void(* \fBwwwprogress_f\fP) (const char *name, double current, double total, double speed)"
+.br
+.ti -1c
+.RI "typedef struct \fBwwwProgress\fP \fBwwwProgress_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBwww\fP \fBwww_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBwww_begin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBwww_end\fP (void)"
+.br
+.ti -1c
+.RI "void \fBwww_buffer_init\fP (\fBwwwBuffer_s\fP *buf, size_t upto)"
+.br
+.ti -1c
+.RI "void \fBwww_buffer_delete\fP (\fBwwwBuffer_s\fP *buf)"
+.br
+.ti -1c
+.RI "void \fBwww_buffer_upsize\fP (\fBwwwBuffer_s\fP *buf, size_t addsize)"
+.br
+.ti -1c
+.RI "void \fBwww_set_ssl\fP (\fBwww_s\fP *\fBwww\fP, int flags)"
+.br
+.ti -1c
+.RI "void \fBwww_set_app_json\fP (\fBwww_s\fP *\fBwww\fP, int flags)"
+.br
+.ti -1c
+.RI "void \fBwww_set_recv_mode\fP (\fBwww_s\fP *\fBwww\fP, int flags)"
+.br
+.ti -1c
+.RI "void \fBwww_set_send_mode\fP (\fBwww_s\fP *\fBwww\fP, int flags)"
+.br
+.ti -1c
+.RI "void \fBwww_set_follow\fP (\fBwww_s\fP *\fBwww\fP, int flags)"
+.br
+.ti -1c
+.RI "void \fBwww_set_progress\fP (\fBwww_s\fP *\fBwww\fP, \fBwwwProgress_s\fP *prog)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBwww_init\fP (\fBwww_s\fP *\fBwww\fP, size_t bufferupsize, int flags, \fBwwwProgress_s\fP *prog)"
+.br
+.ti -1c
+.RI "void \fBwww_delete\fP (\fBwww_s\fP *\fBwww\fP)"
+.br
+.ti -1c
+.RI "void \fBwww_curl_free\fP (void *mem)"
+.br
+.ti -1c
+.RI "void \fBwww_url_set\fP (\fBwww_s\fP *\fBwww\fP, const char *url)"
+.br
+.ti -1c
+.RI "void \fBwww_fd_set\fP (\fBwww_s\fP *\fBwww\fP, int *fd)"
+.br
+.ti -1c
+.RI "void \fBwww_send_fd_set\fP (\fBwww_s\fP *\fBwww\fP, int *fd)"
+.br
+.ti -1c
+.RI "void \fBwww_send_set\fP (\fBwww_s\fP *\fBwww\fP, \fBwwwBuffer_s\fP *buf)"
+.br
+.ti -1c
+.RI "void \fBwww_post_set\fP (\fBwww_s\fP *\fBwww\fP, struct curl_httppost *post)"
+.br
+.ti -1c
+.RI "void \fBwww_user_pass_set\fP (\fBwww_s\fP *\fBwww\fP, const char *user, const char *psw)"
+.br
+.ti -1c
+.RI "\fB__printf\fP (2, 3) void www_custom_reqest(\fBwww_s\fP *\fBwww\fP"
+.br
+.ti -1c
+.RI "const char void \fBwww_header_list_append\fP (\fBwww_s\fP *\fBwww\fP, const char *str)"
+.br
+.ti -1c
+.RI "void \fBwww_header_list_delete\fP (\fBwww_s\fP *\fBwww\fP)"
+.br
+.ti -1c
+.RI "void \fBwww_resume\fP (\fBwww_s\fP *\fBwww\fP, ssize_t resume)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBwww_perform\fP (\fBwww_s\fP *\fBwww\fP, int retcode)"
+.br
+.ti -1c
+.RI "void \fBwww_dump_buffers\fP (\fBwww_s\fP *\fBwww\fP)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "const char * \fBformat\fP"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __www_buffer_delete   \fB__cleanup\fP(\fBwww_buffer_delete\fP)"
+cleanup function 
+.PP
+Definition at line 51 of file www\&.h\&.
+.SS "#define __www_delete   \fB__cleanup\fP(\fBwww_delete\fP)"
+cleanup 
+.PP
+Definition at line 100 of file www\&.h\&.
+.SS "#define __www_escape_free   \fB__cleanup\fP(\fBwww_curl_free\fP)"
+curl cleanup 
+.PP
+Definition at line 103 of file www\&.h\&.
+.SS "#define WWW_BUFFER_NEW(UPSIZE)   { \&.buf = NULL, \&.size = 0, \&.len = 0, \&.upto = UPSIZE }"
+for static initialization 
+.PP
+Definition at line 42 of file www\&.h\&.
+.SS "#define www_errno_str()   curl_easy_strerror(errno)"
+
+.PP
+Definition at line 31 of file www\&.h\&.
+.SS "#define WWW_FLAGS_APP_JSON   0x02"
+reply in json format 
+.PP
+Definition at line 10 of file www\&.h\&.
+.SS "#define WWW_FLAGS_BODY   0x04"
+get body as data 
+.PP
+Definition at line 12 of file www\&.h\&.
+.SS "#define WWW_FLAGS_FD   0x20"
+write on fd 
+.PP
+Definition at line 18 of file www\&.h\&.
+.SS "#define WWW_FLAGS_FOLLOW   0x10"
+follow location 
+.PP
+Definition at line 16 of file www\&.h\&.
+.SS "#define WWW_FLAGS_HEADER   0x08"
+get header as data 
+.PP
+Definition at line 14 of file www\&.h\&.
+.SS "#define WWW_FLAGS_SEND_FD   0x80"
+read on fd 
+.PP
+Definition at line 22 of file www\&.h\&.
+.SS "#define WWW_FLAGS_SENDS   0x40"
+read on buffers 
+.PP
+Definition at line 20 of file www\&.h\&.
+.SS "#define WWW_FLAGS_SSL   0x01"
+secure connection flags 
+.PP
+Definition at line 8 of file www\&.h\&.
+.SS "#define www_uri_escape(WWW, STR, LEN)   curl_easy_escape((WWW)\->h, STR, LEN)"
+escape data in uri 
+.PP
+Definition at line 107 of file www\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBwww\fP \fBwww_s\fP"
+
+.SS "typedef struct \fBwwwBuffer_s\fP \fBwwwBuffer_s\fP"
+
+.SS "typedef void(* wwwprogress_f) (const char *name, double current, double total, double speed)"
+
+.PP
+Definition at line 56 of file www\&.h\&.
+.SS "typedef struct \fBwwwProgress\fP \fBwwwProgress_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "__printf (2, 3)"
+create custom request 
+.SS "void www_begin (void)"
+enable www, call before use anyof www function 
+.SS "void www_buffer_delete (\fBwwwBuffer_s\fP * buf)"
+delete buffer 
+.SS "void www_buffer_init (\fBwwwBuffer_s\fP * buf, size_t upto)"
+init buffer, same of BUFFER_NEW 
+.SS "void www_buffer_upsize (\fBwwwBuffer_s\fP * buf, size_t addsize)"
+increase size of buffer 
+.SS "void www_curl_free (void * mem)"
+
+.SS "void www_delete (\fBwww_s\fP * www)"
+delete www object 
+.SS "void www_dump_buffers (\fBwww_s\fP * www)"
+dump buffer 
+.SS "void www_end (void)"
+terminate www session 
+.SS "void www_fd_set (\fBwww_s\fP * www, int * fd)"
+fd set 
+.SS "const char void www_header_list_append (\fBwww_s\fP * www, const char * str)"
+add in header 
+.SS "void www_header_list_delete (\fBwww_s\fP * www)"
+delete header 
+.SS "\fBerr_t\fP www_init (\fBwww_s\fP * www, size_t bufferupsize, int flags, \fBwwwProgress_s\fP * prog)"
+init www object 
+.SS "\fBerr_t\fP www_perform (\fBwww_s\fP * www, int retcode)"
+performe request 
+.SS "void www_post_set (\fBwww_s\fP * www, struct curl_httppost * post)"
+set post 
+.SS "void www_resume (\fBwww_s\fP * www, ssize_t resume)"
+resume mode 
+.SS "void www_send_fd_set (\fBwww_s\fP * www, int * fd)"
+send fd set 
+.SS "void www_send_set (\fBwww_s\fP * www, \fBwwwBuffer_s\fP * buf)"
+set buffer to send 
+.SS "void www_set_app_json (\fBwww_s\fP * www, int flags)"
+set reply as json 
+.SS "void www_set_follow (\fBwww_s\fP * www, int flags)"
+set follow 
+.SS "void www_set_progress (\fBwww_s\fP * www, \fBwwwProgress_s\fP * prog)"
+set progress 
+.SS "void www_set_recv_mode (\fBwww_s\fP * www, int flags)"
+set recv mode 
+.SS "void www_set_send_mode (\fBwww_s\fP * www, int flags)"
+set send mode 
+.SS "void www_set_ssl (\fBwww_s\fP * www, int flags)"
+set ssl 
+.SS "void www_url_set (\fBwww_s\fP * www, const char * url)"
+url set 
+.SS "void www_user_pass_set (\fBwww_s\fP * www, const char * user, const char * psw)"
+set user/pass 
+.SH "Variable Documentation"
+.PP 
+.SS "const char* format"
+
+.PP
+Definition at line 128 of file www\&.h\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

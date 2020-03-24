@@ -1,0 +1,523 @@
+.TH "include/ef/socket.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/socket.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/file\&.h>\fP
+.br
+\fC#include <ef/deadpoll\&.h>\fP
+.br
+\fC#include <sys/socket\&.h>\fP
+.br
+\fC#include <sys/un\&.h>\fP
+.br
+\fC#include <sys/epoll\&.h>\fP
+.br
+\fC#include <arpa/inet\&.h>\fP
+.br
+\fC#include <linux/wireless\&.h>\fP
+.br
+\fC#include <gnutls/gnutls\&.h>\fP
+.br
+\fC#include <gnutls/crypto\&.h>\fP
+.br
+\fC#include <gnutls/x509\&.h>\fP
+.br
+\fC#include <gnutls/abstract\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "union \fBesport\fP"
+.br
+.ti -1c
+.RI "struct \fBtls\fP"
+.br
+.ti -1c
+.RI "struct \fBtlsSession\fP"
+.br
+.ti -1c
+.RI "struct \fBesunix\fP"
+.br
+.ti -1c
+.RI "struct \fBesnet4\fP"
+.br
+.ti -1c
+.RI "struct \fBesnet6\fP"
+.br
+.ti -1c
+.RI "struct \fBesocket\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBSOCKET_IPV6_LENGHT\fP   52"
+.br
+.ti -1c
+.RI "#define \fBSOCKET_EPOLL_EVENTS\fP   (EPOLLIN | EPOLLRDHUP | EPOLLHUP)"
+.br
+.ti -1c
+.RI "#define \fBSOCKET_SIMULTANEOUS_CONNECTION_MAX\fP   128"
+.br
+.ti -1c
+.RI "#define \fBSOCKET_EVENT_MAX\fP   256"
+.br
+.ti -1c
+.RI "#define \fBSOCKET_WIFI_ESSID_SIZE\fP   IW_ESSID_MAX_SIZE"
+.br
+.ti -1c
+.RI "#define \fBSOCKET_DEADPOLL_EVENT\fP   (EPOLLIN | EPOLLET | EPOLLPRI | EPOLLHUP | EPOLLRDHUP)"
+.br
+.ti -1c
+.RI "#define \fBSOCKET_TLS_PRIORITY\fP   'NORMAL:\-VERS\-TLS\-ALL:+VERS\-TLS1\&.2'"
+.br
+.ti -1c
+.RI "#define \fBSOCKET_TLS_SERVER\fP   0x01"
+.br
+.ti -1c
+.RI "#define \fBSOCKET_TLS_INSECURE\fP   0x02"
+.br
+.ti -1c
+.RI "#define \fBsocket_fd\fP(S)   ((S)\->fd)"
+.br
+.ti -1c
+.RI "#define \fBsocket_type\fP(S)   ((S)\->type)"
+.br
+.ti -1c
+.RI "#define \fBsocket_userdata\fP(S)   ((S)\->userdata)"
+.br
+.ti -1c
+.RI "#define \fB__socket_close\fP   \fB__cleanup\fP(\fBsocket_close_auto\fP)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBesocket\fP \fBsocket_s\fP"
+.br
+.ti -1c
+.RI "typedef int(* \fBsocketEvent_f\fP) (\fBdeadpoll_s\fP *dp, \fBsocket_s\fP *s)"
+.br
+.ti -1c
+.RI "typedef union \fBesport\fP \fBesport_u\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtls\fP \fBtls_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtlsSession\fP \fBtlsSession_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBesunix\fP \fBesunix_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBesnet4\fP \fBesnet4_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBesnet6\fP \fBesnet6_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBsocketType_e\fP { \fBSOCKET_TYPE_UNIX\fP, \fBSOCKET_TYPE_NET4\fP, \fBSOCKET_TYPE_NET6\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBsocket_s\fP * \fBsocket_new\fP (\fBsocketType_e\fP type, \fBsocketEvent_f\fP onread, \fBsocketEvent_f\fP onclose, void *userdata)"
+.br
+.ti -1c
+.RI "void \fBsocket_close\fP (\fBsocket_s\fP *s)"
+.br
+.ti -1c
+.RI "void \fBsocket_close_auto\fP (\fBsocket_s\fP **s)"
+.br
+.ti -1c
+.RI "\fBsocket_s\fP * \fBsocket_open\fP (\fBsocket_s\fP *s, int nonblock, int datagram, size_t enableStream)"
+.br
+.ti -1c
+.RI "\fBsocket_s\fP * \fBsocket_listen\fP (\fBsocket_s\fP *s, \fBesport_u\fP port)"
+.br
+.ti -1c
+.RI "\fBsocket_s\fP * \fBsocket_accept\fP (\fBsocket_s\fP *out, \fBsocket_s\fP *server, size_t enableStream, long timeoutms, \fBtlsSession_s\fP *\fBtls\fP)"
+.br
+.ti -1c
+.RI "\fBsocket_s\fP * \fBsocket_connect\fP (\fBsocket_s\fP *s, const char *addr, int port, \fBtlsSession_s\fP *\fBtls\fP)"
+.br
+.ti -1c
+.RI "const char * \fBsocket_addr_get\fP (\fBsocket_s\fP *s)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBsocket_parse_events\fP (\fBdeadpoll_s\fP *dp, int \fBevent\fP, \fBsocket_s\fP *s)"
+.br
+.ti -1c
+.RI "int \fBsocket_isopen\fP (\fBsocket_s\fP *s)"
+.br
+.ti -1c
+.RI "int \fBsocket_error\fP (\fBsocket_s\fP *s)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBsocket_wifi_info\fP (const char *device, char *essid, int *dbm, int *bitrate)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBtls_session_begin\fP (void)"
+.br
+.ti -1c
+.RI "\fBtlsSession_s\fP * \fBtls_session_new\fP (int mode, const char *hostname, const char *keyfile, const char *certfile, const char *password, const char *cacertfile)"
+.br
+.ti -1c
+.RI "void \fBtls_session_free\fP (\fBtlsSession_s\fP *\fBtls\fP)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBtls_socket_attach\fP (\fBtlsSession_s\fP *\fBtls\fP, \fBsocket_s\fP *s)"
+.br
+.ti -1c
+.RI "ssize_t \fBtls_pending\fP (\fBtlsSession_s\fP *\fBtls\fP)"
+.br
+.ti -1c
+.RI "ssize_t \fBtls_write\fP (\fBtlsSession_s\fP *\fBtls\fP, void *buf, size_t size)"
+.br
+.ti -1c
+.RI "ssize_t \fBtls_read\fP (\fBtlsSession_s\fP *\fBtls\fP, void *buf, size_t size)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __socket_close   \fB__cleanup\fP(\fBsocket_close_auto\fP)"
+cleanup function 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.PP
+Definition at line 111 of file socket\&.h\&.
+.SS "#define SOCKET_DEADPOLL_EVENT   (EPOLLIN | EPOLLET | EPOLLPRI | EPOLLHUP | EPOLLRDHUP)"
+
+.PP
+Definition at line 24 of file socket\&.h\&.
+.SS "#define SOCKET_EPOLL_EVENTS   (EPOLLIN | EPOLLRDHUP | EPOLLHUP)"
+
+.PP
+Definition at line 20 of file socket\&.h\&.
+.SS "#define SOCKET_EVENT_MAX   256"
+
+.PP
+Definition at line 22 of file socket\&.h\&.
+.SS "#define socket_fd(S)   ((S)\->fd)"
+get socket fd 
+.PP
+Definition at line 83 of file socket\&.h\&.
+.SS "#define SOCKET_IPV6_LENGHT   52"
+
+.PP
+Definition at line 19 of file socket\&.h\&.
+.SS "#define SOCKET_SIMULTANEOUS_CONNECTION_MAX   128"
+
+.PP
+Definition at line 21 of file socket\&.h\&.
+.SS "#define SOCKET_TLS_INSECURE   0x02"
+
+.PP
+Definition at line 27 of file socket\&.h\&.
+.SS "#define SOCKET_TLS_PRIORITY   'NORMAL:\-VERS\-TLS\-ALL:+VERS\-TLS1\&.2'"
+
+.PP
+Definition at line 25 of file socket\&.h\&.
+.SS "#define SOCKET_TLS_SERVER   0x01"
+
+.PP
+Definition at line 26 of file socket\&.h\&.
+.SS "#define socket_type(S)   ((S)\->type)"
+get socket type 
+.PP
+Definition at line 86 of file socket\&.h\&.
+.SS "#define socket_userdata(S)   ((S)\->userdata)"
+get socket userdata 
+.PP
+Definition at line 89 of file socket\&.h\&.
+.SS "#define SOCKET_WIFI_ESSID_SIZE   IW_ESSID_MAX_SIZE"
+
+.PP
+Definition at line 23 of file socket\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBesnet4\fP \fBesnet4_s\fP"
+
+.SS "typedef struct \fBesnet6\fP \fBesnet6_s\fP"
+
+.SS "typedef union \fBesport\fP \fBesport_u\fP"
+
+.SS "typedef struct \fBesunix\fP \fBesunix_s\fP"
+
+.SS "typedef struct \fBesocket\fP \fBsocket_s\fP"
+
+.PP
+Definition at line 29 of file socket\&.h\&.
+.SS "typedef int(* socketEvent_f) (\fBdeadpoll_s\fP *dp, \fBsocket_s\fP *s)"
+
+.PP
+Definition at line 31 of file socket\&.h\&.
+.SS "typedef struct \fBtls\fP \fBtls_s\fP"
+
+.SS "typedef struct \fBtlsSession\fP \fBtlsSession_s\fP"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBsocketType_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fISOCKET_TYPE_UNIX \fP\fP
+.TP
+\fB\fISOCKET_TYPE_NET4 \fP\fP
+.TP
+\fB\fISOCKET_TYPE_NET6 \fP\fP
+.PP
+Definition at line 33 of file socket\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "\fBsocket_s\fP* socket_accept (\fBsocket_s\fP * out, \fBsocket_s\fP * server, size_t enableStream, long timeoutms, \fBtlsSession_s\fP * tls)"
+accept a socket 
+.PP
+\fBParameters\fP
+.RS 4
+\fIout\fP socket to accept, init before, is checked 
+.br
+\fIserver\fP socket get a request 
+.br
+\fIenableStream\fP if 0 stream disabled otherwise is size of chunk of stream 
+.br
+\fItimeoutms\fP set timeout of accept connection 0 no timeout 
+.br
+\fItls\fP a tls session for enable a socket tls 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+socket out or null for error or timeout, auto close out socket if error is returned 
+.RE
+.PP
+
+.SS "const char* socket_addr_get (\fBsocket_s\fP * s)"
+get address/ip of socket 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP socket 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+string rappresentation of address 
+.RE
+.PP
+
+.SS "void socket_close (\fBsocket_s\fP * s)"
+close and free socket 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP socket to close 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull, -1 error 
+.RE
+.PP
+
+.SS "void socket_close_auto (\fBsocket_s\fP ** s)"
+
+.SS "\fBsocket_s\fP* socket_connect (\fBsocket_s\fP * s, const char * addr, int port, \fBtlsSession_s\fP * tls)"
+connect to server 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP socket 
+.br
+\fIaddr\fP address 
+.br
+\fIport\fP if unix socket port is unused 
+.br
+\fItls\fP a tls session for enable a socket tls 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+s successfull, NULL on error and socket is closed 
+.RE
+.PP
+
+.SS "int socket_error (\fBsocket_s\fP * s)"
+get socket error 
+.SS "int socket_isopen (\fBsocket_s\fP * s)"
+return 1 if fd is open otherwise 0 
+.SS "\fBsocket_s\fP* socket_listen (\fBsocket_s\fP * s, \fBesport_u\fP port)"
+listen 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP socket to init, is checked 
+.br
+\fIport\fP aadr or port depend if is unix or inet 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+s successfull, NULL and closed socket on error 
+.RE
+.PP
+
+.SS "\fBsocket_s\fP* socket_new (\fBsocketType_e\fP type, \fBsocketEvent_f\fP onread, \fBsocketEvent_f\fP onclose, void * userdata)"
+create a socket 
+.PP
+\fBParameters\fP
+.RS 4
+\fItype\fP of socket 
+.br
+\fIonread\fP callback for read 
+.br
+\fIonclose\fP callbacl for close 
+.br
+\fIuserdata\fP user data 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+obj socket successfull, NULL for error 
+.RE
+.PP
+
+.SS "\fBsocket_s\fP* socket_open (\fBsocket_s\fP * s, int nonblock, int datagram, size_t enableStream)"
+open a socket 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP socket to open, is checked 
+.br
+\fInonblock\fP 1 for non blocking socket 
+.br
+\fIdatagram\fP 1 for datagram socket 
+.br
+\fIenableStream\fP if 0 stream disabled otherwise is size of chunk of stream 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+s successfull, NULL and close socket on error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP socket_parse_events (\fBdeadpoll_s\fP * dp, int event, \fBsocket_s\fP * s)"
+you can use this inside deadpoll, cast to pollCbk_f 
+.SS "\fBerr_t\fP socket_wifi_info (const char * device, char * essid, int * dbm, int * bitrate)"
+get wifi info 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdevice\fP name of device 
+.br
+\fIessid\fP get out essid name, size max IW_ESSID_MAX_SIZE 
+.br
+\fIdbm\fP power in decibel 
+.br
+\fIbitrate\fP speed of connection 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull, -1 error 
+.RE
+.PP
+
+.SS "ssize_t tls_pending (\fBtlsSession_s\fP * tls)"
+check pending data on tls session, check before enter in epoll 
+.PP
+\fBParameters\fP
+.RS 4
+\fItls\fP session 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error or size of pending data 
+.RE
+.PP
+
+.SS "ssize_t tls_read (\fBtlsSession_s\fP * tls, void * buf, size_t size)"
+same syscall read but on tls 
+.SS "\fBerr_t\fP tls_session_begin (void)"
+init function for tls, call at main 
+.SS "void tls_session_free (\fBtlsSession_s\fP * tls)"
+free a tls session 
+.PP
+\fBParameters\fP
+.RS 4
+\fItls\fP session 
+.RE
+.PP
+
+.SS "\fBtlsSession_s\fP* tls_session_new (int mode, const char * hostname, const char * keyfile, const char * certfile, const char * password, const char * cacertfile)"
+create a new session tls 
+.PP
+\fBParameters\fP
+.RS 4
+\fImode\fP SOCKET_TLS_SERVER if is server, SOCKET_TLS_INSECURE if use not secure socket 
+.br
+\fIhostname\fP hostname 
+.br
+\fIkeyfile\fP key file 
+.br
+\fIcertfile\fP cert file 
+.br
+\fIpassword\fP password of cert file 
+.br
+\fIcacertfile\fP cacert file 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+session or NULL for error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP tls_socket_attach (\fBtlsSession_s\fP * tls, \fBsocket_s\fP * s)"
+attach tls session to socket 
+.PP
+\fBParameters\fP
+.RS 4
+\fItls\fP tls session 
+.br
+\fIs\fP socket to attach a tls session 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error 0 successfull 
+.RE
+.PP
+
+.SS "ssize_t tls_write (\fBtlsSession_s\fP * tls, void * buf, size_t size)"
+same syscall write but on tls 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

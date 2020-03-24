@@ -1,0 +1,1690 @@
+.TH "include/ef/utf8.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/utf8.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <locale\&.h>\fP
+.br
+\fC#include <ctype\&.h>\fP
+.br
+\fC#include <unistr\&.h>\fP
+.br
+\fC#include <uniconv\&.h>\fP
+.br
+\fC#include <unistdio\&.h>\fP
+.br
+\fC#include <uniname\&.h>\fP
+.br
+\fC#include <unictype\&.h>\fP
+.br
+\fC#include <uniwidth\&.h>\fP
+.br
+\fC#include <unigbrk\&.h>\fP
+.br
+\fC#include <uniwbrk\&.h>\fP
+.br
+\fC#include <unilbrk\&.h>\fP
+.br
+\fC#include <uninorm\&.h>\fP
+.br
+\fC#include <unicase\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fButf8Iterator\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBU8\fP(V)   (uint8_t*)(V)"
+.br
+.ti -1c
+.RI "#define \fBUTF_NOT_VALID\fP   0xFFFD"
+.br
+.ti -1c
+.RI "#define \fButf_validate_n\fP(STR,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf8_cast_n\fP(STR8,  LEN,  OUT,  PTROUTLEN)"
+.br
+.ti -1c
+.RI "#define \fButf16_cast_n\fP(STR16,  LEN,  OUT,  PTROUTLEN)"
+.br
+.ti -1c
+.RI "#define \fButf32_cast_n\fP(STR32,  LEN,  OUT,  PTROUTLEN)"
+.br
+.ti -1c
+.RI "#define \fButf_cast_n\fP(STRSRC,  LEN,  STRDEST,  PTROUTLEN)"
+.br
+.ti -1c
+.RI "#define \fButf_unit_count_n\fP(STR,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_get_unit_n\fP(RET,  STR,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_get_unit_and_check_n\fP(RET,  STR,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_get_unit_and_check_and_error_n\fP(RET,  STR,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_putu_n\fP(STR,  UTF,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_putch\fP(STR,  UTF)   \fButf_putu_n\fP(STR, UTF, sizeof(\fButf_t\fP))"
+.br
+.ti -1c
+.RI "#define \fButf_cpy_n\fP(DST,  SRC,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_move_n\fP(DST,  SRC,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_set_n\fP(DST,  UTF,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_fixed_cmp_n\fP(SA,  SB,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_cmp_n\fP(SA,  SB,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_chr_n\fP(STR,  NCH,  UTF)"
+.br
+.ti -1c
+.RI "#define \fButf_len_n\fP(STR,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_cpy_n_alloc\fP(SRC,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_unit_count\fP(STR)"
+.br
+.ti -1c
+.RI "#define \fButf_get_unit\fP(RET,  STR,  NCH)"
+.br
+.ti -1c
+.RI "#define \fButf_next\fP(RET,  STR)"
+.br
+.ti -1c
+.RI "#define \fButf_prev\fP(RET,  STR,  START)"
+.br
+.ti -1c
+.RI "#define \fButf_len\fP(STR)"
+.br
+.ti -1c
+.RI "#define \fButf_len_max\fP(STR,  MAX)"
+.br
+.ti -1c
+.RI "#define \fButf_cpy\fP(DST,  SRC)"
+.br
+.ti -1c
+.RI "#define \fButf_cpy_max\fP(DST,  SRC,  MAX)"
+.br
+.ti -1c
+.RI "#define \fButf_cat\fP(DST,  SRC)"
+.br
+.ti -1c
+.RI "#define \fButf_cat_max\fP(DST,  SRC,  MAX)"
+.br
+.ti -1c
+.RI "#define \fButf_coll\fP(SA,  SB)"
+.br
+.ti -1c
+.RI "#define \fButf_cmp_max\fP(SA,  SB,  MAX)"
+.br
+.ti -1c
+.RI "#define \fButf_clone\fP(STR)"
+.br
+.ti -1c
+.RI "#define \fButf_chr\fP(STR,  UTF)"
+.br
+.ti -1c
+.RI "#define \fButf_cspn\fP(STR,  REJECT)"
+.br
+.ti -1c
+.RI "#define \fButf_spn\fP(STR,  ACCEPT)"
+.br
+.ti -1c
+.RI "#define \fButf_anyof\fP(STR,  ANY)"
+.br
+.ti -1c
+.RI "#define \fButf_search\fP(STR,  SEARCH)"
+.br
+.ti -1c
+.RI "#define \fButf_rewind\fP(STR,  WITH)"
+.br
+.ti -1c
+.RI "#define \fButf_ends\fP(STR,  WITH)"
+.br
+.ti -1c
+.RI "#define \fButf_tok\fP(STR,  DEL,  PTR)"
+.br
+.ti -1c
+.RI "#define \fButf8_f_sprintf\fP(STR,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf16_f_sprintf\fP(STR,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf32_f_sprintf\fP(STR,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf_sprintf\fP(STR,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf8_f_snprintf\fP(STR,  MAX,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf16_f_snprintf\fP(STR,  MAX,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf32_f_snprintf\fP(STR,  MAX,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf_snprintf\fP(STR,  MAX,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf8_f_sprintf_alloc\fP(STR,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf16_f_sprintf_alloc\fP(STR,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf32_f_sprintf_alloc\fP(STR,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf_sprintf_alloc\fP(STR,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf8_f_snprintf_alloc\fP(STR,  MAX,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf16_f_snprintf_alloc\fP(STR,  MAX,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf32_f_snprintf_alloc\fP(STR,  MAX,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf_snprintf_alloc\fP(STR,  MAX,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf_fprintf\fP   ulc_fprintf"
+.br
+.ti -1c
+.RI "#define \fButf_printf\fP(FORM,  arg\&.\&.\&.)   ulc_fprintf(stdout, FORM, ## arg)"
+.br
+.ti -1c
+.RI "#define \fBUTF_NAME_MAX\fP   UNINAME_MAX"
+.br
+.ti -1c
+.RI "#define \fBUTF_NAME_INVALID\fP   UNINAME_INVALID"
+.br
+.ti -1c
+.RI "#define \fButf_unicode_name\fP   unicode_character_name"
+.br
+.ti -1c
+.RI "#define \fButf_name_unicode\fP   unicode_name_character"
+.br
+.ti -1c
+.RI "#define \fButf_alnum\fP   uc_is_alnum"
+.br
+.ti -1c
+.RI "#define \fButf_alpha\fP   uc_is_alpha"
+.br
+.ti -1c
+.RI "#define \fButf_cntrl\fP   uc_is_cntrl"
+.br
+.ti -1c
+.RI "#define \fButf_digit\fP   uc_is_digit"
+.br
+.ti -1c
+.RI "#define \fButf_graph\fP   uc_is_graph"
+.br
+.ti -1c
+.RI "#define \fButf_lower\fP   uc_is_lower"
+.br
+.ti -1c
+.RI "#define \fButf_print\fP   uc_is_print"
+.br
+.ti -1c
+.RI "#define \fButf_punct\fP   uc_is_punct"
+.br
+.ti -1c
+.RI "#define \fButf_space\fP   uc_is_space"
+.br
+.ti -1c
+.RI "#define \fButf_upper\fP   uc_is_upper"
+.br
+.ti -1c
+.RI "#define \fButf_xdigit\fP   uc_is_xdigit"
+.br
+.ti -1c
+.RI "#define \fButf_blank\fP   uc_is_blank"
+.br
+.ti -1c
+.RI "#define \fButf_toupper\fP   uc_toupper"
+.br
+.ti -1c
+.RI "#define \fButf_tolower\fP   uc_tolower"
+.br
+.ti -1c
+.RI "#define \fButf_snprintf_alloc\fP(STR,  MAX,  FORM,  arg\&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fButf_width\fP(STR)"
+.br
+.ti -1c
+.RI "#define \fButf_width_enc\fP(STR,  ENCODING)"
+.br
+.ti -1c
+.RI "#define \fButf_width_n\fP(STR,  NCH,  ENCODING)"
+.br
+.ti -1c
+.RI "#define \fButf_to\fP(STR,  COUNT)"
+.br
+.ti -1c
+.RI "#define \fButf_insert\fP(DST,  DLEN,  SRC,  SLEN)"
+.br
+.ti -1c
+.RI "#define \fButf_append\fP(DST,  SRC)"
+.br
+.ti -1c
+.RI "#define \fButf_replace\fP(DST,  SRC)"
+.br
+.ti -1c
+.RI "#define \fButf_del_n\fP(STR,  STRLEN,  COUNT)"
+.br
+.ti -1c
+.RI "#define \fButf_del\fP(STR,  COUNT)"
+.br
+.ti -1c
+.RI "#define \fButf_delu\fP(STR,  COUNT)"
+.br
+.ti -1c
+.RI "#define \fButf_resize\fP(PTRSTR,  COUNT)"
+.br
+.ti -1c
+.RI "#define \fBU8I_NEW\fP(STR)   { \&.begin = STR, \&.str = STR, \&.index = 0}"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef uint8_t \fButf8_t\fP"
+.br
+.ti -1c
+.RI "typedef uint16_t \fButf16_t\fP"
+.br
+.ti -1c
+.RI "typedef uint32_t \fButf32_t\fP"
+.br
+.ti -1c
+.RI "typedef ucs4_t \fButf_t\fP"
+.br
+.ti -1c
+.RI "typedef struct \fButf8Iterator\fP \fButf8Iterator_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fButf_begin\fP (void)"
+.br
+.ti -1c
+.RI "\fButf8_t\fP * \fButf8_to\fP (const \fButf8_t\fP *str, size_t n)"
+.br
+.ti -1c
+.RI "void \fButf8_ins\fP (\fButf8_t\fP *dst, size_t dnch, \fButf8_t\fP *src, size_t snch)"
+.br
+.ti -1c
+.RI "void \fButf8_append\fP (\fButf8_t\fP *dst, \fButf8_t\fP *src)"
+.br
+.ti -1c
+.RI "void \fButf8_replace\fP (\fButf8_t\fP *dst, const \fButf8_t\fP *src)"
+.br
+.ti -1c
+.RI "void \fButf8_del_n\fP (\fButf8_t\fP *dst, size_t dnch, size_t ndel)"
+.br
+.ti -1c
+.RI "void \fButf8_del\fP (\fButf8_t\fP *dst, size_t ndel)"
+.br
+.ti -1c
+.RI "void \fButf8_delu\fP (\fButf8_t\fP *dst, size_t ndel)"
+.br
+.ti -1c
+.RI "int \fButf8_resize\fP (\fButf8_t\fP **str, size_t element)"
+.br
+.ti -1c
+.RI "void \fButf8_fputchar\fP (FILE *fd, \fButf_t\fP ch)"
+.br
+.ti -1c
+.RI "\fButf8Iterator_s\fP \fButf8_iterator\fP (\fButf8_t\fP *begin, size_t index)"
+.br
+.ti -1c
+.RI "size_t \fButf8_iteretor_position\fP (\fButf8Iterator_s\fP *it)"
+.br
+.ti -1c
+.RI "void \fButf8_iterator_rewind\fP (\fButf8Iterator_s\fP *it)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fButf8_iterator_next\fP (\fButf8Iterator_s\fP *it)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fButf8_iterator_next_to\fP (\fButf8Iterator_s\fP *it, size_t count)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fButf8_iterator_last\fP (\fButf8Iterator_s\fP *it)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fButf8_iterator_last_valid\fP (\fButf8Iterator_s\fP *it)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fButf8_iterator_prev\fP (\fButf8Iterator_s\fP *it)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fButf8_iterator_prev_to\fP (\fButf8Iterator_s\fP *it, size_t count)"
+.br
+.ti -1c
+.RI "void \fButf8_iterator_replace\fP (\fButf8Iterator_s\fP *it, \fButf_t\fP ch)"
+.br
+.ti -1c
+.RI "void \fButf8_iterator_replace_str\fP (\fButf8Iterator_s\fP *it, \fButf8_t\fP *str, size_t width)"
+.br
+.ti -1c
+.RI "void \fButf8_iterator_insert\fP (\fButf8Iterator_s\fP *it, \fButf_t\fP ch)"
+.br
+.ti -1c
+.RI "void \fButf8_iterator_insert_str\fP (\fButf8Iterator_s\fP *it, \fButf8_t\fP *str, size_t width)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fButf8_iterator_delete\fP (\fButf8Iterator_s\fP *it)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fButf8_iterator_delete_to\fP (\fButf8Iterator_s\fP *it, size_t count)"
+.br
+.ti -1c
+.RI "void \fButf8_chomp\fP (\fButf8_t\fP *str)"
+.br
+.ti -1c
+.RI "\fButf8_t\fP * \fButf8_gets\fP (\fButf8_t\fP *line, size_t max, FILE *fd)"
+.br
+.ti -1c
+.RI "\fButf8_t\fP * \fButf8_gets_alloc\fP (size_t *outsize, size_t chunk, int nl, FILE *fd)"
+.br
+.ti -1c
+.RI "ssize_t \fButf8_from_seu16\fP (\fButf8_t\fP *out, size_t size, const char *str, const char **end)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "const char * \fBlc_charset\fP"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define U8(V)   (uint8_t*)(V)"
+simple way to cast 
+.PP
+Definition at line 32 of file utf8\&.h\&.
+.SS "#define U8I_NEW(STR)   { \&.begin = STR, \&.str = STR, \&.index = 0}"
+init iterator on stack 
+.PP
+Definition at line 504 of file utf8\&.h\&.
+.SS "#define utf16_cast_n(STR16, LEN, OUT, PTROUTLEN)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((OUT),\
+        utf8_t*: u16_to_u8,\
+        utf32_t*: u16_to_u32\
+    )(STR16,LEN,OUT,PTROUTLEN)
+.fi
+cast from utf16 to utf8 or 32 
+.PP
+Definition at line 60 of file utf8\&.h\&.
+.SS "#define utf16_f_snprintf(STR, MAX, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((FORM),\
+        char*: u8_snprintf,\
+        utf16_t*: u16_u16_snprintf\
+    )(STR,MAX,FORM, ## arg)
+.fi
+.PP
+Definition at line 310 of file utf8\&.h\&.
+.SS "#define utf16_f_snprintf_alloc(STR, MAX, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((FORM),\
+        char*: u8_asnprintf,\
+        utf16_t*: u16_u16_asnprintf,\
+    )(STR,MAX,FORM, ## arg)
+.fi
+.PP
+Definition at line 350 of file utf8\&.h\&.
+.SS "#define utf16_f_sprintf(STR, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((FORM),\
+        char*: u16_sprintf,\
+        utf16_t*: u16_u16_sprintf\
+    )(STR,FORM, ## arg)
+.fi
+.PP
+Definition at line 290 of file utf8\&.h\&.
+.SS "#define utf16_f_sprintf_alloc(STR, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((FORM),\
+        char*: u16_asprintf,\
+        utf16_t*: u16_u16_asprintf\
+    )(STR,FORM, ## arg)
+.fi
+.PP
+Definition at line 330 of file utf8\&.h\&.
+.SS "#define utf32_cast_n(STR32, LEN, OUT, PTROUTLEN)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((OUT),\
+        utf8_t*: u32_to_u8,\
+        utf16_t*: u32_to_u16\
+    )(STR32,LEN,OUT,PTROUTLEN)
+.fi
+cast from utf32 to utf8 or 16 
+.PP
+Definition at line 66 of file utf8\&.h\&.
+.SS "#define utf32_f_snprintf(STR, MAX, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((FORM),\
+        char*: u8_snprintf,\
+        utf32_t*: u32_u32_snprintf\
+    )(STR,MAX,FORM, ## arg)
+.fi
+.PP
+Definition at line 314 of file utf8\&.h\&.
+.SS "#define utf32_f_snprintf_alloc(STR, MAX, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((FORM),\
+        char*: u8_asnprintf,\
+        utf32_t*: u32_u32_asnprintf,\
+    )(STR,MAX,FORM, ## arg)
+.fi
+.PP
+Definition at line 354 of file utf8\&.h\&.
+.SS "#define utf32_f_sprintf(STR, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((FORM),\
+        char*: u32_sprintf,\
+        utf32_t*: u32_u32_sprintf\
+    )(STR,FORM, ## arg)
+.fi
+.PP
+Definition at line 294 of file utf8\&.h\&.
+.SS "#define utf32_f_sprintf_alloc(STR, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((FORM),\
+        char*: u32_asprintf,\
+        utf32_t*: u32_u32_asprintf\
+    )(STR,FORM, ## arg)
+.fi
+.PP
+Definition at line 334 of file utf8\&.h\&.
+.SS "#define utf8_cast_n(STR8, LEN, OUT, PTROUTLEN)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((OUT),\
+        utf16_t*: u8_to_u16,\
+        utf32_t*: u8_to_u32\
+    )(STR8,LEN,OUT,PTROUTLEN)
+.fi
+cast from utf8 to utf16 or 32 
+.PP
+Definition at line 54 of file utf8\&.h\&.
+.SS "#define utf8_f_snprintf(STR, MAX, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((FORM),\
+        char*: u8_snprintf,\
+        utf8_t*: u8_u8_snprintf\
+    )(STR,MAX,FORM, ## arg)
+.fi
+.PP
+Definition at line 306 of file utf8\&.h\&.
+.SS "#define utf8_f_snprintf_alloc(STR, MAX, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((FORM),\
+        char*: u8_asnprintf,\
+        utf8_t*: u8_u8_asnprintf,\
+    )(STR,MAX,FORM, ## arg)
+.fi
+.PP
+Definition at line 346 of file utf8\&.h\&.
+.SS "#define utf8_f_sprintf(STR, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((FORM),\
+        char*: u8_sprintf,\
+        utf8_t*: u8_u8_sprintf\
+    )(STR,FORM, ## arg)
+.fi
+.PP
+Definition at line 286 of file utf8\&.h\&.
+.SS "#define utf8_f_sprintf_alloc(STR, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((FORM),\
+        char*: u8_asprintf,\
+        utf8_t*: u8_u8_asprintf\
+    )(STR,FORM, ## arg)
+.fi
+.PP
+Definition at line 326 of file utf8\&.h\&.
+.SS "#define utf_alnum   uc_is_alnum"
+
+.PP
+Definition at line 374 of file utf8\&.h\&.
+.SS "#define utf_alpha   uc_is_alpha"
+
+.PP
+Definition at line 375 of file utf8\&.h\&.
+.SS "#define utf_anyof(STR, ANY)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        utf8_t*: u8_strpbrk,\
+        utf16_t*: u16_strpbrk,\
+        utf32_t*: u32_strpbrk\
+    )(STR,ANY)
+.fi
+.PP
+Definition at line 256 of file utf8\&.h\&.
+.SS "#define utf_append(DST, SRC)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((DST),\
+        utf8_t*: utf8_append\
+    )(DST,SRC)
+.fi
+.PP
+Definition at line 446 of file utf8\&.h\&.
+.SS "#define utf_blank   uc_is_blank"
+
+.PP
+Definition at line 385 of file utf8\&.h\&.
+.SS "#define utf_cast_n(STRSRC, LEN, STRDEST, PTROUTLEN)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STRSRC),\
+        utf8_t*: utf8_cast_n,\
+        utf16_t*: utf16_cast_n,\
+        utf32_t*: utf32_cast_n\
+    )(STRSRC,LEN,STRDEST,PTROUTLEN)
+.fi
+cast from 8/16/32 to 8/16/32 
+.PP
+Definition at line 72 of file utf8\&.h\&.
+.SS "#define utf_cat(DST, SRC)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((DST),\
+        utf8_t*: u8_strcat,\
+        utf16_t*: u16_strcat,\
+        utf32_t*: u32_strcat\
+    )(DST,SRC)
+.fi
+.PP
+Definition at line 208 of file utf8\&.h\&.
+.SS "#define utf_cat_max(DST, SRC, MAX)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((DST),\
+        utf8_t*: u8_strncat,\
+        utf16_t*: u16_strncat,\
+        utf32_t*: u32_strncat\
+    )(DST,SRC,MAX)
+.fi
+.PP
+Definition at line 214 of file utf8\&.h\&.
+.SS "#define utf_chr(STR, UTF)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((STR),\
+        utf8_t*: u8_strchr,\
+        utf16_t*: u16_strchr,\
+        utf32_t*: u32_strchr\
+    )(STR,UTF)
+.fi
+.PP
+Definition at line 238 of file utf8\&.h\&.
+.SS "#define utf_chr_n(STR, NCH, UTF)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((STR),\
+        utf8_t*: u8_chr,\
+        utf16_t*: u16_chr,\
+        utf32_t*: u32_chr\
+    )(STR,NCH,UTF)
+.fi
+.PP
+Definition at line 141 of file utf8\&.h\&.
+.SS "#define utf_clone(STR)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((STR),\
+        utf8_t*: u8_strdup,\
+        utf16_t*: u16_strdup,\
+        utf32_t*: u32_strdup\
+    )(STR)
+.fi
+.PP
+Definition at line 232 of file utf8\&.h\&.
+.SS "#define utf_cmp_max(SA, SB, MAX)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((SA),\
+        utf8_t*: u8_strncmp,\
+        utf16_t*: u16_strncmp,\
+        utf32_t*: u32_strncmp\
+    )(SA,SB,MAX)
+.fi
+.PP
+Definition at line 226 of file utf8\&.h\&.
+.SS "#define utf_cmp_n(SA, SB, NCH)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((SA),\
+        utf8_t*: u8_cmp2,\
+        utf16_t*: u16_cmp2,\
+        utf32_t*: u32_cmp2\
+    )(SA,SB,NCH)
+.fi
+.PP
+Definition at line 135 of file utf8\&.h\&.
+.SS "#define utf_cntrl   uc_is_cntrl"
+
+.PP
+Definition at line 376 of file utf8\&.h\&.
+.SS "#define utf_coll(SA, SB)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((SA),\
+        utf8_t*: u8_strcoll,\
+        utf16_t*: u16_strcoll,\
+        utf32_t*: u32_strcoll\
+    )(SA,SB)
+.fi
+.PP
+Definition at line 220 of file utf8\&.h\&.
+.SS "#define utf_cpy(DST, SRC)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((DST),\
+        utf8_t*: u8_stpcpy,\
+        utf16_t*: u16_stpcpy,\
+        utf32_t*: u32_stpcpy\
+    )(DST,SRC)
+.fi
+.PP
+Definition at line 196 of file utf8\&.h\&.
+.SS "#define utf_cpy_max(DST, SRC, MAX)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((DST),\
+        utf8_t*: u8_strncpy,\
+        utf16_t*: u16_stpncpy,\
+        utf32_t*: u32_stpncpy\
+    )(DST,SRC,MAX)
+.fi
+.PP
+Definition at line 202 of file utf8\&.h\&.
+.SS "#define utf_cpy_n(DST, SRC, NCH)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((DST),\
+        utf8_t*: u8_cpy,\
+        utf16_t*: u16_cpy,\
+        utf32_t*: u32_cpy\
+    )(DST,SRC,NCH)
+.fi
+.PP
+Definition at line 110 of file utf8\&.h\&.
+.SS "#define utf_cpy_n_alloc(SRC, NCH)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((SRC),\
+        utf8_t*: u8_cpy_alloc,\
+        utf16_t*: u16_cpy_alloc,\
+        utf32_t*: u32_cpy_alloc\
+    )(DST,SRC,NCH)
+.fi
+.PP
+Definition at line 153 of file utf8\&.h\&.
+.SS "#define utf_cspn(STR, REJECT)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((STR),\
+        utf8_t*: u8_strcspn,\
+        utf16_t*: u16_strcspn,\
+        utf32_t*: u32_strcspn\
+    )(STR,REJECT)
+.fi
+.PP
+Definition at line 244 of file utf8\&.h\&.
+.SS "#define utf_del(STR, COUNT)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        utf8_t*: utf8_del\
+    )(STR,COUNT)
+.fi
+.PP
+Definition at line 474 of file utf8\&.h\&.
+.SS "#define utf_del_n(STR, STRLEN, COUNT)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((STR),\
+        utf8_t*: utf8_del_n\
+    )(STR,STRLEN,COUNT)
+.fi
+.PP
+Definition at line 465 of file utf8\&.h\&.
+.SS "#define utf_delu(STR, COUNT)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((STR),\
+        utf8_t*: utf8_delu\
+    )(STR,COUNT)
+.fi
+.PP
+Definition at line 483 of file utf8\&.h\&.
+.SS "#define utf_digit   uc_is_digit"
+
+.PP
+Definition at line 377 of file utf8\&.h\&.
+.SS "#define utf_ends(STR, WITH)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        utf8_t*: u8_endswith,\
+        utf16_t*: u16_endswith,\
+        utf32_t*: u32_endswith\
+    )(STR,WITH)
+.fi
+.PP
+Definition at line 274 of file utf8\&.h\&.
+.SS "#define utf_fixed_cmp_n(SA, SB, NCH)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((SA),\
+        utf8_t*: u8_cmp,\
+        utf16_t*: u16_cmp,\
+        utf32_t*: u32_cmp\
+    )(SA,SB,NCH)
+.fi
+.PP
+Definition at line 129 of file utf8\&.h\&.
+.SS "#define utf_fprintf   ulc_fprintf"
+
+.PP
+Definition at line 366 of file utf8\&.h\&.
+.SS "#define utf_get_unit(RET, STR, NCH)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((STR),\
+        utf8_t*: u8_strmbtouc,\
+        utf16_t*: u16_strmbtouc,\
+        utf32_t*: u32_strmbtouc\
+    )(RET,STR)
+.fi
+.PP
+Definition at line 165 of file utf8\&.h\&.
+.SS "#define utf_get_unit_and_check_and_error_n(RET, STR, NCH)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((STR),\
+        utf8_t*: u8_mbtoucr,\
+        utf16_t*: u16_mbtoucr,\
+        utf32_t*: u32_mbtoucr\
+    )(RET,STR,NCH)
+.fi
+.PP
+Definition at line 96 of file utf8\&.h\&.
+.SS "#define utf_get_unit_and_check_n(RET, STR, NCH)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((STR),\
+        utf8_t*: u8_mbtouc,\
+        utf16_t*: u16_mbtouc,\
+        utf32_t*: u32_mbtouc\
+    )(RET,STR,NCH)
+.fi
+.PP
+Definition at line 90 of file utf8\&.h\&.
+.SS "#define utf_get_unit_n(RET, STR, NCH)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((STR),\
+        utf8_t*: u8_mbtouc_unsafe,\
+        utf16_t*: u16_mbtouc_unsafe,\
+        utf32_t*: u32_mbtouc_unsafe\
+    )(RET,STR,NCH)
+.fi
+.PP
+Definition at line 84 of file utf8\&.h\&.
+.SS "#define utf_graph   uc_is_graph"
+
+.PP
+Definition at line 378 of file utf8\&.h\&.
+.SS "#define utf_insert(DST, DLEN, SRC, SLEN)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((DST),\
+        utf8_t*: utf8_ins\
+    )(DST,DLEN,SRC,SLEN)
+.fi
+.PP
+Definition at line 437 of file utf8\&.h\&.
+.SS "#define utf_len(STR)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((STR),\
+        utf8_t*: u8_strlen,\
+        utf16_t*: u16_strlen,\
+        utf32_t*: u32_strlen\
+    )(STR)
+.fi
+.PP
+Definition at line 184 of file utf8\&.h\&.
+.SS "#define utf_len_max(STR, MAX)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((STR),\
+        utf8_t*: u8_strnlen,\
+        utf16_t*: u16_strnlen,\
+        utf32_t*: u32_strnlen\
+    )(STR,MAX)
+.fi
+.PP
+Definition at line 190 of file utf8\&.h\&.
+.SS "#define utf_len_n(STR, NCH)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        utf8_t*: u8_mbsnlen,\
+        utf16_t*: u16_mbsnlen,\
+        utf32_t*: u32_mbsnlen\
+    )(STR,NCH)
+.fi
+.PP
+Definition at line 147 of file utf8\&.h\&.
+.SS "#define utf_lower   uc_is_lower"
+
+.PP
+Definition at line 379 of file utf8\&.h\&.
+.SS "#define utf_move_n(DST, SRC, NCH)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((DST),\
+        utf8_t*: u8_move,\
+        utf16_t*: u16_move,\
+        utf32_t*: u32_move\
+    )(DST,SRC,NCH)
+.fi
+move n visible char 
+.PP
+Definition at line 117 of file utf8\&.h\&.
+.SS "#define UTF_NAME_INVALID   UNINAME_INVALID"
+
+.PP
+Definition at line 370 of file utf8\&.h\&.
+.SS "#define UTF_NAME_MAX   UNINAME_MAX"
+
+.PP
+Definition at line 369 of file utf8\&.h\&.
+.SS "#define utf_name_unicode   unicode_name_character"
+
+.PP
+Definition at line 372 of file utf8\&.h\&.
+.SS "#define utf_next(RET, STR)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((STR),\
+        utf8_t*: u8_next,\
+        const utf8_t*: u8_next,\
+        utf16_t*: u16_next,\
+        utf32_t*: u32_next\
+    )(RET,STR)
+.fi
+.PP
+Definition at line 171 of file utf8\&.h\&.
+.SS "#define UTF_NOT_VALID   0xFFFD"
+
+.PP
+Definition at line 44 of file utf8\&.h\&.
+.SS "#define utf_prev(RET, STR, START)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        utf8_t*: u8_prev,\
+        utf16_t*: u16_prev,\
+        utf32_t*: u32_prev\
+    )(RET,STR, START)
+.fi
+.PP
+Definition at line 178 of file utf8\&.h\&.
+.SS "#define utf_print   uc_is_print"
+
+.PP
+Definition at line 380 of file utf8\&.h\&.
+.SS "#define utf_printf(FORM, arg\&.\&.\&.)   ulc_fprintf(stdout, FORM, ## arg)"
+
+.PP
+Definition at line 367 of file utf8\&.h\&.
+.SS "#define utf_punct   uc_is_punct"
+
+.PP
+Definition at line 381 of file utf8\&.h\&.
+.SS "#define utf_putch(STR, UTF)   \fButf_putu_n\fP(STR, UTF, sizeof(\fButf_t\fP))"
+
+.PP
+Definition at line 108 of file utf8\&.h\&.
+.SS "#define utf_putu_n(STR, UTF, NCH)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((STR),\
+        utf8_t*: u8_uctomb,\
+        utf16_t*: u16_uctomb,\
+        utf32_t*: u32_uctomb\
+    )(STR,UTF,NCH)
+.fi
+.PP
+Definition at line 102 of file utf8\&.h\&.
+.SS "#define utf_replace(DST, SRC)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((DST),\
+        utf8_t*: utf8_replace\
+    )(DST,SRC)
+.fi
+.PP
+Definition at line 455 of file utf8\&.h\&.
+.SS "#define utf_resize(PTRSTR, COUNT)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((PTRSTR),\
+        utf8_t**: utf8_resize\
+    )(PTRSTR,COUNT)
+.fi
+.PP
+Definition at line 493 of file utf8\&.h\&.
+.SS "#define utf_rewind(STR, WITH)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((STR),\
+        utf8_t*: u8_startwith,\
+        utf16_t*: u16_startwith,\
+        utf32_t*: u32_startwith\
+    )(STR,WITH)
+.fi
+.PP
+Definition at line 268 of file utf8\&.h\&.
+.SS "#define utf_search(STR, SEARCH)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        utf8_t*: u8_strstr,\
+        utf16_t*: u16_strstr,\
+        utf32_t*: u32_strstr\
+    )(STR,SEARCH)
+.fi
+.PP
+Definition at line 262 of file utf8\&.h\&.
+.SS "#define utf_set_n(DST, UTF, NCH)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((DST),\
+        utf8_t*: u8_set,\
+        utf16_t*: u16_set,\
+        utf32_t*: u32_set\
+    )(DST,UTF,NCH)
+.fi
+.PP
+Definition at line 123 of file utf8\&.h\&.
+.SS "#define utf_snprintf(STR, MAX, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((STR),\
+        char*: ulc_snprintf,\
+        utf8_t*: utf8_f_snprintf,\
+        utf16_t*: utf16_f_snprintf,\
+        utf32_t*: utf32_f_snprintf\
+    )(STR,MAX,FORM, ## arg)
+.fi
+.PP
+Definition at line 319 of file utf8\&.h\&.
+.SS "#define utf_snprintf_alloc(STR, MAX, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        char*: ulc_asnprintf,\
+        utf8_t*: utf8_f_asnprintf_alloc,\
+        utf16_t*: utf16_f_asnprintf_alloc,\
+        utf32_t*: utf32_f_asnprintf_alloc\
+    )(STR,MAX,FORM, ## arg)
+.fi
+.PP
+Definition at line 389 of file utf8\&.h\&.
+.SS "#define utf_snprintf_alloc(STR, MAX, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        char*: ulc_asnprintf,\
+        utf8_t*: utf8_f_asnprintf_alloc,\
+        utf16_t*: utf16_f_asnprintf_alloc,\
+        utf32_t*: utf32_f_asnprintf_alloc\
+    )(STR,MAX,FORM, ## arg)
+.fi
+.PP
+Definition at line 389 of file utf8\&.h\&.
+.SS "#define utf_space   uc_is_space"
+
+.PP
+Definition at line 382 of file utf8\&.h\&.
+.SS "#define utf_spn(STR, ACCEPT)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((STR),\
+        utf8_t*: u8_strspn,\
+        utf16_t*: u16_strspn,\
+        utf32_t*: u32_strspn\
+    )(STR,ACCEPT)
+.fi
+.PP
+Definition at line 250 of file utf8\&.h\&.
+.SS "#define utf_sprintf(STR, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        char*: ulc_sprintf,\
+        utf8_t*: utf8_f_sprintf,\
+        utf16_t*: utf16_f_sprintf,\
+        utf32_t*: utf32_f_sprintf\
+    )(STR,FORM, ## arg)
+.fi
+.PP
+Definition at line 299 of file utf8\&.h\&.
+.SS "#define utf_sprintf_alloc(STR, FORM, arg\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((STR),\
+        char*: ulc_asprintf,\
+        utf8_t*: utf8_f_asprintf_alloc,\
+        utf16_t*: utf16_f_asprintf_alloc,\
+        utf32_t*: utf32_f_asprintf_alloc\
+    )(STR,FORM, ## arg)
+.fi
+.PP
+Definition at line 339 of file utf8\&.h\&.
+.SS "#define utf_to(STR, COUNT)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((STR),\
+        utf8_t*: utf8_to,\
+        const uint8_t*: utf8_to\
+    )(STR,COUNT)
+.fi
+.PP
+Definition at line 425 of file utf8\&.h\&.
+.SS "#define utf_tok(STR, DEL, PTR)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((STR),\
+        utf8_t*: u8_strtok,\
+        utf16_t*: u16_strtok,\
+        utf32_t*: u32_strtok\
+    )(STR,DEL,PTR)
+.fi
+.PP
+Definition at line 280 of file utf8\&.h\&.
+.SS "#define utf_tolower   uc_tolower"
+
+.PP
+Definition at line 387 of file utf8\&.h\&.
+.SS "#define utf_toupper   uc_toupper"
+
+.PP
+Definition at line 386 of file utf8\&.h\&.
+.SS "#define utf_unicode_name   unicode_character_name"
+
+.PP
+Definition at line 371 of file utf8\&.h\&.
+.SS "#define utf_unit_count(STR)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        utf8_t*: u8_strmblen,\
+        utf16_t*: u16_strmblen,\
+        utf32_t*: u32_strmblen\
+    )(STR)
+.fi
+.PP
+Definition at line 159 of file utf8\&.h\&.
+.SS "#define utf_unit_count_n(STR, NCH)"
+\fBValue:\fP
+.PP
+.nf
+      _Generic((STR),\
+        utf8_t*: u8_mblen,\
+        utf16_t*: u16_mblen,\
+        utf32_t*: u32_mblen\
+    )(STR,NCH)
+.fi
+.PP
+Definition at line 78 of file utf8\&.h\&.
+.SS "#define utf_upper   uc_is_upper"
+
+.PP
+Definition at line 383 of file utf8\&.h\&.
+.SS "#define utf_validate_n(STR, NCH)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        utf8_t*: u8_check,\
+        utf16_t*: u16_check,\
+        utf32_t*: u32_check\
+    )(STR,NCH)
+.fi
+check STR is valid unicode, return NULL if is valid or first uninvalid char 
+.PP
+Definition at line 47 of file utf8\&.h\&.
+.SS "#define utf_width(STR)"
+\fBValue:\fP
+.PP
+.nf
+       _Generic((STR),\
+        utf_t: uc_width,\
+        utf8_t*: u8_strwidth,\
+        utf16_t*: u16_strwidth,\
+        utf32_t*: u32_strwidth\
+    )(STR,lc_charset)
+.fi
+.PP
+Definition at line 396 of file utf8\&.h\&.
+.SS "#define utf_width_enc(STR, ENCODING)"
+\fBValue:\fP
+.PP
+.nf
+        _Generic((STR),\
+        utf_t: uc_width,\
+        utf8_t*: u8_strwidth,\
+        utf16_t*: u16_strwidth,\
+        utf32_t*: u32_strwidth\
+    )(STR,ENCODING)
+.fi
+.PP
+Definition at line 403 of file utf8\&.h\&.
+.SS "#define utf_width_n(STR, NCH, ENCODING)"
+\fBValue:\fP
+.PP
+.nf
+     _Generic((STR),\
+        utf8_t*: u8_width,\
+        utf16_t*: u16_width,\
+        utf32_t*: u32_width\
+    )(STR,NCH,ENCODING)
+.fi
+.PP
+Definition at line 410 of file utf8\&.h\&.
+.SS "#define utf_xdigit   uc_is_xdigit"
+
+.PP
+Definition at line 384 of file utf8\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef uint16_t \fButf16_t\fP"
+utf16 type 
+.PP
+Definition at line 23 of file utf8\&.h\&.
+.SS "typedef uint32_t \fButf32_t\fP"
+utf32 type 
+.PP
+Definition at line 26 of file utf8\&.h\&.
+.SS "typedef uint8_t \fButf8_t\fP"
+utf8 type 
+.PP
+Definition at line 20 of file utf8\&.h\&.
+.SS "typedef struct \fButf8Iterator\fP \fButf8Iterator_s\fP"
+obj iterator 
+.SS "typedef ucs4_t \fButf_t\fP"
+one char for utf type 
+.PP
+Definition at line 29 of file utf8\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void utf8_append (\fButf8_t\fP * dst, \fButf8_t\fP * src)"
+append string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdst\fP destination 
+.br
+\fIsrc\fP source string 
+.RE
+.PP
+
+.SS "void utf8_chomp (\fButf8_t\fP * str)"
+remove enter char 
+.SS "void utf8_del (\fButf8_t\fP * dst, size_t ndel)"
+delete char from begin 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdst\fP destination 
+.br
+\fIndel\fP number of char to delete 
+.RE
+.PP
+
+.SS "void utf8_del_n (\fButf8_t\fP * dst, size_t dnch, size_t ndel)"
+delete char from position 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdst\fP destination 
+.br
+\fIdnch\fP position 
+.br
+\fIndel\fP number of char to delete 
+.RE
+.PP
+
+.SS "void utf8_delu (\fButf8_t\fP * dst, size_t ndel)"
+delete visible char 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdst\fP begin char to remove 
+.br
+\fIndel\fP count visible char to delete 
+.RE
+.PP
+
+.SS "void utf8_fputchar (FILE * fd, \fButf_t\fP ch)"
+put singhe char to file 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP FILE 
+.br
+\fIch\fP single utf8 
+.RE
+.PP
+
+.SS "ssize_t utf8_from_seu16 (\fButf8_t\fP * out, size_t size, const char * str, const char ** end)"
+parse string contains escaped unicode16 \\uA1F3 
+.PP
+\fBParameters\fP
+.RS 4
+\fIout\fP where write cast to utf8, if is null data is not writed 
+.br
+\fIsize\fP max output size 
+.br
+\fIstr\fP string with escape 
+.br
+\fIend\fP optional poiter to the end of escaped string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 for errot or size of data writed 
+.RE
+.PP
+
+.SS "\fButf8_t\fP* utf8_gets (\fButf8_t\fP * line, size_t max, FILE * fd)"
+fgets for utf8, validate input 
+.SS "\fButf8_t\fP* utf8_gets_alloc (size_t * outsize, size_t chunk, int nl, FILE * fd)"
+fgets but alloc string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIoutsize\fP return size of memory, not len 
+.br
+\fIchunk\fP size 
+.br
+\fInl\fP include new line 
+.br
+\fIfd\fP file 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+string or null for error 
+.RE
+.PP
+
+.SS "void utf8_ins (\fButf8_t\fP * dst, size_t dnch, \fButf8_t\fP * src, size_t snch)"
+insert string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdst\fP destination 
+.br
+\fIdnch\fP at position of visible chars 
+.br
+\fIsrc\fP source string 
+.br
+\fIsnch\fP len of visible char to write 
+.RE
+.PP
+
+.SS "\fButf8Iterator_s\fP utf8_iterator (\fButf8_t\fP * begin, size_t index)"
+init iterator 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbegin\fP start string 
+.br
+\fIindex\fP start index 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+copy of iterator 
+.RE
+.PP
+
+.SS "\fButf_t\fP utf8_iterator_delete (\fButf8Iterator_s\fP * it)"
+delete current utf 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.RE
+.PP
+
+.SS "\fButf_t\fP utf8_iterator_delete_to (\fButf8Iterator_s\fP * it, size_t count)"
+delete n times 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.br
+\fIcount\fP number of utf to delete 
+.RE
+.PP
+
+.SS "void utf8_iterator_insert (\fButf8Iterator_s\fP * it, \fButf_t\fP ch)"
+insert char 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.br
+\fIch\fP utf char 
+.RE
+.PP
+
+.SS "void utf8_iterator_insert_str (\fButf8Iterator_s\fP * it, \fButf8_t\fP * str, size_t width)"
+insert string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.br
+\fIstr\fP string 
+.br
+\fIwidth\fP numbers of visible chars to rewrite 
+.RE
+.PP
+
+.SS "\fButf_t\fP utf8_iterator_last (\fButf8Iterator_s\fP * it)"
+go to last char 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+current utf char or 0 if string end 
+.RE
+.PP
+
+.SS "\fButf_t\fP utf8_iterator_last_valid (\fButf8Iterator_s\fP * it)"
+go to last char for get with next 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+current utf char or 0 if string end 
+.RE
+.PP
+
+.SS "\fButf_t\fP utf8_iterator_next (\fButf8Iterator_s\fP * it)"
+next visible char 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+current utf char or 0 if string end 
+.RE
+.PP
+
+.SS "\fButf_t\fP utf8_iterator_next_to (\fButf8Iterator_s\fP * it, size_t count)"
+next visible char 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.br
+\fIcount\fP number of visible chars to skip 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+current utf char or 0 if string end 
+.RE
+.PP
+
+.SS "\fButf_t\fP utf8_iterator_prev (\fButf8Iterator_s\fP * it)"
+prev visible char 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+current utf char or 0 if string begin 
+.RE
+.PP
+
+.SS "\fButf_t\fP utf8_iterator_prev_to (\fButf8Iterator_s\fP * it, size_t count)"
+prev visible char 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.br
+\fIcount\fP number of visible chars to skip 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+current utf char or 0 if string begin 
+.RE
+.PP
+
+.SS "void utf8_iterator_replace (\fButf8Iterator_s\fP * it, \fButf_t\fP ch)"
+replace char 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.br
+\fIch\fP utf 
+.RE
+.PP
+
+.SS "void utf8_iterator_replace_str (\fButf8Iterator_s\fP * it, \fButf8_t\fP * str, size_t width)"
+replace string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIit\fP iterator 
+.br
+\fIstr\fP string 
+.br
+\fIwidth\fP numbers of visible chars to rewrite 
+.RE
+.PP
+
+.SS "void utf8_iterator_rewind (\fButf8Iterator_s\fP * it)"
+rewind iterator 
+.SS "size_t utf8_iteretor_position (\fButf8Iterator_s\fP * it)"
+get position, refer of visible chars 
+.SS "void utf8_replace (\fButf8_t\fP * dst, const \fButf8_t\fP * src)"
+replace string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsrc\fP source 
+.br
+\fIdst\fP destination 
+.RE
+.PP
+
+.SS "int utf8_resize (\fButf8_t\fP ** str, size_t element)"
+realloc string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstr\fP pointer to string, can be change address 
+.br
+\fIelement\fP new element count 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 success -1 error 
+.RE
+.PP
+
+.SS "\fButf8_t\fP* utf8_to (const \fButf8_t\fP * str, size_t n)"
+get visible char at n position 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstr\fP string 
+.br
+\fIn\fP skip n char 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+str after n 
+.RE
+.PP
+
+.SS "void utf_begin (void)"
+init utf8 
+.SH "Variable Documentation"
+.PP 
+.SS "const char* lc_charset"
+call utf8_begin for initialize this 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

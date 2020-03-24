@@ -1,0 +1,216 @@
+.TH "include/ef/json.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/json.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBjson\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBjson\fP \fBjson_s\fP"
+.br
+.ti -1c
+.RI "typedef \fBerr_t\fP(* \fBjsonEvent_f\fP) (\fBjson_s\fP *ctx)"
+.br
+.ti -1c
+.RI "typedef \fBerr_t\fP(* \fBjsonEventName_f\fP) (\fBjson_s\fP *ctx, char **name, size_t len)"
+.br
+.ti -1c
+.RI "typedef \fBerr_t\fP(* \fBjsonEventValue_f\fP) (\fBjson_s\fP *ctx, const char *name, size_t len)"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBjsonError_e\fP { \fBJSON_OK\fP, \fBJSON_ERR_STRING_END\fP, \fBJSON_ERR_STRING_LEN\fP, \fBJSON_ERR_STRING\fP, \fBJSON_ERR_UNICODE\fP, \fBJSON_ERR_NUMBER\fP, \fBJSON_ERR_CONSTANT\fP, \fBJSON_ERR_OBJECT_NAME\fP, \fBJSON_ERR_OBJECT_COLON\fP, \fBJSON_ERR_OBJECT_VALUE\fP, \fBJSON_ERR_OBJECT_END\fP, \fBJSON_ERR_ARRAY_END\fP, \fBJSON_ERR_UNASPECTED_CHAR\fP, \fBJSON_ERR_NOSPACE\fP, \fBJSON_ERR_USER\fP, \fBJSON_ERR_COUNT\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBjson_begin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBjson_end\fP (void)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBjson_lexer\fP (\fBjson_s\fP *\fBjson\fP, char const *data)"
+.br
+.ti -1c
+.RI "void \fBjson_error\fP (\fBjson_s\fP *\fBjson\fP)"
+.br
+.ti -1c
+.RI "char * \fBjson_error_allocstr\fP (\fBjson_s\fP *\fBjson\fP)"
+.br
+.ti -1c
+.RI "void \fBjson_push_error\fP (\fBjson_s\fP *\fBjson\fP)"
+.br
+.ti -1c
+.RI "char * \fBjson_unescape\fP (\fBjson_s\fP *js, const char *str, size_t len)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBjson_long_validation\fP (long *ret, const char *number, size_t len)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBjson_float_validation\fP (double *ret, const char *number, size_t len)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBjson\fP \fBjson_s\fP"
+
+.PP
+Definition at line 27 of file json\&.h\&.
+.SS "typedef \fBerr_t\fP(* jsonEvent_f) (\fBjson_s\fP *ctx)"
+
+.PP
+Definition at line 29 of file json\&.h\&.
+.SS "typedef \fBerr_t\fP(* jsonEventName_f) (\fBjson_s\fP *ctx, char **name, size_t len)"
+set ptr name to null for not free variable 
+.PP
+Definition at line 31 of file json\&.h\&.
+.SS "typedef \fBerr_t\fP(* jsonEventValue_f) (\fBjson_s\fP *ctx, const char *name, size_t len)"
+
+.PP
+Definition at line 32 of file json\&.h\&.
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBjsonError_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIJSON_OK \fP\fP
+.TP
+\fB\fIJSON_ERR_STRING_END \fP\fP
+.TP
+\fB\fIJSON_ERR_STRING_LEN \fP\fP
+.TP
+\fB\fIJSON_ERR_STRING \fP\fP
+.TP
+\fB\fIJSON_ERR_UNICODE \fP\fP
+.TP
+\fB\fIJSON_ERR_NUMBER \fP\fP
+.TP
+\fB\fIJSON_ERR_CONSTANT \fP\fP
+.TP
+\fB\fIJSON_ERR_OBJECT_NAME \fP\fP
+.TP
+\fB\fIJSON_ERR_OBJECT_COLON \fP\fP
+.TP
+\fB\fIJSON_ERR_OBJECT_VALUE \fP\fP
+.TP
+\fB\fIJSON_ERR_OBJECT_END \fP\fP
+.TP
+\fB\fIJSON_ERR_ARRAY_END \fP\fP
+.TP
+\fB\fIJSON_ERR_UNASPECTED_CHAR \fP\fP
+.TP
+\fB\fIJSON_ERR_NOSPACE \fP\fP
+.TP
+\fB\fIJSON_ERR_USER \fP\fP
+.TP
+\fB\fIJSON_ERR_COUNT \fP\fP
+.PP
+Definition at line 8 of file json\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void json_begin (void)"
+before use json, disable locale for correct parsing double value 
+.SS "void json_end (void)"
+after end use json, restore old locale 
+.SS "void json_error (\fBjson_s\fP * json)"
+print error on stderr 
+.SS "char* json_error_allocstr (\fBjson_s\fP * json)"
+return string allocated, remember to free, contains error descript 
+.SS "\fBerr_t\fP json_float_validation (double * ret, const char * number, size_t len)"
+validate float value 
+.PP
+\fBParameters\fP
+.RS 4
+\fIret\fP optional return number 
+.br
+\fInumber\fP string number to validate 
+.br
+\fIlen\fP len of number 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull, -1 error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP json_lexer (\fBjson_s\fP * json, char const * data)"
+lexing json 
+.PP
+\fBParameters\fP
+.RS 4
+\fIjson\fP structure 
+.br
+\fIdata\fP text to parse 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 for error 0 successfull 
+.RE
+.PP
+
+.SS "\fBerr_t\fP json_long_validation (long * ret, const char * number, size_t len)"
+validate integer value 
+.PP
+\fBParameters\fP
+.RS 4
+\fIret\fP optional return number 
+.br
+\fInumber\fP string number to validate 
+.br
+\fIlen\fP len of number 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull, -1 error 
+.RE
+.PP
+
+.SS "void json_push_error (\fBjson_s\fP * json)"
+err_push json error 
+.SS "char* json_unescape (\fBjson_s\fP * js, const char * str, size_t len)"
+unescape json string, utf_begin required 
+.PP
+\fBParameters\fP
+.RS 4
+\fIjs\fP optional 
+.br
+\fIstr\fP to escape 
+.br
+\fIlen\fP len of str 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+new unescaped string , remember to free, or null and set json error 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

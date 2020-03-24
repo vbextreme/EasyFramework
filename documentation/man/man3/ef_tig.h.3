@@ -1,0 +1,154 @@
+.TH "include/ef/tig.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/tig.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtigProgress\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBtigProgress\fP \fBtigProgress_s\fP"
+.br
+.ti -1c
+.RI "typedef void(* \fBtigProgress_f\fP) (\fBtigProgress_s\fP *p)"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBtigStatusProgress_e\fP { \fBTIG_STATUS_FETCH\fP, \fBTIG_STATUS_CHECKOUT\fP, \fBTIG_STATUS_DELTA\fP, \fBTIG_STATUS_NEW\fP, \fBTIG_STATUS_UPDATE\fP, \fBTIG_STATUS_OBJECTS\fP, \fBTIG_STATUS_COMPRESS\fP, \fBTIG_STATUS_END\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBtig_begin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBtig_end\fP (void)"
+.br
+.ti -1c
+.RI "const char * \fBtig_error_get\fP (int *klass)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBtig_clone\fP (const char *url, const char *path, \fBtigProgress_f\fP progress, void *userdata)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBtig_pull\fP (int *nothing, const char *path, const char *origin, \fBtigProgress_f\fP progress, void *userdata)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef void(* tigProgress_f) (\fBtigProgress_s\fP *p)"
+progress callback 
+.PP
+Definition at line 9 of file tig\&.h\&.
+.SS "typedef struct \fBtigProgress\fP \fBtigProgress_s\fP"
+
+.PP
+Definition at line 6 of file tig\&.h\&.
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBtigStatusProgress_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fITIG_STATUS_FETCH \fP\fP
+.TP
+\fB\fITIG_STATUS_CHECKOUT \fP\fP
+.TP
+\fB\fITIG_STATUS_DELTA \fP\fP
+.TP
+\fB\fITIG_STATUS_NEW \fP\fP
+.TP
+\fB\fITIG_STATUS_UPDATE \fP\fP
+.TP
+\fB\fITIG_STATUS_OBJECTS \fP\fP
+.TP
+\fB\fITIG_STATUS_COMPRESS \fP\fP
+.TP
+\fB\fITIG_STATUS_END \fP\fP
+.PP
+Definition at line 11 of file tig\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void tig_begin (void)"
+before use tig call this 
+.SS "\fBerr_t\fP tig_clone (const char * url, const char * path, \fBtigProgress_f\fP progress, void * userdata)"
+clone project 
+.PP
+\fBParameters\fP
+.RS 4
+\fIurl\fP url where get project 
+.br
+\fIpath\fP destination dir 
+.br
+\fIprogress\fP optional progress callback 
+.br
+\fIuserdata\fP optional userdata for callback 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull otherwise error 
+.RE
+.PP
+
+.SS "void tig_end (void)"
+when end of use tig call this 
+.SS "const char* tig_error_get (int * klass)"
+get error message and klass 
+.PP
+\fBParameters\fP
+.RS 4
+\fIklass\fP output klass 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+error message 
+.RE
+.PP
+
+.SS "\fBerr_t\fP tig_pull (int * nothing, const char * path, const char * origin, \fBtigProgress_f\fP progress, void * userdata)"
+pull project 
+.PP
+\fBParameters\fP
+.RS 4
+\fInothing\fP optional, setted to 1 if nothig append otherwise 0 
+.br
+\fIpath\fP of repo 
+.br
+\fIorigin\fP origin 
+.br
+\fIprogress\fP optional progress callback 
+.br
+\fIuserdata\fP optional userdata for callback 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull otherwise error 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

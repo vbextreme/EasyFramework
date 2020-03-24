@@ -1,0 +1,603 @@
+.TH "include/ef/type.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/type.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include <stdlib\&.h>\fP
+.br
+\fC#include <stdint\&.h>\fP
+.br
+\fC#include <inttypes\&.h>\fP
+.br
+\fC#include <errno\&.h>\fP
+.br
+\fC#include <limits\&.h>\fP
+.br
+\fC#include <string\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <assert\&.h>\fP
+.br
+\fC#include <unistd\&.h>\fP
+.br
+\fC#include <pthread\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fB_GNU_SOURCE\fP"
+.br
+.ti -1c
+.RI "#define \fB_XOPEN_SPURCE\fP   600"
+.br
+.ti -1c
+.RI "#define \fBlenght_stack_vector\fP(V)   (sizeof(V)/sizeof(V[0]))"
+.br
+.ti -1c
+.RI "#define \fB_Y_\fP   1"
+.br
+.ti -1c
+.RI "#define \fB_N_\fP   0"
+.br
+.ti -1c
+.RI "#define \fBEMPTY_MACRO\fP   do{}while(0)"
+.br
+.ti -1c
+.RI "#define \fBSWAP\fP(A,  B)"
+.br
+.ti -1c
+.RI "#define \fBADDR\fP(VAR)   ((char*)(VAR))"
+.br
+.ti -1c
+.RI "#define \fB__VA_COUNT__\fP(\&.\&.\&.)   \fB__VA_COUNT_IMPL__\fP(foo, ##__VA_ARGS__,9,8,7,6,5,4,3,2,1,0)"
+.br
+.ti -1c
+.RI "#define \fB__VA_COUNT_IMPL__\fP(_0,  _1,  _2,  _3,  _4,  _5,  _6,  _7,  _8,  _9,  N, \&.\&.\&.)   N"
+.br
+.ti -1c
+.RI "#define \fB__CONCAT__\fP(A,  B)   A##B"
+.br
+.ti -1c
+.RI "#define \fB__CONCAT_EXPAND__\fP(A,  B)   \fB__CONCAT__\fP(A,B)"
+.br
+.ti -1c
+.RI "#define \fBforever\fP()   for(;;)"
+.br
+.ti -1c
+.RI "#define \fB__private\fP   static"
+.br
+.ti -1c
+.RI "#define \fB__unused\fP   __attribute__((unused))"
+.br
+.ti -1c
+.RI "#define \fB__cleanup\fP(FNC)   __attribute__((__cleanup__(FNC)))"
+.br
+.ti -1c
+.RI "#define \fB__printf\fP(FRMT,  VA)   __attribute__((\fBformat\fP (printf, FRMT, VA)))"
+.br
+.ti -1c
+.RI "#define \fB__const\fP   __attribute__((const))"
+.br
+.ti -1c
+.RI "#define \fB__packed\fP   __attribute__((packed))"
+.br
+.ti -1c
+.RI "#define \fB__target\fP(T)   __attribute__((target(T)))"
+.br
+.ti -1c
+.RI "#define \fB__target_clone\fP(arg\&.\&.\&.)   __attribute__((target_clones(## arg)))"
+.br
+.ti -1c
+.RI "#define \fB__target_default\fP   \fB__target\fP('default')"
+.br
+.ti -1c
+.RI "#define \fB__target_popcount\fP   \fB__target\fP('popcnt')"
+.br
+.ti -1c
+.RI "#define \fB__target_vectorization\fP   __attribute__((target_clones('default','mmx','sse','sse2','sse3','ssse3','sse4\&.1','sse4\&.2','avx','avx2')))"
+.br
+.ti -1c
+.RI "#define \fB__target_default_popcount\fP   \fB__target_clone\fP('default','popcnt')"
+.br
+.ti -1c
+.RI "#define \fB__target_default_vectorization\fP   \fB__target_clone\fP('default','mmx','sse','sse2','sse3','ssse3','sse4\&.1','sse4\&.2','avx','avx2')"
+.br
+.ti -1c
+.RI "#define \fB__target_all\fP   \fB__target_clone\fP('default','popcnt','mmx','sse','sse2','sse3','ssse3','sse4\&.1','sse4\&.2','avx','avx2')"
+.br
+.ti -1c
+.RI "#define \fB__cpu_init\fP()   __builtin_cpu_init()"
+.br
+.ti -1c
+.RI "#define \fB__cpu_supports_popcount\fP()   __builtin_cpu_supports ('popcnt')"
+.br
+.ti -1c
+.RI "#define \fB__cpu_supports_vectorization\fP()   (__builtin_cpu_supports('mmx') || __builtin_cpu_supports('sse') || __builtin_cpu_supports('sse2') || __builtin_cpu_supports('sse3') || __builtin_cpu_supports('ssse3') || __builtin_cpu_supports('sse4\&.1') || __builtin_cpu_supports('sse4\&.2') || __builtin_cpu_supports('avx') || __builtin_cpu_supports('avx2'))"
+.br
+.ti -1c
+.RI "#define \fB__mul_overflow\fP(R,  A,  B)   __builtin_mul_overflow(A,B,R)"
+.br
+.ti -1c
+.RI "#define \fBKiB\fP   (1024UL)"
+.br
+.ti -1c
+.RI "#define \fBMiB\fP   (\fBKiB\fP*\fBKiB\fP)"
+.br
+.ti -1c
+.RI "#define \fBGiB\fP   (\fBMiB\fP*\fBMiB\fP)"
+.br
+.ti -1c
+.RI "#define \fBDO_PRAGMA\fP(DOP)   _Pragma(#DOP)"
+.br
+.ti -1c
+.RI "#define \fBUNSAFE_BEGIN\fP(FLAGS)   \fBDO_PRAGMA\fP(GCC diagnostic push); \fBDO_PRAGMA\fP(GCC diagnostic ignored FLAGS)"
+.br
+.ti -1c
+.RI "#define \fBUNSAFE_END\fP   \fBDO_PRAGMA\fP(GCC diagnostic pop)"
+.br
+.ti -1c
+.RI "#define \fB__parallef\fP"
+.br
+.ti -1c
+.RI "#define \fB__parallefc\fP(Z)"
+.br
+.ti -1c
+.RI "#define \fBDBG_OUTPUT\fP   stderr"
+.br
+.ti -1c
+.RI "#define \fBDBG_COLOR_INFO\fP   ''"
+.br
+.ti -1c
+.RI "#define \fBDBG_COLOR_WARNING\fP   ''"
+.br
+.ti -1c
+.RI "#define \fBDBG_COLOR_ERROR\fP   ''"
+.br
+.ti -1c
+.RI "#define \fBDBG_COLOR_FAIL\fP   ''"
+.br
+.ti -1c
+.RI "#define \fBDBG_COLOR_RESET\fP   ''"
+.br
+.ti -1c
+.RI "#define \fBDBG_INFO\fP   'info'"
+.br
+.ti -1c
+.RI "#define \fBDBG_WARNING\fP   'warning'"
+.br
+.ti -1c
+.RI "#define \fBDBG_ERROR\fP   'error'"
+.br
+.ti -1c
+.RI "#define \fBDBG_FAIL\fP   'fail'"
+.br
+.ti -1c
+.RI "#define \fBDBG_ERRNO\fP   'errno'"
+.br
+.ti -1c
+.RI "#define \fBDBG_LVL_FAIL\fP   1"
+.br
+.ti -1c
+.RI "#define \fBDBG_LVL_ERROR\fP   2"
+.br
+.ti -1c
+.RI "#define \fBDBG_LVL_WARNING\fP   3"
+.br
+.ti -1c
+.RI "#define \fBDBG_LVL_INFO\fP   4"
+.br
+.ti -1c
+.RI "#define \fBdbg\fP(TYPE,  FORMAT,  arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+.br
+.ti -1c
+.RI "#define \fBdbg_fail\fP(FORMAT,  arg\&.\&.\&.)   do{exit(1);}while(0)"
+.br
+.ti -1c
+.RI "#define \fBdbg_errno\fP()   \fBEMPTY_MACRO\fP"
+.br
+.ti -1c
+.RI "#define \fBdbg_error\fP(FORMAT,  arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+.br
+.ti -1c
+.RI "#define \fBdbg_warning\fP(FORMAT,  arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+.br
+.ti -1c
+.RI "#define \fBdbg_info\fP(FORMAT,  arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+.br
+.ti -1c
+.RI "#define \fBiassert\fP(C)   \fBEMPTY_MACRO\fP"
+.br
+.ti -1c
+.RI "#define \fBiassert_static\fP(EX,  MSG)   _Static_assert(EX, MSG)"
+.br
+.ti -1c
+.RI "#define \fBscan_build_unknown_cleanup\fP(E)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef char \fBbyte_t\fP"
+.br
+.ti -1c
+.RI "typedef uint16_t \fBword_t\fP"
+.br
+.ti -1c
+.RI "typedef uint32_t \fBdword_t\fP"
+.br
+.ti -1c
+.RI "typedef uint64_t \fBqword_t\fP"
+.br
+.ti -1c
+.RI "typedef \fBdword_t\fP \fBflags_t\fP"
+.br
+.ti -1c
+.RI "typedef int \fBerr_t\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBbool_t\fP { \fBFALSE\fP, \fBTRUE\fP }"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "int(* \fBqsort_f\fP )(const void *a, const void *b)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __cleanup(FNC)   __attribute__((__cleanup__(FNC)))"
+cleanup function called when exit from scope 
+.PP
+\fBParameters\fP
+.RS 4
+\fIFNC\fP function to call 
+.RE
+.PP
+
+.PP
+Definition at line 93 of file type\&.h\&.
+.SS "#define __CONCAT__(A, B)   A##B"
+
+.PP
+Definition at line 80 of file type\&.h\&.
+.SS "#define __CONCAT_EXPAND__(A, B)   \fB__CONCAT__\fP(A,B)"
+
+.PP
+Definition at line 81 of file type\&.h\&.
+.SS "#define __const   __attribute__((const))"
+is const 
+.PP
+Definition at line 100 of file type\&.h\&.
+.SS "#define __cpu_init()   __builtin_cpu_init()"
+init cpu before use runtime optimizations 
+.PP
+Definition at line 120 of file type\&.h\&.
+.SS "#define __cpu_supports_popcount()   __builtin_cpu_supports ('popcnt')"
+test is support bitcount 
+.PP
+Definition at line 122 of file type\&.h\&.
+.SS "#define __cpu_supports_vectorization()   (__builtin_cpu_supports('mmx') || __builtin_cpu_supports('sse') || __builtin_cpu_supports('sse2') || __builtin_cpu_supports('sse3') || __builtin_cpu_supports('ssse3') || __builtin_cpu_supports('sse4\&.1') || __builtin_cpu_supports('sse4\&.2') || __builtin_cpu_supports('avx') || __builtin_cpu_supports('avx2'))"
+test is support vectorization 
+.PP
+Definition at line 124 of file type\&.h\&.
+.SS "#define __mul_overflow(R, A, B)   __builtin_mul_overflow(A,B,R)"
+
+.PP
+Definition at line 126 of file type\&.h\&.
+.SS "#define __packed   __attribute__((packed))"
+is packed 
+.PP
+Definition at line 102 of file type\&.h\&.
+.SS "#define __parallef"
+
+.PP
+Definition at line 147 of file type\&.h\&.
+.SS "#define __parallefc(Z)"
+
+.PP
+Definition at line 148 of file type\&.h\&.
+.SS "#define __printf(FRMT, VA)   __attribute__((\fBformat\fP (printf, FRMT, VA)))"
+is printf 
+.PP
+\fBParameters\fP
+.RS 4
+\fIFRMT\fP int argument where stored format, start from 1 
+.br
+\fIVA\fP int argument where stored \&.\&.\&., start from 1 
+.RE
+.PP
+
+.PP
+Definition at line 98 of file type\&.h\&.
+.SS "#define __private   static"
+private is more elegant? 
+.PP
+Definition at line 87 of file type\&.h\&.
+.SS "#define __target(T)   __attribute__((target(T)))"
+target for runtime optimization 
+.PP
+Definition at line 104 of file type\&.h\&.
+.SS "#define __target_all   \fB__target_clone\fP('default','popcnt','mmx','sse','sse2','sse3','ssse3','sse4\&.1','sse4\&.2','avx','avx2')"
+target for runtime optimization 
+.PP
+Definition at line 118 of file type\&.h\&.
+.SS "#define __target_clone(arg\&.\&.\&.)   __attribute__((target_clones(## arg)))"
+target for runtime optimization 
+.PP
+Definition at line 106 of file type\&.h\&.
+.SS "#define __target_default   \fB__target\fP('default')"
+target for runtime optimization 
+.PP
+Definition at line 108 of file type\&.h\&.
+.SS "#define __target_default_popcount   \fB__target_clone\fP('default','popcnt')"
+target for runtime optimization 
+.PP
+Definition at line 114 of file type\&.h\&.
+.SS "#define __target_default_vectorization   \fB__target_clone\fP('default','mmx','sse','sse2','sse3','ssse3','sse4\&.1','sse4\&.2','avx','avx2')"
+target for runtime optimization 
+.PP
+Definition at line 116 of file type\&.h\&.
+.SS "#define __target_popcount   \fB__target\fP('popcnt')"
+target for runtime optimization 
+.PP
+Definition at line 110 of file type\&.h\&.
+.SS "#define __target_vectorization   __attribute__((target_clones('default','mmx','sse','sse2','sse3','ssse3','sse4\&.1','sse4\&.2','avx','avx2')))"
+target for runtime optimization 
+.PP
+Definition at line 112 of file type\&.h\&.
+.SS "#define __unused   __attribute__((unused))"
+unused value 
+.PP
+Definition at line 89 of file type\&.h\&.
+.SS "#define __VA_COUNT__( \&.\&.\&.)   \fB__VA_COUNT_IMPL__\fP(foo, ##__VA_ARGS__,9,8,7,6,5,4,3,2,1,0)"
+
+.PP
+Definition at line 78 of file type\&.h\&.
+.SS "#define __VA_COUNT_IMPL__(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, N,  \&.\&.\&.)   N"
+
+.PP
+Definition at line 79 of file type\&.h\&.
+.SS "#define _GNU_SOURCE"
+
+.PP
+Definition at line 5 of file type\&.h\&.
+.SS "#define _N_   0"
+macro value no 
+.PP
+Definition at line 59 of file type\&.h\&.
+.SS "#define _XOPEN_SPURCE   600"
+
+.PP
+Definition at line 8 of file type\&.h\&.
+.SS "#define _Y_   1"
+macro value yes 
+.PP
+Definition at line 55 of file type\&.h\&.
+.SS "#define ADDR(VAR)   ((char*)(VAR))"
+use address for move to data 
+.PP
+Definition at line 76 of file type\&.h\&.
+.SS "#define dbg(TYPE, FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+
+.PP
+Definition at line 217 of file type\&.h\&.
+.SS "#define DBG_COLOR_ERROR   ''"
+
+.PP
+Definition at line 164 of file type\&.h\&.
+.SS "#define DBG_COLOR_FAIL   ''"
+
+.PP
+Definition at line 165 of file type\&.h\&.
+.SS "#define DBG_COLOR_INFO   ''"
+
+.PP
+Definition at line 162 of file type\&.h\&.
+.SS "#define DBG_COLOR_RESET   ''"
+
+.PP
+Definition at line 166 of file type\&.h\&.
+.SS "#define DBG_COLOR_WARNING   ''"
+
+.PP
+Definition at line 163 of file type\&.h\&.
+.SS "#define dbg_errno()   \fBEMPTY_MACRO\fP"
+
+.PP
+Definition at line 219 of file type\&.h\&.
+.SS "#define DBG_ERRNO   'errno'"
+
+.PP
+Definition at line 182 of file type\&.h\&.
+.SS "#define dbg_error(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+
+.PP
+Definition at line 226 of file type\&.h\&.
+.SS "#define DBG_ERROR   'error'"
+
+.PP
+Definition at line 176 of file type\&.h\&.
+.SS "#define dbg_fail(FORMAT, arg\&.\&.\&.)   do{exit(1);}while(0)"
+
+.PP
+Definition at line 218 of file type\&.h\&.
+.SS "#define DBG_FAIL   'fail'"
+
+.PP
+Definition at line 179 of file type\&.h\&.
+.SS "#define dbg_info(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+
+.PP
+Definition at line 240 of file type\&.h\&.
+.SS "#define DBG_INFO   'info'"
+
+.PP
+Definition at line 170 of file type\&.h\&.
+.SS "#define DBG_LVL_ERROR   2"
+
+.PP
+Definition at line 189 of file type\&.h\&.
+.SS "#define DBG_LVL_FAIL   1"
+
+.PP
+Definition at line 186 of file type\&.h\&.
+.SS "#define DBG_LVL_INFO   4"
+
+.PP
+Definition at line 195 of file type\&.h\&.
+.SS "#define DBG_LVL_WARNING   3"
+
+.PP
+Definition at line 192 of file type\&.h\&.
+.SS "#define DBG_OUTPUT   stderr"
+
+.PP
+Definition at line 152 of file type\&.h\&.
+.SS "#define dbg_warning(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+
+.PP
+Definition at line 233 of file type\&.h\&.
+.SS "#define DBG_WARNING   'warning'"
+
+.PP
+Definition at line 173 of file type\&.h\&.
+.SS "#define DO_PRAGMA(DOP)   _Pragma(#DOP)"
+to call pragma 
+.PP
+Definition at line 136 of file type\&.h\&.
+.SS "#define EMPTY_MACRO   do{}while(0)"
+macro is empty 
+.PP
+Definition at line 63 of file type\&.h\&.
+.SS "#define forever()   for(;;)"
+forever loop 
+.PP
+Definition at line 85 of file type\&.h\&.
+.SS "#define GiB   (\fBMiB\fP*\fBMiB\fP)"
+GiB value 
+.PP
+Definition at line 133 of file type\&.h\&.
+.SS "#define iassert(C)   \fBEMPTY_MACRO\fP"
+
+.PP
+Definition at line 247 of file type\&.h\&.
+.SS "#define iassert_static(EX, MSG)   _Static_assert(EX, MSG)"
+static assert 
+.PP
+Definition at line 251 of file type\&.h\&.
+.SS "#define KiB   (1024UL)"
+KiB value 
+.PP
+Definition at line 129 of file type\&.h\&.
+.SS "#define lenght_stack_vector(V)   (sizeof(V)/sizeof(V[0]))"
+get size of array allocated in same scope and in stack 
+.PP
+\fBParameters\fP
+.RS 4
+\fIV\fP is an array 
+.RE
+.PP
+
+.PP
+Definition at line 51 of file type\&.h\&.
+.SS "#define MiB   (\fBKiB\fP*\fBKiB\fP)"
+MiB value 
+.PP
+Definition at line 131 of file type\&.h\&.
+.SS "#define scan_build_unknown_cleanup(E)"
+
+.PP
+Definition at line 256 of file type\&.h\&.
+.SS "#define SWAP(A, B)"
+\fBValue:\fP
+.PP
+.nf
+       ({ \
+        __auto_type __tmp__ = A;\
+        A = B;\
+        B = __tmp__;\
+    })
+.fi
+swap two variable 
+.PP
+\fBParameters\fP
+.RS 4
+\fIA\fP 
+.br
+\fIB\fP 
+.RE
+.PP
+
+.PP
+Definition at line 69 of file type\&.h\&.
+.SS "#define UNSAFE_BEGIN(FLAGS)   \fBDO_PRAGMA\fP(GCC diagnostic push); \fBDO_PRAGMA\fP(GCC diagnostic ignored FLAGS)"
+suppress compiler warning 
+.PP
+Definition at line 138 of file type\&.h\&.
+.SS "#define UNSAFE_END   \fBDO_PRAGMA\fP(GCC diagnostic pop)"
+
+.PP
+Definition at line 139 of file type\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef char \fBbyte_t\fP"
+type for byte 
+.PP
+Definition at line 28 of file type\&.h\&.
+.SS "typedef uint32_t \fBdword_t\fP"
+type for double word 
+.PP
+Definition at line 34 of file type\&.h\&.
+.SS "typedef int \fBerr_t\fP"
+type for error 
+.PP
+Definition at line 43 of file type\&.h\&.
+.SS "typedef \fBdword_t\fP \fBflags_t\fP"
+type for flags 
+.PP
+Definition at line 40 of file type\&.h\&.
+.SS "typedef uint64_t \fBqword_t\fP"
+type for quad word 
+.PP
+Definition at line 37 of file type\&.h\&.
+.SS "typedef uint16_t \fBword_t\fP"
+type for word 
+.PP
+Definition at line 31 of file type\&.h\&.
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBbool_t\fP"
+type for boolean 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIFALSE \fP\fP
+.TP
+\fB\fITRUE \fP\fP
+.PP
+Definition at line 46 of file type\&.h\&.
+.SH "Variable Documentation"
+.PP 
+.SS "int(* qsort_f) (const void *a, const void *b)"
+compare function for qsort 
+.PP
+Definition at line 25 of file type\&.h\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

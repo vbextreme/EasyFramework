@@ -1,0 +1,162 @@
+.TH "include/ef/http.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/http.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/www\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBhttpPost\fP"
+.br
+.ti -1c
+.RI "struct \fBhttp\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBHTTP_DOWNLOAD_BUFFER\fP   4096"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBhttpPost\fP \fBhttpPost_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBhttp\fP \fBhttp_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBhttp_post_free\fP (\fBhttp_s\fP *\fBhttp\fP)"
+.br
+.ti -1c
+.RI "void \fBhttp_post_set\fP (\fBhttp_s\fP *\fBhttp\fP, const char *\fBcmp\fP, const char *value)"
+.br
+.ti -1c
+.RI "\fB__printf\fP (3, 4) void http_post_setf(\fBhttp_s\fP *\fBhttp\fP"
+.br
+.ti -1c
+.RI "const char const char void \fBhttp_post_file_set\fP (\fBhttp_s\fP *\fBhttp\fP, const char *\fBcmp\fP, const char *value)"
+.br
+.ti -1c
+.RI "\fBhttp_s\fP * \fBhttp_new\fP (size_t bufferupsize, int flags, \fBwwwProgress_s\fP *prog)"
+.br
+.ti -1c
+.RI "void \fBhttp_free\fP (\fBhttp_s\fP *\fBhttp\fP)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBhttp_get\fP (\fBhttp_s\fP *\fBhttp\fP, const char *url)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBhttp_post\fP (\fBhttp_s\fP *\fBhttp\fP, const char *url)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBhttp_download\fP (int fd, const char *url, int flags, \fBwwwProgress_s\fP *prog, ssize_t resume)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "const char * \fBcmp\fP"
+.br
+.ti -1c
+.RI "const char const char * \fBformat\fP"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define HTTP_DOWNLOAD_BUFFER   4096"
+
+.PP
+Definition at line 7 of file http\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBhttp\fP \fBhttp_s\fP"
+
+.SS "typedef struct \fBhttpPost\fP \fBhttpPost_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "__printf (3, 4)"
+set post 
+.SS "\fBerr_t\fP http_download (int fd, const char * url, int flags, \fBwwwProgress_s\fP * prog, ssize_t resume)"
+download to a fd 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP destination 
+.br
+\fIurl\fP ubication file 
+.br
+\fIflags\fP WWW_FLAGS, WWW_FLAGS_FD are automatic set, WWW_FLAGS_BODY & WWW_FLAGS_HEADER not have effect 
+.br
+\fIprog\fP set callback fro progress or NULL if not used 
+.br
+\fIresume\fP position to resume download, -1 no resume, assume fd is in a position 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1/-2 error 
+.RE
+.PP
+
+.SS "void http_free (\fBhttp_s\fP * http)"
+free http 
+.SS "\fBerr_t\fP http_get (\fBhttp_s\fP * http, const char * url)"
+perform an http get 
+.SS "\fBhttp_s\fP* http_new (size_t bufferupsize, int flags, \fBwwwProgress_s\fP * prog)"
+create new http 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbufferupsize\fP the upsize of www_buffer 
+.br
+\fIflags\fP WWW_FLAGS 
+.br
+\fIprog\fP set callback fro progress or NULL if not used 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+obj or NULL for error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP http_post (\fBhttp_s\fP * http, const char * url)"
+perform an http post 
+.SS "const char const char void http_post_file_set (\fBhttp_s\fP * http, const char * cmp, const char * value)"
+set file post 
+.SS "void http_post_free (\fBhttp_s\fP * http)"
+free post, is auto called from http_delete 
+.SS "void http_post_set (\fBhttp_s\fP * http, const char * cmp, const char * value)"
+set post 
+.SH "Variable Documentation"
+.PP 
+.SS "const char* cmp"
+
+.PP
+Definition at line 26 of file http\&.h\&.
+.SS "const char const char* format"
+
+.PP
+Definition at line 26 of file http\&.h\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

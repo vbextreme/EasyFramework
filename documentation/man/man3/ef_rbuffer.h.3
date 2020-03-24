@@ -1,0 +1,276 @@
+.TH "include/ef/rbuffer.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/rbuffer.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBrbuffer\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fB__rbuffer_free\fP   \fB__cleanup\fP(\fBrbuffer_free_auto\fP)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBrbuffer\fP \fBrbuffer_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBrbuffer_s\fP * \fBrbuffer_new\fP (size_t sof, size_t size)"
+.br
+.ti -1c
+.RI "void \fBrbuffer_free\fP (\fBrbuffer_s\fP *cb)"
+.br
+.ti -1c
+.RI "void \fBrbuffer_free_auto\fP (\fBrbuffer_s\fP **cb)"
+.br
+.ti -1c
+.RI "int \fBrbuffer_isempty\fP (\fBrbuffer_s\fP *cb)"
+.br
+.ti -1c
+.RI "int \fBrbuffer_isfull\fP (\fBrbuffer_s\fP *cb)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBrbuffer_write\fP (\fBrbuffer_s\fP *cb, void *data)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBrbuffer_read\fP (\fBrbuffer_s\fP *cb, void *out)"
+.br
+.ti -1c
+.RI "size_t \fBrbuffer_available_write\fP (\fBrbuffer_s\fP *cb)"
+.br
+.ti -1c
+.RI "size_t \fBrbuffer_available_read\fP (\fBrbuffer_s\fP *cb)"
+.br
+.ti -1c
+.RI "size_t \fBrbuffer_available_linear_write\fP (\fBrbuffer_s\fP *cb)"
+.br
+.ti -1c
+.RI "size_t \fBrbuffer_available_linear_read\fP (\fBrbuffer_s\fP *cb)"
+.br
+.ti -1c
+.RI "void \fBrbuffer_sync_write\fP (\fBrbuffer_s\fP *cb, size_t n)"
+.br
+.ti -1c
+.RI "void \fBrbuffer_sync_read\fP (\fBrbuffer_s\fP *cb, size_t n)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBrbuffer_unread\fP (\fBrbuffer_s\fP *cb)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBrbuffer_unwrite\fP (\fBrbuffer_s\fP *cb)"
+.br
+.ti -1c
+.RI "void * \fBrbuffer_addr_r\fP (\fBrbuffer_s\fP *cb)"
+.br
+.ti -1c
+.RI "void * \fBrbuffer_addr_w\fP (\fBrbuffer_s\fP *cb)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __rbuffer_free   \fB__cleanup\fP(\fBrbuffer_free_auto\fP)"
+cleanup function 
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.PP
+Definition at line 18 of file rbuffer\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBrbuffer\fP \fBrbuffer_s\fP"
+generic ring buffer 
+.SH "Function Documentation"
+.PP 
+.SS "void* rbuffer_addr_r (\fBrbuffer_s\fP * cb)"
+get address of r 
+.SS "void* rbuffer_addr_w (\fBrbuffer_s\fP * cb)"
+get address of w 
+.SS "size_t rbuffer_available_linear_read (\fBrbuffer_s\fP * cb)"
+available linear size for read with memcpy, for examples 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcb\fP ring buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+size 
+.RE
+.PP
+
+.SS "size_t rbuffer_available_linear_write (\fBrbuffer_s\fP * cb)"
+available linear size for write with memcpy, for examples 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcb\fP ring buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+size 
+.RE
+.PP
+
+.SS "size_t rbuffer_available_read (\fBrbuffer_s\fP * cb)"
+available size for read 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcb\fP ring buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+size 
+.RE
+.PP
+
+.SS "size_t rbuffer_available_write (\fBrbuffer_s\fP * cb)"
+available size for write 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcb\fP ring buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+size 
+.RE
+.PP
+
+.SS "void rbuffer_free (\fBrbuffer_s\fP * cb)"
+free ring buffer 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcb\fP ring buffer 
+.RE
+.PP
+
+.SS "void rbuffer_free_auto (\fBrbuffer_s\fP ** cb)"
+free for cleanup ring buffer 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcb\fP ring buffer 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fB__cleanup\fP 
+.RE
+.PP
+
+.SS "int rbuffer_isempty (\fBrbuffer_s\fP * cb)"
+chek if ring buffer is empty 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcb\fP ring buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+1 for empty 0 otherwise 
+.RE
+.PP
+
+.SS "int rbuffer_isfull (\fBrbuffer_s\fP * cb)"
+chek if ring buffer is full, no more data can be write 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcb\fP ring buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+1 for full 0 otherwise 
+.RE
+.PP
+
+.SS "\fBrbuffer_s\fP* rbuffer_new (size_t sof, size_t size)"
+create new ring buffer 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsof\fP sizeof object 
+.br
+\fIsize\fP size of memory 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+rbuffer or NULL for error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP rbuffer_read (\fBrbuffer_s\fP * cb, void * out)"
+read data 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcb\fP ring buffer 
+.br
+\fIout\fP out data with same size of rbuffer element 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 ok -1 for error 
+.RE
+.PP
+
+.SS "void rbuffer_sync_read (\fBrbuffer_s\fP * cb, size_t n)"
+sync w, call thin with value returned from linear size 
+.SS "void rbuffer_sync_write (\fBrbuffer_s\fP * cb, size_t n)"
+sync w, call thin with value returned from linear size 
+.SS "\fBerr_t\fP rbuffer_unread (\fBrbuffer_s\fP * cb)"
+push back readed element 
+.SS "\fBerr_t\fP rbuffer_unwrite (\fBrbuffer_s\fP * cb)"
+puch back writed element 
+.SS "\fBerr_t\fP rbuffer_write (\fBrbuffer_s\fP * cb, void * data)"
+write data 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcb\fP ring buffer 
+.br
+\fIdata\fP data with same size of rbuffer element 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 ok -1 for error 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

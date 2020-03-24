@@ -1,0 +1,1008 @@
+.TH "include/ef/mth.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/mth.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <complex\&.h>\fP
+.br
+\fC#include <time\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fB_USE_MATH_DEFINES\fP"
+.br
+.ti -1c
+.RI "#define \fBMTH_PI\fP   M_PI"
+.br
+.ti -1c
+.RI "#define \fBMTH_2PI\fP   (2\&.0*\fBMTH_PI\fP)"
+.br
+.ti -1c
+.RI "#define \fBMTH_RAD\fP   (\fBMTH_PI\fP/180\&.0)"
+.br
+.ti -1c
+.RI "#define \fBMTH_SMALL_FLOAT\fP   (1e\-12)"
+.br
+.ti -1c
+.RI "#define \fBMTH_ANGLE_FULL\fP   360"
+.br
+.ti -1c
+.RI "#define \fBMTH_DOUBLE_CMP\fP(A,  B,  R)   ((A) > (B) \- (R) && (A) < (B) + (R))"
+.br
+.ti -1c
+.RI "#define \fBMTH_MAX\fP(A,  B)   ((A>B)?A:B)"
+.br
+.ti -1c
+.RI "#define \fBMTH_3MAX\fP(A,  B,  C)   \fBMTH_MAX\fP(\fBMTH_MAX\fP(A,B),C)"
+.br
+.ti -1c
+.RI "#define \fBMTH_MIN\fP(A,  B)   ((A<B)?A:B)"
+.br
+.ti -1c
+.RI "#define \fBMTH_3MIN\fP(A,  B,  C)   \fBMTH_MIN\fP(\fBMTH_MIN\fP(A,B),C)"
+.br
+.ti -1c
+.RI "#define \fBROUND_UP\fP(N,  S)   ((((N)+(S)\-1)/(S))*(S))"
+.br
+.ti -1c
+.RI "#define \fBROUND_UP_POW_TWO32\fP(N)"
+.br
+.ti -1c
+.RI "#define \fBROUND_DOWN_POW_TWO32\fP(N)"
+.br
+.ti -1c
+.RI "#define \fBFAST_MOD_POW_TWO\fP(N,  M)   ((N) & ((M) \- 1))"
+.br
+.ti -1c
+.RI "#define \fBFAST_BIT_COUNT\fP(B)   __builtin_popcount(B)"
+.br
+.ti -1c
+.RI "#define \fBMM_ALPHA\fP(CHANNEL,  COUNT)   ((CHANNEL)/((COUNT)+1))"
+.br
+.ti -1c
+.RI "#define \fBMM_AHPLA\fP(CHANNEL,  ALPHA)   ((CHANNEL/2)\-ALPHA)"
+.br
+.ti -1c
+.RI "#define \fBMM_NEXT\fP(CHANNEL,  ALPHA,  AHPLA,  NEWVAL,  OLDVAL)   (((ALPHA)*(NEWVAL)+(AHPLA)*(OLDVAL))/(CHANNEL/2))"
+.br
+.ti -1c
+.RI "#define \fBULLBIT_INDEX\fP(VAL)   ((VAL)/(sizeof(unsigned long)*8))"
+.br
+.ti -1c
+.RI "#define \fBULLBIT_BIT\fP(VAL)   ((unsigned long)1<<\fBFAST_MOD_POW_TWO\fP(VAL, sizeof(unsigned long)*8))"
+.br
+.ti -1c
+.RI "#define \fBULLBITS\fP(V,  VAL)   (V[\fBULLBIT_INDEX\fP(VAL)] |= \fBULLBIT_BIT\fP(VAL))"
+.br
+.ti -1c
+.RI "#define \fBULLBITC\fP(V,  VAL)   (V[\fBULLBIT_INDEX\fP(VAL)] &= ~\fBULLBIT_BIT\fP(VAL))"
+.br
+.ti -1c
+.RI "#define \fBULLBITT\fP(V,  VAL)   (V[\fBULLBIT_INDEX\fP(VAL)] & \fBULLBIT_BIT\fP(VAL))"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBsip_e\fP { \fBMTH_SIP_ONE\fP, \fBMTH_SIP_DECA\fP, \fBMTH_SIP_HECTO\fP, \fBMTH_SIP_KILO\fP, \fBMTH_SIP_MEGA\fP, \fBMTH_SIP_GIGA\fP, \fBMTH_SIP_TERA\fP, \fBMTH_SIP_PETA\fP, \fBMTH_SIP_EXA\fP, \fBMTH_SIP_ZETTA\fP, \fBMTH_SIP_YOTTA\fP }"
+.br
+.ti -1c
+.RI "enum \fBiecp_e\fP { \fBMTH_IEC_BYTE\fP, \fBMTH_IEC_KILOBYTE\fP, \fBMTH_IEC_MEGABYTE\fP, \fBMTH_IEC_GIGABYTE\fP, \fBMTH_IEC_TERABYTE\fP, \fBMTH_IEC_PETABYTE\fP, \fBMTH_IEC_EXABYTE\fP, \fBMTH_IEC_ZETTABYTE\fP, \fBMTH_IEC_YOTTABYTE\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "double \fBmth_gtor\fP (double gradi)"
+.br
+.ti -1c
+.RI "void \fBmth_random_begin\fP (void)"
+.br
+.ti -1c
+.RI "int \fBmth_random\fP (int n)"
+.br
+.ti -1c
+.RI "int \fBmth_random_range\fP (int min, int max)"
+.br
+.ti -1c
+.RI "float \fBmth_random_gauss\fP (float media, float stddeviation)"
+.br
+.ti -1c
+.RI "double \fBmth_random_f01\fP (void)"
+.br
+.ti -1c
+.RI "void \fBmth_random_string_azAZ09\fP (char *out, size_t size)"
+.br
+.ti -1c
+.RI "void \fBmth_rotate\fP (float *x, float *y, float centerx, float centery, float rad)"
+.br
+.ti -1c
+.RI "time_t \fBmth_date_julian_time\fP (double jd)"
+.br
+.ti -1c
+.RI "double \fBmth_date_julian\fP (int year, int month, double day)"
+.br
+.ti -1c
+.RI "int \fBmth_date_julian_ut\fP (int d, int m, int y)"
+.br
+.ti -1c
+.RI "double \fBmth_sun_position\fP (double j)"
+.br
+.ti -1c
+.RI "double \fBmth_moon_position\fP (double j, double ls)"
+.br
+.ti -1c
+.RI "double \fBmth_moon_phase\fP (int year, int month, int day, double hour, int *ip)"
+.br
+.ti -1c
+.RI "void \fBmth_mat_addi\fP (int **r, int **a, int **b, size_t szr, size_t szc)"
+.br
+.ti -1c
+.RI "void \fBmth_mat_subi\fP (int **r, int **a, int **b, size_t szr, size_t szc)"
+.br
+.ti -1c
+.RI "void \fBmth_mat_imuli\fP (int **r, int a, int **b, size_t szr, size_t szc)"
+.br
+.ti -1c
+.RI "void \fBmth_mat_muli\fP (int **r, int **a, int **b, size_t szr, size_t szc)"
+.br
+.ti -1c
+.RI "int \fBmth_mat_determinant2\fP (int **a)"
+.br
+.ti -1c
+.RI "int \fBmth_mat_determinant3\fP (int **a)"
+.br
+.ti -1c
+.RI "void \fBmth_fqr_generate\fP (short int *buffer, int samplerate, double durata, double stfq, int loopfq, double fq, double amplitude, int fase)"
+.br
+.ti -1c
+.RI "double complex * \fBmth_fft\fP (double complex buf[], int n)"
+.br
+.ti -1c
+.RI "double \fBmth_bbppigreco\fP (long int i)"
+.br
+.ti -1c
+.RI "\fB__const\fP size_t \fBmth_round_up_power_two\fP (size_t n)"
+.br
+.ti -1c
+.RI "size_t \fBmth_si_prefix_translate_base\fP (const \fBsip_e\fP sibase)"
+.br
+.ti -1c
+.RI "const char * \fBmth_si_prefix_translate_short_string\fP (const \fBsip_e\fP sibase)"
+.br
+.ti -1c
+.RI "double \fBmth_si_prefix_base\fP (\fBsip_e\fP *siout, const double num)"
+.br
+.ti -1c
+.RI "size_t \fBmth_iec_prefix_translate_base\fP (const \fBiecp_e\fP b)"
+.br
+.ti -1c
+.RI "const char * \fBmth_iec_prefix_translate_short_string\fP (const \fBiecp_e\fP b)"
+.br
+.ti -1c
+.RI "double \fBmth_ice_prefix_base\fP (\fBiecp_e\fP *iecout, const double num)"
+.br
+.ti -1c
+.RI "char * \fBbase64_encode\fP (const void *src, const size_t size)"
+.br
+.ti -1c
+.RI "void * \fBbase64_decode\fP (size_t *size, const char *b64)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define _USE_MATH_DEFINES"
+
+.PP
+Definition at line 4 of file mth\&.h\&.
+.SS "#define FAST_BIT_COUNT(B)   __builtin_popcount(B)"
+fast way to count bit 
+.PP
+\fBParameters\fP
+.RS 4
+\fIB\fP is value to counting bit 
+.RE
+.PP
+
+.PP
+Definition at line 87 of file mth\&.h\&.
+.SS "#define FAST_MOD_POW_TWO(N, M)   ((N) & ((M) \- 1))"
+fast version to get modulo of pwer of two value 
+.PP
+\fBParameters\fP
+.RS 4
+\fIN\fP is number 
+.br
+\fIM\fP is modulo 
+.RE
+.PP
+
+.PP
+Definition at line 82 of file mth\&.h\&.
+.SS "#define MM_AHPLA(CHANNEL, ALPHA)   ((CHANNEL/2)\-ALPHA)"
+calcolate ahpla 
+.PP
+\fBSee also\fP
+.RS 4
+\fBMM_NEXT\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fICHANNEL\fP is offset value, 2000 
+.br
+\fIALPHA\fP is wight of value 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+ahpla value 
+.RE
+.PP
+
+.PP
+Definition at line 103 of file mth\&.h\&.
+.SS "#define MM_ALPHA(CHANNEL, COUNT)   ((CHANNEL)/((COUNT)+1))"
+get alpha value for continuate median 
+.PP
+\fBSee also\fP
+.RS 4
+\fBMM_NEXT\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fICHANNEL\fP is offset value, 2000 
+.br
+\fICOUNT\fP is wight of value 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+alpha value 
+.RE
+.PP
+
+.PP
+Definition at line 96 of file mth\&.h\&.
+.SS "#define MM_NEXT(CHANNEL, ALPHA, AHPLA, NEWVAL, OLDVAL)   (((ALPHA)*(NEWVAL)+(AHPLA)*(OLDVAL))/(CHANNEL/2))"
+calcolate next median value 
+.PP
+\fBParameters\fP
+.RS 4
+\fICHANNEL\fP a channel 
+.br
+\fIALPHA\fP get with MM_ALPHA 
+.br
+\fIAHPLA\fP get with MM_AHPLA 
+.br
+\fINEWVAL\fP new value 
+.br
+\fIOLDVAL\fP previus median 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+new median 
+.PP
+.nf
+const long alpha = MM_ALPHA(2000, 5);
+const long ahpla = MM_AHPLA(2000, alpha);
+long median = 0;
+while(1){
+ long newval = anyfunctiontogetit();
+ long median = MM_NEXT(alpha, ahpla, newval,  median);
+ printf("median:%ld",medianNew);
+}
+
+.fi
+.PP
+ 
+.RE
+.PP
+
+.PP
+Definition at line 122 of file mth\&.h\&.
+.SS "#define MTH_2PI   (2\&.0*\fBMTH_PI\fP)"
+PI*2 
+.PP
+Definition at line 13 of file mth\&.h\&.
+.SS "#define MTH_3MAX(A, B, C)   \fBMTH_MAX\fP(\fBMTH_MAX\fP(A,B),C)"
+get max from three numbers 
+.PP
+\fBParameters\fP
+.RS 4
+\fIA\fP 
+.br
+\fIB\fP 
+.br
+\fIC\fP 
+.RE
+.PP
+
+.PP
+Definition at line 34 of file mth\&.h\&.
+.SS "#define MTH_3MIN(A, B, C)   \fBMTH_MIN\fP(\fBMTH_MIN\fP(A,B),C)"
+get min from three numbers 
+.PP
+\fBParameters\fP
+.RS 4
+\fIA\fP 
+.br
+\fIB\fP 
+.br
+\fIC\fP 
+.RE
+.PP
+
+.PP
+Definition at line 47 of file mth\&.h\&.
+.SS "#define MTH_ANGLE_FULL   360"
+full degree angle 
+.PP
+Definition at line 19 of file mth\&.h\&.
+.SS "#define MTH_DOUBLE_CMP(A, B, R)   ((A) > (B) \- (R) && (A) < (B) + (R))"
+
+.PP
+Definition at line 21 of file mth\&.h\&.
+.SS "#define MTH_MAX(A, B)   ((A>B)?A:B)"
+get max from two numbers 
+.PP
+\fBParameters\fP
+.RS 4
+\fIA\fP 
+.br
+\fIB\fP 
+.RE
+.PP
+
+.PP
+Definition at line 27 of file mth\&.h\&.
+.SS "#define MTH_MIN(A, B)   ((A<B)?A:B)"
+get min from two numbers 
+.PP
+\fBParameters\fP
+.RS 4
+\fIA\fP 
+.br
+\fIB\fP 
+.RE
+.PP
+
+.PP
+Definition at line 40 of file mth\&.h\&.
+.SS "#define MTH_PI   M_PI"
+PI 
+.PP
+Definition at line 11 of file mth\&.h\&.
+.SS "#define MTH_RAD   (\fBMTH_PI\fP/180\&.0)"
+radiant 
+.PP
+Definition at line 15 of file mth\&.h\&.
+.SS "#define MTH_SMALL_FLOAT   (1e\-12)"
+small float 
+.PP
+Definition at line 17 of file mth\&.h\&.
+.SS "#define ROUND_DOWN_POW_TWO32(N)"
+\fBValue:\fP
+.PP
+.nf
+      ({\
+        unsigned int r = ROUND_UP_POW_TWO32((N)+1);\
+        r >> 1;\
+    })
+.fi
+round number to down value as power of two, example 16 is 16, 17 is 16 
+.PP
+\fBParameters\fP
+.RS 4
+\fIN\fP is number 
+.RE
+.PP
+
+.PP
+Definition at line 73 of file mth\&.h\&.
+.SS "#define ROUND_UP(N, S)   ((((N)+(S)\-1)/(S))*(S))"
+round number to up value 
+.PP
+\fBParameters\fP
+.RS 4
+\fIN\fP is number 
+.br
+\fIS\fP is to round 
+.RE
+.PP
+
+.PP
+Definition at line 53 of file mth\&.h\&.
+.SS "#define ROUND_UP_POW_TWO32(N)"
+\fBValue:\fP
+.PP
+.nf
+       ({\
+        unsigned int r = (N);\
+        --r;\
+        r |= r >> 1;\
+        r |= r >> 2;\
+        r |= r >> 4;\
+        r |= r >> 8;\
+        r |= r >> 16;\
+        ++r;\
+        r;\
+    })
+.fi
+round number to up value as power of two, example 16 is 16, 17 is 32 
+.PP
+\fBParameters\fP
+.RS 4
+\fIN\fP is number 
+.RE
+.PP
+
+.PP
+Definition at line 58 of file mth\&.h\&.
+.SS "#define ULLBIT_BIT(VAL)   ((unsigned long)1<<\fBFAST_MOD_POW_TWO\fP(VAL, sizeof(unsigned long)*8))"
+unsigned long lut bit, get bit 
+.PP
+\fBParameters\fP
+.RS 4
+\fIVAL\fP 
+.RE
+.PP
+
+.PP
+Definition at line 132 of file mth\&.h\&.
+.SS "#define ULLBIT_INDEX(VAL)   ((VAL)/(sizeof(unsigned long)*8))"
+unsigned long lut bit, get index 
+.PP
+\fBParameters\fP
+.RS 4
+\fIVAL\fP 
+.RE
+.PP
+
+.PP
+Definition at line 127 of file mth\&.h\&.
+.SS "#define ULLBITC(V, VAL)   (V[\fBULLBIT_INDEX\fP(VAL)] &= ~\fBULLBIT_BIT\fP(VAL))"
+unsigned long lut bit, clear bit in lut 
+.PP
+\fBParameters\fP
+.RS 4
+\fIV\fP is array 
+.br
+\fIVAL\fP 
+.RE
+.PP
+
+.PP
+Definition at line 144 of file mth\&.h\&.
+.SS "#define ULLBITS(V, VAL)   (V[\fBULLBIT_INDEX\fP(VAL)] |= \fBULLBIT_BIT\fP(VAL))"
+unsigned long lut bit, set bit in lut 
+.PP
+\fBParameters\fP
+.RS 4
+\fIV\fP is array 
+.br
+\fIVAL\fP 
+.RE
+.PP
+
+.PP
+Definition at line 138 of file mth\&.h\&.
+.SS "#define ULLBITT(V, VAL)   (V[\fBULLBIT_INDEX\fP(VAL)] & \fBULLBIT_BIT\fP(VAL))"
+unsigned long lut bit, test bit in lut 
+.PP
+\fBParameters\fP
+.RS 4
+\fIV\fP is array 
+.br
+\fIVAL\fP 
+.RE
+.PP
+
+.PP
+Definition at line 150 of file mth\&.h\&.
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBiecp_e\fP"
+International Electrotechnical Commission 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIMTH_IEC_BYTE \fP\fP
+.TP
+\fB\fIMTH_IEC_KILOBYTE \fP\fP
+.TP
+\fB\fIMTH_IEC_MEGABYTE \fP\fP
+.TP
+\fB\fIMTH_IEC_GIGABYTE \fP\fP
+.TP
+\fB\fIMTH_IEC_TERABYTE \fP\fP
+.TP
+\fB\fIMTH_IEC_PETABYTE \fP\fP
+.TP
+\fB\fIMTH_IEC_EXABYTE \fP\fP
+.TP
+\fB\fIMTH_IEC_ZETTABYTE \fP\fP
+.TP
+\fB\fIMTH_IEC_YOTTABYTE \fP\fP
+.PP
+Definition at line 342 of file mth\&.h\&.
+.SS "enum \fBsip_e\fP"
+International_System_of_Units 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIMTH_SIP_ONE \fP\fP
+.TP
+\fB\fIMTH_SIP_DECA \fP\fP
+.TP
+\fB\fIMTH_SIP_HECTO \fP\fP
+.TP
+\fB\fIMTH_SIP_KILO \fP\fP
+.TP
+\fB\fIMTH_SIP_MEGA \fP\fP
+.TP
+\fB\fIMTH_SIP_GIGA \fP\fP
+.TP
+\fB\fIMTH_SIP_TERA \fP\fP
+.TP
+\fB\fIMTH_SIP_PETA \fP\fP
+.TP
+\fB\fIMTH_SIP_EXA \fP\fP
+.TP
+\fB\fIMTH_SIP_ZETTA \fP\fP
+.TP
+\fB\fIMTH_SIP_YOTTA \fP\fP
+.PP
+Definition at line 326 of file mth\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void* base64_decode (size_t * size, const char * b64)"
+deencode string b64 to data 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsize\fP out size of decoded data 
+.br
+\fIb64\fP base64 string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a new data or null if error, remember to free 
+.RE
+.PP
+
+.SS "char* base64_encode (const void * src, const size_t size)"
+encode data to base64 string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsrc\fP data sources 
+.br
+\fIsize\fP size of data 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a new string or null if error, remember to free 
+.RE
+.PP
+
+.SS "double mth_bbppigreco (long int i)"
+calcolate pi 
+.PP
+\fBParameters\fP
+.RS 4
+\fIi\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pi 
+.RE
+.PP
+
+.SS "double mth_date_julian (int year, int month, double day)"
+convert yy mm dd in julian date 
+.PP
+\fBParameters\fP
+.RS 4
+\fIyear\fP 
+.br
+\fImonth\fP 
+.br
+\fIday\fP dd+hh/24\&.0 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+julian date 
+.RE
+.PP
+
+.SS "time_t mth_date_julian_time (double jd)"
+convert julian date to time_t 
+.PP
+\fBParameters\fP
+.RS 4
+\fIjd\fP julian date 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+time_t date 
+.RE
+.PP
+
+.SS "int mth_date_julian_ut (int d, int m, int y)"
+convert yy mm dd in julian date 
+.PP
+\fBParameters\fP
+.RS 4
+\fId\fP day 
+.br
+\fIm\fP month 
+.br
+\fIy\fP year 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+julian date at 12h UT(universal Time) 
+.RE
+.PP
+
+.SS "double complex* mth_fft (double complex buf[], int n)"
+simpple fft 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP in 
+.br
+\fIn\fP size buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+fft result, free memory after use 
+.RE
+.PP
+
+.SS "void mth_fqr_generate (short int * buffer, int samplerate, double durata, double stfq, int loopfq, double fq, double amplitude, int fase)"
+determinat of matrix 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuffer\fP data 
+.br
+\fIsamplerate\fP samplerate 
+.br
+\fIdurata\fP lenght 
+.br
+\fIstfq\fP startfq 
+.br
+\fIloopfq\fP loop 
+.br
+\fIfq\fP frequency 
+.br
+\fIamplitude\fP amplitude 
+.br
+\fIfase\fP fase 
+.RE
+.PP
+
+.SS "double mth_gtor (double gradi)"
+degree to radiant 
+.PP
+\fBParameters\fP
+.RS 4
+\fIgradi\fP degree 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+radiant 
+.RE
+.PP
+
+.SS "double mth_ice_prefix_base (\fBiecp_e\fP * iecout, const double num)"
+move number to base 
+.PP
+\fBParameters\fP
+.RS 4
+\fIiecout\fP the iec base 
+.br
+\fInum\fP number to translate 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a base on iec 
+.RE
+.PP
+
+.SS "size_t mth_iec_prefix_translate_base (const \fBiecp_e\fP b)"
+translate iec to base 
+.SS "const char* mth_iec_prefix_translate_short_string (const \fBiecp_e\fP b)"
+translate to short string form 
+.SS "void mth_mat_addi (int ** r, int ** a, int ** b, size_t szr, size_t szc)"
+sum matrix a to b and return in r 
+.PP
+\fBParameters\fP
+.RS 4
+\fIr\fP out 
+.br
+\fIa\fP in 
+.br
+\fIb\fP in 
+.br
+\fIszr\fP row count 
+.br
+\fIszc\fP col count 
+.RE
+.PP
+
+.SS "int mth_mat_determinant2 (int ** a)"
+determinat of matrix 
+.PP
+\fBParameters\fP
+.RS 4
+\fIa\fP in 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+determinant 
+.RE
+.PP
+
+.SS "int mth_mat_determinant3 (int ** a)"
+determinat3 of matrix 
+.PP
+\fBParameters\fP
+.RS 4
+\fIa\fP in 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+determinant3 
+.RE
+.PP
+
+.SS "void mth_mat_imuli (int ** r, int a, int ** b, size_t szr, size_t szc)"
+mul int to matrix return in r 
+.PP
+\fBParameters\fP
+.RS 4
+\fIr\fP out 
+.br
+\fIa\fP integer 
+.br
+\fIb\fP in 
+.br
+\fIszr\fP row count 
+.br
+\fIszc\fP col count 
+.RE
+.PP
+
+.SS "void mth_mat_muli (int ** r, int ** a, int ** b, size_t szr, size_t szc)"
+mul matrix a to b and return in r 
+.PP
+\fBParameters\fP
+.RS 4
+\fIr\fP out 
+.br
+\fIa\fP in 
+.br
+\fIb\fP in 
+.br
+\fIszr\fP row count 
+.br
+\fIszc\fP col count 
+.RE
+.PP
+
+.SS "void mth_mat_subi (int ** r, int ** a, int ** b, size_t szr, size_t szc)"
+sub matrix a to b and return in r 
+.PP
+\fBParameters\fP
+.RS 4
+\fIr\fP out 
+.br
+\fIa\fP in 
+.br
+\fIb\fP in 
+.br
+\fIszr\fP row count 
+.br
+\fIszc\fP col count 
+.RE
+.PP
+
+.SS "double mth_moon_phase (int year, int month, int day, double hour, int * ip)"
+get moon phase by date 
+.PP
+\fBParameters\fP
+.RS 4
+\fIyear\fP 
+.br
+\fImonth\fP 
+.br
+\fIday\fP 
+.br
+\fIhour\fP 
+.br
+\fIip\fP out value 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+moon phase 
+.RE
+.PP
+
+.SS "double mth_moon_position (double j, double ls)"
+get moon position by julian date and sun position 
+.PP
+\fBParameters\fP
+.RS 4
+\fIj\fP julian 
+.br
+\fIls\fP sun 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+sun position 
+.RE
+.PP
+
+.SS "int mth_random (int n)"
+get random from 0 to N-1 
+.PP
+\fBParameters\fP
+.RS 4
+\fIn\fP number 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+random 
+.RE
+.PP
+
+.SS "void mth_random_begin (void)"
+initialize random number 
+.SS "double mth_random_f01 (void)"
+get random from 0\&.0 to 1\&.0 
+.PP
+\fBReturns\fP
+.RS 4
+random 
+.RE
+.PP
+
+.SS "float mth_random_gauss (float media, float stddeviation)"
+get random gauss 
+.PP
+\fBParameters\fP
+.RS 4
+\fImedia\fP mediana value 
+.br
+\fIstddeviation\fP deviation 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+random 
+.RE
+.PP
+
+.SS "int mth_random_range (int min, int max)"
+get random in range, from min to max 
+.PP
+\fBParameters\fP
+.RS 4
+\fImin\fP min value 
+.br
+\fImax\fP max value 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+random 
+.RE
+.PP
+
+.SS "void mth_random_string_azAZ09 (char * out, size_t size)"
+get random string [a-zA-Z0-9] with size = size -1 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsize\fP size string with 0 
+.br
+\fIout\fP output 
+.RE
+.PP
+
+.SS "void mth_rotate (float * x, float * y, float centerx, float centery, float rad)"
+rotate a point 
+.PP
+\fBParameters\fP
+.RS 4
+\fIx\fP x position, out new position here 
+.br
+\fIy\fP y position, out new position here 
+.br
+\fIcenterx\fP x rotation center 
+.br
+\fIcentery\fP y rotation center 
+.br
+\fIrad\fP radiant rotation 
+.RE
+.PP
+
+.SS "\fB__const\fP size_t mth_round_up_power_two (size_t n)"
+round number to up value as power of two 
+.PP
+\fBParameters\fP
+.RS 4
+\fIn\fP is number 
+.RE
+.PP
+
+.SS "double mth_si_prefix_base (\fBsip_e\fP * siout, const double num)"
+move number to base 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsiout\fP the si base 
+.br
+\fInum\fP number to translate 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a base on si 
+.RE
+.PP
+
+.SS "size_t mth_si_prefix_translate_base (const \fBsip_e\fP sibase)"
+translate si to base 
+.SS "const char* mth_si_prefix_translate_short_string (const \fBsip_e\fP sibase)"
+translate to short string form 
+.SS "double mth_sun_position (double j)"
+get sun position by julian date 
+.PP
+\fBParameters\fP
+.RS 4
+\fIj\fP julian 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+sun position 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

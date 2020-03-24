@@ -1,0 +1,184 @@
+.TH "json" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+json
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <json\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "\fBjsonEvent_f\fP \fBobjectNew\fP"
+.br
+.ti -1c
+.RI "\fBjsonEvent_f\fP \fBobjectNext\fP"
+.br
+.ti -1c
+.RI "\fBjsonEventName_f\fP \fBobjectProperties\fP"
+.br
+.ti -1c
+.RI "\fBjsonEvent_f\fP \fBobjectEnd\fP"
+.br
+.ti -1c
+.RI "\fBjsonEvent_f\fP \fBarrayNew\fP"
+.br
+.ti -1c
+.RI "\fBjsonEvent_f\fP \fBarrayNext\fP"
+.br
+.ti -1c
+.RI "\fBjsonEvent_f\fP \fBarrayEnd\fP"
+.br
+.ti -1c
+.RI "\fBjsonEvent_f\fP \fBvalueNull\fP"
+.br
+.ti -1c
+.RI "\fBjsonEvent_f\fP \fBvalueTrue\fP"
+.br
+.ti -1c
+.RI "\fBjsonEvent_f\fP \fBvalueFalse\fP"
+.br
+.ti -1c
+.RI "\fBjsonEventValue_f\fP \fBvalueInteger\fP"
+.br
+.ti -1c
+.RI "\fBjsonEventValue_f\fP \fBvalueFloat\fP"
+.br
+.ti -1c
+.RI "\fBjsonEventName_f\fP \fBvalueString\fP"
+.br
+.ti -1c
+.RI "void * \fBusrctx\fP"
+.br
+.ti -1c
+.RI "long \fBusrstat\fP"
+.br
+.ti -1c
+.RI "void * \fBusrval\fP"
+.br
+.ti -1c
+.RI "size_t \fBusrit\fP"
+.br
+.ti -1c
+.RI "size_t \fBcline\fP"
+.br
+.ti -1c
+.RI "char const  * \fBtext\fP"
+.br
+.ti -1c
+.RI "char const  * \fBbeginLine\fP"
+.br
+.ti -1c
+.RI "char const  * \fBcurrent\fP"
+.br
+.ti -1c
+.RI "\fBjsonError_e\fP \fBerr\fP"
+.br
+.ti -1c
+.RI "char ** \fBusrError\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 34 of file json\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "\fBjsonEvent_f\fP json::arrayEnd"
+array end 
+.PP
+Definition at line 41 of file json\&.h\&.
+.SS "\fBjsonEvent_f\fP json::arrayNew"
+array is created 
+.PP
+Definition at line 39 of file json\&.h\&.
+.SS "\fBjsonEvent_f\fP json::arrayNext"
+next element on array 
+.PP
+Definition at line 40 of file json\&.h\&.
+.SS "char const* json::beginLine"
+private begin line 
+.PP
+Definition at line 54 of file json\&.h\&.
+.SS "size_t json::cline"
+private numbers of current line 
+.PP
+Definition at line 52 of file json\&.h\&.
+.SS "char const* json::current"
+private current line 
+.PP
+Definition at line 55 of file json\&.h\&.
+.SS "\fBjsonError_e\fP json::err"
+error 
+.PP
+Definition at line 56 of file json\&.h\&.
+.SS "\fBjsonEvent_f\fP json::objectEnd"
+end object 
+.PP
+Definition at line 38 of file json\&.h\&.
+.SS "\fBjsonEvent_f\fP json::objectNew"
+event when object is created 
+.PP
+Definition at line 35 of file json\&.h\&.
+.SS "\fBjsonEvent_f\fP json::objectNext"
+event when have next object 
+.PP
+Definition at line 36 of file json\&.h\&.
+.SS "\fBjsonEventName_f\fP json::objectProperties"
+property of object 
+.PP
+Definition at line 37 of file json\&.h\&.
+.SS "char const* json::text"
+private text 
+.PP
+Definition at line 53 of file json\&.h\&.
+.SS "void* json::usrctx"
+user data ctx 
+.PP
+Definition at line 48 of file json\&.h\&.
+.SS "char** json::usrError"
+user error 
+.PP
+Definition at line 57 of file json\&.h\&.
+.SS "size_t json::usrit"
+user iterator 
+.PP
+Definition at line 51 of file json\&.h\&.
+.SS "long json::usrstat"
+user status 
+.PP
+Definition at line 49 of file json\&.h\&.
+.SS "void* json::usrval"
+user value 
+.PP
+Definition at line 50 of file json\&.h\&.
+.SS "\fBjsonEvent_f\fP json::valueFalse"
+FALSE 
+.PP
+Definition at line 44 of file json\&.h\&.
+.SS "\fBjsonEventValue_f\fP json::valueFloat"
+float value 
+.PP
+Definition at line 46 of file json\&.h\&.
+.SS "\fBjsonEventValue_f\fP json::valueInteger"
+integer value 
+.PP
+Definition at line 45 of file json\&.h\&.
+.SS "\fBjsonEvent_f\fP json::valueNull"
+NULL 
+.PP
+Definition at line 42 of file json\&.h\&.
+.SS "\fBjsonEventName_f\fP json::valueString"
+string value 
+.PP
+Definition at line 47 of file json\&.h\&.
+.SS "\fBjsonEvent_f\fP json::valueTrue"
+TRUE 
+.PP
+Definition at line 43 of file json\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

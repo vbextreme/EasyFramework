@@ -1,0 +1,303 @@
+.TH "include/ef/imap.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/imap.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/www\&.h>\fP
+.br
+\fC#include <ef/vector\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBimapMimeContent\fP"
+.br
+.ti -1c
+.RI "struct \fBimapMime\fP"
+.br
+.ti -1c
+.RI "struct \fBimapFetch\fP"
+.br
+.ti -1c
+.RI "struct \fBimapExamine\fP"
+.br
+.ti -1c
+.RI "struct \fBimap\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBimapMimeContent\fP \fBimapMimeContent_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBimapMime\fP \fBimapMime_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBimapFetch\fP \fBimapFetch_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBimapExamine\fP \fBimapExamine_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBimap\fP \fBimap_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBimapFetchFlags_e\fP { \fBIMAP_FETCH_FLAGS_ERROR\fP = -1, \fBIMAP_FETCH_FLAGS_SEEN\fP, \fBIMAP_FETCH_FLAGS_ANSWERED\fP, \fBIMAP_FETCH_FLAGS_FLAGGED\fP, \fBIMAP_FETCH_FLAGS_DELETED\fP, \fBIMAP_FETCH_FLAGS_DRAFT\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBimap_s\fP * \fBimap_new\fP (size_t bufferupsize, int flags, \fBwwwProgress_s\fP *prog)"
+.br
+.ti -1c
+.RI "void \fBimap_free\fP (\fBimap_s\fP *ima)"
+.br
+.ti -1c
+.RI "void \fBimap_email_password\fP (\fBimap_s\fP *ima, const char *email, const char *pass)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBimap_server\fP (\fBimap_s\fP *ima, const char *server)"
+.br
+.ti -1c
+.RI "char ** \fBimap_ls\fP (\fBimap_s\fP *ima)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBimap_examine\fP (\fBimapExamine_s\fP *out, \fBimap_s\fP *ima, const char *dir)"
+.br
+.ti -1c
+.RI "\fBimapFetch_s\fP * \fBimap_fetch\fP (\fBimap_s\fP *ima, const char *dir, int nobody, size_t from, size_t to)"
+.br
+.ti -1c
+.RI "void \fBimap_mime_delete\fP (\fBimapMime_s\fP *mime)"
+.br
+.ti -1c
+.RI "void \fBimap_mime_free\fP (\fBimapMime_s\fP *mime, size_t count)"
+.br
+.ti -1c
+.RI "\fBimapMime_s\fP * \fBimap_fetch_to_mime\fP (\fBimapFetch_s\fP *fetch, size_t count)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBimap_flags\fP (\fBimap_s\fP *ima, const char *dir, size_t id, char mode, \fBimapFetchFlags_e\fP flag)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBimap\fP \fBimap_s\fP"
+
+.SS "typedef struct \fBimapExamine\fP \fBimapExamine_s\fP"
+
+.SS "typedef struct \fBimapFetch\fP \fBimapFetch_s\fP"
+
+.SS "typedef struct \fBimapMime\fP \fBimapMime_s\fP"
+
+.SS "typedef struct \fBimapMimeContent\fP \fBimapMimeContent_s\fP"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBimapFetchFlags_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIIMAP_FETCH_FLAGS_ERROR \fP\fP
+.TP
+\fB\fIIMAP_FETCH_FLAGS_SEEN \fP\fP
+.TP
+\fB\fIIMAP_FETCH_FLAGS_ANSWERED \fP\fP
+.TP
+\fB\fIIMAP_FETCH_FLAGS_FLAGGED \fP\fP
+.TP
+\fB\fIIMAP_FETCH_FLAGS_DELETED \fP\fP
+.TP
+\fB\fIIMAP_FETCH_FLAGS_DRAFT \fP\fP
+.PP
+Definition at line 8 of file imap\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void imap_email_password (\fBimap_s\fP * ima, const char * email, const char * pass)"
+set email and pass before use imap, init before call this 
+.PP
+\fBParameters\fP
+.RS 4
+\fIima\fP imap object 
+.br
+\fIemail\fP your email@server.com 
+.br
+\fIpass\fP password 
+.RE
+.PP
+
+.SS "\fBerr_t\fP imap_examine (\fBimapExamine_s\fP * out, \fBimap_s\fP * ima, const char * dir)"
+number of exist, unsee messages 
+.PP
+\fBParameters\fP
+.RS 4
+\fIout\fP structure out info 
+.br
+\fIima\fP imap object 
+.br
+\fIdir\fP directory name 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error 0 suzzessfull 
+.RE
+.PP
+
+.SS "\fBimapFetch_s\fP* imap_fetch (\fBimap_s\fP * ima, const char * dir, int nobody, size_t from, size_t to)"
+get a messages, not free return object 
+.PP
+\fBParameters\fP
+.RS 4
+\fIima\fP imap object 
+.br
+\fIdir\fP directory name 
+.br
+\fInobody\fP if set get only header message 
+.br
+\fIfrom\fP get from id 
+.br
+\fIto\fP get to id 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+NULL for error 
+.RE
+.PP
+
+.SS "\fBimapMime_s\fP* imap_fetch_to_mime (\fBimapFetch_s\fP * fetch, size_t count)"
+convert fetch to mime, call imap_mime_free after used imapMime_s 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfetch\fP object 
+.br
+\fIcount\fP count of fetched messages 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+NULL for error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP imap_flags (\fBimap_s\fP * ima, const char * dir, size_t id, char mode, \fBimapFetchFlags_e\fP flag)"
+change imap flag 
+.PP
+\fBParameters\fP
+.RS 4
+\fIima\fP imap object 
+.br
+\fIdir\fP directory name 
+.br
+\fIid\fP id to set/remove flags 
+.br
+\fImode\fP + for add flag - for remove flag 
+.br
+\fIflag\fP flag to change 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error 0 suzzessfull 
+.RE
+.PP
+
+.SS "void imap_free (\fBimap_s\fP * ima)"
+end of used imap 
+.PP
+\fBParameters\fP
+.RS 4
+\fIima\fP imap object 
+.RE
+.PP
+
+.SS "char** imap_ls (\fBimap_s\fP * ima)"
+list directory 
+.PP
+\fBParameters\fP
+.RS 4
+\fIima\fP imap object 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+vector of char** contains dir name, need to free each element of vector 
+.RE
+.PP
+
+.SS "void imap_mime_delete (\fBimapMime_s\fP * mime)"
+delete mime 
+.PP
+\fBParameters\fP
+.RS 4
+\fImime\fP mime object 
+.RE
+.PP
+
+.SS "void imap_mime_free (\fBimapMime_s\fP * mime, size_t count)"
+free all mime 
+.PP
+\fBParameters\fP
+.RS 4
+\fImime\fP mime object 
+.br
+\fIcount\fP count of mime 
+.RE
+.PP
+
+.SS "\fBimap_s\fP* imap_new (size_t bufferupsize, int flags, \fBwwwProgress_s\fP * prog)"
+create imap 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbufferupsize\fP minimal buffer size 
+.br
+\fIflags\fP see www flags 
+.br
+\fIprog\fP see www prog 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+imap or NULL on error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP imap_server (\fBimap_s\fP * ima, const char * server)"
+set imap server 
+.PP
+\fBParameters\fP
+.RS 4
+\fIima\fP imap object 
+.br
+\fIserver\fP server address for examples: imaps://outlook\&.office365\&.com 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error 0 suzzessfull 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

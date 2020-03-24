@@ -1,0 +1,271 @@
+.TH "include/ef/phq.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/phq.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBphqElement\fP"
+.br
+.ti -1c
+.RI "struct \fBphq\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fB__phq_free\fP   \fB__cleanup\fP(\fBphq_free_auto\fP)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef int(* \fBphqCompare_f\fP) (size_t a, size_t b)"
+.br
+.ti -1c
+.RI "typedef void(* \fBphqFree_f\fP) (void *data)"
+.br
+.ti -1c
+.RI "typedef struct \fBphqElement\fP \fBphqElement_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBphq\fP \fBphq_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBphq_cmp_des\fP (size_t a, size_t b)"
+.br
+.ti -1c
+.RI "int \fBphq_cmp_asc\fP (size_t a, size_t b)"
+.br
+.ti -1c
+.RI "\fBphq_s\fP * \fBphq_new\fP (size_t size, size_t resize, \fBphqCompare_f\fP \fBcmp\fP)"
+.br
+.ti -1c
+.RI "void \fBphq_element_free\fP (\fBphqElement_s\fP *el)"
+.br
+.ti -1c
+.RI "void \fBphq_free\fP (\fBphq_s\fP *q)"
+.br
+.ti -1c
+.RI "void \fBphq_free_auto\fP (\fBphq_s\fP **q)"
+.br
+.ti -1c
+.RI "size_t \fBphq_size\fP (\fBphq_s\fP *q)"
+.br
+.ti -1c
+.RI "size_t \fBphq_count\fP (\fBphq_s\fP *q)"
+.br
+.ti -1c
+.RI "\fBphqElement_s\fP * \fBphq_element_new\fP (size_t priority, void *data, \fBphqFree_f\fP pfree)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBphq_insert\fP (\fBphq_s\fP *q, \fBphqElement_s\fP *el)"
+.br
+.ti -1c
+.RI "void \fBphq_change_priority\fP (\fBphq_s\fP *q, size_t newpri, \fBphqElement_s\fP *el)"
+.br
+.ti -1c
+.RI "void \fBphq_remove\fP (\fBphq_s\fP *q, \fBphqElement_s\fP *el)"
+.br
+.ti -1c
+.RI "\fBphqElement_s\fP * \fBphq_pop\fP (\fBphq_s\fP *q)"
+.br
+.ti -1c
+.RI "\fBphqElement_s\fP * \fBphq_peek\fP (\fBphq_s\fP *q)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __phq_free   \fB__cleanup\fP(\fBphq_free_auto\fP)"
+cleanup 
+.PP
+Definition at line 54 of file phq\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBphq\fP \fBphq_s\fP"
+
+.SS "typedef int(* phqCompare_f) (size_t a, size_t b)"
+callback compare priority funcion 
+.PP
+Definition at line 7 of file phq\&.h\&.
+.SS "typedef struct \fBphqElement\fP \fBphqElement_s\fP"
+
+.SS "typedef void(* phqFree_f) (void *data)"
+callback free userdata 
+.PP
+Definition at line 9 of file phq\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void phq_change_priority (\fBphq_s\fP * q, size_t newpri, \fBphqElement_s\fP * el)"
+change priority of element in queue 
+.PP
+\fBParameters\fP
+.RS 4
+\fIq\fP 
+.br
+\fInewpri\fP new priority 
+.br
+\fIel\fP element in a queue 
+.RE
+.PP
+
+.SS "int phq_cmp_asc (size_t a, size_t b)"
+compare ascend function 
+.SS "int phq_cmp_des (size_t a, size_t b)"
+compare descend function 
+.SS "size_t phq_count (\fBphq_s\fP * q)"
+get count of array elements 
+.PP
+\fBParameters\fP
+.RS 4
+\fIq\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+count 
+.RE
+.PP
+
+.SS "void phq_element_free (\fBphqElement_s\fP * el)"
+free an element of queue 
+.PP
+\fBParameters\fP
+.RS 4
+\fIel\fP element 
+.RE
+.PP
+
+.SS "\fBphqElement_s\fP* phq_element_new (size_t priority, void * data, \fBphqFree_f\fP pfree)"
+create a new element 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpriority\fP priority of element 
+.br
+\fIdata\fP userdata 
+.br
+\fIpfree\fP callback for free userdata 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+new element, or NULL for error 
+.RE
+.PP
+
+.SS "void phq_free (\fBphq_s\fP * q)"
+free a queue 
+.PP
+\fBParameters\fP
+.RS 4
+\fIq\fP queue 
+.RE
+.PP
+
+.SS "void phq_free_auto (\fBphq_s\fP ** q)"
+cleanup 
+.SS "\fBerr_t\fP phq_insert (\fBphq_s\fP * q, \fBphqElement_s\fP * el)"
+insert element in queue 
+.PP
+\fBParameters\fP
+.RS 4
+\fIq\fP 
+.br
+\fIel\fP element 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SS "\fBphq_s\fP* phq_new (size_t size, size_t resize, \fBphqCompare_f\fP cmp)"
+create new priority heap queue 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsize\fP initial size 
+.br
+\fIresize\fP resize 
+.br
+\fIcmp\fP compare function 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+phq or NULL, err is pushed errno is setted 
+.RE
+.PP
+
+.SS "\fBphqElement_s\fP* phq_peek (\fBphq_s\fP * q)"
+get element without extract from queue 
+.PP
+\fBParameters\fP
+.RS 4
+\fIq\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+element or NULL if not have element 
+.RE
+.PP
+
+.SS "\fBphqElement_s\fP* phq_pop (\fBphq_s\fP * q)"
+pop a element; 
+.PP
+\fBParameters\fP
+.RS 4
+\fIq\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+element or NULL if no element 
+.RE
+.PP
+
+.SS "void phq_remove (\fBphq_s\fP * q, \fBphqElement_s\fP * el)"
+remove element from queue 
+.PP
+\fBParameters\fP
+.RS 4
+\fIq\fP 
+.br
+\fIel\fP element to remove 
+.RE
+.PP
+
+.SS "size_t phq_size (\fBphq_s\fP * q)"
+get size of array elements 
+.PP
+\fBParameters\fP
+.RS 4
+\fIq\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+size 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

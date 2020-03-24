@@ -1,0 +1,483 @@
+.TH "include/ef/list.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/list.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBlistSimple\fP"
+.br
+.ti -1c
+.RI "struct \fBlistDouble\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBLIST_SIMPLE\fP(L)   ((\fBlistSimple_s\fP*)(\fBADDR\fP(L)\-sizeof(\fBlistSimple_s\fP)))"
+.br
+.ti -1c
+.RI "#define \fBlist_simple_new\fP(TYPE,  DATA,  CLEAN)   (TYPE*)\fBlist_simple_new_raw\fP(sizeof(TYPE), DATA, CLEAN)"
+.br
+.ti -1c
+.RI "#define \fB__listsimple_free\fP   \fB__cleanup\fP(\fBlist_simple_free_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fB__listsimple_allfree\fP   \fB__cleanup\fP(\fBlist_simple_all_free_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fBlistsimple_foreach\fP(HEAD,  IT)   for(IT = HEAD; IT; IT = (\fBLIST_SIMPLE\fP(IT)\->next))"
+.br
+.ti -1c
+.RI "#define \fBlistsimple_generic_foreach\fP(HEAD,  IT)   for(void** IT = (void**)HEAD; *IT; IT = &(\fBLIST_SIMPLE\fP(*IT)\->next))"
+.br
+.ti -1c
+.RI "#define \fBLIST_DOUBLY\fP(L)   ((\fBlistDouble_s\fP*)(\fBADDR\fP(L)\-sizeof(\fBlistDouble_s\fP)))"
+.br
+.ti -1c
+.RI "#define \fBlist_doubly_new\fP(TYPE,  DATA,  CLEAN)   (TYPE*)\fBlist_doubly_new_raw\fP(sizeof(TYPE), DATA, CLEAN)"
+.br
+.ti -1c
+.RI "#define \fB__listdoubly_allfree\fP   \fB__cleanup\fP(\fBlist_doubly_all_free_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fBlistdoubly_do\fP(HEAD,  IT)   do{ void* ___ ## IT ## ___ = HEAD; IT = HEAD; do"
+.br
+.ti -1c
+.RI "#define \fBlistdoubly_while\fP(HEAD,  IT)   while( (IT=\fBLIST_DOUBLY\fP(IT)\->next) != ___ ## IT ## ___ );}while(0)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef void(* \fBlistFree_f\fP) (void *data)"
+.br
+.ti -1c
+.RI "typedef int(* \fBlistCmp_f\fP) (void *a, void *b)"
+.br
+.ti -1c
+.RI "typedef struct \fBlistSimple\fP \fBlistSimple_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBlistDouble\fP \fBlistDouble_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void * \fBlist_simple_new_raw\fP (size_t size, void *data, \fBlistFree_f\fP clean)"
+.br
+.ti -1c
+.RI "void \fBlist_simple_add_head\fP (void *head, void *lst)"
+.br
+.ti -1c
+.RI "void \fBlist_simple_add_tail\fP (void *head, void *lst)"
+.br
+.ti -1c
+.RI "void \fBlist_simple_add_before\fP (void *head, void *before, void *lst)"
+.br
+.ti -1c
+.RI "void \fBlist_simple_add_after\fP (void *head, void *after, void *lst)"
+.br
+.ti -1c
+.RI "void * \fBlist_simple_extract\fP (void *head, void *lst)"
+.br
+.ti -1c
+.RI "void * \fBlist_simple_find_extract\fP (void *head, void *userdata, \fBlistCmp_f\fP fn)"
+.br
+.ti -1c
+.RI "void \fBlist_simple_free\fP (void *lst)"
+.br
+.ti -1c
+.RI "void \fBlist_simple_free_auto\fP (void *lst)"
+.br
+.ti -1c
+.RI "void \fBlist_simple_all_free\fP (void *lst)"
+.br
+.ti -1c
+.RI "void \fBlist_simple_all_free_auto\fP (void *head)"
+.br
+.ti -1c
+.RI "void * \fBlist_doubly_new_raw\fP (size_t size, void *data, \fBlistFree_f\fP clean)"
+.br
+.ti -1c
+.RI "void \fBlist_doubly_add_before\fP (void *before, void *lst)"
+.br
+.ti -1c
+.RI "void \fBlist_doubly_add_after\fP (void *after, void *lst)"
+.br
+.ti -1c
+.RI "void \fBlist_doubly_merge\fP (void *a, void *b)"
+.br
+.ti -1c
+.RI "void * \fBlist_doubly_extract\fP (void *lst)"
+.br
+.ti -1c
+.RI "void \fBlist_doubly_free\fP (void *lst)"
+.br
+.ti -1c
+.RI "void \fBlist_doubly_all_free\fP (void *lst)"
+.br
+.ti -1c
+.RI "void \fBlist_doubly_all_free_auto\fP (void *lst)"
+.br
+.ti -1c
+.RI "int \fBlist_doubly_only_root\fP (void *lst)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __listdoubly_allfree   \fB__cleanup\fP(\fBlist_doubly_all_free_auto\fP)"
+cleanup 
+.PP
+Definition at line 189 of file list\&.h\&.
+.SS "#define __listsimple_allfree   \fB__cleanup\fP(\fBlist_simple_all_free_auto\fP)"
+cleanup 
+.PP
+Definition at line 97 of file list\&.h\&.
+.SS "#define __listsimple_free   \fB__cleanup\fP(\fBlist_simple_free_auto\fP)"
+
+.PP
+Definition at line 85 of file list\&.h\&.
+.SS "#define LIST_DOUBLY(L)   ((\fBlistDouble_s\fP*)(\fBADDR\fP(L)\-sizeof(\fBlistDouble_s\fP)))"
+
+.PP
+Definition at line 137 of file list\&.h\&.
+.SS "#define list_doubly_new(TYPE, DATA, CLEAN)   (TYPE*)\fBlist_doubly_new_raw\fP(sizeof(TYPE), DATA, CLEAN)"
+list doubly new with auto sizeof 
+.PP
+Definition at line 148 of file list\&.h\&.
+.SS "#define LIST_SIMPLE(L)   ((\fBlistSimple_s\fP*)(\fBADDR\fP(L)\-sizeof(\fBlistSimple_s\fP)))"
+
+.PP
+Definition at line 23 of file list\&.h\&.
+.SS "#define list_simple_new(TYPE, DATA, CLEAN)   (TYPE*)\fBlist_simple_new_raw\fP(sizeof(TYPE), DATA, CLEAN)"
+list simple new with auto sizeof 
+.PP
+Definition at line 34 of file list\&.h\&.
+.SS "#define listdoubly_do(HEAD, IT)   do{ void* ___ ## IT ## ___ = HEAD; IT = HEAD; do"
+do while element in list, for traversing all list 
+.PP
+\fBParameters\fP
+.RS 4
+\fIHEAD\fP head or element list 
+.br
+\fIIT\fP iterator name 
+.PP
+.nf
+int* head = list_doubly_new(\&.\&.\&.);
+\&.\&.\&.
+int* iterator;
+listdoubly_do(head, iterator){
+ if( *(iterator) == 1234 ) break;
+}listdoubly_while(head, iterator);
+
+.fi
+.PP
+ 
+.RE
+.PP
+
+.PP
+Definition at line 206 of file list\&.h\&.
+.SS "#define listdoubly_while(HEAD, IT)   while( (IT=\fBLIST_DOUBLY\fP(IT)\->next) != ___ ## IT ## ___ );}while(0)"
+
+.PP
+Definition at line 207 of file list\&.h\&.
+.SS "#define listsimple_foreach(HEAD, IT)   for(IT = HEAD; IT; IT = (\fBLIST_SIMPLE\fP(IT)\->next))"
+foreach element in list 
+.PP
+\fBParameters\fP
+.RS 4
+\fIHEAD\fP list 
+.br
+\fIIT\fP variable to set a data 
+.PP
+.nf
+int* head = \&.\&.\&.\&.;
+int* element;
+listsimple_foreach(head, element){
+ if( *element == \&.\&.\&. ) \&.\&.\&.;
+}
+
+.fi
+.PP
+ 
+.RE
+.PP
+
+.PP
+Definition at line 110 of file list\&.h\&.
+.SS "#define listsimple_generic_foreach(HEAD, IT)   for(void** IT = (void**)HEAD; *IT; IT = &(\fBLIST_SIMPLE\fP(*IT)\->next))"
+foreach element in list, using void** 
+.PP
+\fBParameters\fP
+.RS 4
+\fIHEAD\fP pointer to head or element list 
+.br
+\fIIT\fP void** iterator name 
+.PP
+.nf
+int* head = list_simple_new(\&.\&.\&.);
+*head = 1234;
+listsimple_generic_foreach(head, lst){
+ if( *(int*)(lst) == 1234 ) break;
+}
+
+.fi
+.PP
+ 
+.RE
+.PP
+
+.PP
+Definition at line 123 of file list\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef int(* listCmp_f) (void *a, void *b)"
+callback list compare 
+.PP
+Definition at line 10 of file list\&.h\&.
+.SS "typedef struct \fBlistDouble\fP \fBlistDouble_s\fP"
+
+.SS "typedef void(* listFree_f) (void *data)"
+callback clean function 
+.PP
+Definition at line 7 of file list\&.h\&.
+.SS "typedef struct \fBlistSimple\fP \fBlistSimple_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "void list_doubly_add_after (void * after, void * lst)"
+add after element 
+.PP
+\fBParameters\fP
+.RS 4
+\fIafter\fP add after this element 
+.br
+\fIlst\fP list to add 
+.RE
+.PP
+
+.SS "void list_doubly_add_before (void * before, void * lst)"
+add before element 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbefore\fP add before this element 
+.br
+\fIlst\fP list to add 
+.RE
+.PP
+
+.SS "void list_doubly_all_free (void * lst)"
+free all list 
+.PP
+\fBParameters\fP
+.RS 4
+\fIlst\fP is list head, call list_simple_free for each element 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBlist_simple_free\fP 
+.RE
+.PP
+
+.SS "void list_doubly_all_free_auto (void * lst)"
+cleanup 
+.SS "void* list_doubly_extract (void * lst)"
+extract element from list 
+.PP
+\fBParameters\fP
+.RS 4
+\fIlst\fP list to extract 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+same lst pass, but setted next and prev to lst 
+.RE
+.PP
+
+.SS "void list_doubly_free (void * lst)"
+free list 
+.PP
+\fBParameters\fP
+.RS 4
+\fIlst\fP list to be free, call callback clean if needed 
+.RE
+.PP
+
+.SS "void list_doubly_merge (void * a, void * b)"
+merge list b after list a 
+.PP
+\fBParameters\fP
+.RS 4
+\fIa\fP add list after this element 
+.br
+\fIb\fP list to merge 
+.RE
+.PP
+
+.SS "void* list_doubly_new_raw (size_t size, void * data, \fBlistFree_f\fP clean)"
+create new list auto refereced 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsize\fP size of data 
+.br
+\fIdata\fP if userdata != NULL is copied to new list element 
+.br
+\fIclean\fP cleanup function, can pass NULL 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+new list or NULL for error 
+.RE
+.PP
+
+.SS "int list_doubly_only_root (void * lst)"
+return 1 if have only root in list 
+.SS "void list_simple_add_after (void * head, void * after, void * lst)"
+add after element 
+.PP
+\fBParameters\fP
+.RS 4
+\fIhead\fP address of pointer to head list 
+.br
+\fIafter\fP add after this element 
+.br
+\fIlst\fP list to add 
+.RE
+.PP
+
+.SS "void list_simple_add_before (void * head, void * before, void * lst)"
+add before element 
+.PP
+\fBParameters\fP
+.RS 4
+\fIhead\fP address of pointer to head list 
+.br
+\fIbefore\fP add before this element 
+.br
+\fIlst\fP list to add 
+.RE
+.PP
+
+.SS "void list_simple_add_head (void * head, void * lst)"
+add to head 
+.PP
+\fBParameters\fP
+.RS 4
+\fIhead\fP address of pointer to data head list 
+.br
+\fIlst\fP data list to add in head 
+.RE
+.PP
+
+.SS "void list_simple_add_tail (void * head, void * lst)"
+add to tail 
+.PP
+\fBParameters\fP
+.RS 4
+\fIhead\fP address of pointer to data head list 
+.br
+\fIlst\fP data list to add to tail 
+.RE
+.PP
+
+.SS "void list_simple_all_free (void * lst)"
+free all list 
+.PP
+\fBParameters\fP
+.RS 4
+\fIlst\fP is list head, call list_simple_free for each element 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBlist_simple_free\fP 
+.RE
+.PP
+
+.SS "void list_simple_all_free_auto (void * head)"
+cleanup 
+.SS "void* list_simple_extract (void * head, void * lst)"
+extract element from list 
+.PP
+\fBParameters\fP
+.RS 4
+\fIhead\fP address of pointer to head list 
+.br
+\fIlst\fP list to extract 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+an extracted list or null if not find 
+.RE
+.PP
+
+.SS "void* list_simple_find_extract (void * head, void * userdata, \fBlistCmp_f\fP fn)"
+extract element from list when listcmp return 0 
+.PP
+\fBParameters\fP
+.RS 4
+\fIhead\fP address of pointer to head list 
+.br
+\fIuserdata\fP data to compare 
+.br
+\fIfn\fP callback function for compare data, fn(head, userdata) 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+an extracted list or null if not find 
+.RE
+.PP
+
+.SS "void list_simple_free (void * lst)"
+free list 
+.PP
+\fBParameters\fP
+.RS 4
+\fIlst\fP list to be free, call callback clean if needed 
+.RE
+.PP
+
+.SS "void list_simple_free_auto (void * lst)"
+cleanup 
+.SS "void* list_simple_new_raw (size_t size, void * data, \fBlistFree_f\fP clean)"
+create new list 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsize\fP size of element 
+.br
+\fIdata\fP userdata is copied to new list element 
+.br
+\fIclean\fP cleanup function, can pass NULL 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+pointer to data of new list or NULL for error 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

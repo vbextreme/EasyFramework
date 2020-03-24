@@ -1,0 +1,107 @@
+.TH "gnn" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+gnn
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <gnn\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "int \fBrunned\fP"
+.br
+.ti -1c
+.RI "int \fBinputs\fP"
+.br
+.ti -1c
+.RI "int \fBhidden_layers\fP"
+.br
+.ti -1c
+.RI "int \fBhidden\fP"
+.br
+.ti -1c
+.RI "int \fBoutputs\fP"
+.br
+.ti -1c
+.RI "\fBgnnAct_f\fP \fBactivation_hidden\fP"
+.br
+.ti -1c
+.RI "\fBgnnAct_f\fP \fBactivation_output\fP"
+.br
+.ti -1c
+.RI "int \fBtotal_weights\fP"
+.br
+.ti -1c
+.RI "int \fBtotal_neurons\fP"
+.br
+.ti -1c
+.RI "double * \fBweight\fP"
+.br
+.ti -1c
+.RI "double * \fBoutput\fP"
+.br
+.ti -1c
+.RI "double * \fBdelta\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 44 of file gnn\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "\fBgnnAct_f\fP gnn::activation_hidden"
+Which activation function to use for hidden neurons\&. Default: gennann_act_sigmoid_cached 
+.PP
+Definition at line 52 of file gnn\&.h\&.
+.SS "\fBgnnAct_f\fP gnn::activation_output"
+Which activation function to use for output\&. Default: gennann_act_sigmoid_cached 
+.PP
+Definition at line 55 of file gnn\&.h\&.
+.SS "double* gnn::delta"
+Stores delta of each hidden and output neuron (total_neurons - inputs long)\&. 
+.PP
+Definition at line 70 of file gnn\&.h\&.
+.SS "int gnn::hidden"
+
+.PP
+Definition at line 49 of file gnn\&.h\&.
+.SS "int gnn::hidden_layers"
+
+.PP
+Definition at line 49 of file gnn\&.h\&.
+.SS "int gnn::inputs"
+How many inputs, outputs, and hidden neurons\&. 
+.PP
+Definition at line 49 of file gnn\&.h\&.
+.SS "double* gnn::output"
+Stores input array and output of each neuron (total_neurons long)\&. 
+.PP
+Definition at line 67 of file gnn\&.h\&.
+.SS "int gnn::outputs"
+
+.PP
+Definition at line 49 of file gnn\&.h\&.
+.SS "int gnn::runned"
+used to check if already runned before train 
+.PP
+Definition at line 46 of file gnn\&.h\&.
+.SS "int gnn::total_neurons"
+Total number of neurons + inputs and size of output buffer\&. 
+.PP
+Definition at line 61 of file gnn\&.h\&.
+.SS "int gnn::total_weights"
+Total number of weights, and size of weights buffer\&. 
+.PP
+Definition at line 58 of file gnn\&.h\&.
+.SS "double* gnn::weight"
+All weights (total_weights long)\&. 
+.PP
+Definition at line 64 of file gnn\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.
