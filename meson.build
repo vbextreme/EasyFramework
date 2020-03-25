@@ -71,6 +71,8 @@ src += [ 'ef/www/imap.c' ]
 src += [ 'ef/www/tig.c' ]
 src += [ 'ef/www/oauth.c' ]
 
+src += [ 'ef/term/terminfo.c' ]
+
 ##################
 # compiler flags #
 ##################
@@ -173,7 +175,7 @@ libDeps += [ dependency('libgit2', required: true) ]
 # software dependencies #
 #########################
 
-#perl = find_program('perl', required: true)
+tic = find_program('tic', required: true)
 
 #################
 # Configuration #
@@ -182,6 +184,13 @@ libDeps += [ dependency('libgit2', required: true) ]
 #################
 # Custom Target #
 #################
+
+tic_src = custom_target('tic',
+  output: 'ef-term-extend',
+  input: 'ti/ef-term-extend.ti',
+  command: [tic, '-x', '-o', '@OUTPUT@', '@INPUT@']
+)
+src += [ tic_src ]
 
 #########
 # debug #
