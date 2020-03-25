@@ -1,9 +1,10 @@
-EasyFramework v1.0.0
+EasyFramework v1.1.0
 ====================
 Little framework created during the study of language c.<br/>
 
 State:
 ======
+* 1.1.0 add terminal function
 * 1.0.0 full documentated, complete revision code
 * 0.4.3 add fix gcc bug
 * 0.4.2 resolve man
@@ -14,6 +15,7 @@ Bug:
 
 Require Developer version of:
 ========
+tic<br/>
 libm<br/>
 libdl<br/>
 librt<br/>
