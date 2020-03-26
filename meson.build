@@ -88,6 +88,12 @@ add_global_arguments('-Wstrict-aliasing', language: 'c')
 add_global_arguments('-Wstrict-overflow', language: 'c')
 add_global_arguments('-Wfloat-equal', language: 'c')
 add_global_arguments('-Wvla', language: 'c')
+add_global_arguments('-Wduplicated-branches', language: 'c')
+add_global_arguments('-Wduplicated-cond', language: 'c')
+add_global_arguments('-Wlogical-op', language: 'c')
+#add_global_arguments('-fanalyzer', language: 'c')
+#add_global_arguments('-Wcast-qual', language: 'c')
+
 
 #reentrant malloc
 add_global_arguments('-pthread', language: 'c')
@@ -207,6 +213,7 @@ if opt_debug > 0
   debugstr = debugstr.format(opt_debug)
   add_global_arguments(debugstr, language: 'c')
   add_global_arguments('-g', language: 'c')
+  add_global_arguments('-fstack-protector-strong', language: 'c')
   #add_global_arguments('-ftree-vectorizer-verbose=5', language:'c')
   #add_global_arguments('-fopt-info-loop-optimized', language:'c')
   #add_global_arguments('-fopt-info-vec-optimized', language:'c')
