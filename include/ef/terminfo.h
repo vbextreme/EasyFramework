@@ -113,6 +113,9 @@ err_t term_load(char* path, const char* dbname);
 /** print */
 #define term_print(STR) fputs(STR,stdout)
 
+/** flush */
+#define term_flush() fflush(stdout)
+
 /** get a format cap, variable and build it on string
  * @param out builded escape
  * @param format cap
