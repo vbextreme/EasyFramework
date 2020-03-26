@@ -972,6 +972,312 @@ char* term_escape_make(char* out, const char* format, tvariable_s* param){
 	return begin;
 }	
 
+void term_escape_make_print(const char* format, tvariable_s* param){
+	__private tvariable_s var['z'-'a'];
+
+	tstack_s stack;
+	stack.id = 0;
+	stack.size = TERM_STACK_MAX;
+	const char* memformat = NULL;
+	int statif[TERM_IF_MAX] = {0};
+	size_t curif = 0;
+
+	while( *format ){
+		while( *format && *format != '%' ){
+			putchar(*format++);
+		}
+		if( 0 == *format ) break;
+		
+		++format;
+		int next;
+		do{
+			next = 0;
+			switch( *format ){
+				default:
+					dbg_warning("unknow %% simbol %c",*format);
+					++format;
+				break;
+
+				case 0:	dbg_warning("end of format with no symbol"); break;
+	
+				case '%':
+					putchar('%');
+					++format;
+				break;
+				
+				UNSAFE_BEGIN("-Wimplicit-fallthrough");				
+				case ':':
+					++format;
+				case '0':
+				case '.':
+				case '1'...'9':
+					memformat = te_get_format(&format);
+					next = 1;
+				break;
+				UNSAFE_END;
+
+				case 'x': case 'c':	case 'X': case 'o':	case 'd':{
+					int val = tstack_pop_long(&stack);
+					if( memformat != NULL ){
+						printf(memformat, val);
+					}
+					else{
+						char ff[3];
+						ff[0] = '%';
+						ff[1] = *format;
+						ff[2] = 0;
+						printf(ff, val);
+					}
+					memformat = NULL;
+					++format;
+				}
+				break;
+	
+				case 's':{
+					char* val = tstack_pop_string(&stack);
+					if( memformat != NULL ){
+						printf(memformat, val);
+					}
+					else{
+						fputs(val, stdout);
+					}
+					memformat = NULL;
+					++format;
+				}
+				break;
+				
+				case 'p':{
+					++format;
+					iassert(*format > '0' && *format <= '9');
+					size_t id = *format - '0';
+					switch( param[id].type ){
+						case 0: tstack_push_long(&stack, param[id].l); break;
+						case 1: tstack_push_string(&stack, param[id].s); break;
+						default: dbg_fail("p unknow stack param type"); break;
+					}
+					++format;
+				}
+				break;
+
+				case 'P':{
+					++format;
+					iassert(*format >= 'a' && *format <= 'z');
+					size_t id = *format - 'a';
+					tvariable_s* p = tstack_pop(&stack);
+					var[id].type = p->type;
+					switch( p->type ){
+						case 0: var[id].l = p->l; break;
+						case 1: var[id].s = p->s; break;
+						default: dbg_fail("P unknow stack type"); break;
+					}
+					++format;
+				}
+				break;
+
+				case 'g':{
+					++format;
+					iassert(*format >= 'a' && *format <= 'z');
+					size_t id = *format - 'a';
+					tstack_push(&stack, &var[id]);
+					++format;
+				}
+				break;
+
+				case '\'':
+					++format;
+					tstack_push_long(&stack, *format++);
+					iassert( *format == '\'');
+					++format;
+				break;
+
+				case '{':{
+					char* endl = NULL;
+					++format;
+					long n = strtol(format,&endl,10);
+					iassert( endl != NULL );
+					iassert( *endl == '}' );
+					tstack_push_long(&stack, n);
+					format = endl+1;
+				}
+				break;
+
+				case 'l':{
+					char* str = tstack_pop_string(&stack); 
+					iassert( str != NULL );
+					long n = strlen(str);
+					iassert( n != -1 );
+					tstack_push_long(&stack, n);
+					++format;
+				}
+				break;
+
+				case '+':{
+					long a = tstack_pop_long(&stack); 
+					long b = tstack_pop_long(&stack); 
+					long r = a + b;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case '-':{
+					long a = tstack_pop_long(&stack); 
+					long b = tstack_pop_long(&stack); 
+					long r = a - b;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case '/':{
+					long a = tstack_pop_long(&stack); 
+					long b = tstack_pop_long(&stack); 
+					long r = a / b;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case '*':{
+					long a = tstack_pop_long(&stack); 
+					long b = tstack_pop_long(&stack); 
+					long r = a * b;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case 'm':{
+					long a = tstack_pop_long(&stack); 
+					long b = tstack_pop_long(&stack); 
+					long r = a % b;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case '&':{
+					long a = tstack_pop_long(&stack); 
+					long b = tstack_pop_long(&stack); 
+					long r = a & b;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case '|':{
+					long a = tstack_pop_long(&stack); 
+					long b = tstack_pop_long(&stack); 
+					long r = a | b;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case '^':{
+					long a = tstack_pop_long(&stack); 
+					long b = tstack_pop_long(&stack); 
+					long r = a ^ b;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case '!':{
+					long a = tstack_pop_long(&stack); 
+					long r = !a;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case '~':{
+					long a = tstack_pop_long(&stack); 
+					long r = ~a;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case '=':{
+					long a = tstack_pop_long(&stack); 
+					long b = tstack_pop_long(&stack); 
+					long r = a == b;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case '<':{
+					long a = tstack_pop_long(&stack); 
+					long b = tstack_pop_long(&stack); 
+					long r = a < b;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case '>':{
+					long a = tstack_pop_long(&stack); 
+					long b = tstack_pop_long(&stack); 
+					dbg_info("compare %ld > %ld",a,b);
+					long r = a > b;
+				    tstack_push_long(&stack, r);
+					++format;
+				}
+				break;
+
+				case 'i':{
+					iassert( param[1].type == 0 );
+					iassert( param[2].type == 0 );
+					++param[1].l;
+					++param[2].l;
+					++format;
+				}
+				break;
+
+				case '?':
+					statif[curif]=1;
+					++curif;
+					dbg_info("start if %lu", curif);
+					++format;
+				break;
+
+				case 't':{
+					long condition = tstack_pop_long(&stack); 
+					if( 0 == condition ){
+						format = escape_to_else(format);
+						iassert(curif > 0);
+						statif[curif-1]=2;
+					}else{
+						++format;
+						dbg_info("then");
+					}
+				}
+				break;
+
+				case 'e':
+					iassert(curif > 0);
+					if( statif[curif-1] != 2 ){
+						format = escape_to_end(format);
+					}
+					else{
+						dbg_info("else");
+						++format;
+					}
+				break;
+
+				case ';':
+					dbg_info("endif %lu", curif);
+					iassert(curif > 0);
+					--curif;
+					++format;
+				break;
+			}//switch( *format )
+		}while( next );
+	}//while( *format )
+}
+
 err_t term_escape_string(char* out, char* name, tvariable_s* var){
 	tiData_s* dt = rbhash_find(localTermInfo.cap, name, strlen(name));
 	if( !dt ){
@@ -987,27 +1293,36 @@ err_t term_escape_string(char* out, char* name, tvariable_s* var){
 	return 0;
 }
 
-void term_escape_print(char* name, tvariable_s* var){
-	char mk[256];
-	if( term_escape_string(mk, name, var) ) return;
-	term_print(mk);
+err_t term_escape_print(char* name, tvariable_s* var){
+	tiData_s* dt = rbhash_find(localTermInfo.cap, name, strlen(name));
+	if( !dt ){
+		dbg_warning("cap %s not exists", name);
+		return -1;
+	}
+	if( dt->type != TI_TYPE_STR ){
+		dbg_warning("cap %s isn't str", name);
+		dbg_error("cap %s is not a string", name);
+		return -1;
+	}
+	term_escape_make_print(dt->str, var);
+	return 0;
 }
 
-tiData_s* term_info(char* name){
+tiData_s* term_info(const char* name){
 	static tiData_s err = {.type = TI_TYPE_UNSET, .str = NULL};
 	tiData_s* ret = rbhash_find(localTermInfo.cap, name, strlen(name));
 	return ret ? ret : &err;
 }
 
-int term_info_number(char* name){
+int term_info_number(const char* name){
 	return term_info(name)->num;
 }
 
-int term_info_bool(char* name){
+int term_info_bool(const char* name){
 	return term_info(name)->bol;
 }
 
-const char* term_info_string(char* name){
+const char* term_info_string(const char* name){
 	return term_info(name)->str;
 }
 

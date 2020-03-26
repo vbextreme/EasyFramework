@@ -121,6 +121,13 @@ err_t term_load(char* path, const char* dbname);
  */
 char* term_escape_make(char* out, const char* format, tvariable_s* param);
 
+/** get a format cap, variable, build and print on stdout
+ * @param format cap
+ * @param param variable for cap
+ * @return out
+ */
+void term_escape_make_print(const char* format, tvariable_s* param);
+
 /** get a name of cap, variable and build it on string
  * @param out builded escape
  * @param name name cap
@@ -132,8 +139,9 @@ err_t term_escape_string(char* out, char* name, tvariable_s* var);
 /** get a name of cap, variable, build it and print
  * @param name name cap
  * @param var variable for cap
+  * @return 0 successfull -1 for error 
  */
-void term_escape_print(char* name, tvariable_s* var);
+err_t term_escape_print(char* name, tvariable_s* var);
 
 /** return a boolean cap value -1 for error */
 int term_escape_bool(char* name);
@@ -142,16 +150,16 @@ int term_escape_bool(char* name);
 int term_escape_number(char* name);
 
 /** return a raw tiData for name*/
-tiData_s* term_info(char* name);
+tiData_s* term_info(const char* name);
 
 /** return cap bool */
-int term_info_bool(char* name);
+int term_info_bool(const char* name);
 
 /** return cap number */
-int term_info_number(char* name);
+int term_info_number(const char* name);
 
 /** return cap string */
-const char* term_info_string(char* name);
+const char* term_info_string(const char* name);
 
 __always_inline tvariable_s __tvariable_set_numeric(long num) { return (tvariable_s){.type = 0, .l = num }; }
 __always_inline tvariable_s __tvariable_set_string(char* str) { return (tvariable_s){.type = 1, .s = str }; }

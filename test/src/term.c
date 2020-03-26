@@ -1,5 +1,8 @@
 #include "test.h"
 #include <ef/terminfo.h>
+#include <ef/termcapstr.h>
+#include <ef/termlink.h>
+
 #include <ef/memory.h>
 #include <ef/file.h>
 
@@ -19,8 +22,17 @@ void test_term(__unused const char* argA, __unused const char* argB){
 		err_print();
 	}
 
+	term_ca_mode(1);
+	term_gotorc(0,0);
+	puts("hello");
+	delay_ms(1000);
+	term_clear(TERM_CLEAR);
+	puts("bye bye");
+	delay_ms(1000);	
 
+	//term_escapef(cap_exit_ca_mode);
 
+	term_ca_mode(0);	
 
 	term_end();
 	err_restore();

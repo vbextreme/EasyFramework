@@ -1,5 +1,5 @@
-#ifndef __TI_TO_STRING_H__
-#define __TI_TO_STRING_H__
+#ifndef __EF_TERM_TI_TO_STRING_H__
+#define __EF_TERM_TI_TO_STRING_H__
 
 #include <ef/type.h>
 /*https://github.com/gittup/ncurses/blob/5a58bcb99470378fbbb24d21cb5e54f08cb7d353/include/Caps*/

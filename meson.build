@@ -72,6 +72,8 @@ src += [ 'ef/www/tig.c' ]
 src += [ 'ef/www/oauth.c' ]
 
 src += [ 'ef/term/terminfo.c' ]
+src += [ 'ef/term/termlink.c' ]
+
 
 ##################
 # compiler flags #
