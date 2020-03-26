@@ -14,10 +14,11 @@ void test_term(__unused const char* argA, __unused const char* argB){
 		dbg_error("ops");
 		err_print();
 	}
-	if( term_load(lcex, TERM_EF_EXTEND) ){
+	if( term_load(lcex, term_name_ef()) ){
 		dbg_error("ops");
 		err_print();
 	}
+
 
 
 

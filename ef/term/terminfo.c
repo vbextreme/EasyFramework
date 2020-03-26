@@ -30,7 +30,8 @@ const char* term_name_extend(void){
 }
 
 const char* term_name_ef(void){
-	return getenv(ENV_TERMEF);
+	const char* ret = getenv(ENV_TERMEF);
+	return ret ? ret : TERM_EF_EXTEND;
 }
 
 __private FILE* term_database_open(const char* path, const char* dbname){

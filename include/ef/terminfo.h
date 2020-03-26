@@ -81,7 +81,7 @@ const char* term_name(void);
 /** return terminal extend name */
 const char* term_name_extend(void);
 
-/** return terminal common extend name */
+/** return terminal common extend name if not eviroment is setted return TERM_EF_EXTEND*/
 const char* term_name_ef(void);
 
 /** convert unescaped char in printable, escaped, string
