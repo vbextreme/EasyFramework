@@ -41,6 +41,9 @@ void term_cursor(termCursor_e mode);
 /** set visible or invisible cursor */
 void term_cursor_visible(int v);
 
+/** 1 store / 0 load cursor */
+void term_cursor_mem(int store);
+
 typedef enum{
 	TERM_COLOR_RELOAD = -1,
 	TERM_COLOR_BLACK,
@@ -61,16 +64,52 @@ typedef enum{
 	TERM_COLOR_WHYTE
 } termColor_e;
 
-/** set background color */
+/** set background color 16 */
 void term_color16_bk(termColor_e color);
 
 /** set foreground color 16 */
 void term_color16_fg(termColor_e color);
 
+/** set background color 256 */
+void term_color256_bk(int color);
+
+/** set foreground color 256 */
+void term_color256_fg(int color);
+
+/** set background color 24k */
+void term_color24_bk(unsigned char r, unsigned char g, unsigned char b);
+
+/** set foreground color 24k */
+void term_color24_fg(unsigned char r, unsigned char g, unsigned char b);
+
 /** reset to default color */
 void term_color_reset(void);
 
+typedef enum {
+	TERM_FONT_RELOAD = -1,
+	TERM_FONT_BOLT,
+	TERM_FONT_ITALIC,
+	TERM_FONT_UNDERLINE,
+	TERM_FONT_RESET,
+	TERM_FONT_COUNT
+}termFontAttribute_e;
 
+/** set font attribute */
+void term_font_attribute(termFontAttribute_e att);
 
+/** change scroll region */
+void term_change_scroll_region(int startRow, int endRow);
+
+/** resize terminal */
+void term_resize(int w, int h);
+
+/** enable mouse event */
+void term_mouse(int enable);
+
+/** enable mouse move report */
+void term_mouse_move(int enable);
+
+/** enable mouse focus report */
+void term_mouse_focus(int enable);
 
 #endif 

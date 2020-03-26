@@ -8,36 +8,57 @@
 #include <ef/termcapstr.h>
 #include <ef/termlink.h>
 
-void term_ca_mode(int ee){
-	static tiData_s* em[2] = {0};
+#define def_cap_val_null(CAP) static tiData_s* em = NULL;\
+	if( !em ){\
+		em = term_info(CAP); \
+		if( !em ) err_fail("%s", CAP);\
+	}\
+	tvariable_s var[10] = { \
+		[1].type = 0, [1].l = 0,\
+   	};\
+	term_escape_make_print(em->str, var)
 
-	if( ee == -1 || !em[0] ){
-		em[0] = term_info(cap_enter_ca_mode); 
-		em[1] = term_info(cap_exit_ca_mode);
-		if( !em[0] || !em[1] ){
-			err_fail("%s || %s", cap_enter_ca_mode, cap_exit_ca_mode);
-		}
-		if( ee == -1 ) return;
-	}
-	
-	tvariable_s var[10] = { [1].type = 0, [1].l = 0 };
-	term_escape_make_print(em[!ee]->str, var);
+#define def_cap_val_bool(VAL, CAP_FALSE, CAP_TRUE) static tiData_s* em[2] = {0};\
+	if( VAL < 0 || !em[0] ){\
+		em[0] = term_info(CAP_TRUE);\
+		em[1] = term_info(CAP_FALSE);\
+		if( !em[0] || !em[1] ){\
+			err_fail("%s || %s", CAP_FALSE, CAP_TRUE);\
+		}\
+		if( VAL < 0 ) return;\
+	}\
+	tvariable_s var[10] = { [1].type = 0, [1].l = 0 };\
+	term_escape_make_print(em[!VAL]->str, var)
+
+#define def_cap_val_int(VAL, CAP) static tiData_s* em = NULL;\
+	if( VAL < 0 || !em ){\
+		em = term_info(CAP);\
+		if( !em ) err_fail("%s", CAP);\
+		if( VAL < 0 ) return;\
+	}\
+	tvariable_s var[10] = { \
+		[1].type = 0, [1].l = VAL\
+   	};\
+	term_escape_make_print(em->str, var)
+
+#define def_cap_val_int_int(VAL1, VAL2, CAP) static tiData_s* em = NULL;\
+	if( VAL1 < 0 || VAL2 <0 || !em ){\
+		em = term_info(CAP);\
+		if( !em ) err_fail("%s", CAP);\
+		if( VAL1 < 0 || VAL2 < 0 ) return;\
+	}\
+	tvariable_s var[10] = { \
+		[1].type = 0, [1].l = VAL1,\
+		[2].type = 0, [2].l = VAL2\
+   	};\
+	term_escape_make_print(em->str, var)
+
+void term_ca_mode(int ee){
+	def_cap_val_bool(ee, cap_exit_ca_mode, cap_enter_ca_mode);
 }
 
 void term_gotorc(int r, int c){
-	static tiData_s* em = NULL;
-
-	if( r < 0 || c < 0 || !em ){
-		em = term_info(cap_cursor_address); 
-		if( !em ) err_fail("%s", cap_cursor_address);
-		if( r < 0 || c < 0 ) return;
-	}
-	
-	tvariable_s var[10] = { 
-		[1].type = 0, [1].l = r,
-		[2].type = 0, [2].l = c,
-   	};
-	term_escape_make_print(em->str, var);
+	def_cap_val_int_int(r, c, cap_cursor_address);
 }
 
 void term_clear(termClearMode_e mode){
@@ -86,68 +107,105 @@ void term_cursor(termCursor_e mode){
 		[1].type = 0, [1].l = 0
    	};
 	term_escape_make_print(em[mode]->str, var);
-
 }
 
 void term_cursor_visible(int v){
-	static tiData_s* em[2] = {0};
+	def_cap_val_bool(v, cap_cursor_invisible, cap_cursor_visible);
+}
 
-	if( v == -1 || !em[0] ){
-		em[0] = term_info(cap_cursor_visible); 
-		em[1] = term_info(cap_cursor_invisible);
-		if( !em[0] || !em[1] ){
-			err_fail("%s || %s", cap_cursor_invisible, cap_cursor_visible);
-		}
-		if( v < 0 ) return;
-	}
-	
-	tvariable_s var[10] = { [1].type = 0, [1].l = 0 };
-	term_escape_make_print(em[!v]->str, var);
+void term_cursor_mem(int store){
+	def_cap_val_bool(store, cap_restore_cursor, cap_save_cursor);
 }
 
 void term_color16_bk(termColor_e color){
-	static tiData_s* em = NULL;
+	def_cap_val_int(color, "color16_bk");
+}
 
-	if( color < 0 || !em ){
-		em = term_info("color16_bk"); 
-		if( !em ) err_fail("color16_bk");
-		if( color < 0 ) return;
-	}
+void term_color16_fg(termColor_e color){
+	def_cap_val_int(color, "color16_fg");
+}
+
+void term_color256_bk(int color){
+	def_cap_val_int(color, "color256_bk");
+}
+
+void term_color256_fg(int color){
+	def_cap_val_int(color, "color256_fg");
+}
+
+void term_color24_bk(unsigned char r, unsigned char g, unsigned char b){
+	static tiData_s* em = NULL;
 	
-	tvariable_s var[10] = { 
-		[1].type = 0, [1].l = color,
+	if( !em ){
+		em = term_info("color24_bk");
+		if( !em ) err_fail("%s", "color24_bk");
+	}
+	tvariable_s var[10] = {
+		[1].type = 0, [1].l = r,
+		[2].type = 0, [2].l = g,
+		[3].type = 0, [3].l = b,
    	};
 	term_escape_make_print(em->str, var);
 }
 
-void term_color16_fg(termColor_e color){
+void term_color24_fg(unsigned char r, unsigned char g, unsigned char b){
 	static tiData_s* em = NULL;
-
-	if( color < 0 || !em ){
-		em = term_info("color16_fg"); 
-		if( !em ) err_fail("color16_fg");
-		if( color < 0 ) return;
-	}
 	
-	tvariable_s var[10] = { 
-		[1].type = 0, [1].l = color,
+	if( !em ){
+		em = term_info("color24_fg");
+		if( !em ) err_fail("%s", "color24_fg");
+	}
+	tvariable_s var[10] = {
+		[1].type = 0, [1].l = r,
+		[2].type = 0, [2].l = g,
+		[3].type = 0, [3].l = b,
    	};
 	term_escape_make_print(em->str, var);
 }
 
 void term_color_reset(void){
-	static tiData_s* em = NULL;
-
-	if( !em ){
-		em = term_info("color_reset"); 
-		if( !em ) err_fail("color_reset");
-	}
-	
-	tvariable_s var[10] = { 
-		[1].type = 0, [1].l = 0,
-   	};
-	term_escape_make_print(em->str, var);
+	def_cap_val_null("color_reset");
 }
 
+void term_font_attribute(termFontAttribute_e att){
+	static tiData_s* em[TERM_FONT_COUNT] = {0};
 
+	if( att == TERM_FONT_RELOAD || !em[0] ){
+		char* capn[] = {
+			[TERM_FONT_BOLT]      = cap_enter_bold_mode,
+			[TERM_FONT_ITALIC]    = cap_enter_insert_mode,
+			[TERM_FONT_UNDERLINE] = cap_enter_underline_mode,
+			[TERM_FONT_RESET]     = cap_exit_attribute_mode,
+			NULL
+		};
+		for( size_t i = 0; capn[i]; ++i){
+			em[i] = term_info(capn[i]); 
+			if( !em[i] ) err_fail("%s", capn[i]);
+		}
+	}
+	if( att <= TERM_FONT_RELOAD || att >= TERM_FONT_COUNT ) return;
+	tvariable_s var[10] = { 
+		[1].type = 0, [1].l = 0
+   	};
+	term_escape_make_print(em[att]->str, var);
+}
 
+void term_change_scroll_region(int startRow, int endRow){
+	def_cap_val_int_int(startRow, endRow, cap_change_scroll_region);
+}
+
+void term_resize(int w, int h){
+	def_cap_val_int_int(w, h, "term_resize");
+}
+
+void term_mouse(int enable){
+	def_cap_val_bool(enable, "mouse_disable", "mouse_enable");
+}
+
+void term_mouse_move(int enable){
+	def_cap_val_bool(enable, "mouse_move_disable", "mouse_move_enable");
+}
+
+void term_mouse_focus(int enable){
+	def_cap_val_bool(enable, "mouse_focus_disable", "mouse_focus_enable");
+}

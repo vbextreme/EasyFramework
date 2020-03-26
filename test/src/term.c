@@ -64,6 +64,9 @@ void test_term(__unused const char* argA, __unused const char* argB){
 		term_print("\n");		
 	}
 
+	term_escapef("term_move", 50,50);
+
+
 
 	term_end();
 	err_restore();
