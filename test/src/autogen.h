@@ -16,6 +16,7 @@
 { 0, 'R', "rb-hash", ARGDEF_NOARG, NULL, "test rbhash, use arg-a for file data, without a use internal data, use arg-b for hash function, default vbx, all for test all"},\
 { 0, 'S', "socket", ARGDEF_NOARG, NULL, "test socket arg-a set client/client.tls/server/server.tls, arg-b type:addr:port, where type is unix or net4. write exit to end"},\
 { 0, 's', "str", ARGDEF_NOARG, NULL, "test string"},\
+{ 0, 'E', "term", ARGDEF_NOARG, NULL, "test terminal"},\
 { 0, 'r', "thr", ARGDEF_NOARG, NULL, "test threads"},\
 { 0, 'T', "trie", ARGDEF_NOARG, NULL, "test trie, use arg-a for file data, without use internal data set"},\
 { 0, 'v', "vector", ARGDEF_NOARG, NULL, "test vector"},
@@ -31,10 +32,11 @@ void test_mem(__unused const char* argA, __unused const char* argB);\
 void test_math(__unused const char* argA, __unused const char* argB);\
 void test_oauth(__unused const char* argA, __unused const char* argB);\
 void test_os(__unused const char* argA, __unused const char* argB);\
-void test_promise(__unused const char* argA, __unused const char* argB);\
+void test_promise(const char* argA, __unused const char* argB);\
 void test_hashtable(const char* a, const char* b);\
 void test_socket(const char* argA, const char* argB);\
 void test_str(__unused const char* argA, __unused const char* argB);\
+void test_term(__unused const char* argA, __unused const char* argB);\
 void test_thr(__unused const char* argA, __unused const char* argB);\
 void test_trie(const char* a, __unused const char* b);\
 void test_vector(__unused const char* argA, __unused const char* argB);
@@ -54,6 +56,7 @@ test_promise,\
 test_hashtable,\
 test_socket,\
 test_str,\
+test_term,\
 test_thr,\
 test_trie,\
 test_vector,

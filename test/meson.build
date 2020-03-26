@@ -33,6 +33,7 @@ src += [ 'src/promise.c' ]
 src += [ 'src/rbhash.c' ]
 src += [ 'src/socket.c' ]
 src += [ 'src/str.c' ]
+src += [ 'src/term.c' ]
 src += [ 'src/thr.c' ]
 src += [ 'src/trie.c' ]
 src += [ 'src/vector.c' ]
@@ -109,12 +110,15 @@ endif
 ##########################
 # libraries dependencies #
 ##########################
+curpath = meson.source_root()
+efpath = run_command('meson.bash', 'dirname', curpath).stdout().strip().split('\n')
+efpath = join_paths(efpath, 'build')
 
 if get_option('efdbg') > 0
-  ef_dep = cc.find_library('ef', dirs: ['/home/vbextreme/Project/c/ef/build-dbg'], required: true)
+  ef_dep = cc.find_library('ef', dirs: efpath, required: true)
   message('use ef debug')
 else
-  ef_dep = cc.find_library('ef', dirs: ['/home/vbextreme/Project/c/ef/build'], required: true)
+  ef_dep = cc.find_library('ef', dirs: efpath, required: true)
 endif
 
 #math_dep = cc.find_library('m', required : true)

@@ -1,4 +1,4 @@
-termll-extend|vbextreme termll caps,
+ef-term-extend|vbextreme common term caps,
 	color16_bk=\E[%{40}%p1%+%dm,
 	color16_fg=\E[%{30}%p1%+%dm,
 	color256_bk=\E[48;5;%p1%dm,

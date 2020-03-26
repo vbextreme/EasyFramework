@@ -50,4 +50,24 @@ void test_file(const char* argA, __unused const char* argB){
 	}
 	
 	config_parse(tr, sm);
+
+	const char* testpath[] = {
+		"../",
+		"../../hello",
+		"./",
+		"~/",
+		"/home",
+		"home/hello",
+		"./home",
+		"../yessa",
+		"home/./help",
+		"home/../ok",
+		"home/ji/../run",
+		NULL
+	};
+
+	for( size_t i = 0; testpath[i]; ++i){
+		__mem_free char* pr = path_resolve(testpath[i]);
+		printf("'%s' -> '%s'\n", testpath[i], pr);
+	}
 }

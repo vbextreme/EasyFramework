@@ -26,6 +26,8 @@
 	#define ENV_TERMEF "TERMEF"
 #endif
 
+#define TERM_EF_EXTEND "ef-term-extend"
+
 typedef enum { TI_TYPE_UNSET, TI_TYPE_BOOL, TI_TYPE_NUM, TI_TYPE_STR } titype_e;
 
 typedef struct tiData {
@@ -103,10 +105,10 @@ void term_end(void);
 
 /** load terminal cap, add to previus database if loaded
  * @param path null used TERM_DATABASE_DIRECTORY
- * @param dbname database to load, null use ENV_TERM
+ * @param dbname name database to load, \<path\>/\<dbname[0]\>/\<dbname\>, null use path without change for loading database
  * @return -1 error, 0 successfull
  */
-err_t term_load(char* path, char* dbname);
+err_t term_load(char* path, const char* dbname);
 
 /** print */
 #define term_print(STR) fputs(STR,stdout)
@@ -253,9 +255,9 @@ __always_inline tvariable_s __tvariable_set_string(char* str) { return (tvariabl
 
 #ifndef __clang__
 /** same term_escape_print but with stdarg for tvariable_s*/
-#define term_escapef(NAME, ...) __CONCAT_EXPAND__(term_escape_f,__VA_COUNT__(__VA_ARGS__))(NAME,##__VA_ARGS__)
+	#define term_escapef(NAME, ...) __CONCAT_EXPAND__(term_escape_f,__VA_COUNT__(__VA_ARGS__))(NAME,##__VA_ARGS__)
 #else
-#define term_escapef(NAME, ...)
+	#define term_escapef(NAME, ...)
 #endif
 
 #define term_escape_mk0(OUT, NAME) term_escape_string(OUT, NAME, (tvariable_s[10]){\
@@ -346,11 +348,9 @@ __always_inline tvariable_s __tvariable_set_string(char* str) { return (tvariabl
 
 #ifndef __clang__
 /** same term_escape_string but with stdarg for tvariable_s*/
-#define term_escapemk(OUT, TI, NAME, ...) __CONCAT_EXPAND__(term_escape_mk,__VA_COUNT__(__VA_ARGS__))(OUT,TI,NAME,##__VA_ARGS__)
+	#define term_escapemk(OUT, TI, NAME, ...) __CONCAT_EXPAND__(term_escape_mk,__VA_COUNT__(__VA_ARGS__))(OUT,TI,NAME,##__VA_ARGS__)
 #else
-#define term_escapemk(OUT, TI, NAME, ...)
-
-
+	#define term_escapemk(OUT, TI, NAME, ...)
 #endif
 
 #endif 

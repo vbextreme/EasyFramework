@@ -19,7 +19,6 @@
 #define TERM_STACK_MAX  128
 #define TERM_IF_MAX     16
 
-
 termInfo_s localTermInfo;
 
 const char* term_name(void){
@@ -35,12 +34,6 @@ const char* term_name_ef(void){
 }
 
 __private FILE* term_database_open(const char* path, const char* dbname){
-	const char* dbn = dbname ? dbname : term_name();
-	if( dbn == NULL ){
-		dbg_error("no database select, set TERM enviroment");
-		return NULL;
-	}
-	
 	char fname[PATH_MAX];
 	if( path == NULL ){
 		strcpy(fname, TERM_DATABASE_DIRECTORY);
@@ -49,21 +42,29 @@ __private FILE* term_database_open(const char* path, const char* dbname){
 		strcpy(fname, path);
 	}
 
-	size_t nf = strlen(fname);
-	size_t dbnlen = strlen(dbn);
-	if( nf + 4 + dbnlen > PATH_MAX ){
-		dbg_error("path to long");
-		return NULL;
+	if( dbname ){
+		size_t nf = strlen(fname);
+		size_t dbnlen = strlen(dbname);
+		if( nf + 4 + dbnlen > PATH_MAX ){
+			dbg_error("path to long");
+			return NULL;
+		}
+	
+		fname[nf++] = '/';
+		fname[nf++] = *dbname;
+		fname[nf++] = '/';
+		memcpy(&fname[nf], dbname, dbnlen+1);
 	}
-
-	fname[nf++] = '/';
-	fname[nf++] = *dbn;
-	fname[nf++] = '/';
-	memcpy(&fname[nf], dbn, dbnlen+1);
-
+	else{
+		strcpy(fname, path);
+	}
+	
 	dbg_info("term file: '%s'", fname);
-
-	return fopen( fname, "r");
+	FILE* ret = fopen( fname, "r");
+	if( !ret ){
+		err_pushno("open '%s'", fname);
+	}
+	return ret;
 }
 
 #define term_database_read16(PTR,FD) do{\
@@ -526,7 +527,7 @@ void term_end(void){
 	localTermInfo.dbname = NULL;
 }
 
-err_t term_load(char* path, char* dbname){
+err_t term_load(char* path, const char* dbname){
 	__file_close FILE* fd = term_database_open(path, dbname);
 	if( fd == NULL ) return -1;
 	
@@ -539,6 +540,7 @@ err_t term_load(char* path, char* dbname){
 
 	__file_close FILE* sfd = term_database_open(path, dbname);
 	if( sfd == NULL ){
+		err_pushno("dup open %s %s", path, dbname);
 		dbg_error("file_dup");
 		dbg_errno();
 		return -1;
@@ -637,7 +639,6 @@ __private const char* escape_to_else(const char* format){
 	}while( *format != 'e' && *format != ';' );
 	return format - 1;
 }
-
 /*
 __private const char* escape_delay(const char* format){
 	if( *format != '<' ){
@@ -672,12 +673,12 @@ char* term_escape_make(char* out, const char* format, tvariable_s* param){
 			*out++=*format++;
 		}
 		if( 0 == *format ) break;
-		/*
-		if( '$' == *format ){
-			format = escape_delay(format+1);
-			continue;
-		}
-		*/
+		
+		//if( '$' == *format ){
+		//	format = escape_delay(format+1);
+		//	continue;
+		//}
+		
 		++format;
 		int next;
 		do{
