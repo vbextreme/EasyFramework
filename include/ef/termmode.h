@@ -9,10 +9,16 @@ typedef struct termios termios_s;
 typedef struct winsize winsize_s;
 
 /** get termios setting */
-#define term_settings_get(PTR_SETTINGS) tcgetattr(0, PTR_SETTINGS)
+#define term_settings_fdget(FD, PTR_SETTINGS) tcgetattr(FD, PTR_SETTINGS)
 
 /** set termios setting */
-#define term_settings_set(PTR_SETTINGS) tcsetattr(0, TCSANOW, PTR_SETTINGS)
+#define term_settings_fdset(FD, PTR_SETTINGS) tcsetattr(FD, TCSANOW, PTR_SETTINGS)
+
+/** get termios setting */
+#define term_settings_get(PTR_SETTINGS) term_settings_fdget(0, PTR_SETTINGS)
+
+/** set termios setting */
+#define term_settings_set(PTR_SETTINGS) term_settings_fdset(0, PTR_SETTINGS)
 
 /** set raw mode and get termios */
 void term_raw_mode(termios_s* old);

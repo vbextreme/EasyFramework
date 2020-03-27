@@ -7,6 +7,7 @@
 #include <ef/terminfo.h>
 #include <ef/termcapstr.h>
 #include <ef/termlink.h>
+#include <ef/termmode.h>
 
 #define def_cap_val_null(CAP) static tiData_s* em = NULL;\
 	if( !em ){\
@@ -209,3 +210,86 @@ void term_mouse_move(int enable){
 void term_mouse_focus(int enable){
 	def_cap_val_bool(enable, "mouse_focus_disable", "mouse_focus_enable");
 }
+
+err_t term_cursor_position(int* r, int* c){
+    const char *dev;
+	termios_s oldtio;
+	termios_s newtio;
+    __fd_close int fd = -1;
+
+    if( !(dev = ttyname(STDIN_FILENO)) || !(dev = ttyname(STDOUT_FILENO)) ){
+		err_pushno("can't get tty name");
+		return -1;
+	}
+
+    while( (fd = open(dev, O_RDWR | O_NOCTTY)) == -1 && errno == EINTR);
+    if( fd == -1){
+		err_pushno("open tty %s", dev);
+		return -1;
+	}
+
+    if( term_settings_fdget(fd, &oldtio) ){
+		err_pushno("tcgetattr");
+		return -1;
+	}
+
+	newtio = oldtio;
+	newtio.c_lflag &= ~ICANON;
+    newtio.c_lflag &= ~ECHO;
+    newtio.c_cflag &= ~CREAD;
+	if( term_settings_fdset(fd, &newtio) ){
+		err_pushno("tcsetattr");
+		return -1;
+	}
+	
+	char mkuser7[128];
+	term_escapemk(mkuser7, cap_user7);
+	size_t len = strlen(mkuser7);
+	if( write(fd, mkuser7, len) != (ssize_t)len ){
+		err_pushno("write user7");
+		term_settings_fdset(fd, &oldtio);
+		return -1;
+	}
+
+	int ch;
+	if( fd_read(fd, &ch, 1) != 1 || ch != 0x1B ){
+		err_push("not read esc");
+		term_settings_fdset(fd, &oldtio);
+		return -1;
+	}
+	if( fd_read(fd, &ch, 1) != 1 || ch != '[' ){
+		err_push("not read [ but (%d)%c", ch, ch);
+		term_settings_fdset(fd, &oldtio);
+		return -1;
+	}
+
+	*r = 0;
+	while( fd_read(fd, &ch, 1) == 1 && ch >= '0' && ch <= '9' ){
+		*r = 10 * *r + (ch-'0');
+	}
+	
+	if( ch != ';' ){
+		err_pushno("not read ;");
+		term_settings_fdset(fd, &oldtio);
+		return -1;
+	}
+
+	*c = 0;
+	while( fd_read(fd, &ch, 1) == 1 && ch >= '0' && ch <= '9' ){
+		*c = 10 * *c + (ch-'0');
+	}
+	
+	if( ch != 'R' ){
+		err_pushno("not read R");
+		term_settings_fdset(fd, &oldtio);
+		return -1;
+	}
+	
+	--(*r);
+	--(*c);
+
+	term_settings_fdset(fd, &oldtio);
+	return 0;
+}
+
+

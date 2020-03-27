@@ -359,9 +359,9 @@ __always_inline tvariable_s __tvariable_set_string(char* str) { return (tvariabl
 
 #ifndef __clang__
 /** same term_escape_string but with stdarg for tvariable_s*/
-	#define term_escapemk(OUT, TI, NAME, ...) __CONCAT_EXPAND__(term_escape_mk,__VA_COUNT__(__VA_ARGS__))(OUT,TI,NAME,##__VA_ARGS__)
+	#define term_escapemk(OUT, NAME, ...) __CONCAT_EXPAND__(term_escape_mk,__VA_COUNT__(__VA_ARGS__))(OUT,NAME,##__VA_ARGS__)
 #else
-	#define term_escapemk(OUT, TI, NAME, ...)
+	#define term_escapemk(OUT, NAME, ...)
 #endif
 
 #endif 

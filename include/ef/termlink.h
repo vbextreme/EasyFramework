@@ -112,4 +112,13 @@ void term_mouse_move(int enable);
 /** enable mouse focus report */
 void term_mouse_focus(int enable);
 
+/** read cursor position, origin 0,0
+ * @param r row
+ * @param c columns
+ * @return -1 error 0 successfull
+ */
+err_t term_cursor_position(int* r, int* c);
+
+
+
 #endif 

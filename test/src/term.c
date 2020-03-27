@@ -1,8 +1,5 @@
 #include "test.h"
-#include <ef/terminfo.h>
-#include <ef/termcapstr.h>
-#include <ef/termlink.h>
-
+#include <ef/term.h>
 #include <ef/memory.h>
 #include <ef/file.h>
 
@@ -32,11 +29,38 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	term_clear(TERM_CLEAR);
 	term_ca_mode(0);
 
+	term_clear(TERM_CLEAR);
+	term_flush();
+
+	int x,y;
+	if( term_cursor_position(&y, &x) ){
+		err_fail("cursor position");
+	}
+	printf("y:%d, x:%d\n", y, x);
+	puts("next try in raw mode");
+	delay_ms(3000);
+	term_clear(TERM_CLEAR);
+	term_raw_enable();
+	printf("raw mode, goto to x=4 y=3");
+	term_gotorc(3,4);
+	term_flush();
+	if( term_cursor_position(&y, &x) ){
+		term_raw_disable();
+		err_fail("cursor position");
+	}
+	printf("y:%d, x:%d\n", y, x);
+	delay_ms(3000);
+	term_raw_disable();
+
+
+
+
 	term_color16_bk(TERM_COLOR_WHYTE);
 	term_color16_fg(TERM_COLOR_BLACK);
 	term_print("black");
 	term_color_reset();
 	term_print(" ");
+
 
 	char* colorn[] = {
 		"black",
@@ -64,7 +88,8 @@ void test_term(__unused const char* argA, __unused const char* argB){
 		term_print("\n");		
 	}
 
-	term_escapef("term_move", 50,50);
+	//term_escapef("term_move", 50,50);
+
 
 
 
