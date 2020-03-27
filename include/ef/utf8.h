@@ -1,6 +1,8 @@
 #ifndef __EF_UTF8_H__
 #define __EF_UTF8_H__
 
+/* libunistring required in dest application link*/
+
 #include <ef/type.h>
 #include <locale.h>
 #include <ctype.h>

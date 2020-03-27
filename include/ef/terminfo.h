@@ -3,6 +3,7 @@
 
 #include <ef/type.h>
 #include <ef/rbhash.h>
+#include <ef/trie.h>
 
 #define TERM_MAGIC 282
 
@@ -30,7 +31,7 @@
 
 typedef enum { TI_TYPE_UNSET, TI_TYPE_BOOL, TI_TYPE_NUM, TI_TYPE_STR } titype_e;
 
-typedef struct tiData {
+typedef struct tiData{
 	titype_e type;
 	union {
 		char* str;
@@ -39,8 +40,15 @@ typedef struct tiData {
 	};
 } tiData_s;
 
-typedef struct termInfo {
+typedef struct kbData{
+	tiData_s* tid;
+	char* name;
+	size_t id;
+}kbData_s;
+
+typedef struct termInfo{
 	rbhash_s* cap;
+	trie_s* caupcake;
 	char* dbname;
 }termInfo_s;
 
@@ -109,6 +117,9 @@ void term_end(void);
  * @return -1 error, 0 successfull
  */
 err_t term_load(char* path, const char* dbname);
+
+/** after loading all database call update key if you need special key on input */
+void term_update_key(void);
 
 /** print */
 #define term_print(STR) fputs(STR,stdout)

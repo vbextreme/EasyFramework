@@ -380,8 +380,6 @@ __private err_t term_database_strings(termInfo_s* ti, tidatabase_s* db, FILE* fd
 		rbhash_add(ti->cap, termStrToStr[i], strlen(termStrToStr[i]), tid);
 		
 		len = term_escape_askey(tmp, tid->str);
-		
-		//trie_insert(&ti->pac, tmp, termStrToStr[i]);
 
 		#if DEBUG_ENABLE 
 			char tmpdbg[2048];
@@ -517,6 +515,7 @@ __private void term_tid_free(__unused uint32_t hash, __unused const char* name, 
 
 void term_begin(void){
 	localTermInfo.cap = rbhash_new(TI_HASH_SIZE, TI_HASH_MIN, TI_HASH_KEY, hash_fasthash, (rbhashfree_f)term_tid_free);
+	localTermInfo.caupcake = NULL;
 	iassert(localTermInfo.cap);
 	localTermInfo.dbname = NULL;
 }
@@ -524,6 +523,7 @@ void term_begin(void){
 void term_end(void){
 	if( localTermInfo.cap ) rbhash_free(localTermInfo.cap);
 	if( localTermInfo.dbname ) free(localTermInfo.dbname);
+	if( localTermInfo.caupcake ) trie_free(localTermInfo.caupcake);
 	localTermInfo.cap = NULL;
 	localTermInfo.dbname = NULL;
 }
@@ -553,6 +553,55 @@ err_t term_load(char* path, const char* dbname){
 	if( term_database_strings_ex(&localTermInfo, &db, fd, sfd) ) return -1;
 
 	return 0;
+}
+
+/*
+void dbg_unescape(char* name, char* esc){
+	char es[1024];
+	char* p = es;
+	while(*esc){
+		if( *esc >= ' ' && *esc < 127 ){
+			*p++=*esc++;
+		}
+		else{
+			*p++='^';
+			++esc;
+		}
+	}
+	*p = 0;
+	dbg_info("^ == not visible char, name:'%s' escape:'%s'", name, es);
+}
+*/
+
+void term_update_key(void){
+	if( localTermInfo.caupcake ){
+		trie_free(localTermInfo.caupcake);
+	}
+	localTermInfo.caupcake = trie_new(free);
+
+	size_t count = lenght_stack_vector(termKeyToStr);
+	for( size_t i = 0; i < count; ++i){
+		//dbg_info("search name:%s", termKeyToStr[i]);
+		tiData_s* tid = rbhash_find(localTermInfo.cap, termKeyToStr[i], strlen(termKeyToStr[i]));
+		if( tid ){
+			kbData_s* kbd = mem_new(kbData_s);
+			kbd->tid = tid;
+			kbd->name = termKeyToStr[i];
+			kbd->id = i;
+
+			if( trie_insert(localTermInfo.caupcake, kbd->tid->str, kbd) ){
+				dbg_error("insert %s in trie", termKeyToStr[i]);
+				free(kbd);
+			}
+			else{
+				//dbg_info("inserted:%s",kbd->name);
+				//dbg_unescape(kbd->name, kbd->tid->str);
+			}
+		}
+		else{
+			dbg_warning("cupcake %s not exists", termKeyToStr[i]);
+		}
+	}
 }
 
 typedef struct tstack{

@@ -6,5 +6,9 @@
 #include <ef/termcapstr.h>
 #include <ef/termlink.h>
 #include <ef/termmode.h>
+#include <ef/terminput.h>
+
+
+
 
 #endif 

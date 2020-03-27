@@ -1,4 +1,7 @@
 #include <ef/termmode.h>
+#include <ef/file.h>
+#include <ef/err.h>
+#include <fcntl.h>
 
 __private termios_s previusSession;
 
@@ -21,3 +24,28 @@ void term_raw_enable(void){
 void term_raw_disable(void){
 	term_settings_set(&previusSession);
 }
+
+err_t term_winsize_get(winsize_s* ws){
+	const char* pts;
+	__fd_close int fd = -1;
+
+    if( !(pts = ttyname(STDIN_FILENO)) || !(pts = ttyname(STDOUT_FILENO)) ){
+		err_push("can't get tty name");
+		return -1;
+	}
+
+	dbg_info("use tty %s", pts);
+    while( (fd = open(pts, O_RDWR | O_NOCTTY, 0)) == -1 && errno == EINTR);
+    if( fd == -1){
+		err_pushno("open tty %s", pts);
+		return -1;
+	}
+
+	if( ioctl(fd, TIOCGWINSZ, ws) == -1 ){
+		err_pushno("ioctl tiocswinsz");
+        return -1;
+	}
+
+	return 0;
+}
+

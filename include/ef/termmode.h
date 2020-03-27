@@ -29,6 +29,7 @@ void term_raw_enable(void);
 /** exit from raw mode */
 void term_raw_disable(void);
 
-
+/** read winsize struct*/
+err_t term_winsize_get(winsize_s* ws);
 
 #endif 

@@ -18,6 +18,7 @@ void test_term(__unused const char* argA, __unused const char* argB){
 		dbg_error("ops");
 		err_print();
 	}
+	term_update_key();
 
 	term_ca_mode(1);
 	term_gotorc(0,0);
@@ -38,7 +39,7 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	}
 	printf("y:%d, x:%d\n", y, x);
 	puts("next try in raw mode");
-	delay_ms(3000);
+	delay_ms(1000);
 	term_clear(TERM_CLEAR);
 	term_raw_enable();
 	printf("raw mode, goto to x=4 y=3");
@@ -49,11 +50,8 @@ void test_term(__unused const char* argA, __unused const char* argB){
 		err_fail("cursor position");
 	}
 	printf("y:%d, x:%d\n", y, x);
-	delay_ms(3000);
+	delay_ms(1000);
 	term_raw_disable();
-
-
-
 
 	term_color16_bk(TERM_COLOR_WHYTE);
 	term_color16_fg(TERM_COLOR_BLACK);
@@ -88,10 +86,39 @@ void test_term(__unused const char* argA, __unused const char* argB){
 		term_print("\n");		
 	}
 
+	puts("");
+	term_screen_size_enable();
+	term_input_enable();
+		
+	term_print("insert: ");
+	term_flush();
+
+	utf8_t inp[80] = {0};
+	utf8_t* ins = inp;
+	*ins = 0;
+	termKey_s key;
+
+	while( (key=term_input_extend()).ch ){
+		if( key.ch == '\n' ) break;
+		utf_putch(ins, key.ch);
+		//printf("%s",ins);
+		utf_t prev;
+		ins = (utf8_t*)utf_next(&prev, ins);
+		utf8_fputchar(stdout, prev);
+		term_flush();
+	}
+	utf_putch(ins, 0);
+	puts("");
+	
+	if( key.escape ){
+		printf("escape  :%d\n", key.escape);
+	}
+	if( inp[0] ){
+		printf("inserted:'%s'\n", inp);
+	}
+
+	term_input_disable();
 	//term_escapef("term_move", 50,50);
-
-
-
 
 	term_end();
 	err_restore();

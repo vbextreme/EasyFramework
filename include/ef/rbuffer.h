@@ -57,7 +57,7 @@ err_t rbuffer_write(rbuffer_s* cb, void* data);
 /** read data
  * @param cb ring buffer
  * @param out out data with same size of rbuffer element
- * @return 0 ok -1 for error
+ * @return 0 ok, -1 for error or not have data to read
  */
 err_t rbuffer_read(rbuffer_s* cb, void* out);
 
@@ -102,5 +102,8 @@ void* rbuffer_addr_r(rbuffer_s* cb);
 
 /** get address of w*/
 void* rbuffer_addr_w(rbuffer_s* cb);
+
+/** clear buffer */
+void rbuffer_clear(rbuffer_s* cb);
 
 #endif 

@@ -109,11 +109,12 @@ err_t trie_insert(trie_s* trie, const char* str, void* data){
 	return 0;
 }
 
-trieStep_e trie_step(void** out, trieElement_s** el, char ch){
+trieStep_e trie_step(void* out, trieElement_s** el, char ch){
 	int chs = trie_search_charset((*el)->charset, ch);
 	if( chs < 0 ) return TRIE_STEP_ERROR;
 	trieStep_e ret = (*el)->endnode[chs] ? TRIE_STEP_END_NODE: TRIE_STEP_NEXT;
-	*out = (*el)->endnode[chs];
+	void** rout = (void**)out;
+	*rout = (*el)->endnode[chs];
 	*el = &(*el)->next[chs];
 	return ret;
 }

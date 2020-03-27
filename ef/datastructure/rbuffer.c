@@ -138,3 +138,7 @@ void* rbuffer_addr_r(rbuffer_s* cb){
 void* rbuffer_addr_w(rbuffer_s* cb){
 	return ADDR(cb->element) + cb->r * cb->sof;
 }
+
+void rbuffer_clear(rbuffer_s* cb){
+	cb->w = cb->r;	
+}
