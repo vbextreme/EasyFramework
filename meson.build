@@ -73,6 +73,7 @@ src += [ 'ef/www/oauth.c' ]
 
 src += [ 'ef/term/terminfo.c' ]
 src += [ 'ef/term/termlink.c' ]
+src += [ 'ef/term/pty.c' ]
 
 
 ##################
