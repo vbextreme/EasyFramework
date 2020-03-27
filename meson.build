@@ -57,6 +57,7 @@ src += [ 'ef/os/sys.c' ]
 src += [ 'ef/os/spawn.c' ]
 src += [ 'ef/os/inutility.c' ]
 src += [ 'ef/os/vectorization.c' ]
+src += [ 'ef/os/signal.c' ]
 
 src += [ 'ef/concurrency/threads.c' ]
 src += [ 'ef/concurrency/promise.c' ]
