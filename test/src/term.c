@@ -9,17 +9,32 @@
 void test_term(__unused const char* argA, __unused const char* argB){
 	err_enable();
 	term_begin();
+	//term_screen_size_enable();
+	//term_input_enable();
+		
 	__mem_free char* lcex = path_resolve("../../build/" TERM_EF_EXTEND);
+	printf("../../build::%s\n",lcex);
+exit(1);	
 	if( term_load(NULL, term_name()) ){
-		dbg_error("ops");
+		dbg_error("ops load default term");
 		err_print();
+		exit(1);
 	}
 	if( term_load(lcex, term_name_ef()) ){
-		dbg_error("ops");
+		dbg_error("ops load ef term");
 		err_print();
+		exit(1);
 	}
 	term_update_key();
 
+
+	termReadLine_s* rl = term_readline_new(U8("inp: "), -1, -1, -1, -1);
+	term_readline_puts(rl, U8("hello"));
+	term_readline_draw(rl);
+	term_flush();
+
+
+/*
 	term_ca_mode(1);
 	term_gotorc(0,0);
 	puts("hello");
@@ -39,6 +54,7 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	}
 	printf("y:%d, x:%d\n", y, x);
 	puts("next try in raw mode");
+	term_flush();
 	delay_ms(1000);
 	term_clear(TERM_CLEAR);
 	term_raw_enable();
@@ -87,9 +103,7 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	}
 
 	puts("");
-	term_screen_size_enable();
-	term_input_enable();
-		
+	
 	term_print("insert: ");
 	term_flush();
 
@@ -116,10 +130,11 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	if( inp[0] ){
 		printf("inserted:'%s'\n", inp);
 	}
-
-	term_input_disable();
 	//term_escapef("term_move", 50,50);
 
+*/
+
+	term_input_disable();
 	term_end();
 	err_restore();
 }

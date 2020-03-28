@@ -70,6 +70,7 @@ err_t path_home(char* path){
 }
 
 char* path_resolve(const char* path){
+	//dbg_info("get path:%s",path);
 	char cur[PATH_MAX];
 	char out[PATH_MAX];
 

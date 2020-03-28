@@ -112,12 +112,15 @@ endif
 ##########################
 curpath = meson.source_root()
 efpath = run_command('meson.bash', 'dirname', curpath).stdout().strip().split('\n')
-efpath = join_paths(efpath, 'build')
+
 
 if get_option('efdbg') > 0
+  efpath = join_paths(efpath, 'build-dbg')
   ef_dep = cc.find_library('ef', dirs: efpath, required: true)
   message('use ef debug')
+  message(efpath)
 else
+  efpath = join_paths(efpath, 'build')
   ef_dep = cc.find_library('ef', dirs: efpath, required: true)
 endif
 libDeps = [ ef_dep ]

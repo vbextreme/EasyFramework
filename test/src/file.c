@@ -52,14 +52,15 @@ void test_file(const char* argA, __unused const char* argB){
 	config_parse(tr, sm);
 
 	const char* testpath[] = {
-		"../",
-		"../../hello",
 		"./",
+		"./home",
+		"../",
+		"../yessa",
+		"../../",
+		"../../hello",
 		"~/",
 		"/home",
 		"home/hello",
-		"./home",
-		"../yessa",
 		"home/./help",
 		"home/../ok",
 		"home/ji/../run",
