@@ -77,7 +77,7 @@ src += [ 'ef/term/termlink.c' ]
 src += [ 'ef/term/pty.c' ]
 src += [ 'ef/term/termmode.c' ]
 src += [ 'ef/term/terminput.c' ]
-
+src += [ 'ef/term/termreadline.c' ]
 
 ##################
 # compiler flags #

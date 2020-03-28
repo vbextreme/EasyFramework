@@ -57,5 +57,21 @@ const utf8_t* term_readline_str_raw(termReadLine_s* rl);
 
 const utf8_t* term_readline_str_raw(termReadLine_s* rl);
 
+void term_readline_put(termReadLine_s* rl, utf_t utf);
+
+void term_readline_puts(termReadLine_s* rl, utf8_t* str);
+
+void term_readline_del(termReadLine_s* rl);
+
+void term_readline_backspace(termReadLine_s* rl);
+
+void term_readline_cursor_next(termReadLine_s* rl);
+
+void term_readline_cursor_prev(termReadLine_s* rl);
+
+void term_readline_cursor_end(termReadLine_s* rl);
+
+void term_readline_cursor_home(termReadLine_s* rl);
+
 
 #endif 
