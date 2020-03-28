@@ -128,14 +128,14 @@ char* path_resolve(const char* path){
 			if( *(parse+1) == '.' ){
 				if( *(parse+2) == 0 ){
 					*pout = 0;
-					path_kill_back(pout);
+					path_kill_back(pout-1);
 					pout = out + strlen(out);
 					parse += 2;
 					continue;
 				}
 				if ( *(parse+2) == '/' ){
 					*pout = 0;
-					path_kill_back(pout);
+					path_kill_back(pout-1);
 					pout = out + strlen(out);
 					parse += 2;
 					continue;
