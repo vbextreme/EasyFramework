@@ -56,9 +56,6 @@ __private FILE* term_database_open(const char* path, const char* dbname){
 		fname[nf++] = '/';
 		memcpy(&fname[nf], dbname, dbnlen+1);
 	}
-	else{
-		strcpy(fname, path);
-	}
 	
 	dbg_info("term file: '%s'", fname);
 	FILE* ret = fopen( fname, "r");
@@ -499,7 +496,7 @@ __private err_t term_database_strings_ex(termInfo_s* ti, tidatabase_s* db, FILE*
 			dbg_info("str %s = %s", name, term_escape_str(tmpdbg,tid->str));
 		}
 
-		len = term_escape_askey(tmp, tid->str);
+		//len = term_escape_askey(tmp, tid->str);
 		//trie_insert(&ti->pac, tmp, keyname);
 	}
 

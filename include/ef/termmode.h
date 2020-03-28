@@ -8,6 +8,12 @@
 typedef struct termios termios_s;
 typedef struct winsize winsize_s;
 
+/** set fullbuffered with buf size (w*h+1)*4 */
+err_t term_buff_same_screen(void);
+
+/** destroy buffer */
+void term_buff_end(void);
+
 /** get termios setting */
 #define term_settings_fdget(FD, PTR_SETTINGS) tcgetattr(FD, PTR_SETTINGS)
 

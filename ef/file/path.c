@@ -126,18 +126,17 @@ char* path_resolve(const char* path){
 			}
 			if( *(parse+1) == '.' ){
 				if( *(parse+2) == 0 ){
-					while( pout > out && *pout != '/') --pout;
-					if( *pout == '/' ) --pout;
-					while( pout > out && *pout != '/') --pout;
+					*pout = 0;
+					path_kill_back(pout);
+					pout = out + strlen(out);
 					parse += 2;
 					continue;
 				}
 				if ( *(parse+2) == '/' ){
-					while( pout > out && *pout != '/') --pout;
-					if( *pout == '/' ) --pout;
-					while( pout > out && *pout != '/') --pout;
-					if( pout != out ) *pout++ ='/';
-					parse += 3;
+					*pout = 0;
+					path_kill_back(pout);
+					pout = out + strlen(out);
+					parse += 2;
 					continue;
 				}
 			}

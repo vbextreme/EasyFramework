@@ -7,7 +7,7 @@
 #include <ef/termlink.h>
 #include <ef/termmode.h>
 #include <ef/terminput.h>
-
+#include <ef/termreadline.h>
 
 
 

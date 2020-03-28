@@ -1,9 +1,33 @@
 #include <ef/termmode.h>
 #include <ef/file.h>
+#include <ef/memory.h>
 #include <ef/err.h>
 #include <fcntl.h>
 
 __private termios_s previusSession;
+
+__private char* hyperbuf;
+
+err_t term_buff_same_screen(void){
+	winsize_s ws;
+	if( term_winsize_get(&ws) ){
+		return -1;
+	}
+	size_t size = (ws.ws_col * ws.ws_row + 1)*4;
+	hyperbuf = mem_many(char, size);
+	if( !hyperbuf ) return -1;
+	if( setvbuf(stdout, hyperbuf, _IOFBF, size) ){
+		err_pushno("setvbuf"); 
+	}
+	dbg_info("new buffer size %lu", size);
+	
+	return 0;
+}
+
+void term_buff_end(void){
+	free(hyperbuf);
+}
+
 
 void term_raw_mode(termios_s* old){
 	term_settings_get(old);
