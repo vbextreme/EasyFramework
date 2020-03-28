@@ -147,6 +147,7 @@ void term_readline_draw(termReadLine_s* rl){
 	rl->position.colLast = c;
 	rl->position.rowLast = r;
 	
+	if( rl->text.str[0] ) ++rl->cursor.col;
 	term_gotorc(rl->cursor.row, rl->cursor.col);
 }
 
@@ -229,6 +230,7 @@ void term_readline_puts(termReadLine_s* rl, utf8_t* str){
 	}
 }
 
+//TODO del need check utf private
 void term_readline_del(termReadLine_s* rl){
 	utf8_iterator_delete(&rl->it);
 }

@@ -17,7 +17,6 @@
 	tvariable_s var[10] = { \
 		[1].type = 0, [1].l = 0,\
    	};\
-	dbg_info("call escape:%s", em->str);\
 	term_escape_make_print(em->str, var)
 
 #define def_cap_val_bool(VAL, CAP_FALSE, CAP_TRUE) static tiData_s* em[2] = {0};\

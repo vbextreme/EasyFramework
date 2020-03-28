@@ -9,28 +9,45 @@
 void test_term(__unused const char* argA, __unused const char* argB){
 	err_enable();
 	term_begin();
-	//term_screen_size_enable();
-	//term_input_enable();
+	term_screen_size_enable();
+	term_input_enable();
 		
 	__mem_free char* lcex = path_resolve("../../build/" TERM_EF_EXTEND);
 	printf("../../build::%s\n",lcex);
-exit(1);	
+
 	if( term_load(NULL, term_name()) ){
 		dbg_error("ops load default term");
 		err_print();
+		term_input_disable();
+		term_end();
 		exit(1);
 	}
 	if( term_load(lcex, term_name_ef()) ){
 		dbg_error("ops load ef term");
 		err_print();
+		term_input_disable();
+		term_end();
 		exit(1);
 	}
 	term_update_key();
 
-
 	termReadLine_s* rl = term_readline_new(U8("inp: "), -1, -1, -1, -1);
-	term_readline_puts(rl, U8("hello"));
 	term_readline_draw(rl);
+	term_flush();
+
+	while(1){
+		termKey_s key = term_input_extend();
+		if( key.ch == 0 && key.escape == 0 ) break;
+		if( key.ch == TERM_INPUT_CHAR_ESC ) break;
+		if( key.ch > 0 ){
+			term_readline_put(rl,key.ch);
+		}
+		term_readline_draw(rl);
+		term_flush();
+	}
+
+	term_readline_free(rl);
+	puts("");
 	term_flush();
 
 

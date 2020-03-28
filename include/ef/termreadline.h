@@ -4,7 +4,6 @@
 #include <ef/type.h>
 #include <ef/utf8.h>
 
-
 typedef struct termRLArea{
 	unsigned col;
 	unsigned row;
