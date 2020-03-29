@@ -88,9 +88,19 @@ __private void term_readline_attribute_print(termReadLine_s* rl, utf_t att){
 	term_print(rl->attribute.value[id]);
 }
 
-__private void term_readline_print(termReadLine_s* rl, utf8_t* str, unsigned* r, unsigned* c){
+__private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsigned* c){
 	utf8Iterator_s it = utf8_iterator(str, 0);
 	utf_t utf;
+
+	while( *r < 0 ){
+		utf_t utf = utf8_iterator_next(&it);
+		if( utf >= TERM_READLINE_PRIVATE_UTF ) continue;
+		++*c;
+		if( utf == '\n' || *c >= rl->position.width ){
+			++*r;
+			*c = rl->position.col;
+		}
+	}
 
 	term_clear(TERM_CLEAR_END_OF_LINE);
 	while( (utf=utf8_iterator_next(&it)) ){
@@ -103,7 +113,7 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, unsigned* r,
 			if( utf == '\n' || *c >= rl->position.width ){
 				++(*r);
 				*c = rl->position.col;
-				if( *r >= rl->position.height ){
+				if( *r >= (int)rl->position.height ){
 					--(*r);
 					--rl->position.row;
 					putchar(' ');
@@ -132,10 +142,11 @@ __private void term_readline_downsize_clear(termReadLine_s* rl, unsigned r, unsi
 	}
 }
 
-__private void term_readline_cursor_update(termReadLine_s* rl, unsigned promptr, unsigned promptc){
-	unsigned r = promptr;
+__private void term_readline_cursor_update(termReadLine_s* rl, int promptr, unsigned promptc){
+	int r = promptr;
 	unsigned c = promptc;
 	utf8Iterator_s it = utf8_iterator(rl->text.str, 0);
+
 	while( rl->it.str != it.str ){
 		utf_t utf = utf8_iterator_next(&it);
 		if( utf >= TERM_READLINE_PRIVATE_UTF ) continue;
@@ -150,14 +161,21 @@ __private void term_readline_cursor_update(termReadLine_s* rl, unsigned promptr,
 }
 
 void term_readline_draw(termReadLine_s* rl){
-	unsigned r = rl->position.row;
+	int r = rl->position.row;
 	unsigned c = rl->position.col;
-	unsigned pr, pc;
-	
-	term_gotorc(r, c);
-	if( rl->prompt.str ) term_readline_print(rl, rl->prompt.str, &r, &c);
-	pr = r;
-	pc = c;
+	int pr;
+	unsigned pc;
+
+	if( r >= 0 ){
+		term_gotorc(r, c);
+		if( rl->prompt.str ) term_readline_print(rl, rl->prompt.str, &r, &c);
+		pr = r;
+		pc = c;
+	}
+	else{
+		pr = r;
+		pc = c;
+	}
 	term_readline_print(rl, rl->text.str, &r, &c);
 
 	term_readline_downsize_clear(rl, r, c);

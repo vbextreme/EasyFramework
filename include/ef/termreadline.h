@@ -10,7 +10,7 @@
 
 typedef struct termRLArea{
 	unsigned col;
-	unsigned row;
+	int row;
 	unsigned width;
 	unsigned height;
 	unsigned rowLast;
