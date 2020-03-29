@@ -10,6 +10,8 @@
 #define TERM_READLINE_PRIVATE_UTF UTF_PRIVATE0_START
 #define TERM_READLINE_ATTRIBUTE_SIZE 80
 
+//TODO empty line collapse when scroll
+
 termReadLine_s* term_readline_new(utf8_t* prompt, int r, int c, int w, int h){
 	termReadLine_s* rl = mem_new(termReadLine_s);
 	if( !rl ){
@@ -112,7 +114,13 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 	if( it.begin == rl->text.str && scrollx){
 		utf_t utf;
 		unsigned offsetx = rl->cursor.scrollcol;
-		while( offsetx>0 && (utf=utf8_iterator_next(&it)) && utf != '\n' ) --offsetx;
+		while( offsetx>0 && (utf=utf8_iterator_next(&it)) && utf != '\n' ){
+			if( utf >= TERM_READLINE_PRIVATE_UTF ){
+				term_readline_attribute_print(rl, utf);
+				continue;
+			}
+			--offsetx;
+		}
 		if( offsetx && !utf ) return;
 		if( offsetx && utf == '\n' ) utf8_iterator_prev(&it);
 	}
@@ -134,10 +142,20 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 					putchar(' ');
 				}
 				if( scrollx ){
-					if( utf != '\n' ) while( (utf=utf8_iterator_next(&it)) && utf != '\n' );
+					if( utf != '\n' ) 
+						while( (utf=utf8_iterator_next(&it)) && utf != '\n' ) 
+							if( utf > TERM_READLINE_PRIVATE_UTF ) 
+								term_readline_attribute_print(rl, utf);
 					if( !utf ) return;
 					unsigned offsetx = rl->cursor.scrollcol;
-					while( offsetx-->0 && (utf=utf8_iterator_next(&it)) && utf != '\n' );
+					while( offsetx > 0 && (utf=utf8_iterator_next(&it)) && utf != '\n' ){
+						if( utf > TERM_READLINE_PRIVATE_UTF ){
+							term_readline_attribute_print(rl, utf);
+							continue;
+						}
+						--offsetx;
+					}
+
 					if( offsetx && !utf ) return;
 				}
 				term_gotorc(*r, *c);
