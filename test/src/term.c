@@ -50,7 +50,9 @@ void test_term(__unused const char* argA, __unused const char* argB){
 
 	term_flush();
 
-	int rlMode = TERM_READLINE_INSERT_MODE;
+	int rlMode = TERM_READLINE_MODE_INSERT | TERM_READLINE_MODE_SCROLL_COL;
+	term_readline_mode(rl, rlMode);
+
 	while(1){
 		termKey_s key = term_input_extend();
 		if( key.ch == 0 && key.escape == 0 ) break;
@@ -73,12 +75,30 @@ void test_term(__unused const char* argA, __unused const char* argB){
 				term_readline_cursor_next(rl);
 			break;
 
+			case TERM_KEY_SHIFT_LEFT:
+				term_readline_cursor_scroll_left(rl);
+			break;
+
+			case TERM_KEY_SHIFT_RIGHT:
+				term_readline_cursor_scroll_right(rl);
+			break;
+
 			case TERM_KEY_FIND:
 				term_readline_cursor_home(rl);
 			break;
 
 			case TERM_KEY_SELECT:
 				term_readline_cursor_end(rl);
+			break;
+
+			case TERM_KEY_F5:
+				if( rlMode & TERM_READLINE_MODE_SCROLL_COL ){
+					rlMode &= ~TERM_READLINE_MODE_SCROLL_COL;
+				}
+				else{
+					rlMode |= TERM_READLINE_MODE_SCROLL_COL;
+				}
+				term_readline_mode(rl, rlMode);
 			break;
 
 			case TERM_KEY_F4:
@@ -94,8 +114,14 @@ void test_term(__unused const char* argA, __unused const char* argB){
 			break;
 
 			case TERM_KEY_IC:
-				if( rlMode & TERM_READLINE_INSERT_MODE ) rlMode = TERM_READLINE_REPLACE_MODE;
-				else if( rlMode & TERM_READLINE_REPLACE_MODE) rlMode = TERM_READLINE_INSERT_MODE;
+				if( rlMode & TERM_READLINE_MODE_INSERT ){
+					rlMode &= ~TERM_READLINE_MODE_INSERT;
+					rlMode |= TERM_READLINE_MODE_REPLACE;
+				}
+				else if( rlMode & TERM_READLINE_MODE_REPLACE){
+					rlMode &= ~TERM_READLINE_MODE_REPLACE;
+				   	rlMode |= TERM_READLINE_MODE_INSERT;
+				}
 				term_readline_mode(rl, rlMode);
 			break;
 

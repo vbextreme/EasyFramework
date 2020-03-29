@@ -4,9 +4,9 @@
 #include <ef/type.h>
 #include <ef/utf8.h>
 
-#define TERM_READLINE_INSERT_MODE  0x0001
-#define TERM_READLINE_REPLACE_MODE 0x0002
-
+#define TERM_READLINE_MODE_INSERT     0x0001
+#define TERM_READLINE_MODE_REPLACE    0x0002
+#define TERM_READLINE_MODE_SCROLL_COL 0x0004
 
 typedef struct termRLArea{
 	unsigned col;
@@ -26,6 +26,7 @@ typedef struct termRLText{
 typedef struct termRLCursor{
 	unsigned row;
 	unsigned col;
+	unsigned scrollcol;
 	unsigned mode;
 }termRLCursor_s;
 
@@ -76,5 +77,8 @@ void term_readline_cursor_end(termReadLine_s* rl);
 
 void term_readline_cursor_home(termReadLine_s* rl);
 
+void term_readline_cursor_scroll_left(termReadLine_s* rl);
+
+void term_readline_cursor_scroll_right(termReadLine_s* rl);
 
 #endif 

@@ -55,8 +55,9 @@ termReadLine_s* term_readline_new(utf8_t* prompt, int r, int c, int w, int h){
 	
 	rl->cursor.col = rl->position.col + rl->prompt.len;
 	rl->cursor.row = rl->position.row;
-	rl->cursor.mode = TERM_READLINE_INSERT_MODE;
-	
+	rl->cursor.mode = TERM_READLINE_MODE_INSERT;
+	rl->cursor.scrollcol = 0;
+
 	rl->attribute.size = TERM_READLINE_ATTRIBUTE_SIZE;
 	rl->attribute.value = mem_many(char*, rl->attribute.size);
 	if( !rl->attribute.value ){
@@ -88,18 +89,41 @@ __private void term_readline_attribute_print(termReadLine_s* rl, utf_t att){
 	term_print(rl->attribute.value[id]);
 }
 
+/*
+__private size_t term_readline_line_width(utf8Iterator_s it){
+	size_t width = 0;
+	utf_t u;
+	while( (u=utf8_iterator_next(&it)) && u != '\n') ++width;
+	return width;
+}
+*/
+
 __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsigned* c){
+	const unsigned scrollx = rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL;
+
 	utf8Iterator_s it = utf8_iterator(str, 0);
 	utf_t utf;
 
 	while( *r < 0 ){
 		utf_t utf = utf8_iterator_next(&it);
-		if( utf >= TERM_READLINE_PRIVATE_UTF ) continue;
+		if( utf == 0 ) return;
+		if( utf >= TERM_READLINE_PRIVATE_UTF ){
+			term_readline_attribute_print(rl, utf);
+			continue;
+		}
 		++*c;
-		if( utf == '\n' || *c >= rl->position.width ){
+		if( utf == '\n' || (!scrollx && *c >= rl->position.width) ){
 			++*r;
 			*c = rl->position.col;
 		}
+	}
+
+	if( it.begin == rl->text.str && scrollx){
+		utf_t utf;
+		unsigned offsetx = rl->cursor.scrollcol;
+		while( offsetx>0 && (utf=utf8_iterator_next(&it)) && utf != '\n' ) --offsetx;
+		if( offsetx && !utf ) return;
+		if( offsetx && utf == '\n' ) utf8_iterator_prev(&it);
 	}
 
 	term_clear(TERM_CLEAR_END_OF_LINE);
@@ -117,6 +141,13 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 					--(*r);
 					--rl->position.row;
 					putchar(' ');
+				}
+				if( scrollx ){
+					if( utf != '\n' ) while( (utf=utf8_iterator_next(&it)) && utf != '\n' );
+					if( !utf ) return;
+					unsigned offsetx = rl->cursor.scrollcol;
+					while( offsetx-->0 && (utf=utf8_iterator_next(&it)) && utf != '\n' );
+					if( offsetx && !utf ) return;
 				}
 				term_gotorc(*r, *c);
 				term_clear(TERM_CLEAR_END_OF_LINE);
@@ -143,17 +174,54 @@ __private void term_readline_downsize_clear(termReadLine_s* rl, unsigned r, unsi
 }
 
 __private void term_readline_cursor_update(termReadLine_s* rl, int promptr, unsigned promptc){
+	const unsigned scrollx = rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL;
 	int r = promptr;
 	unsigned c = promptc;
 	utf8Iterator_s it = utf8_iterator(rl->text.str, 0);
 
+	if( scrollx ){//&& promptr == rl->position.row /*&& promptc == rl->position.col*/){
+		utf_t utf;
+		unsigned offsetx = rl->cursor.scrollcol;
+		while( offsetx > 0 && (utf=utf8_iterator_next(&it)) && utf != '\n' ) --offsetx;
+		if( offsetx && !utf ){
+			rl->cursor.col = c;
+			rl->cursor.row = r;
+			return;
+		}
+		else if( offsetx && utf == '\n' ){
+			//++r;
+			//c = rl->position.col;
+			utf8_iterator_prev(&it);
+		}
+	}
+
 	while( rl->it.str != it.str ){
 		utf_t utf = utf8_iterator_next(&it);
+		if( !utf ){
+			rl->cursor.col = c;
+			rl->cursor.row = r;
+			return;
+		}	
 		if( utf >= TERM_READLINE_PRIVATE_UTF ) continue;
 		++c;
 		if( utf == '\n' || c >= rl->position.width ){
 			++r;
 			c = rl->position.col;
+			if( scrollx ){
+				if( utf != '\n' ) while( (utf=utf8_iterator_next(&it)) && utf != '\n' );
+				if( !utf ){
+					rl->cursor.col = c;
+					rl->cursor.row = r;
+					return;
+				}
+				unsigned offsetx = rl->cursor.scrollcol;
+				while( offsetx-->0 && (utf=utf8_iterator_next(&it)) && utf != '\n');
+				if( offsetx && !utf ){
+					rl->cursor.col = c;
+					rl->cursor.row = r;
+					return;
+				}
+			}
 		}
 	}
 	rl->cursor.col = c;
@@ -251,11 +319,11 @@ void term_readline_put(termReadLine_s* rl, utf_t utf){
 		rl->it.begin = rl->text.str;
 		rl->it.str =  rl->it.begin + offset;
 	}
-	if( rl->cursor.mode & TERM_READLINE_INSERT_MODE ){
+	if( rl->cursor.mode & TERM_READLINE_MODE_INSERT ){
 		dbg_info("insert 0x%X", utf);
 		utf8_iterator_insert(&rl->it, utf);
 	}
-	else if( rl->cursor.mode & TERM_READLINE_REPLACE_MODE ){
+	else if( rl->cursor.mode & TERM_READLINE_MODE_REPLACE ){
 		dbg_info("replace 0x%X", utf);
 		utf8_iterator_replace(&rl->it, utf);
 	}
@@ -310,3 +378,11 @@ void term_readline_cursor_home(termReadLine_s* rl){
 	while( utf8_iterator_prev(&rl->it) );
 }
 
+void term_readline_cursor_scroll_left(termReadLine_s* rl){
+	if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL && rl->cursor.scrollcol > 0 ) rl->cursor.scrollcol -= 1;
+}
+
+void term_readline_cursor_scroll_right(termReadLine_s* rl){
+	if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL ) ++rl->cursor.scrollcol;
+	dbg_info("cursor.scroll: %u", rl->cursor.scrollcol);
+}
