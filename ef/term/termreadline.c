@@ -356,6 +356,7 @@ void term_readline_put(termReadLine_s* rl, utf_t utf){
 			dbg_info("col:%u scrol:%u width:%u",rl->cursor.col, rl->cursor.scrollcol, rl->position.width);
 			if( rl->cursor.col + rl->cursor.scrollcol + 1 > rl->position.width - 1 ){
 				rl->cursor.scrollcol =  (rl->cursor.col + rl->cursor.scrollcol + 1) - rl->position.width;
+				dbg_info("new position:%u", rl->cursor.scrollcol);
 			}
 		}
 	}
