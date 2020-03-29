@@ -89,15 +89,6 @@ __private void term_readline_attribute_print(termReadLine_s* rl, utf_t att){
 	term_print(rl->attribute.value[id]);
 }
 
-/*
-__private size_t term_readline_line_width(utf8Iterator_s it){
-	size_t width = 0;
-	utf_t u;
-	while( (u=utf8_iterator_next(&it)) && u != '\n') ++width;
-	return width;
-}
-*/
-
 __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsigned* c){
 	const unsigned scrollx = rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL;
 
@@ -179,7 +170,7 @@ __private void term_readline_cursor_update(termReadLine_s* rl, int promptr, unsi
 	unsigned c = promptc;
 	utf8Iterator_s it = utf8_iterator(rl->text.str, 0);
 
-	if( scrollx ){//&& promptr == rl->position.row /*&& promptc == rl->position.col*/){
+	if( scrollx ){
 		utf_t utf;
 		unsigned offsetx = rl->cursor.scrollcol;
 		while( offsetx > 0 && (utf=utf8_iterator_next(&it)) && utf != '\n' ) --offsetx;
@@ -189,8 +180,6 @@ __private void term_readline_cursor_update(termReadLine_s* rl, int promptr, unsi
 			return;
 		}
 		else if( offsetx && utf == '\n' ){
-			//++r;
-			//c = rl->position.col;
 			utf8_iterator_prev(&it);
 		}
 	}
