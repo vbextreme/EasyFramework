@@ -10,8 +10,6 @@
 #define TERM_READLINE_PRIVATE_UTF UTF_PRIVATE0_START
 #define TERM_READLINE_ATTRIBUTE_SIZE 80
 
-//TODO empty line collapse when scroll
-
 termReadLine_s* term_readline_new(utf8_t* prompt, int r, int c, int w, int h){
 	termReadLine_s* rl = mem_new(termReadLine_s);
 	if( !rl ){
@@ -142,10 +140,13 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 					putchar(' ');
 				}
 				if( scrollx ){
-					if( utf != '\n' ) 
-						while( (utf=utf8_iterator_next(&it)) && utf != '\n' ) 
-							if( utf > TERM_READLINE_PRIVATE_UTF ) 
+					if( utf != '\n' ){ 
+						while( (utf=utf8_iterator_next(&it)) && utf != '\n' ) {
+							if( utf > TERM_READLINE_PRIVATE_UTF ){
 								term_readline_attribute_print(rl, utf);
+							}
+						}
+					}
 					if( !utf ) return;
 					unsigned offsetx = rl->cursor.scrollcol;
 					while( offsetx > 0 && (utf=utf8_iterator_next(&it)) && utf != '\n' ){
@@ -155,8 +156,8 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 						}
 						--offsetx;
 					}
-
 					if( offsetx && !utf ) return;
+					if( offsetx && utf == '\n' ) utf8_iterator_prev(&it);
 				}
 				term_gotorc(*r, *c);
 				term_clear(TERM_CLEAR_END_OF_LINE);
@@ -193,6 +194,7 @@ __private void term_readline_cursor_update(termReadLine_s* rl, int promptr, unsi
 		unsigned offsetx = rl->cursor.scrollcol;
 		while( offsetx > 0 && (utf=utf8_iterator_next(&it)) && utf != '\n' ) --offsetx;
 		if( offsetx && !utf ){
+			dbg_warning("A");
 			rl->cursor.col = c;
 			rl->cursor.row = r;
 			return;
@@ -205,30 +207,38 @@ __private void term_readline_cursor_update(termReadLine_s* rl, int promptr, unsi
 	while( rl->it.str != it.str ){
 		utf_t utf = utf8_iterator_next(&it);
 		if( !utf ){
-			rl->cursor.col = c;
-			rl->cursor.row = r;
+			dbg_warning("B");
+			//rl->cursor.col = c;
+			//rl->cursor.row = r;
 			return;
 		}	
 		if( utf >= TERM_READLINE_PRIVATE_UTF ) continue;
 		++c;
 		if( utf == '\n' || c >= rl->position.width ){
-			++r;
 			c = rl->position.col;
 			if( scrollx ){
 				if( utf != '\n' ) while( (utf=utf8_iterator_next(&it)) && utf != '\n' );
 				if( !utf ){
-					rl->cursor.col = c;
-					rl->cursor.row = r;
+					dbg_warning("C");
+					//rl->cursor.col = c;
+					//rl->cursor.row = r;
 					return;
 				}
 				unsigned offsetx = rl->cursor.scrollcol;
-				while( offsetx-->0 && (utf=utf8_iterator_next(&it)) && utf != '\n');
+				while( offsetx > 0 && (utf=utf8_iterator_next(&it)) && utf != '\n'){
+					--offsetx;
+				}
 				if( offsetx && !utf ){
-					rl->cursor.col = c;
-					rl->cursor.row = r;
+					dbg_warning("D");
+					//rl->cursor.col = c;
+					//rl->cursor.row = r;
 					return;
 				}
+				else if( offsetx && utf == '\n' ){
+					utf8_iterator_prev(&it);
+				}
 			}
+			++r;
 		}
 	}
 	rl->cursor.col = c;
@@ -316,6 +326,18 @@ void term_readline_prompt_change(termReadLine_s* rl, utf8_t* prompt){
 	rl->prompt.len = prompt ? utf_width(prompt) : 0;
 }
 
+/*
+__private size_t term_readline_line_width(termReadLine_s* rl){
+	utf8Iterator_s it = rl->it;
+	size_t width = 0;
+	utf_t utf;
+	while( (utf=utf8_iterator_prev(&it)) && utf != '\n' ) ++width;
+	it = rl->it;
+	while( (utf=utf8_iterator_next(&it)) && utf != '\n' ) ++width;
+	return width ? width - 1 : 0;
+}
+*/
+
 void term_readline_put(termReadLine_s* rl, utf_t utf){
 	if( rl->it.str - rl->it.begin + 4 >= (long)rl->text.size - 1 ){
 		rl->text.size += rl->position.width + 5;
@@ -329,6 +351,13 @@ void term_readline_put(termReadLine_s* rl, utf_t utf){
 	if( rl->cursor.mode & TERM_READLINE_MODE_INSERT ){
 		dbg_info("insert 0x%X", utf);
 		utf8_iterator_insert(&rl->it, utf);
+		if( rl->cursor.mode & TERM_READLINE_MODE_AUTOSCROLL_COL ){
+			//size_t width = term_readline_line_width(rl);
+			dbg_info("col:%u scrol:%u width:%u",rl->cursor.col, rl->cursor.scrollcol, rl->position.width);
+			if( rl->cursor.col + rl->cursor.scrollcol + 1 > rl->position.width - 1 ){
+				rl->cursor.scrollcol =  (rl->cursor.col + rl->cursor.scrollcol + 1) - rl->position.width;
+			}
+		}
 	}
 	else if( rl->cursor.mode & TERM_READLINE_MODE_REPLACE ){
 		dbg_info("replace 0x%X", utf);

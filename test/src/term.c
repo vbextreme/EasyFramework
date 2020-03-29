@@ -50,7 +50,7 @@ void test_term(__unused const char* argA, __unused const char* argB){
 
 	term_flush();
 
-	int rlMode = TERM_READLINE_MODE_INSERT | TERM_READLINE_MODE_SCROLL_COL;
+	int rlMode = TERM_READLINE_MODE_INSERT | TERM_READLINE_MODE_SCROLL_COL;// | TERM_READLINE_MODE_AUTOSCROLL_COL;
 	term_readline_mode(rl, rlMode);
 
 	while(1){
