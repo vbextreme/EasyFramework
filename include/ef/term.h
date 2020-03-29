@@ -8,7 +8,7 @@
 #include <ef/termmode.h>
 #include <ef/terminput.h>
 #include <ef/termreadline.h>
-
+#include <ef/termkey.h>
 
 
 #endif 

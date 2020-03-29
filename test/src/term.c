@@ -30,17 +30,80 @@ void test_term(__unused const char* argA, __unused const char* argB){
 		exit(1);
 	}
 	term_update_key();
+	term_flush();
+	
 
 	termReadLine_s* rl = term_readline_new(U8("inp: "), -1, -1, -1, -1);
 	term_readline_draw(rl);
+	
+	char escColRes[256];
+	char escColLGreen[256];
+	char escColLRed[256];
+
+	term_escapemk(escColRes, "color_reset");
+	term_escapemk(escColLGreen, "color16_fg", TERM_COLOR_LIGHT_GREEN);
+	term_escapemk(escColLRed, "color16_fg", TERM_COLOR_LIGHT_RED);
+	utf_t ecolreset = term_readline_attribute_new(rl, escColRes);
+	utf_t ecolgreen = term_readline_attribute_new(rl, escColLGreen);
+	utf_t ecolred   = term_readline_attribute_new(rl, escColLRed);
+
+
 	term_flush();
 
+	int rlMode = TERM_READLINE_INSERT_MODE;
 	while(1){
 		termKey_s key = term_input_extend();
 		if( key.ch == 0 && key.escape == 0 ) break;
 		if( key.ch == TERM_INPUT_CHAR_ESC ) break;
-		if( key.ch > 0 ){
-			term_readline_put(rl,key.ch);
+		dbg_info("ch:%d es:%d", key.ch, key.escape);
+		switch( key.escape ){
+			case TERM_KEY_BACKSPACE:
+				term_readline_backspace(rl);
+			break;
+
+			case TERM_KEY_DC:
+				term_readline_del(rl);
+			break;
+
+			case TERM_KEY_LEFT:
+				term_readline_cursor_prev(rl);
+			break;
+
+			case TERM_KEY_RIGHT:
+				term_readline_cursor_next(rl);
+			break;
+
+			case TERM_KEY_FIND:
+				term_readline_cursor_home(rl);
+			break;
+
+			case TERM_KEY_SELECT:
+				term_readline_cursor_end(rl);
+			break;
+
+			case TERM_KEY_F4:
+				term_readline_put(rl,ecolred);
+			break;
+	
+			case TERM_KEY_F3:
+				term_readline_put(rl,ecolgreen);
+			break;
+			
+			case TERM_KEY_F2:
+				term_readline_put(rl, ecolreset);
+			break;
+
+			case TERM_KEY_IC:
+				if( rlMode & TERM_READLINE_INSERT_MODE ) rlMode = TERM_READLINE_REPLACE_MODE;
+				else if( rlMode & TERM_READLINE_REPLACE_MODE) rlMode = TERM_READLINE_INSERT_MODE;
+				term_readline_mode(rl, rlMode);
+			break;
+
+			case 0:
+				if( key.ch ){
+					term_readline_put(rl,key.ch);
+				}
+			break;
 		}
 		term_readline_draw(rl);
 		term_flush();

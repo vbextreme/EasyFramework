@@ -18,6 +18,7 @@ includeDir = include_directories(['../include'])
 
 src = [ 'src/main.c', 'src/data.c' ]
 #@src
+src += [ 'src/code.c' ]
 src += [ 'src/err.c' ]
 src += [ 'src/file.c' ]
 src += [ 'src/ftp.c' ]

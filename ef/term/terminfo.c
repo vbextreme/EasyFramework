@@ -575,7 +575,11 @@ void term_update_key(void){
 		trie_free(localTermInfo.caupcake);
 	}
 	localTermInfo.caupcake = trie_new(free);
+	if( !localTermInfo.caupcake ){
+		err_fail("eom");
+	}
 
+	err_disable();
 	size_t count = lenght_stack_vector(termKeyToStr);
 	for( size_t i = 0; i < count; ++i){
 		//dbg_info("search name:%s", termKeyToStr[i]);
@@ -599,6 +603,7 @@ void term_update_key(void){
 			dbg_warning("cupcake %s not exists", termKeyToStr[i]);
 		}
 	}
+	err_restore();
 }
 
 typedef struct tstack{

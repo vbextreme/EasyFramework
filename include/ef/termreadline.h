@@ -4,6 +4,10 @@
 #include <ef/type.h>
 #include <ef/utf8.h>
 
+#define TERM_READLINE_INSERT_MODE  0x0001
+#define TERM_READLINE_REPLACE_MODE 0x0002
+
+
 typedef struct termRLArea{
 	unsigned col;
 	unsigned row;

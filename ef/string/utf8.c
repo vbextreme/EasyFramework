@@ -1,5 +1,6 @@
 #include <ef/type.h>
 #include <ef/utf8.h>
+#include <ef/str.h>
 #include <ef/memory.h>
 #include <ef/err.h>
 
@@ -178,12 +179,13 @@ void utf8_iterator_replace_str(utf8Iterator_s* it, utf8_t* str, size_t width){
 }
 
 void utf8_iterator_insert(utf8Iterator_s* it, utf_t ch){
-	utf8Iterator_s lc = *it;
+	__mem_free utf8_t* temp = (utf8_t*)str_dup((char*)it->str, 0);
+	utf8Iterator_s lc = utf8_iterator(temp, 0);
 	utf8Iterator_s bk = *it;
 	while( ch != 0 ){
 		utf_t mem = utf8_iterator_next(&lc);
 		utf8_iterator_replace(&bk,ch);
-		dbg_info("mem:%c ch:(%d)%c",mem,ch,ch);
+		//dbg_info("mem:%c ch:(%d)%c",mem,ch,ch);
 		ch = mem;
 	}
 	utf8_iterator_next(it);
