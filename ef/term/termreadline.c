@@ -92,6 +92,7 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, unsigned* r,
 	utf8Iterator_s it = utf8_iterator(str, 0);
 	utf_t utf;
 
+	term_clear(TERM_CLEAR_END_OF_LINE);
 	while( (utf=utf8_iterator_next(&it)) ){
 		if( utf > TERM_READLINE_PRIVATE_UTF ){
 			term_readline_attribute_print(rl, utf);
@@ -99,7 +100,7 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, unsigned* r,
 		else{
 			utf8_fputchar(stdout, utf);
 			++(*c);
-			if( *c >= rl->position.width ){
+			if( utf == '\n' || *c >= rl->position.width ){
 				++(*r);
 				*c = rl->position.col;
 				if( *r >= rl->position.height ){
@@ -108,6 +109,7 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, unsigned* r,
 					putchar(' ');
 				}
 				term_gotorc(*r, *c);
+				term_clear(TERM_CLEAR_END_OF_LINE);
 			}
 		}
 	}
@@ -138,7 +140,7 @@ __private void term_readline_cursor_update(termReadLine_s* rl, unsigned promptr,
 		utf_t utf = utf8_iterator_next(&it);
 		if( utf >= TERM_READLINE_PRIVATE_UTF ) continue;
 		++c;
-		if( c >= rl->position.width ){
+		if( utf == '\n' || c >= rl->position.width ){
 			++r;
 			c = rl->position.col;
 		}
