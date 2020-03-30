@@ -362,9 +362,14 @@ void term_readline_put(termReadLine_s* rl, utf_t utf){
 	}
 
 	if( rl->cursor.mode & TERM_READLINE_MODE_AUTOSCROLL_COL ){
-		int lw = term_readline_line_left_width(rl);
-		if( lw - (int)rl->cursor.scrollcol >= (int)rl->position.width ){
-			++rl->cursor.scrollcol;
+		if( utf == '\n' ){
+			rl->cursor.scrollcol = 0;
+		}
+		else{
+			int lw = term_readline_line_left_width(rl);
+			if( lw - (int)rl->cursor.scrollcol >= (int)rl->position.width ){
+				++rl->cursor.scrollcol;
+			}
 		}
 	}
 }
@@ -457,6 +462,22 @@ void term_readline_cursor_up(termReadLine_s* rl){
 		if( utf == '\n' ){
 			int cl = (int)term_readline_line_left_width(rl) - (int)rl->cursor.scrollcol;
 			wid = cl - col;
+		}
+		else{
+			--wid;
+		}
+	}		
+}
+
+void term_readline_cursor_down(termReadLine_s* rl){
+	int col = (int)term_readline_line_left_width(rl) - (int)rl->cursor.scrollcol;
+	int wid = rl->position.width;
+	utf_t utf;
+	while( wid > 0 && (utf=utf8_iterator_next(&rl->it)) ){
+		if( utf >= TERM_READLINE_PRIVATE_UTF ) continue;
+		if( utf == '\n' ){
+			int cl = (int)term_readline_line_left_width(rl) - (int)rl->cursor.scrollcol;
+			wid = col - cl;
 		}
 		else{
 			--wid;

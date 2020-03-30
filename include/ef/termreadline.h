@@ -89,4 +89,6 @@ void term_readline_cursor_scroll_right(termReadLine_s* rl);
 
 void term_readline_cursor_up(termReadLine_s* rl);
 
+void term_readline_cursor_down(termReadLine_s* rl);
+
 #endif 

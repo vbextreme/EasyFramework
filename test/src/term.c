@@ -33,7 +33,7 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	term_flush();
 	
 
-	termReadLine_s* rl = term_readline_new(U8("inp: "), -1, -1, -1, -1);
+	termReadLine_s* rl = term_readline_new(U8("inp: "), -1, -1, 12, -1);
 	term_readline_draw(rl);
 	
 	char escColRes[256];
@@ -50,7 +50,7 @@ void test_term(__unused const char* argA, __unused const char* argB){
 
 	term_flush();
 
-	int rlMode = TERM_READLINE_MODE_INSERT;// | TERM_READLINE_MODE_SCROLL_COL | TERM_READLINE_MODE_AUTOSCROLL_COL;
+	int rlMode = TERM_READLINE_MODE_INSERT | TERM_READLINE_MODE_SCROLL_COL | TERM_READLINE_MODE_AUTOSCROLL_COL;
 	term_readline_mode(rl, rlMode);
 
 	while(1){
@@ -85,6 +85,10 @@ void test_term(__unused const char* argA, __unused const char* argB){
 
 			case TERM_KEY_UP:
 				term_readline_cursor_up(rl);
+			break;
+
+			case TERM_KEY_DOWN:
+				term_readline_cursor_down(rl);
 			break;
 
 			case TERM_KEY_FIND:
