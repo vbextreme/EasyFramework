@@ -57,6 +57,7 @@ termReadLine_s* term_readline_new(utf8_t* prompt, int r, int c, int w, int h){
 	rl->cursor.row = rl->position.row;
 	rl->cursor.mode = TERM_READLINE_MODE_INSERT;
 	rl->cursor.scrollcol = 0;
+	rl->cursor.scrollrow = 0;
 
 	rl->attribute.size = TERM_READLINE_ATTRIBUTE_SIZE;
 	rl->attribute.value = mem_many(char*, rl->attribute.size);
@@ -107,6 +108,7 @@ __private void term_readline_attribute_print(termReadLine_s* rl, utf_t att){
 
 __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsigned* c){
 	const unsigned scrollx = rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL;
+	const unsigned scrolly = rl->cursor.mode & TERM_READLINE_MODE_SCROLL_ROW;
 
 	utf8Iterator_s it = utf8_iterator(str, 0);
 	utf_t utf;
@@ -119,9 +121,25 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 			continue;
 		}
 		++*c;
-		if( utf == '\n' || (!scrollx && *c >= rl->position.width) ){
+		if( utf == '\n' || (!scrollx && *c - rl->position.col >= rl->position.width) ){
 			++*r;
 			*c = rl->position.col;
+		}
+	}
+
+	if( scrolly ){
+		unsigned offsety = rl->cursor.scrollrow;
+	   	unsigned width = scrollx ? UINT_MAX : rl->position.width - rl->prompt.len;
+		while( offsety > 0 && (utf=utf8_iterator_next(&it)) ){
+			if( utf >= TERM_READLINE_PRIVATE_UTF ){
+				term_readline_attribute_print(rl, utf);
+				continue;
+			}
+			--width;
+			if( width == 0 || utf == '\n' ){
+				--offsety;
+				width = scrollx ? UINT_MAX : rl->position.width;
+			}
 		}
 	}
 
@@ -140,17 +158,21 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 	}
 
 	term_clear(TERM_CLEAR_END_OF_LINE);
-	while( (utf=utf8_iterator_next(&it)) ){
+	while( *r - rl->position.row < (int)rl->position.height && (utf=utf8_iterator_next(&it)) ){
 		if( utf > TERM_READLINE_PRIVATE_UTF ){
 			term_readline_attribute_print(rl, utf);
 		}
 		else{
 			utf8_fputchar(stdout, utf);
 			++(*c);
-			if( utf == '\n' || *c >= rl->position.width ){
+			dbg_warning("c:%d col:%u w:%u", *c, rl->position.col, rl->position.width);
+			dbg_warning("r:%d row:%u h:%u", *r, rl->position.row, rl->position.height);
+
+			if( utf == '\n' || *c - rl->position.col >= rl->position.width ){
 				++(*r);
 				*c = rl->position.col;
-				if( *r >= (int)rl->position.height ){
+				if( !scrolly && *r >= (int)rl->position.height ){
+					dbg_error("r:%d row:%u h:%u", *r, rl->position.row, rl->position.height);
 					--(*r);
 					--rl->position.row;
 					putchar(' ');
@@ -185,32 +207,66 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 __private void term_readline_downsize_clear(termReadLine_s* rl, unsigned r, unsigned c){
 	term_color_reset();
 	term_font_attribute(TERM_FONT_RESET);
-	for(; r < rl->position.rowLast; ++r){
-		term_gotorc(r, c);
-		for(; c  < rl->position.width; ++c ){
-			putchar(' ');
+
+	if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_ROW ){
+		for(; r < rl->position.height + rl->position.row; ++r){
+			term_gotorc(r, c);
+			for(; c  < rl->position.width + rl->position.col; ++c ){
+				putchar(' ');
+			}
+			c = rl->position.col;
 		}
-		c = rl->position.col;
+		if( r == rl->position.height ){
+			for(; c < rl->position.width + rl->position.col; ++c ){
+				putchar(' ');
+			}
+		}
 	}
-	if( r == rl->position.rowLast ){
-		for(; c < rl->position.colLast; ++c ){
-			putchar(' ');
+	else{
+		for(; r < rl->position.rowLast; ++r){
+			term_gotorc(r, c);
+			for(; c  < rl->position.width + rl->position.col; ++c ){
+				putchar(' ');
+			}
+			c = rl->position.col;
+		}
+		if( r == rl->position.rowLast ){
+			for(; c < rl->position.colLast; ++c ){
+				putchar(' ');
+			}
 		}
 	}
 }
 
 __private void term_readline_cursor_update(termReadLine_s* rl, int promptr, unsigned promptc){
 	const unsigned scrollx = rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL;
+	const unsigned scrolly = rl->cursor.mode & TERM_READLINE_MODE_SCROLL_ROW;
 	int r = promptr;
 	unsigned c = promptc;
 	utf8Iterator_s it = utf8_iterator(rl->text.str, 0);
+
+	if( scrolly ){
+		dbg_warning("skip row:%u", rl->cursor.scrollrow);
+		unsigned offsety = rl->cursor.scrollrow;
+	   	unsigned width = scrollx ? UINT_MAX : rl->position.width - rl->prompt.len;
+		utf_t utf;
+		while( offsety > 0 && (utf=utf8_iterator_next(&it)) ){
+			if( utf >= TERM_READLINE_PRIVATE_UTF ){
+				continue;
+			}
+			--width;
+			if( width == 0 || utf == '\n' ){
+				--offsety;
+				width = scrollx ? UINT_MAX : rl->position.width;
+			}
+		}
+	}
 
 	if( scrollx ){
 		utf_t utf;
 		unsigned offsetx = rl->cursor.scrollcol;
 		while( offsetx > 0 && (utf=utf8_iterator_next(&it)) && utf != '\n' ) --offsetx;
 		if( offsetx && !utf ){
-			dbg_warning("A");
 			rl->cursor.col = c;
 			rl->cursor.row = r;
 			return;
@@ -223,21 +279,15 @@ __private void term_readline_cursor_update(termReadLine_s* rl, int promptr, unsi
 	while( rl->it.str != it.str ){
 		utf_t utf = utf8_iterator_next(&it);
 		if( !utf ){
-			dbg_warning("B");
-			//rl->cursor.col = c;
-			//rl->cursor.row = r;
 			return;
 		}	
 		if( utf >= TERM_READLINE_PRIVATE_UTF ) continue;
 		++c;
-		if( utf == '\n' || c >= rl->position.width ){
+		if( utf == '\n' || c - rl->position.col >= rl->position.width ){
 			c = rl->position.col;
 			if( scrollx ){
 				if( utf != '\n' ) while( (utf=utf8_iterator_next(&it)) && utf != '\n' );
 				if( !utf ){
-					dbg_warning("C");
-					//rl->cursor.col = c;
-					//rl->cursor.row = r;
 					return;
 				}
 				unsigned offsetx = rl->cursor.scrollcol;
@@ -245,9 +295,6 @@ __private void term_readline_cursor_update(termReadLine_s* rl, int promptr, unsi
 					--offsetx;
 				}
 				if( offsetx && !utf ){
-					dbg_warning("D");
-					//rl->cursor.col = c;
-					//rl->cursor.row = r;
 					return;
 				}
 				else if( offsetx && utf == '\n' ){
@@ -267,8 +314,8 @@ void term_readline_draw(termReadLine_s* rl){
 	int pr;
 	unsigned pc;
 
-	if( r >= 0 ){
-		term_gotorc(r, c);
+	term_gotorc(r, c);
+	if( r >= 0 && rl->cursor.scrollrow == 0 ){
 		if( rl->prompt.str ) term_readline_print(rl, rl->prompt.str, &r, &c);
 		pr = r;
 		pc = c;
@@ -361,7 +408,7 @@ void term_readline_put(termReadLine_s* rl, utf_t utf){
 		utf8_iterator_replace(&rl->it, utf);
 	}
 
-	if( rl->cursor.mode & TERM_READLINE_MODE_AUTOSCROLL_COL ){
+	if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL ){
 		if( utf == '\n' ){
 			rl->cursor.scrollcol = 0;
 		}
@@ -371,6 +418,11 @@ void term_readline_put(termReadLine_s* rl, utf_t utf){
 				++rl->cursor.scrollcol;
 			}
 		}
+	}
+	
+	if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_ROW && (int)rl->cursor.row - rl->position.row + 1 > (int)rl->position.height ){
+		dbg_info("row:%d curr:%u n:%d h:%d", rl->position.row, rl->cursor.row, (int)rl->cursor.row - rl->position.row, rl->position.height);
+		++rl->cursor.scrollrow;
 	}
 }
 
@@ -403,13 +455,10 @@ __private void dbg_cursor(termReadLine_s* rl){
 }
 
 void term_readline_cursor_next(termReadLine_s* rl){
-	utf8_iterator_next(&rl->it);
 	utf_t u;
 	while( (u=utf8_iterator_next(&rl->it)) >= TERM_READLINE_PRIVATE_UTF );
 	if( u ){	
-		utf8_iterator_prev(&rl->it);
-		
-		if( rl->cursor.mode & TERM_READLINE_MODE_AUTOSCROLL_COL ){
+		if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL ){//
 			int lw = term_readline_line_left_width(rl);
 			dbg_info("lw:%d scrol:%u", lw, rl->cursor.scrollcol);
 			if( lw - (int)rl->cursor.scrollcol >= (int)rl->position.width ){
@@ -424,7 +473,7 @@ void term_readline_cursor_prev(termReadLine_s* rl){
 	utf_t utf;
 	while( (utf=utf8_iterator_prev(&rl->it)) >= TERM_READLINE_PRIVATE_UTF );
 
-	if( rl->cursor.mode & TERM_READLINE_MODE_AUTOSCROLL_COL && rl->cursor.scrollcol > 0 ){
+	if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL && rl->cursor.scrollcol > 0 ){//
 		int lw = term_readline_line_left_width(rl);
 		if( rl->position.row == (int)rl->cursor.row ) lw -= rl->prompt.len;
 		dbg_info("prev lw:%d scrol:%u", lw, rl->cursor.scrollcol);
@@ -437,11 +486,23 @@ void term_readline_cursor_prev(termReadLine_s* rl){
 }
 
 void term_readline_cursor_end(termReadLine_s* rl){
-	while( utf8_iterator_next(&rl->it) );
+	while( *rl->it.str && *rl->it.str != '\n' ){
+		term_readline_cursor_next(rl);
+	}
+
+	/*utf_t utf;
+	while( (utf=utf8_iterator_next(&rl->it)) && utf != '\n' );
+	if( utf ) utf8_iterator_prev(&rl->it);
+	if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL ){
+		rl->cursor.scrollcol = term_readline_line_left_width(rl) - rl->position.width;
+	}*/
 }
 
 void term_readline_cursor_home(termReadLine_s* rl){
-	while( utf8_iterator_prev(&rl->it) );
+	utf_t utf;
+	while( (utf=utf8_iterator_prev(&rl->it)) && utf != '\n' );
+	if( utf ) utf8_iterator_next(&rl->it);
+	rl->cursor.scrollcol = 0;
 }
 
 void term_readline_cursor_scroll_left(termReadLine_s* rl){
@@ -466,7 +527,10 @@ void term_readline_cursor_up(termReadLine_s* rl){
 		else{
 			--wid;
 		}
-	}		
+	}
+	if( rl->cursor.scrollrow > 0 && (int)rl->cursor.row - rl->position.row <= 0 ){
+		--rl->cursor.scrollrow;
+	}	
 }
 
 void term_readline_cursor_down(termReadLine_s* rl){
@@ -482,5 +546,8 @@ void term_readline_cursor_down(termReadLine_s* rl){
 		else{
 			--wid;
 		}
-	}		
+	}
+	if( (int)rl->cursor.row - rl->position.row + 1 >= (int)rl->position.height ){
+		++rl->cursor.scrollrow;
+	}
 }

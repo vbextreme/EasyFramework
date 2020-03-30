@@ -4,11 +4,10 @@
 #include <ef/type.h>
 #include <ef/utf8.h>
 
-#define TERM_READLINE_MODE_INSERT         0x0001
-#define TERM_READLINE_MODE_REPLACE        0x0002
-#define TERM_READLINE_MODE_SCROLL_COL     0x0004
-#define TERM_READLINE_MODE_AUTOSCROLL_COL 0x0008
-
+#define TERM_READLINE_MODE_INSERT         0x01
+#define TERM_READLINE_MODE_REPLACE        0x02
+#define TERM_READLINE_MODE_SCROLL_COL     0x04
+#define TERM_READLINE_MODE_SCROLL_ROW     0x08
 
 typedef struct termRLArea{
 	unsigned col;
@@ -29,6 +28,7 @@ typedef struct termRLCursor{
 	unsigned row;
 	unsigned col;
 	unsigned scrollcol;
+	unsigned scrollrow;
 	unsigned mode;
 }termRLCursor_s;
 
