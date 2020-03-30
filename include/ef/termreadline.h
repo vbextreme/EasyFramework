@@ -51,6 +51,10 @@ termReadLine_s* term_readline_new(utf8_t* prompt, int r, int c, int w, int h);
 
 void term_readline_free(termReadLine_s* rl);
 
+size_t term_readline_line_left_width(termReadLine_s* rl);
+
+size_t term_readline_line_right_width(termReadLine_s* rl);
+
 void term_readline_draw(termReadLine_s* rl);
 
 utf_t term_readline_attribute_new(termReadLine_s* rl, char* att);
@@ -82,5 +86,7 @@ void term_readline_cursor_home(termReadLine_s* rl);
 void term_readline_cursor_scroll_left(termReadLine_s* rl);
 
 void term_readline_cursor_scroll_right(termReadLine_s* rl);
+
+void term_readline_cursor_up(termReadLine_s* rl);
 
 #endif 

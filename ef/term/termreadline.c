@@ -80,6 +80,22 @@ void term_readline_free(termReadLine_s* rl){
 	free(rl);
 }
 
+size_t term_readline_line_left_width(termReadLine_s* rl){
+	utf8Iterator_s it = rl->it;
+	size_t width = 0;
+	utf_t utf;
+	while( (utf=utf8_iterator_prev(&it)) && utf != '\n' ) ++width;
+	return (int)rl->cursor.row == rl->position.row ? width + rl->prompt.len : width;
+}
+
+size_t term_readline_line_right_width(termReadLine_s* rl){
+	utf8Iterator_s it = rl->it;
+	size_t width = 0;
+	utf_t utf;
+	while( (utf=utf8_iterator_next(&it)) && utf != '\n' ) ++width;
+	return width;
+}
+
 __private void term_readline_attribute_print(termReadLine_s* rl, utf_t att){
 	size_t id = att - TERM_READLINE_PRIVATE_UTF - 1;
 	if( id >= rl->attribute.len ){
@@ -326,24 +342,6 @@ void term_readline_prompt_change(termReadLine_s* rl, utf8_t* prompt){
 	rl->prompt.len = prompt ? utf_width(prompt) : 0;
 }
 
-__private size_t term_readline_line_left_width(termReadLine_s* rl){
-	utf8Iterator_s it = rl->it;
-	size_t width = 0;
-	utf_t utf;
-	while( (utf=utf8_iterator_prev(&it)) && utf != '\n' ) ++width;
-	return (int)rl->cursor.row == rl->position.row ? width + rl->prompt.len : width;
-}
-
-/*
-__private size_t term_readline_line_right_width(termReadLine_s* rl){
-	utf8Iterator_s it = rl->it;
-	size_t width = 0;
-	utf_t utf;
-	while( (utf=utf8_iterator_next(&it)) && utf != '\n' ) ++width;
-	return width;
-}
-*/
-
 void term_readline_put(termReadLine_s* rl, utf_t utf){
 	if( rl->it.str - rl->it.begin + 4 >= (long)rl->text.size - 1 ){
 		rl->text.size += rl->position.width + 5;
@@ -448,4 +446,20 @@ void term_readline_cursor_scroll_left(termReadLine_s* rl){
 void term_readline_cursor_scroll_right(termReadLine_s* rl){
 	if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL ) ++rl->cursor.scrollcol;
 	dbg_info("cursor.scroll: %u", rl->cursor.scrollcol);
+}
+
+void term_readline_cursor_up(termReadLine_s* rl){
+	int col = (int)term_readline_line_left_width(rl) - (int)rl->cursor.scrollcol;
+	int wid = rl->position.width;
+	utf_t utf;
+	while( wid > 0 && (utf=utf8_iterator_prev(&rl->it)) ){
+		if( utf >= TERM_READLINE_PRIVATE_UTF ) continue;
+		if( utf == '\n' ){
+			int cl = (int)term_readline_line_left_width(rl) - (int)rl->cursor.scrollcol;
+			wid = cl - col;
+		}
+		else{
+			--wid;
+		}
+	}		
 }
