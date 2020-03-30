@@ -2,7 +2,7 @@
 #include <ef/terminfo.h>
 #include <ef/termlink.h>
 #include <ef/termmode.h>
-#include <ef/terminput.h>
+#include <ef/termkey.h>
 #include <ef/str.h>
 #include <ef/memory.h>
 #include <ef/err.h>
@@ -489,13 +489,6 @@ void term_readline_cursor_end(termReadLine_s* rl){
 	while( *rl->it.str && *rl->it.str != '\n' ){
 		term_readline_cursor_next(rl);
 	}
-
-	/*utf_t utf;
-	while( (utf=utf8_iterator_next(&rl->it)) && utf != '\n' );
-	if( utf ) utf8_iterator_prev(&rl->it);
-	if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL ){
-		rl->cursor.scrollcol = term_readline_line_left_width(rl) - rl->position.width;
-	}*/
 }
 
 void term_readline_cursor_home(termReadLine_s* rl){
@@ -552,8 +545,87 @@ void term_readline_cursor_down(termReadLine_s* rl){
 	}
 }
 
-//TODO 
-//pgup
-//pgdown
-//
-//onkeyevent
+void term_readline_cursor_pagdn(termReadLine_s* rl){
+	unsigned hei = rl->position.height;
+	while( hei-->0 ){
+		term_readline_cursor_down(rl);
+	}
+}
+
+void term_readline_cursor_pagup(termReadLine_s* rl){
+	unsigned hei = rl->position.height;
+	while( hei-->0 ){
+		term_readline_cursor_up(rl);
+	}
+}
+
+void term_readline_mode_ir_toggle(termReadLine_s* rl){
+	if( rl->cursor.mode & TERM_READLINE_MODE_INSERT ){
+		rl->cursor.mode &= ~TERM_READLINE_MODE_INSERT;
+		rl->cursor.mode |= TERM_READLINE_MODE_REPLACE;
+	}
+	else if( rl->cursor.mode & TERM_READLINE_MODE_REPLACE){
+		rl->cursor.mode &= ~TERM_READLINE_MODE_REPLACE;
+		rl->cursor.mode |= TERM_READLINE_MODE_INSERT;
+	}
+}
+
+void term_readline_process_key(termReadLine_s* rl, termKey_s key){
+	switch( key.escape ){
+		case TERM_KEY_BACKSPACE:
+			term_readline_backspace(rl);
+		break;
+
+		case TERM_KEY_DC:
+			term_readline_del(rl);
+		break;
+
+		case TERM_KEY_LEFT:
+			term_readline_cursor_prev(rl);
+		break;
+
+		case TERM_KEY_RIGHT:
+			term_readline_cursor_next(rl);
+		break;
+
+		case TERM_KEY_CTRL_LEFT:
+			term_readline_cursor_scroll_left(rl);
+		break;
+
+		case TERM_KEY_SHIFT_RIGHT:
+			term_readline_cursor_scroll_right(rl);
+		break;
+
+		case TERM_KEY_UP:
+			if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_ROW) term_readline_cursor_up(rl);
+		break;
+
+		case TERM_KEY_DOWN:
+			if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_ROW) term_readline_cursor_down(rl);
+		break;
+
+		case TERM_KEY_PPAGE:
+			if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_ROW) term_readline_cursor_pagup(rl);
+		break;
+
+		case TERM_KEY_NPAGE:
+			if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_ROW) term_readline_cursor_pagdn(rl);
+		break;
+
+		case TERM_KEY_FIND:
+			term_readline_cursor_home(rl);
+		break;
+
+		case TERM_KEY_SELECT:
+			term_readline_cursor_end(rl);
+		break;
+
+		case TERM_KEY_IC:
+			term_readline_mode_ir_toggle(rl);
+		break;
+
+		case 0:
+			if( key.ch ) term_readline_put(rl,key.ch);
+		break;
+	}
+}
