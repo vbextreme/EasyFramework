@@ -32,6 +32,40 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	term_update_key();
 	term_flush();
 	
+	term_mouse(1);
+	//term_mouse_move(1);
+	//term_mouse_focus(1);
+	//term_print("\x1B[?10003h\x1B[?1006\x1B[?1015h");
+	term_flush();
+
+	termKey_s key;
+	while( 1 ){
+		term_print("showkey:");	
+		term_flush();
+		key = term_input_extend();
+		if( key.escape == TERM_KEY_MOUSE ){
+			//key = term_input_extend();
+			//printf("b:%d ", key.ch);
+			//key = term_input_extend();
+			//printf("r:%d ", key.ch-33);
+			//key = term_input_extend();
+			//printf("c:%d \n", key.ch-33);
+		
+
+			
+			termMouse_s mouse = term_input_mouse();
+			printf("r:%d c:%d b:%d m:%d s:%d c:%d\n", mouse.r, mouse.c, mouse.button, mouse.meta, mouse.shift, mouse.control);
+		}
+		else{
+			printf("utf:0x%0X escape:%d\n", key.ch, key.escape);
+		}
+		term_flush();
+		if( key.ch == TERM_INPUT_CHAR_ESC || key.ch == '\n' ) break;
+		//if( key.ch == TERM_INPUT_CHAR_ESC || key.ch == '\n' ) break;
+	}
+	term_input_disable();
+	term_end();
+	return;
 
 	termReadLine_s* rl = term_readline_new(U8("inp: "), -1, -1, 12, 4);
 	term_readline_draw(rl);

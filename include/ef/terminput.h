@@ -10,6 +10,15 @@
 #define TERM_INPUT_EXTEND_SCREEN 256
 #define TERM_INPUT_EXTEND_OFFSET 1024
 
+typedef struct termMouse_s{
+	int r;
+	int c;
+	int button;
+	int meta;
+	int shift;
+	int control;
+}termMouse_s;
+
 typedef struct termKey{
 	utf_t ch;
 	int escape;
@@ -46,43 +55,7 @@ termKey_s term_input_utf8(void);
 /** return term_input_utf8 or an escape */
 termKey_s term_input_extend(void);
 
-/*
-#define TERM_KEY_ESC (0x1B)
-#define TERM_CNT_SCREEN_RESIZE "screen_resize"
-#define TERM_MOUSE_LEFT         0
-#define TERM_MOUSE_MID          1
-#define TERM_MOUSE_RIGHT        2
-#define TERM_MOUSE_RELEASED     3
-#define TERM_MOUSE_SCROLL_UP    4
-#define TERM_MOUSE_SCROLL_DOWN  5
-#define TERM_MOUSE_SCROLL_LEFT  6
-#define TERM_MOUSE_SCROLL_RIGHT 7
-#define TERM_MOUSE_MOVE         99
-
-typedef struct termKey{
-	char* cnt;
-	utf_t utf;
-}termKey_s;
-
-typedef struct termMouse{
-	char button;
-	char shift;
-	char meta;
-	char control;
-	int c;
-	int r;
-}termMouse_s;
-
-err_t term_screen_size_get(unsigned* rows, unsigned* cols);
-void term_screen_size_enable(void);
-void term_flushin(void);
-int term_screen_size_update(void);
-int term_kbhit(void);
-termMouse_s term_mouse_get(void);
-int term_get_ch(void);
-utf_t term_get_utf(void);
-termKey_s term_get_ex(termInfo_s* ti);
-*/
-
+/** when receved TERM_KEY_MOUSE, call this function to get mouse position */
+termMouse_s term_input_mouse(void);
 
 #endif 

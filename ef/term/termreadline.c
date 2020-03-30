@@ -551,3 +551,9 @@ void term_readline_cursor_down(termReadLine_s* rl){
 		++rl->cursor.scrollrow;
 	}
 }
+
+//TODO 
+//pgup
+//pgdown
+//
+//onkeyevent
