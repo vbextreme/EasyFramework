@@ -1,4 +1,5 @@
 #include <ef/type.h>
+#include <ef/sig.h>
 #include <ef/memory.h>
 #include <ef/file.h>
 #include <ef/str.h>
@@ -8,6 +9,9 @@
 #include <ef/termcapstr.h>
 #include <ef/termlink.h>
 #include <ef/termmode.h>
+#include <ef/terminput.h>
+
+__private int camode;
 
 #define def_cap_val_null(CAP) static tiData_s* em = NULL;\
 	if( !em ){\
@@ -54,8 +58,19 @@
    	};\
 	term_escape_make_print(em->str, var)
 
-void term_ca_mode(int ee){
+__private void term_ca_mode_raw(int ee){
 	def_cap_val_bool(ee, cap_exit_ca_mode, cap_enter_ca_mode);
+}
+
+void term_ca_mode(int ee){
+	if( !ee && camode ){
+		term_ca_mode_raw(ee);
+		camode = ee;
+	}
+	else if( ee && !camode ){
+		term_ca_mode_raw(ee);
+		camode = ee;
+	}
 }
 
 void term_gotorc(int r, int c){
@@ -292,4 +307,18 @@ err_t term_cursor_position(int* r, int* c){
 	return 0;
 }
 
+__private void term_sigint(int sig, __unused siginfo_s* u, __unused void* un){
+	if( sig != SIGINT ) return;
+	term_color_reset();
+	term_font_attribute(TERM_FONT_RESET);
+	term_ca_mode(0);
+	term_flush();
+	term_input_disable();
+	term_buff_end();
+	term_end();
+	exit(1);
+}
 
+void term_endon_sigint(void){
+	os_signal_set(NULL, SIGINT, term_sigint);
+}	

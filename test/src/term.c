@@ -2,8 +2,20 @@
 #include <ef/term.h>
 #include <ef/memory.h>
 #include <ef/file.h>
+#include <ef/sig.h>
 
 /*@test -E --term 'test terminal'*/
+
+void term_kill(int sig, __unused siginfo_s* u, __unused void* un){
+	iassert( sig == SIGINT );
+	term_ca_mode(0);
+	term_flush();
+	term_input_disable();
+	term_buff_end();
+	term_end();
+	//puts("ok end term");
+	exit(1);
+}
 
 /*@fn*/
 void test_term(__unused const char* argA, __unused const char* argB){
@@ -11,7 +23,9 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	term_begin();
 	term_screen_size_enable();
 	term_input_enable();
-		
+	
+	os_signal_set(NULL, SIGINT, term_kill);	
+
 	__mem_free char* lcex = path_resolve("../../build/" TERM_EF_EXTEND);
 	printf("../../build::%s\n",lcex);
 

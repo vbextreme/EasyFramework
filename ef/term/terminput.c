@@ -8,7 +8,7 @@
 #include <ef/err.h>
 
 __private volatile int updateResize = 0;
-__private rbuffer_s* uinp; 
+__private rbuffer_s* uinp = NULL; 
 
 
 __private void sig_resize(__unused int sig, __unused siginfo_t* sinfo, __unused void* context){
@@ -39,15 +39,13 @@ void term_input_enable(void){
 	utf_begin();
 	term_raw_enable();
 	uinp = rbuffer_new(sizeof(termKey_s), 1024);
-	term_buff_same_screen();
 	if( !uinp ) err_fail("rbuffer_new");
 }
 
 void term_input_disable(void){
 	term_raw_disable();
-	rbuffer_free(uinp);
+	if( uinp ) rbuffer_free(uinp);
 	uinp = NULL;
-	term_buff_end();
 }
 
 int term_kbhit(void){	

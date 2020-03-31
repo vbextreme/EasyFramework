@@ -78,6 +78,8 @@ src += [ 'ef/term/pty.c' ]
 src += [ 'ef/term/termmode.c' ]
 src += [ 'ef/term/terminput.c' ]
 src += [ 'ef/term/termreadline.c' ]
+src += [ 'ef/term/tui.c' ]
+
 
 ##################
 # compiler flags #
@@ -241,6 +243,7 @@ endif
 ###########
 
 install_subdir('include/ef', install_dir: 'include')
+install_subdir('ef-term-extend/e', install_dir: '/usr/lib/terminfo') 
 
 if get_option('man') > 0
   manc = run_command('allman')

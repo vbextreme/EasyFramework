@@ -124,6 +124,9 @@ void term_update_key(void);
 /** print */
 #define term_print(STR) fputs(STR,stdout)
 
+/** print utf8 */
+#define term_print_u8(UTF) utf8_fputchar(stdout, UTF)
+
 /** flush */
 #define term_flush() fflush(stdout)
 

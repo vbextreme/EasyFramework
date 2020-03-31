@@ -119,6 +119,7 @@ void term_mouse_focus(int enable);
  */
 err_t term_cursor_position(int* r, int* c);
 
-
+/** call this function intercept sigint and restore all terminal attribute before exit(1) */
+void term_endon_sigint(void);
 
 #endif 
