@@ -86,7 +86,7 @@ typedef struct tuiSize{
 
 typedef struct tui{
 	utf8_t* name;
-	char* attribute[2];
+	utf_t* attribute[2];
 	tuiPosition_s position;
 	tuiSize_s size;
 	struct tui* parent;
@@ -108,7 +108,7 @@ typedef struct tui{
 void tui_begin(void);
 void tui_end(void);
 
-const char* tui_att_get(tuiAttributes_s att);
+utf_t tui_att_get(tuiAttributes_s att);
 
 utf_t tui_border_cast(int weight, char rappresentation);
 
@@ -122,7 +122,7 @@ void tui_free(tui_s* tui);
 
 void tui_name_set(tui_s* tui, utf8_t* name);
 
-void tui_attribute_add(tui_s* tui, int focus, const char* att);
+void tui_attribute_add(tui_s* tui, int focus, utf_t att);
 
 void tui_attribute_clear(tui_s* tui);
 

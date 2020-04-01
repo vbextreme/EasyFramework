@@ -33,37 +33,27 @@ __private utf8_t* tuiBorder[] = {
 	U8("╌┆┅┇┈┊┉┋╌╎╍╏")
 };
 
-__private char* tuiAtt[TUI_ATT_COUNT];
+__private utf_t tuiAtt[TUI_ATT_COUNT];
 
 __private void tui_att_init(void){
 	char tmp[256];
 	for( size_t i = 0; i < 16; ++i ){
 		int c = i < 8 ? i : i - 8 + 60;
 		term_escapemk(tmp, "color16_fg", c);
-		tuiAtt[i] = str_dup(tmp, 0);
+		tuiAtt[i] = term_utf_custom(0, tmp);
 		term_escapemk(tmp, "color16_bk", c);
-		tuiAtt[i+16] = str_dup(tmp, 0);
+		tuiAtt[i+16] = term_utf_custom(0, tmp);
 	}
 	term_escapemk(tmp, "color_reset");
-	tuiAtt[32] = str_dup(tmp, 0);
+	tuiAtt[32] = term_utf_custom(0, tmp);
 	term_escapemk(tmp, cap_enter_bold_mode);
-	tuiAtt[33] = str_dup(tmp, 0);
+	tuiAtt[33] = term_utf_custom(0, tmp);
 	term_escapemk(tmp, cap_enter_italics_mode);
-	tuiAtt[34] = str_dup(tmp, 0);
+	tuiAtt[34] = term_utf_custom(0, tmp);
 	term_escapemk(tmp, cap_enter_underline_mode);
-	tuiAtt[35] = str_dup(tmp, 0);
+	tuiAtt[35] = term_utf_custom(0, tmp);
 	term_escapemk(tmp, cap_exit_attribute_mode);
-	tuiAtt[36] = str_dup(tmp, 0);
-
-	for( size_t i = 0; i < TUI_ATT_COUNT; ++i){
-		if( !tuiAtt[i] ) err_fail("eom on att(%lu)", i);
-	}
-}
-	
-__private void tui_att_free(void){
-	for( size_t i = 0; i < TUI_ATT_COUNT; ++i){
-		free(tuiAtt[i]);
-	}
+	tuiAtt[36] = term_utf_custom(0, tmp);
 }
 
 void tui_begin(void){
@@ -88,12 +78,10 @@ void tui_end(){
 	term_input_disable();
 	term_buff_end();
 	term_end();
-	tui_att_free();
 }
 
-const char* tui_att_get(tuiAttributes_s att){
-	if( att < 0 || att >= TUI_ATT_COUNT ) return NULL;
-	dbg_warning("GEEET %d", att);
+utf_t tui_att_get(tuiAttributes_s att){
+	if( att < 0 || att >= TUI_ATT_COUNT ) return 0;
 	return tuiAtt[att];	
 }
 
@@ -146,8 +134,8 @@ tui_s* tui_new(tui_s* parent, int id, utf8_t* name, int border, int r, int c, in
 	tui->eventKey = NULL;
 	tui->eventFocus = NULL;
 
-	tui->attribute[0] = NULL;
-	tui->attribute[1] = NULL;
+	tui->attribute[0] = vector_new(utf_t, 2, 2);
+	tui->attribute[1] = vector_new(utf_t, 2, 2);
 	tui_attribute_add(tui, 0, tuiAtt[TUI_COLOR_RESET]);
 	tui_attribute_add(tui, 1, tuiAtt[TUI_COLOR_RESET]);
 
@@ -182,41 +170,19 @@ void tui_name_set(tui_s* tui, utf8_t* name){
 	if( !tui->name ) err_fail("create name");
 }
 
-void tui_attribute_add(tui_s* tui, int focus, const char* att){
-	if( tui->attribute[focus] ){
-		char* old = tui->attribute[focus];
-		tui->attribute[focus] = str_printf("%s%s", old, att);
-		if( !tui->attribute[focus] ) err_fail("add attribute");
-		free(old);
-	}
-	else{
-		tui->attribute[focus] = str_dup(att,0);
-	}
-
+void tui_attribute_add(tui_s* tui, int focus, utf_t att){
+	iassert( focus >= 0 && focus <= 1);
+	vector_push_back(tui->attribute[focus], att);
 }
 
 void tui_attribute_clear(tui_s* tui){
-	free(tui->attribute[0]);
-	free(tui->attribute[1]);
-	tui->attribute[0] = NULL;
-	tui->attribute[1] = NULL;
+	vector_clear(tui->attribute[0]);
+	vector_clear(tui->attribute[1]);
 }
 
 void tui_attribute_print(tui_s* tui){
-	if( tui->attribute[tui->focused] ){
-		dbg_info("att.print(%d):%d", tui->id, tui->focused);
-		char tmp[4096];
-		char* d = tmp;
-		char* s = tui->attribute[tui->focused];
-		while(*s){
-			if( *s != '\x1B' ) *d++=*s++;
-			else{
-				*d++='^';
-				++s;
-			}
-		}
-		dbg_info("attribute(%d).add:%s", tui->id, tmp);
-		term_print(tui->attribute[tui->focused]);
+	vector_foreach(tui->attribute[tui->focused], i){
+		term_print(tui->attribute[tui->focused][i]);
 	}
 }
 
@@ -285,7 +251,6 @@ void tui_area_goto(tui_s* tui){
 }
 
 void tui_clear_area(tui_s* tui){
-	//if( !tui->visible ) return;
 	const tuiPosition_s pos = tui_area_position(tui);
 	const tuiSize_s size = tui_area_size(tui);
 	tui_attribute_print(tui);
@@ -301,7 +266,6 @@ void tui_clear_area(tui_s* tui){
 }
 
 void tui_clear(tui_s* tui){
-	//if( !tui->visible ) return;
 	const unsigned h = tui->size.height + tui->position.r;
 	const unsigned w = tui->size.width + tui->position.c;
 	const unsigned xs = tui->position.c;
@@ -323,7 +287,6 @@ void tui_clear(tui_s* tui){
 
 void tui_draw_border(tui_s* tui){
 	dbg_info("tui[%d]:%s.border",tui->id, tui->name);
-	//if( !tui->visible ) return;
 	if( !tui->border ) return;
 	tui_attribute_print(tui);
 
@@ -334,10 +297,10 @@ void tui_draw_border(tui_s* tui){
 	term_print(tui_border_cast(tui->border, '/'));
 	if( tui->name && utf_width(tui->name)+5 < tui->size.width ){
 		size_t n = utf_width(tui->name) + 4;
-		//term_print_u8(h);
 		term_print(tui_border_cast(tui->border, '3'));
 		term_print(tui->name);
 		term_print(tui_border_cast(tui->border, 'F'));
+		tui_attribute_print(tui);
 		tui_draw_hline(h, tui->size.width - n);
 	}
 	else{
@@ -356,7 +319,6 @@ void tui_draw_border(tui_s* tui){
 
 void tui_draw(tui_s* tui){
 	dbg_info("tui[%d]:%s.draw",tui->id, tui->name);
-	//tui_clear_area(tui);
 	if( tui->border ) tui_draw_border(tui) ;
 	if( tui->draw ) tui->draw(tui);
 	vector_foreach(tui->childs,i){
