@@ -37,11 +37,13 @@ typedef struct termRLCursor{
 	unsigned mode;
 }termRLCursor_s;
 
+/*
 typedef struct termRLUtfPrivate{
 	char** value;
 	size_t len;
 	size_t size;
 }termRLUtfPrivate_s;
+*/
 
 typedef struct termReadLine{
 	termRLArea_s position;
@@ -49,7 +51,7 @@ typedef struct termReadLine{
 	termRLText_s text;
 	utf8Iterator_s it;
 	termRLCursor_s cursor;
-	termRLUtfPrivate_s attribute;
+	//termRLUtfPrivate_s attribute;
 }termReadLine_s;
 
 /** create new readline
@@ -77,20 +79,8 @@ size_t term_readline_line_right_width(termReadLine_s* rl);
 /** draw readline*/
 void term_readline_draw(termReadLine_s* rl);
 
-/** create new attribute
- * @param rl readline obj
- * @param att string attribute, the attribute can't display any glyph
- * @return unicode associated to attribute
- */
-utf_t term_readline_attribute_new(termReadLine_s* rl, char* att);
-
-/** change attribute to previus unicode
- * @param rl readline
- * @param utf previus unicode
- * @param att new attribute
- * @return 0 successfull, -1 error
- */
-err_t term_readline_attribute_change(termReadLine_s* rl, utf_t utf, char* att);
+//utf_t term_readline_attribute_new(termReadLine_s* rl, char* att);
+//err_t term_readline_attribute_change(termReadLine_s* rl, utf_t utf, char* att);
 
 /** set readline mode
  * @param readline

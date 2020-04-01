@@ -1,7 +1,9 @@
 #include <ef/type.h>
 #include <ef/memory.h>
 #include <ef/file.h>
+#include <ef/vector.h>
 #include <ef/str.h>
+#include <ef/utf8.h>
 #include <ef/delay.h>
 #include <ef/err.h>
 #include <ef/terminfo.h>
@@ -19,6 +21,8 @@
 #define TERM_STACK_MAX  128
 #define TERM_IF_MAX     16
 
+__private char** utfCustom;
+
 termInfo_s localTermInfo;
 
 const char* term_name(void){
@@ -32,6 +36,42 @@ const char* term_name_extend(void){
 const char* term_name_ef(void){
 	const char* ret = getenv(ENV_TERMEF);
 	return ret ? ret : TERM_EF_EXTEND;
+}
+
+utf_t term_utf_custom(utf_t u, const char* str){
+	if( u == 0 ){
+		vector_push_back(utfCustom, str_dup(str,0));
+		u = UTF_PRIVATE0_START + vector_count(utfCustom);
+	}
+	else{
+		unsigned index = (u - UTF_PRIVATE0_START)-1;
+		if( index >= vector_count(utfCustom) ) return 0;
+		free(utfCustom[index]);
+		utfCustom[index] = str_dup(str,0);
+	}	
+	return u;
+}
+
+void term_print_utf(utf_t u){
+	if( u >= UTF_PRIVATE0_START ){
+		unsigned index = (u - UTF_PRIVATE0_START)-1;
+		iassert( index < vector_count(utfCustom));
+		fputs(utfCustom[index], stdout);
+	}
+	else{
+		utf8_fputchar(stdout, u);
+	}
+}
+
+void term_print_utf8(const utf8_t* str){
+	utf8Iterator_s it = utf8_iterator((utf8_t*)str,0);
+	utf_t u;
+	while( (u=utf8_iterator_next(&it)) )
+		term_print_utf(u);
+}
+
+void term_print_str(const char* str){
+	fputs(str, stdout);
 }
 
 __private FILE* term_database_open(const char* path, const char* dbname){
@@ -515,6 +555,7 @@ void term_begin(void){
 	localTermInfo.caupcake = NULL;
 	iassert(localTermInfo.cap);
 	localTermInfo.dbname = NULL;
+	utfCustom = vector_new(char*, 52, 4);
 }
 
 void term_end(void){
@@ -523,6 +564,10 @@ void term_end(void){
 	if( localTermInfo.caupcake ) trie_free(localTermInfo.caupcake);
 	localTermInfo.cap = NULL;
 	localTermInfo.dbname = NULL;
+	vector_foreach(utfCustom, i){
+		free(utfCustom[i]);
+	}
+	vector_free(utfCustom);
 }
 
 err_t term_load(char* path, const char* dbname){

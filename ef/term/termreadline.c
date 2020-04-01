@@ -66,7 +66,7 @@ termReadLine_s* term_readline_new(utf8_t* prompt, int r, int c, int w, int h){
 	rl->cursor.scrollcol = 0;
 	rl->cursor.scrollrow = 0;
 
-	rl->attribute.size = TERM_READLINE_ATTRIBUTE_SIZE;
+	/*rl->attribute.size = TERM_READLINE_ATTRIBUTE_SIZE;
 	rl->attribute.value = mem_many(char*, rl->attribute.size);
 	if( !rl->attribute.value ){
 		free(rl->text.str);
@@ -74,16 +74,16 @@ termReadLine_s* term_readline_new(utf8_t* prompt, int r, int c, int w, int h){
 		return NULL;
 	}
 	rl->attribute.len = 0;
-
+	*/
 	return rl;
 }
 
 void term_readline_free(termReadLine_s* rl){
-	for( size_t i = 0; i < rl->attribute.len; ++i){
+	/*for( size_t i = 0; i < rl->attribute.len; ++i){
 		free(rl->attribute.value[i]);
 	}
 	free(rl->attribute.value);
-
+	*/
 	free(rl->text.str);
 	free(rl);
 }
@@ -104,6 +104,7 @@ size_t term_readline_line_right_width(termReadLine_s* rl){
 	return width;
 }
 
+/*
 __private void term_readline_attribute_print(termReadLine_s* rl, utf_t att){
 	size_t id = att - TERM_READLINE_PRIVATE_UTF - 1;
 	if( id >= rl->attribute.len ){
@@ -112,6 +113,7 @@ __private void term_readline_attribute_print(termReadLine_s* rl, utf_t att){
 	
 	term_print(rl->attribute.value[id]);
 }
+*/
 
 __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsigned* c){
 	const unsigned scrollx = rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL;
@@ -124,7 +126,7 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 		utf_t utf = utf8_iterator_next(&it);
 		if( utf == 0 ) return;
 		if( utf >= TERM_READLINE_PRIVATE_UTF ){
-			term_readline_attribute_print(rl, utf);
+			term_print(utf);
 			continue;
 		}
 		++*c;
@@ -139,7 +141,7 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 	   	unsigned width = scrollx ? UINT_MAX : rl->position.width - rl->prompt.len;
 		while( offsety > 0 && (utf=utf8_iterator_next(&it)) ){
 			if( utf >= TERM_READLINE_PRIVATE_UTF ){
-				term_readline_attribute_print(rl, utf);
+				term_print(utf);
 				continue;
 			}
 			--width;
@@ -155,7 +157,7 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 		unsigned offsetx = rl->cursor.scrollcol;
 		while( offsetx>0 && (utf=utf8_iterator_next(&it)) && utf != '\n' ){
 			if( utf >= TERM_READLINE_PRIVATE_UTF ){
-				term_readline_attribute_print(rl, utf);
+				term_print(utf);
 				continue;
 			}
 			--offsetx;
@@ -168,10 +170,10 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 	
 	while( *r - rl->position.row < (int)rl->position.height && (utf=utf8_iterator_next(&it)) ){
 		if( utf > TERM_READLINE_PRIVATE_UTF ){
-			term_readline_attribute_print(rl, utf);
+			term_print(utf);
 		}
 		else{
-			utf8_fputchar(stdout, utf);
+			term_print(utf);
 			++(*c);
 			dbg_warning("c:%d col:%u w:%u", *c, rl->position.col, rl->position.width);
 			dbg_warning("r:%d row:%u h:%u", *r, rl->position.row, rl->position.height);
@@ -189,7 +191,7 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 					if( utf != '\n' ){ 
 						while( (utf=utf8_iterator_next(&it)) && utf != '\n' ) {
 							if( utf > TERM_READLINE_PRIVATE_UTF ){
-								term_readline_attribute_print(rl, utf);
+								term_print(utf);
 							}
 						}
 					}
@@ -197,7 +199,7 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 					unsigned offsetx = rl->cursor.scrollcol;
 					while( offsetx > 0 && (utf=utf8_iterator_next(&it)) && utf != '\n' ){
 						if( utf > TERM_READLINE_PRIVATE_UTF ){
-							term_readline_attribute_print(rl, utf);
+							term_print(utf);
 							continue;
 						}
 						--offsetx;
@@ -341,7 +343,7 @@ void term_readline_draw(termReadLine_s* rl){
 	term_readline_cursor_update(rl, pr, pc);
 	term_gotorc(rl->cursor.row, rl->cursor.col);
 }
-
+/*
 utf_t term_readline_attribute_new(termReadLine_s* rl, char* att){
 	if( rl->attribute.len >= rl->attribute.size ){
 		rl->attribute.size += TERM_READLINE_ATTRIBUTE_SIZE;
@@ -368,7 +370,7 @@ err_t term_readline_attribute_change(termReadLine_s* rl, utf_t utf, char* att){
 
 	return 0;
 }
-
+*/
 void term_readline_mode(termReadLine_s* rl, int mode){
 	rl->cursor.mode = mode;
 }

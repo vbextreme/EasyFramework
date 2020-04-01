@@ -2,6 +2,7 @@
 #define __EF_TERM_INFO_H__
 
 #include <ef/type.h>
+#include <ef/utf8.h>
 #include <ef/rbhash.h>
 #include <ef/trie.h>
 
@@ -92,6 +93,32 @@ const char* term_name_extend(void);
 /** return terminal common extend name if not eviroment is setted return TERM_EF_EXTEND*/
 const char* term_name_ef(void);
 
+/** create or cange custom utf
+ * @param u if 0 create new utf, otherwise change utf previus create with this function
+ * @param str string associated to utf
+ * @return utf associated to string
+ */
+utf_t term_utf_custom(utf_t u, const char* str);
+
+/** print utf on terminal*/
+void term_print_utf(utf_t u);
+
+/** print utf string on terminal*/
+void term_print_utf8(const utf8_t* str);
+
+/** print string*/
+void term_print_str(const char* str);
+
+/** print */
+#define term_print(STR) _Generic((STR),\
+	utf_t: term_print_utf,\
+	utf8_t*: term_print_utf8,\
+	const utf8_t*: term_print_utf8,\
+	char: putchar,\
+	char*: term_print_str,\
+	const char*: puts\
+)(STR)
+
 /** convert unescaped char in printable, escaped, string
  * @param ch non printable char
  * @return escaped string rappresent ch
@@ -120,12 +147,6 @@ err_t term_load(char* path, const char* dbname);
 
 /** after loading all database call update key if you need special key on input */
 void term_update_key(void);
-
-/** print */
-#define term_print(STR) fputs(STR,stdout)
-
-/** print utf8 */
-#define term_print_u8(UTF) utf8_fputchar(stdout, UTF)
 
 /** flush */
 #define term_flush() fflush(stdout)

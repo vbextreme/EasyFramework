@@ -112,7 +112,7 @@ utf_t tui_border_cast(int weight, char rappresentation){
 
 void tui_draw_hline(utf_t ch, unsigned count){
 	while(count-->0){
-		term_print_u8(ch);
+		term_print(ch);
 	}
 }
 
@@ -120,7 +120,7 @@ void tui_draw_vline(tuiPosition_s st, utf_t ch, unsigned count){
 	const unsigned en = st.r + count;
 	for(size_t y = st.r; y < en; ++y){
 		term_gotorc(y, st.c);
-		term_print_u8(ch);
+		term_print(ch);
 	}
 }
 
@@ -293,7 +293,7 @@ void tui_clear_area(tui_s* tui){
 	for(int y = pos.r; y < size.height + pos.r; ++y){
 		term_gotorc(y , pos.c);
 		for( int x = pos.c; x < pos.c + size.width; ++x){
-			term_print_u8(tui->clearchar);
+			term_print(tui->clearchar);
 		}
 	}
 
@@ -315,7 +315,7 @@ void tui_clear(tui_s* tui){
 	for(unsigned y = ys; y < h; ++y){
 		term_gotorc(y,xs);
 		for( unsigned x = xs; x < w; ++x){
-			term_print_u8(tui->clearchar);
+			term_print(tui->clearchar);
 		}
 	}
 	term_gotorc(ys, xs);
@@ -331,24 +331,24 @@ void tui_draw_border(tui_s* tui){
 	utf_t v = tui_border_cast(tui->border, '|');
 	
 	term_gotorc(tui->position.r, tui->position.c);
-	term_print_u8(tui_border_cast(tui->border, '/'));
+	term_print(tui_border_cast(tui->border, '/'));
 	if( tui->name && utf_width(tui->name)+5 < tui->size.width ){
 		size_t n = utf_width(tui->name) + 4;
 		//term_print_u8(h);
-		term_print_u8(tui_border_cast(tui->border, '3'));
-		term_print((char*)tui->name);
-		term_print_u8(tui_border_cast(tui->border, 'F'));
+		term_print(tui_border_cast(tui->border, '3'));
+		term_print(tui->name);
+		term_print(tui_border_cast(tui->border, 'F'));
 		tui_draw_hline(h, tui->size.width - n);
 	}
 	else{
 		tui_draw_hline(h, tui->size.width - 2);
 	}
-	term_print_u8(tui_border_cast(tui->border, '7'));
+	term_print(tui_border_cast(tui->border, '7'));
 
 	term_gotorc(tui->position.r + tui->size.height-1, tui->position.c);
-	term_print_u8(tui_border_cast(tui->border, 'L'));
+	term_print(tui_border_cast(tui->border, 'L'));
 	tui_draw_hline(h, tui->size.width - 2);
-	term_print_u8(tui_border_cast(tui->border, 'j'));
+	term_print(tui_border_cast(tui->border, 'j'));
 
 	tui_draw_vline((tuiPosition_s){.r = tui->position.r + 1, .c = tui->position.c}, v, tui->size.height - 2);
 	tui_draw_vline((tuiPosition_s){.r = tui->position.r + 1, .c = tui->position.c + tui->size.width - 1}, v, tui->size.height - 2);

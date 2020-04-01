@@ -26,7 +26,7 @@ void tui_label_event_draw(tui_s* tui){
 	int r = 0;
 	
 	while( (u=utf8_iterator_next(&it)) ){
-		if( u != '\n' ) term_print_u8(u);
+		if( u != '\n' ) term_print(u);
 		++c;
 		if( c >= size.width || u == '\n' ){
 			c = 0;
