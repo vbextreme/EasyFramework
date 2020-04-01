@@ -1,8 +1,6 @@
 #ifndef __EF_TERM_LINK_INFO_H__
 #define __EF_TERM_LINK_INFO_H__
 
-// TODO att common attribute for printing
-
 #include <ef/type.h>
 
 /** alternate mode, 1 enter, 0 exit -1 reload cap*/

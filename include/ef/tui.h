@@ -1,11 +1,6 @@
 #ifndef __EF_TUI_H__
 #define __EF_TUI_H__
 
-/* TODO 
-list
-tab
-*/
-
 #include <ef/type.h>
 #include <ef/term.h>
 

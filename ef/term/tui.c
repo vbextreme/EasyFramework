@@ -38,6 +38,7 @@ __private utf_t tuiAtt[TUI_ATT_COUNT];
 __private void tui_att_init(void){
 	char tmp[256];
 	for( size_t i = 0; i < 16; ++i ){
+		/*scanbuild get error because term_escapemk macro not working on clang*/
 		int c = i < 8 ? i : i - 8 + 60;
 		term_escapemk(tmp, "color16_fg", c);
 		tuiAtt[i] = term_utf_custom(0, tmp);

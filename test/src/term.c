@@ -6,6 +6,7 @@
 #include <ef/tuiLabel.h>
 #include <ef/tuiButton.h>
 #include <ef/tuiText.h>
+#include <ef/tuiList.h>
 
 #include <ef/memory.h>
 #include <ef/file.h>
@@ -38,7 +39,7 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	tuiPosition_s pos = tui_area_position(win);
 	tuiSize_s size = tui_area_size(win);
 	tui_s* lbl = tui_label_new(win, 2, NULL, 0, pos.r, pos.c, size.width, size.height);
-	tui_label_set(lbl, U8("\nthis is a message box, test of ef/tui"));
+	tui_label_set(lbl, U8("this is a message box, test of ef/tui"));
 
 	tui_s* btn = tui_button_new(win, 3, NULL, 0, pos.r + size.height - 2, pos.c + size.width - 10, 9, 1);
 	tui_button_set(btn, U8("click me"));
@@ -48,6 +49,14 @@ void test_term(__unused const char* argA, __unused const char* argB){
 
 	tui_s* txt = tui_text_new(win, 4, NULL, 0, pos.r + size.height - 4, pos.c, 15, 3);
 	term_readline_prompt_change(tui_text_readline(txt), U8("input:"));
+	
+	tui_s* lst = tui_list_new(win, 5, NULL, 0, pos.r+3, pos.c, 12,4);
+	tui_list_option(lst, TUI_LIST_VERTICAL, TUI_LIST_CHECK);
+	tui_list_add(lst, U8("a"), 0, NULL);
+	tui_list_add(lst, U8("b"), 0, NULL);
+	tui_list_add(lst, U8("c"), 0, NULL);
+	tui_list_add(lst, U8("d"), 0, NULL);
+	tui_list_add(lst, U8("e"), 0, NULL);
 	
 	tui_draw(win);
 

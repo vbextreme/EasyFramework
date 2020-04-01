@@ -84,6 +84,7 @@ src += [ 'ef/term/tuiWindow.c' ]
 src += [ 'ef/term/tuiLabel.c' ]
 src += [ 'ef/term/tuiButton.c' ]
 src += [ 'ef/term/tuiText.c' ]
+src += [ 'ef/term/tuiList.c' ]
 
 ##################
 # compiler flags #

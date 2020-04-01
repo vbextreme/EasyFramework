@@ -23,7 +23,7 @@ tui_s* tui_text_new(tui_s* parent, int id, utf8_t* name, int border, int r, int 
 	tr->draw = tui_text_event_draw;
 	tr->eventKey = tui_text_event_key;
 	tr->eventFocus = tui_default_event_focus;
-	tr->type = TUI_TYPE_BUTTON;
+	tr->type = TUI_TYPE_TEXT;
 	
 	tuiPosition_s p = tui_area_position(tr);
 	tuiSize_s s = tui_area_size(tr);
