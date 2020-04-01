@@ -79,7 +79,11 @@ src += [ 'ef/term/termmode.c' ]
 src += [ 'ef/term/terminput.c' ]
 src += [ 'ef/term/termreadline.c' ]
 src += [ 'ef/term/tui.c' ]
-
+src += [ 'ef/term/tuiRoot.c' ]
+src += [ 'ef/term/tuiWindow.c' ]
+src += [ 'ef/term/tuiLabel.c' ]
+src += [ 'ef/term/tuiButton.c' ]
+src += [ 'ef/term/tuiText.c' ]
 
 ##################
 # compiler flags #
@@ -238,12 +242,24 @@ if get_option('assert') > 0
   add_global_arguments('-DASSERT_ENABLE=1', language: 'c')
 endif
 
+#######
+# pkg #
+#######
+
+pkg = import('pkgconfig')
+pkg.generate(
+  name: 'EasyFramework',
+  description : 'easy framework library.',
+  libraries: [ '-lef', '-lunistring' ],
+  version: meson.project_version(),
+)
+
 ###########
 # install #
 ###########
 
-install_subdir('include/ef', install_dir: 'include')
-install_subdir('ef-term-extend/e', install_dir: '/usr/lib/terminfo') 
+install_subdir('include/ef', install_dir: 'usr/include')
+install_subdir('ef-term-extend/e', install_dir: 'usr/lib/terminfo') 
 
 if get_option('man') > 0
   manc = run_command('allman')

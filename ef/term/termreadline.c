@@ -10,6 +10,13 @@
 #define TERM_READLINE_PRIVATE_UTF UTF_PRIVATE0_START
 #define TERM_READLINE_ATTRIBUTE_SIZE 80
 
+__private void term_readline_line_clear(termReadLine_s* rl, int r, int c){
+	unsigned nc = (c - rl->position.col) + 1;
+	nc = rl->position.width - nc;
+	while( nc-->0 ) putchar(' ');
+	term_gotorc(r,c);
+}
+	
 termReadLine_s* term_readline_new(utf8_t* prompt, int r, int c, int w, int h){
 	termReadLine_s* rl = mem_new(termReadLine_s);
 	if( !rl ){
@@ -157,7 +164,8 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 		if( offsetx && utf == '\n' ) utf8_iterator_prev(&it);
 	}
 
-	term_clear(TERM_CLEAR_END_OF_LINE);
+	term_readline_line_clear(rl, *r, *c);
+	
 	while( *r - rl->position.row < (int)rl->position.height && (utf=utf8_iterator_next(&it)) ){
 		if( utf > TERM_READLINE_PRIVATE_UTF ){
 			term_readline_attribute_print(rl, utf);
@@ -198,7 +206,7 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 					if( offsetx && utf == '\n' ) utf8_iterator_prev(&it);
 				}
 				term_gotorc(*r, *c);
-				term_clear(TERM_CLEAR_END_OF_LINE);
+				term_readline_line_clear(rl, *r, *c);
 			}
 		}
 	}

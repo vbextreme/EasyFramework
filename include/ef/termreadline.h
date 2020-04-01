@@ -65,6 +65,9 @@ termReadLine_s* term_readline_new(utf8_t* prompt, int r, int c, int w, int h);
 /** free readline */
 void term_readline_free(termReadLine_s* rl);
 
+/** change prompt*/
+void term_readline_prompt_change(termReadLine_s* rl, utf8_t* prompt);
+
 /** get number of glyph before cursor*/
 size_t term_readline_line_left_width(termReadLine_s* rl);
 

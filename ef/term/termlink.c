@@ -189,7 +189,7 @@ void term_font_attribute(termFontAttribute_e att){
 	if( att == TERM_FONT_RELOAD || !em[0] ){
 		char* capn[] = {
 			[TERM_FONT_BOLT]      = cap_enter_bold_mode,
-			[TERM_FONT_ITALIC]    = cap_enter_insert_mode,
+			[TERM_FONT_ITALIC]    = cap_enter_italics_mode,
 			[TERM_FONT_UNDERLINE] = cap_enter_underline_mode,
 			[TERM_FONT_RESET]     = cap_exit_attribute_mode,
 			NULL

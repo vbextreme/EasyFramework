@@ -21,29 +21,6 @@ L-----1---j
 .:
 
 */
-
-void tui_begin(void){
-	term_begin();
-	term_load(NULL, term_name());
-	term_load(NULL, term_name_extend());
-	term_load(NULL, term_name_ef());
-	term_endon_sigint();
-	term_screen_size_enable();
-	term_input_enable();
-	term_ca_mode(1);
-	term_flush();
-}
-
-void tui_end(){
-	term_color_reset();
-	term_font_attribute(TERM_FONT_RESET);
-	term_ca_mode(0);
-	term_flush();
-	term_input_disable();
-	term_buff_end();
-	term_end();
-}
-
 __private utf8_t* tuiBorder[] = {
 	U8("-|/7LjFT+13"),
 	U8("─│┌┐└┘├┬┼┴┤"),
@@ -56,11 +33,81 @@ __private utf8_t* tuiBorder[] = {
 	U8("╌┆┅┇┈┊┉┋╌╎╍╏")
 };
 
+__private char* tuiAtt[TUI_ATT_COUNT];
+
+__private void tui_att_init(void){
+	char tmp[256];
+	for( size_t i = 0; i < 16; ++i ){
+		int c = i < 8 ? i : i - 8 + 60;
+		term_escapemk(tmp, "color16_fg", c);
+		tuiAtt[i] = str_dup(tmp, 0);
+		term_escapemk(tmp, "color16_bk", c);
+		tuiAtt[i+16] = str_dup(tmp, 0);
+	}
+	term_escapemk(tmp, "color_reset");
+	tuiAtt[32] = str_dup(tmp, 0);
+	term_escapemk(tmp, cap_enter_bold_mode);
+	tuiAtt[33] = str_dup(tmp, 0);
+	term_escapemk(tmp, cap_enter_italics_mode);
+	tuiAtt[34] = str_dup(tmp, 0);
+	term_escapemk(tmp, cap_enter_underline_mode);
+	tuiAtt[35] = str_dup(tmp, 0);
+	term_escapemk(tmp, cap_exit_attribute_mode);
+	tuiAtt[36] = str_dup(tmp, 0);
+
+	for( size_t i = 0; i < TUI_ATT_COUNT; ++i){
+		if( !tuiAtt[i] ) err_fail("eom on att(%lu)", i);
+	}
+}
+	
+__private void tui_att_free(void){
+	for( size_t i = 0; i < TUI_ATT_COUNT; ++i){
+		free(tuiAtt[i]);
+	}
+}
+
+void tui_begin(void){
+	term_begin();
+	term_load(NULL, term_name());
+	term_load(NULL, term_name_extend());
+	term_load(NULL, term_name_ef());
+	term_update_key();
+	term_endon_sigint();
+	term_screen_size_enable();
+	term_input_enable();
+	tui_att_init();
+	term_ca_mode(1);
+	term_flush();
+}
+
+void tui_end(){
+	term_color_reset();
+	term_font_attribute(TERM_FONT_RESET);
+	term_ca_mode(0);
+	term_flush();
+	term_input_disable();
+	term_buff_end();
+	term_end();
+	tui_att_free();
+}
+
+const char* tui_att_get(tuiAttributes_s att){
+	if( att < 0 || att >= TUI_ATT_COUNT ) return NULL;
+	dbg_warning("GEEET %d", att);
+	return tuiAtt[att];	
+}
+
 utf_t tui_border_cast(int weight, char rappresentation){
 	if( weight < 1 || weight > 3 ) return 0;
 	char* pch = strchr((char*)tuiBorder[0], rappresentation);
 	if( !pch ) return 0;
-	return tuiBorder[weight][pch-(char*)tuiBorder[0]];
+	size_t id = pch - (char*)tuiBorder[0];
+	//dbg_info("cast \"%s\" [%lu:%c]", tuiBorder[id], id
+	utf8Iterator_s it = utf8_iterator(tuiBorder[weight], 0);
+	utf_t utf;
+	while( id-->0 ) utf8_iterator_next(&it);
+	utf = utf8_iterator_next(&it);
+	return utf;
 }
 
 void tui_draw_hline(utf_t ch, unsigned count){
@@ -77,21 +124,46 @@ void tui_draw_vline(tuiPosition_s st, utf_t ch, unsigned count){
 	}
 }
 
-tui_s* tui_new(void){
+tui_s* tui_new(tui_s* parent, int id, utf8_t* name, int border, int r, int c, int width, int height, void* userdata){
 	tui_s* tui = mem_new(tui_s);
-	tui->usrdata = NULL;
+	if( !tui ) err_fail("malloc");
+	tui->id = id;
+	tui->name = name ? U8(str_dup((char*)name,0)):NULL;
+
+	tui->position.r = r;
+	tui->position.c = c;
+	tui->size.width = width;
+	tui->size.height = height;
+	tui->usrdata = userdata;
+	
+	tui->parent = parent;
 	tui->childs = vector_new(tui_s*, TUI_CHILD_INITIAL, TUI_CHILD_RESIZE);
+	if(parent){
+		tui_child_add(parent, tui);
+	}
 	tui->free = NULL;
 	tui->draw = NULL;
-	tui->border = 0;
-	tui->name = NULL;
-	tui->attribute = NULL;
+	tui->eventKey = NULL;
+	tui->eventFocus = NULL;
+
+	tui->attribute[0] = NULL;
+	tui->attribute[1] = NULL;
+	tui_attribute_add(tui, 0, tuiAtt[TUI_COLOR_RESET]);
+	tui_attribute_add(tui, 1, tuiAtt[TUI_COLOR_RESET]);
+
 	tui->clearchar = ' ';
-	tui->visible = 1;
+	tui->border = border;
+	//tui->visible = 0;
+	tui->focused = 0;
+	tui->focusBorder = 0;
+
 	return tui;
 }
 
 void tui_free(tui_s* tui){
+	if( tui->parent ){
+		tui_child_remove(tui->parent, tui);
+	}
 	vector_foreach(tui->childs, i){
 		tui_free(tui->childs[i]);
 	}
@@ -99,7 +171,8 @@ void tui_free(tui_s* tui){
 
 	if( tui->free ) tui->free(tui->usrdata);
 	if( tui->name ) free(tui->name);
-	if( tui->attribute ) free(tui->attribute);
+	if( tui->attribute[0] ) free(tui->attribute[0]);
+	if( tui->attribute[1] ) free(tui->attribute[1]);
 	free(tui);
 }
 
@@ -109,21 +182,42 @@ void tui_name_set(tui_s* tui, utf8_t* name){
 	if( !tui->name ) err_fail("create name");
 }
 
-void tui_attribute_add(tui_s* tui, char* att){
-	if( tui->attribute ){
-		char* old = tui->attribute;
-		tui->attribute = str_printf("%s%s", old, att);
-		if( !tui->attribute ) err_fail("add attribute");
+void tui_attribute_add(tui_s* tui, int focus, const char* att){
+	if( tui->attribute[focus] ){
+		char* old = tui->attribute[focus];
+		tui->attribute[focus] = str_printf("%s%s", old, att);
+		if( !tui->attribute[focus] ) err_fail("add attribute");
 		free(old);
 	}
 	else{
-		tui->attribute = str_dup(att,0);
+		tui->attribute[focus] = str_dup(att,0);
 	}
+
 }
 
 void tui_attribute_clear(tui_s* tui){
-	free(tui->attribute);
-	tui->attribute = NULL;
+	free(tui->attribute[0]);
+	free(tui->attribute[1]);
+	tui->attribute[0] = NULL;
+	tui->attribute[1] = NULL;
+}
+
+void tui_attribute_print(tui_s* tui){
+	if( tui->attribute[tui->focused] ){
+		dbg_info("att.print(%d):%d", tui->id, tui->focused);
+		char tmp[4096];
+		char* d = tmp;
+		char* s = tui->attribute[tui->focused];
+		while(*s){
+			if( *s != '\x1B' ) *d++=*s++;
+			else{
+				*d++='^';
+				++s;
+			}
+		}
+		dbg_info("attribute(%d).add:%s", tui->id, tmp);
+		term_print(tui->attribute[tui->focused]);
+	}
 }
 
 void tui_child_add(tui_s* parent, tui_s* child){
@@ -155,6 +249,18 @@ tui_s* tui_child_find(tui_s* parent, utf8_t* name, int id){
 	return NULL;
 }
 
+ssize_t tui_child_index(tui_s* parent, tui_s* child){
+	dbg_info("search %d from %d", child->id, parent->id);
+	vector_foreach(parent->childs, i){
+		if(parent->childs[i] == child){
+			dbg_info("index:%lu", i);
+			return i;
+		}
+	}
+	dbg_error("not find child");
+	return -1;
+}
+
 tuiPosition_s tui_area_position(tui_s* tui){
 	tuiPosition_s ret = tui->position;
 	if( tui->border ){
@@ -168,75 +274,89 @@ tuiSize_s tui_area_size(tui_s* tui){
 	tuiSize_s ret = tui->size;
 	if( tui->border ){
 		ret.width -= 2;
-		ret.width -= 2;
+		ret.height -= 2;
 	}
 	return ret;
 }
 
+void tui_area_goto(tui_s* tui){
+	tuiPosition_s pos = tui_area_position(tui);
+	term_gotorc(pos.r, pos.c);
+}
+
 void tui_clear_area(tui_s* tui){
-	if( !tui->visible ) return;
-	const unsigned h = tui->size.height + tui->position.r;
-	const unsigned ha = tui->border ? h-2 : h;
-	const unsigned w = tui->size.width + tui->position.c;
-	const unsigned wa = tui->border ? w-2 : w;
-	const unsigned xs = tui->border ? tui->position.c + 1 : tui->position.c;
-	const unsigned ys = tui->border ? tui->position.r + 1 : tui->position.r;
+	//if( !tui->visible ) return;
+	const tuiPosition_s pos = tui_area_position(tui);
+	const tuiSize_s size = tui_area_size(tui);
+	tui_attribute_print(tui);
 
-	if( tui->attribute ) term_print(tui->attribute);
-
-	for(unsigned y = ys; y < ha; ++y){
-		term_gotorc(y,xs);
-		for( unsigned x = xs; x < wa; ++x){
+	for(int y = pos.r; y < size.height + pos.r; ++y){
+		term_gotorc(y , pos.c);
+		for( int x = pos.c; x < pos.c + size.width; ++x){
 			term_print_u8(tui->clearchar);
 		}
 	}
 
-	term_gotorc(ys, xs);
+	term_gotorc(pos.r, pos.c);
 }
 
 void tui_clear(tui_s* tui){
-	if( !tui->visible ) return;
+	//if( !tui->visible ) return;
 	const unsigned h = tui->size.height + tui->position.r;
 	const unsigned w = tui->size.width + tui->position.c;
-	const unsigned xs = tui->border ? tui->position.c + 1 : tui->position.c;
-	const unsigned ys = tui->border ? tui->position.r + 1 : tui->position.r;
+	const unsigned xs = tui->position.c;
+	const unsigned ys = tui->position.r;
+	
+	vector_foreach(tui->childs, i){
+		tui_clear(tui->childs[i]);
+	}
 
-	if( tui->attribute ) term_print(tui->attribute);
-
+	tui_attribute_print(tui);
 	for(unsigned y = ys; y < h; ++y){
 		term_gotorc(y,xs);
 		for( unsigned x = xs; x < w; ++x){
 			term_print_u8(tui->clearchar);
 		}
 	}
-
 	term_gotorc(ys, xs);
 }
 
 void tui_draw_border(tui_s* tui){
-	if( !tui->visible ) return;
+	dbg_info("tui[%d]:%s.border",tui->id, tui->name);
+	//if( !tui->visible ) return;
 	if( !tui->border ) return;
-	if( tui->attribute ) term_print(tui->attribute);
-	
+	tui_attribute_print(tui);
+
 	utf_t h = tui_border_cast(tui->border, '-');
 	utf_t v = tui_border_cast(tui->border, '|');
 	
 	term_gotorc(tui->position.r, tui->position.c);
 	term_print_u8(tui_border_cast(tui->border, '/'));
-	tui_draw_hline(h, tui->size.width - 2);
+	if( tui->name && utf_width(tui->name)+5 < tui->size.width ){
+		size_t n = utf_width(tui->name) + 4;
+		//term_print_u8(h);
+		term_print_u8(tui_border_cast(tui->border, '3'));
+		term_print((char*)tui->name);
+		term_print_u8(tui_border_cast(tui->border, 'F'));
+		tui_draw_hline(h, tui->size.width - n);
+	}
+	else{
+		tui_draw_hline(h, tui->size.width - 2);
+	}
 	term_print_u8(tui_border_cast(tui->border, '7'));
 
-	term_gotorc(tui->position.r + tui->size.height, tui->position.c);
+	term_gotorc(tui->position.r + tui->size.height-1, tui->position.c);
 	term_print_u8(tui_border_cast(tui->border, 'L'));
 	tui_draw_hline(h, tui->size.width - 2);
 	term_print_u8(tui_border_cast(tui->border, 'j'));
 
 	tui_draw_vline((tuiPosition_s){.r = tui->position.r + 1, .c = tui->position.c}, v, tui->size.height - 2);
-	tui_draw_vline((tuiPosition_s){.r = tui->position.r + 1, .c = tui->position.c + tui->size.width}, v, tui->size.height - 2);
+	tui_draw_vline((tuiPosition_s){.r = tui->position.r + 1, .c = tui->position.c + tui->size.width - 1}, v, tui->size.height - 2);
 }
 
 void tui_draw(tui_s* tui){
-	if( !tui->visible ) return;
+	dbg_info("tui[%d]:%s.draw",tui->id, tui->name);
+	//tui_clear_area(tui);
 	if( tui->border ) tui_draw_border(tui) ;
 	if( tui->draw ) tui->draw(tui);
 	vector_foreach(tui->childs,i){
@@ -244,30 +364,64 @@ void tui_draw(tui_s* tui){
 	}
 }
 
-void tui_visible(tui_s* tui, int visible){
-	if( tui->visible == visible ) return;
-
-	if( visible ){
-		tui->visible = 1;
-		tui_draw(tui);	
+__private void rmove(tui_s* tui, int r, int c){
+	vector_foreach(tui->childs, i){
+		rmove(tui->childs[i], r, c);
 	}
-	else{	
-		tui_clear(tui);
-		tui->visible = 0;
-		if( tui->parent ) tui_draw(tui->parent);	
-	}
+	tui->position.c += c;
+	tui->position.r += r;
 }
 
+void tui_move(tui_s* tui, int r, int c){
+	tui_clear(tui);
+	rmove(tui, r - tui->position.r, c - tui->position.c);
+	tui_draw(tui);
+}
 
+int tui_default_event_key(__unused tui_s* tui, termKey_s key){
+	dbg_info("key(%d)", tui->id);
 
+	switch( key.ch ){
+		case TERM_INPUT_CHAR_ESC:
+		return TUI_EVENT_RETURN_EXIT;
+	}
 
+	switch( key.escape ){
+		case TERM_KEY_UP:
+		return TUI_EVENT_RETURN_FOCUS_PARENT;
+		
+		case TERM_KEY_RIGHT:
+		return TUI_EVENT_RETURN_FOCUS_NEXT;
 
+		case TERM_KEY_LEFT:
+		return TUI_EVENT_RETURN_FOCUS_PREV;
 
+		case TERM_KEY_DOWN:
+		return TUI_EVENT_RETURN_FOCUS_CHILD;
+	}
 
+	return 0;
+}
 
+int tui_default_event_focus(tui_s* tui, int enable){
+	dbg_info("focus(%d) %d", enable, tui->id);
 
-
-
-
-
+	if( enable ){
+		tui->focused = 1;
+		if( tui->border && tui->focusBorder ){
+			tui->border = 2;
+		}
+		dbg_info("set focus on r:%d c:%d", tui->position.r, tui->position.c);
+		tui_draw(tui);
+		term_gotorc(tui->position.r, tui->position.c);
+		term_flush();
+	}
+	else{
+		tui->focused = 0;
+		if( tui->border && tui->focusBorder ) tui->border = 1;
+		tui_draw(tui);
+		term_flush();
+	}
+	return 0;
+}
 

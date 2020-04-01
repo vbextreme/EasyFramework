@@ -1,31 +1,71 @@
 #include "test.h"
 #include <ef/term.h>
+#include <ef/tui.h>
+#include <ef/tuiRoot.h>
+#include <ef/tuiWindow.h>
+#include <ef/tuiLabel.h>
+#include <ef/tuiButton.h>
+#include <ef/tuiText.h>
+
 #include <ef/memory.h>
 #include <ef/file.h>
 #include <ef/sig.h>
 
 /*@test -E --term 'test terminal'*/
 
-void term_kill(int sig, __unused siginfo_s* u, __unused void* un){
-	iassert( sig == SIGINT );
-	term_ca_mode(0);
-	term_flush();
-	term_input_disable();
-	term_buff_end();
-	term_end();
-	//puts("ok end term");
-	exit(1);
+int btn_press(tui_s* tui, __unused int press){
+	utf8_t* buttons[] = {
+		U8("cancel"),
+		U8("ok")
+	};
+	
+	int ret = tui_window_msgbox(tui_root_get(tui), 7, U8("test pulsanti"), 1, 4, 4, 28, 10, U8("text mesage box"), buttons, 2);
+	dbg_info("button pressed:%d", ret);
+
+	return 0;
 }
 
 /*@fn*/
 void test_term(__unused const char* argA, __unused const char* argB){
 	err_enable();
+	tui_begin();
+	
+	tui_s* root = tui_root_new();
+	
+	tui_s* win = tui_window_new(root, 1, U8("msg box"), 1, 3, 3, 30,15);
+	win->focusBorder = 1;
+	
+	tuiPosition_s pos = tui_area_position(win);
+	tuiSize_s size = tui_area_size(win);
+	tui_s* lbl = tui_label_new(win, 2, NULL, 0, pos.r, pos.c, size.width, size.height);
+	tui_label_set(lbl, U8("\nthis is a message box, test of ef/tui"));
+
+	tui_s* btn = tui_button_new(win, 3, NULL, 0, pos.r + size.height - 2, pos.c + size.width - 10, 9, 1);
+	tui_button_set(btn, U8("click me"));
+	tui_button_onpress_set(btn, btn_press, NULL);
+	tui_attribute_add(btn, 1, tui_att_get(TUI_COLOR_LIGHT_GREEN_BK));
+	tui_attribute_add(btn, 1, tui_att_get(TUI_COLOR_BLACK));
+
+	tui_s* txt = tui_text_new(win, 4, NULL, 0, pos.r + size.height - 4, pos.c, 15, 3);
+	term_readline_prompt_change(tui_text_readline(txt), U8("input:"));
+	
+	tui_draw(win);
+
+	tui_root_focus_set(root, btn);
+	term_flush();
+	tui_root_loop(root);
+	tui_free(root);
+
+	tui_end();
+	
+
+
+/*
 	term_begin();
+	term_endon_sigint();
 	term_screen_size_enable();
 	term_input_enable();
 	
-	os_signal_set(NULL, SIGINT, term_kill);	
-
 	__mem_free char* lcex = path_resolve("../../build/" TERM_EF_EXTEND);
 	printf("../../build::%s\n",lcex);
 
@@ -196,7 +236,10 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	term_readline_free(rl);
 	puts("");
 	term_flush();
+	term_input_disable();
+	term_end();
 
+*/
 
 /*
 	term_ca_mode(1);
@@ -295,11 +338,11 @@ void test_term(__unused const char* argA, __unused const char* argB){
 		printf("inserted:'%s'\n", inp);
 	}
 	//term_escapef("term_move", 50,50);
+	term_input_disable();
+	term_end();
 
 */
 
-	term_input_disable();
-	term_end();
 	err_restore();
 }
 
