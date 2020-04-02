@@ -1,23 +1,13 @@
 # Maintainer: Vbextreme <@>
 # Contributor: Vbextreme <@>
-<<<<<<< HEAD
 pkgname=('easyframework')
 pkgdesc='another C framework'
 pkgver=1.1.0
-=======
-pkgname=('easyframework-git')
-pkgdesc='another C framework'
-pkgver=0.5.0
->>>>>>> future
 pkgrel=1
 arch=('x86_64')
 url='https://github.com/vbextreme/EasyFramework'
 source=('git+https://github.com/vbextreme/EasyFramework.git')
-<<<<<<< HEAD
 license=('GPL3')
-=======
-license=('GPLv3')
->>>>>>> future
 sha256sums=('SKIP')
 makedepends=('git' 'meson')
 depends=('pcre2' 'libunistring' 'libtar' 'zlib' 'gnutls' 'curl' 'libgit2' )
@@ -29,11 +19,7 @@ pkgver() {
 
 prepare() {
     cd EasyFramework
-<<<<<<< HEAD
     meson build -Dprefix=/usr
-=======
-    meson build -Dprefix=/usr/local
->>>>>>> future
 }
 
 build() {
