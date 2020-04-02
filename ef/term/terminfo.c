@@ -97,11 +97,18 @@ __private FILE* term_database_open(const char* path, const char* dbname){
 		memcpy(&fname[nf], dbname, dbnlen+1);
 	}
 	
-	dbg_info("term file: '%s'", fname);
 	FILE* ret = fopen( fname, "r");
-	if( !ret ){
-		err_pushno("open '%s'", fname);
+	if( !ret && path == NULL ){
+		ret = term_database_open(TERM_DATABASE_DIRECTORY_LOCAL, dbname);
 	}
+	if( !ret ){
+		err_pushno("open term file '%s'", fname);
+		dbg_warning("term file '%s'", fname);
+	}
+	else{
+		dbg_info("term file: '%s'", fname);
+	}
+
 	return ret;
 }
 
