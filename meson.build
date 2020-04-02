@@ -260,7 +260,7 @@ pkg.generate(
 ###########
 
 install_subdir('include/ef', install_dir: 'include')
-install_subdir('ef-term-extend/e', install_dir: 'lib/terminfo') 
+install_subdir('ef-term-extend/e', install_dir: get_option('terminfo')) 
 
 if get_option('man') > 0
   manc = run_command('allman')

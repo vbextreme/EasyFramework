@@ -6,3 +6,5 @@ option('openmp', type: 'integer', value: '1', description: 'enable openmp')
 option('gprof', type: 'integer', value: '0', description: 'enable gprof')
 option('autovectorization', type: 'integer', value: '1', description: 'enable vectorization')
 option('man', type: 'integer', value: '1', description: 'install man page')
+option('terminfo', type: 'string', value: 'lib/terminfo', description: 'change install path terminfo')
+
