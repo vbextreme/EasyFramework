@@ -2,7 +2,7 @@
 #include <ef/memory.h>
 #include <ef/mth.h>
 #include <ef/err.h>
-
+#include <ctype.h>
 #include <stdarg.h>
 
 char* str_dup(const char* src, size_t optlen){
@@ -188,4 +188,12 @@ char* quote_printable_decode(size_t *len, const char* str){
 	*next = 0;
 	if( len ) *len = next - ret;
 	return ret;
+}
+
+void str_toupper(char* dst, const char* src){
+	while( (*dst++=toupper(*src++)) );
+}
+
+void str_tolower(char* dst, const char* src){
+	while( (*dst++=toupper(*src++)) );
 }

@@ -18,6 +18,7 @@ includeDir = include_directories(['../include'])
 
 src = [ 'src/main.c', 'src/data.c' ]
 #@src
+src += [ 'src/code.c' ]
 src += [ 'src/err.c' ]
 src += [ 'src/file.c' ]
 src += [ 'src/ftp.c' ]
@@ -33,6 +34,7 @@ src += [ 'src/promise.c' ]
 src += [ 'src/rbhash.c' ]
 src += [ 'src/socket.c' ]
 src += [ 'src/str.c' ]
+src += [ 'src/term.c' ]
 src += [ 'src/thr.c' ]
 src += [ 'src/trie.c' ]
 src += [ 'src/vector.c' ]
@@ -109,13 +111,22 @@ endif
 ##########################
 # libraries dependencies #
 ##########################
+curpath = meson.source_root()
+efpath = run_command('meson.bash', 'dirname', curpath).stdout().strip().split('\n')
+
 
 if get_option('efdbg') > 0
-  ef_dep = cc.find_library('ef', dirs: ['/home/vbextreme/Project/c/ef/build-dbg'], required: true)
+  efpath = join_paths(efpath, 'build-dbg')
+  ef_dep = cc.find_library('ef', dirs: efpath, required: true)
   message('use ef debug')
+  message(efpath)
 else
-  ef_dep = cc.find_library('ef', dirs: ['/home/vbextreme/Project/c/ef/build'], required: true)
+  efpath = join_paths(efpath, 'build')
+  ef_dep = cc.find_library('ef', dirs: efpath, required: true)
 endif
+libDeps = [ ef_dep ]
+
+libDeps += [ cc.find_library('unistring', required : true) ]
 
 #math_dep = cc.find_library('m', required : true)
 #dynamic_dep = cc.find_library('dl', required : true)
@@ -130,7 +141,6 @@ endif
 #git2_dep = dependency('libgit2', required: true)
 #libDeps = [math_dep, dynamic_dep, curl_dep, pcre2_dep, utf8_dep, tar_dep, zlib_dep, git2_dep, rl_dep, sql_dep ]
 #libDeps = [ math_dep, dynamic_dep, rlt_dep ]
-libDeps = [ ef_dep ]
 
 #tcc_dep = cc.find_library('tcc', required: false)
 #if tcc_dep.found()

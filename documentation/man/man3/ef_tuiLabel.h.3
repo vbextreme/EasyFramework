@@ -1,0 +1,53 @@
+.TH "include/ef/tuiLabel.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/tuiLabel.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/tui\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtuiLabel\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBtuiLabel\fP \fBtuiLabel_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBtui_label_event_draw\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_label_new\fP (\fBtui_s\fP *parent, int id, \fButf8_t\fP *name, int border, int r, int c, int width, int height)"
+.br
+.ti -1c
+.RI "void \fBtui_label_set\fP (\fBtui_s\fP *tl, const \fButf8_t\fP *str)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBtuiLabel\fP \fBtuiLabel_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "void tui_label_event_draw (\fBtui_s\fP * tui)"
+event label draw 
+.SS "\fBtui_s\fP* tui_label_new (\fBtui_s\fP * parent, int id, \fButf8_t\fP * name, int border, int r, int c, int width, int height)"
+create new label 
+.SS "void tui_label_set (\fBtui_s\fP * tl, const \fButf8_t\fP * str)"
+set label caption 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

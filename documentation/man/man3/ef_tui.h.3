@@ -1,0 +1,412 @@
+.TH "include/ef/tui.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/tui.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/term\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtuiPosition\fP"
+.br
+.ti -1c
+.RI "struct \fBtuiSize\fP"
+.br
+.ti -1c
+.RI "struct \fBtui\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBTUI_TYPE_ROOT\fP   0"
+.br
+.ti -1c
+.RI "#define \fBTUI_TYPE_WINDOW\fP   1"
+.br
+.ti -1c
+.RI "#define \fBTUI_TYPE_LABEL\fP   2"
+.br
+.ti -1c
+.RI "#define \fBTUI_TYPE_BUTTON\fP   3"
+.br
+.ti -1c
+.RI "#define \fBTUI_TYPE_LIST\fP   4"
+.br
+.ti -1c
+.RI "#define \fBTUI_TYPE_CHECK\fP   5"
+.br
+.ti -1c
+.RI "#define \fBTUI_TYPE_TEXT\fP   6"
+.br
+.ti -1c
+.RI "#define \fBTUI_EVENT_RETURN_EXIT\fP   2"
+.br
+.ti -1c
+.RI "#define \fBTUI_EVENT_RETURN_FOCUS_PARENT\fP   3"
+.br
+.ti -1c
+.RI "#define \fBTUI_EVENT_RETURN_FOCUS_CHILD\fP   4"
+.br
+.ti -1c
+.RI "#define \fBTUI_EVENT_RETURN_FOCUS_NEXT\fP   1"
+.br
+.ti -1c
+.RI "#define \fBTUI_EVENT_RETURN_FOCUS_PREV\fP   \-1"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBtui\fP \fBtui_s\fP"
+.br
+.ti -1c
+.RI "typedef void(* \fBtuiFree_f\fP) (void *)"
+.br
+.ti -1c
+.RI "typedef void(* \fBtuiDraw_f\fP) (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "typedef int(* \fBtuiEventMouse_f\fP) (\fBtui_s\fP *\fBtui\fP, \fBtermMouse_s\fP mouse)"
+.br
+.ti -1c
+.RI "typedef int(* \fBtuiEventKey_f\fP) (\fBtui_s\fP *\fBtui\fP, \fBtermKey_s\fP key)"
+.br
+.ti -1c
+.RI "typedef int(* \fBtuiEventInt_f\fP) (\fBtui_s\fP *\fBtui\fP, int val)"
+.br
+.ti -1c
+.RI "typedef struct \fBtuiPosition\fP \fBtuiPosition_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtuiSize\fP \fBtuiSize_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBtuiAttributes_s\fP { \fBTUI_COLOR_BLACK\fP, \fBTUI_COLOR_RED\fP, \fBTUI_COLOR_GREEN\fP, \fBTUI_COLOR_YELLOW\fP, \fBTUI_COLOR_BLUE\fP, \fBTUI_COLOR_MAGENTA\fP, \fBTUI_COLOR_CYAN\fP, \fBTUI_COLOR_GRAY\fP, \fBTUI_COLOR_LIGHT_GRAY\fP, \fBTUI_COLOR_LIGHT_RED\fP, \fBTUI_COLOR_LIGHT_GREEN\fP, \fBTUI_COLOR_LIGHT_YELLOW\fP, \fBTUI_COLOR_LIGHT_BLUE\fP, \fBTUI_COLOR_LIGHT_MAGENTA\fP, \fBTUI_COLOR_LIGHT_CYAN\fP, \fBTUI_COLOR_WHYTE\fP, \fBTUI_COLOR_BLACK_BK\fP, \fBTUI_COLOR_RED_BK\fP, \fBTUI_COLOR_GREEN_BK\fP, \fBTUI_COLOR_YELLOW_BK\fP, \fBTUI_COLOR_BLUE_BK\fP, \fBTUI_COLOR_MAGENTA_BK\fP, \fBTUI_COLOR_CYAN_BK\fP, \fBTUI_COLOR_GRAY_BK\fP, \fBTUI_COLOR_LIGHT_GRAY_BK\fP, \fBTUI_COLOR_LIGHT_RED_BK\fP, \fBTUI_COLOR_LIGHT_GREEN_BK\fP, \fBTUI_COLOR_LIGHT_YELLOW_BK\fP, \fBTUI_COLOR_LIGHT_BLUE_BK\fP, \fBTUI_COLOR_LIGHT_MAGENTA_BK\fP, \fBTUI_COLOR_LIGHT_CYAN_BK\fP, \fBTUI_COLOR_WHYTE_BK\fP, \fBTUI_COLOR_RESET\fP, \fBTUI_FONT_BOLT\fP, \fBTUI_FONT_ITALIC\fP, \fBTUI_FONT_UNDERLINE\fP, \fBTUI_FONT_RESET\fP, \fBTUI_ATT_COUNT\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBtui_begin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBtui_end\fP (void)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fBtui_att_get\fP (\fBtuiAttributes_s\fP att)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fBtui_border_cast\fP (int weight, char rappresentation)"
+.br
+.ti -1c
+.RI "void \fBtui_draw_hline\fP (\fButf_t\fP ch, unsigned count)"
+.br
+.ti -1c
+.RI "void \fBtui_draw_vline\fP (\fBtuiPosition_s\fP st, \fButf_t\fP ch, unsigned count)"
+.br
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_new\fP (\fBtui_s\fP *parent, int id, \fButf8_t\fP *name, int border, int r, int c, int width, int height, void *userdata)"
+.br
+.ti -1c
+.RI "void \fBtui_free\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_name_set\fP (\fBtui_s\fP *\fBtui\fP, \fButf8_t\fP *name)"
+.br
+.ti -1c
+.RI "void \fBtui_attribute_add\fP (\fBtui_s\fP *\fBtui\fP, int focus, \fButf_t\fP att)"
+.br
+.ti -1c
+.RI "void \fBtui_attribute_clear\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_attribute_print\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_child_add\fP (\fBtui_s\fP *parent, \fBtui_s\fP *child)"
+.br
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_child_remove\fP (\fBtui_s\fP *parent, \fBtui_s\fP *child)"
+.br
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_child_find\fP (\fBtui_s\fP *parent, \fButf8_t\fP *name, int id)"
+.br
+.ti -1c
+.RI "ssize_t \fBtui_child_index\fP (\fBtui_s\fP *parent, \fBtui_s\fP *child)"
+.br
+.ti -1c
+.RI "\fBtuiPosition_s\fP \fBtui_area_position\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "\fBtuiSize_s\fP \fBtui_area_size\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_area_goto\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_clear_area\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_clear\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_clear_all\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_draw_border\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_draw\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_move\fP (\fBtui_s\fP *\fBtui\fP, int r, int c)"
+.br
+.ti -1c
+.RI "int \fBtui_default_event_key\fP (\fB__unused\fP \fBtui_s\fP *\fBtui\fP, \fBtermKey_s\fP key)"
+.br
+.ti -1c
+.RI "int \fBtui_default_event_focus\fP (\fBtui_s\fP *\fBtui\fP, int enable)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define TUI_EVENT_RETURN_EXIT   2"
+
+.PP
+Definition at line 15 of file tui\&.h\&.
+.SS "#define TUI_EVENT_RETURN_FOCUS_CHILD   4"
+
+.PP
+Definition at line 17 of file tui\&.h\&.
+.SS "#define TUI_EVENT_RETURN_FOCUS_NEXT   1"
+
+.PP
+Definition at line 18 of file tui\&.h\&.
+.SS "#define TUI_EVENT_RETURN_FOCUS_PARENT   3"
+
+.PP
+Definition at line 16 of file tui\&.h\&.
+.SS "#define TUI_EVENT_RETURN_FOCUS_PREV   \-1"
+
+.PP
+Definition at line 19 of file tui\&.h\&.
+.SS "#define TUI_TYPE_BUTTON   3"
+
+.PP
+Definition at line 10 of file tui\&.h\&.
+.SS "#define TUI_TYPE_CHECK   5"
+
+.PP
+Definition at line 12 of file tui\&.h\&.
+.SS "#define TUI_TYPE_LABEL   2"
+
+.PP
+Definition at line 9 of file tui\&.h\&.
+.SS "#define TUI_TYPE_LIST   4"
+
+.PP
+Definition at line 11 of file tui\&.h\&.
+.SS "#define TUI_TYPE_ROOT   0"
+
+.PP
+Definition at line 7 of file tui\&.h\&.
+.SS "#define TUI_TYPE_TEXT   6"
+
+.PP
+Definition at line 13 of file tui\&.h\&.
+.SS "#define TUI_TYPE_WINDOW   1"
+
+.PP
+Definition at line 8 of file tui\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBtui\fP \fBtui_s\fP"
+
+.PP
+Definition at line 63 of file tui\&.h\&.
+.SS "typedef void(* tuiDraw_f) (\fBtui_s\fP *\fBtui\fP)"
+
+.PP
+Definition at line 66 of file tui\&.h\&.
+.SS "typedef int(* tuiEventInt_f) (\fBtui_s\fP *\fBtui\fP, int val)"
+
+.PP
+Definition at line 69 of file tui\&.h\&.
+.SS "typedef int(* tuiEventKey_f) (\fBtui_s\fP *\fBtui\fP, \fBtermKey_s\fP key)"
+
+.PP
+Definition at line 68 of file tui\&.h\&.
+.SS "typedef int(* tuiEventMouse_f) (\fBtui_s\fP *\fBtui\fP, \fBtermMouse_s\fP mouse)"
+
+.PP
+Definition at line 67 of file tui\&.h\&.
+.SS "typedef void(* tuiFree_f) (void *)"
+
+.PP
+Definition at line 65 of file tui\&.h\&.
+.SS "typedef struct \fBtuiPosition\fP \fBtuiPosition_s\fP"
+
+.SS "typedef struct \fBtuiSize\fP \fBtuiSize_s\fP"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBtuiAttributes_s\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fITUI_COLOR_BLACK \fP\fP
+.TP
+\fB\fITUI_COLOR_RED \fP\fP
+.TP
+\fB\fITUI_COLOR_GREEN \fP\fP
+.TP
+\fB\fITUI_COLOR_YELLOW \fP\fP
+.TP
+\fB\fITUI_COLOR_BLUE \fP\fP
+.TP
+\fB\fITUI_COLOR_MAGENTA \fP\fP
+.TP
+\fB\fITUI_COLOR_CYAN \fP\fP
+.TP
+\fB\fITUI_COLOR_GRAY \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_GRAY \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_RED \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_GREEN \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_YELLOW \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_BLUE \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_MAGENTA \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_CYAN \fP\fP
+.TP
+\fB\fITUI_COLOR_WHYTE \fP\fP
+.TP
+\fB\fITUI_COLOR_BLACK_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_RED_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_GREEN_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_YELLOW_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_BLUE_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_MAGENTA_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_CYAN_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_GRAY_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_GRAY_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_RED_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_GREEN_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_YELLOW_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_BLUE_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_MAGENTA_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_LIGHT_CYAN_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_WHYTE_BK \fP\fP
+.TP
+\fB\fITUI_COLOR_RESET \fP\fP
+.TP
+\fB\fITUI_FONT_BOLT \fP\fP
+.TP
+\fB\fITUI_FONT_ITALIC \fP\fP
+.TP
+\fB\fITUI_FONT_UNDERLINE \fP\fP
+.TP
+\fB\fITUI_FONT_RESET \fP\fP
+.TP
+\fB\fITUI_ATT_COUNT \fP\fP
+.PP
+Definition at line 21 of file tui\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void tui_area_goto (\fBtui_s\fP * tui)"
+goto to area 
+.SS "\fBtuiPosition_s\fP tui_area_position (\fBtui_s\fP * tui)"
+get area position 
+.SS "\fBtuiSize_s\fP tui_area_size (\fBtui_s\fP * tui)"
+get area size 
+.SS "\fButf_t\fP tui_att_get (\fBtuiAttributes_s\fP att)"
+get utf rappresent attribute 
+.SS "void tui_attribute_add (\fBtui_s\fP * tui, int focus, \fButf_t\fP att)"
+add an attribute to tui 
+.SS "void tui_attribute_clear (\fBtui_s\fP * tui)"
+clear all attribute 
+.SS "void tui_attribute_print (\fBtui_s\fP * tui)"
+print attribute 
+.SS "void tui_begin (void)"
+begin use tui 
+.SS "\fButf_t\fP tui_border_cast (int weight, char rappresentation)"
+cast a char rappresentation of border to utf_t rappresentation /-----T---7 | | | F-----+---3 
+.br
+ | | | L-----1---j (---------) {---------} \&.: 
+.SS "void tui_child_add (\fBtui_s\fP * parent, \fBtui_s\fP * child)"
+add an child 
+.SS "\fBtui_s\fP* tui_child_find (\fBtui_s\fP * parent, \fButf8_t\fP * name, int id)"
+find a child, if name is null is used id 
+.SS "ssize_t tui_child_index (\fBtui_s\fP * parent, \fBtui_s\fP * child)"
+get index of child 
+.SS "\fBtui_s\fP* tui_child_remove (\fBtui_s\fP * parent, \fBtui_s\fP * child)"
+remove a child 
+.SS "void tui_clear (\fBtui_s\fP * tui)"
+clear 
+.SS "void tui_clear_all (\fBtui_s\fP * tui)"
+clear all child 
+.SS "void tui_clear_area (\fBtui_s\fP * tui)"
+clear area, no border clear 
+.SS "int tui_default_event_focus (\fBtui_s\fP * tui, int enable)"
+default event for focus 
+.SS "int tui_default_event_key (\fB__unused\fP \fBtui_s\fP * tui, \fBtermKey_s\fP key)"
+default event for key 
+.SS "void tui_draw (\fBtui_s\fP * tui)"
+draw all child 
+.SS "void tui_draw_border (\fBtui_s\fP * tui)"
+draw border 
+.SS "void tui_draw_hline (\fButf_t\fP ch, unsigned count)"
+draw horizontal line 
+.SS "void tui_draw_vline (\fBtuiPosition_s\fP st, \fButf_t\fP ch, unsigned count)"
+draw vertical line 
+.SS "void tui_end (void)"
+end use tui 
+.SS "void tui_free (\fBtui_s\fP * tui)"
+free a tui object and remove tui from parent 
+.SS "void tui_move (\fBtui_s\fP * tui, int r, int c)"
+move tui to position 
+.SS "void tui_name_set (\fBtui_s\fP * tui, \fButf8_t\fP * name)"
+set name object 
+.SS "\fBtui_s\fP* tui_new (\fBtui_s\fP * parent, int id, \fButf8_t\fP * name, int border, int r, int c, int width, int height, void * userdata)"
+create new tui object 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

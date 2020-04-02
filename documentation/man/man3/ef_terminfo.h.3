@@ -1,0 +1,818 @@
+.TH "include/ef/terminfo.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/terminfo.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/utf8\&.h>\fP
+.br
+\fC#include <ef/rbhash\&.h>\fP
+.br
+\fC#include <ef/trie\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtiData\fP"
+.br
+.ti -1c
+.RI "struct \fBkbData\fP"
+.br
+.ti -1c
+.RI "struct \fBtermInfo\fP"
+.br
+.ti -1c
+.RI "struct \fBtidbheader\fP"
+.br
+.ti -1c
+.RI "struct \fBtidbextend\fP"
+.br
+.ti -1c
+.RI "struct \fBtidatabase\fP"
+.br
+.ti -1c
+.RI "struct \fBtvariable\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBTERM_MAGIC\fP   282"
+.br
+.ti -1c
+.RI "#define \fBTERM_DATABASE_DIRECTORY\fP   '/usr/lib/terminfo'"
+.br
+.ti -1c
+.RI "#define \fBENV_TERM\fP   'TERM'"
+.br
+.ti -1c
+.RI "#define \fBENV_TERMEX\fP   'TERMEX'"
+.br
+.ti -1c
+.RI "#define \fBENV_TERMEF\fP   'TERMEF'"
+.br
+.ti -1c
+.RI "#define \fBTERM_EF_EXTEND\fP   'ef\-term\-extend'"
+.br
+.ti -1c
+.RI "#define \fBterm_print\fP(STR)"
+.br
+.ti -1c
+.RI "#define \fBterm_flush\fP()   fflush(stdout)"
+.br
+.ti -1c
+.RI "#define \fBTVARIABLE_AUTOTYPE\fP(V)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_f0\fP(NAME)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_f1\fP(NAME,  P1)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_f2\fP(NAME,  P1,  P2)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_f3\fP(NAME,  P1,  P2,  P3)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_f4\fP(NAME,  P1,  P2,  P3,  P4)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_f5\fP(NAME,  P1,  P2,  P3,  P4,  P5)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_f6\fP(NAME,  P1,  P2,  P3,  P4,  P5,  P6)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_f7\fP(NAME,  P1,  P2,  P3,  P4,  P5,  P6,  P7)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_f8\fP(NAME,  P1,  P2,  P3,  P4,  P5,  P6,  P7,  P8)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_f9\fP(NAME,  P1,  P2,  P3,  P4,  P5,  P6,  P7,  P8,  P9)"
+.br
+.ti -1c
+.RI "#define \fBterm_escapef\fP(NAME, \&.\&.\&.)   \fB__CONCAT_EXPAND__\fP(term_escape_f,\fB__VA_COUNT__\fP(__VA_ARGS__))(NAME,##__VA_ARGS__)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_mk0\fP(OUT,  NAME)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_mk1\fP(OUT,  NAME,  P1)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_mk2\fP(OUT,  NAME,  P1,  P2)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_mk3\fP(OUT,  NAME,  P1,  P2,  P3)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_mk4\fP(OUT,  NAME,  P1,  P2,  P3,  P4)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_mk5\fP(OUT,  NAME,  P1,  P2,  P3,  P4,  P5)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_mk6\fP(OUT,  NAME,  P1,  P2,  P3,  P4,  P5,  P6)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_mk7\fP(OUT,  NAME,  P1,  P2,  P3,  P4,  P5,  P6,  P7)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_mk8\fP(OUT,  NAME,  P1,  P2,  P3,  P4,  P5,  P6,  P7,  P8)"
+.br
+.ti -1c
+.RI "#define \fBterm_escape_mk9\fP(OUT,  NAME,  P1,  P2,  P3,  P4,  P5,  P6,  P7,  P8,  P9)"
+.br
+.ti -1c
+.RI "#define \fBterm_escapemk\fP(OUT,  NAME, \&.\&.\&.)   \fB__CONCAT_EXPAND__\fP(term_escape_mk,\fB__VA_COUNT__\fP(__VA_ARGS__))(OUT,NAME,##__VA_ARGS__)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBtiData\fP \fBtiData_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBkbData\fP \fBkbData_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtermInfo\fP \fBtermInfo_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtidbheader\fP \fBtidbheader_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtidbextend\fP \fBtidbextend_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtidatabase\fP \fBtidatabase_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtvariable\fP \fBtvariable_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBtitype_e\fP { \fBTI_TYPE_UNSET\fP, \fBTI_TYPE_BOOL\fP, \fBTI_TYPE_NUM\fP, \fBTI_TYPE_STR\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "const char * \fBterm_name\fP (void)"
+.br
+.ti -1c
+.RI "const char * \fBterm_name_extend\fP (void)"
+.br
+.ti -1c
+.RI "const char * \fBterm_name_ef\fP (void)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fBterm_utf_custom\fP (\fButf_t\fP u, const char *str)"
+.br
+.ti -1c
+.RI "void \fBterm_print_utf\fP (\fButf_t\fP u)"
+.br
+.ti -1c
+.RI "void \fBterm_print_utf8\fP (const \fButf8_t\fP *str)"
+.br
+.ti -1c
+.RI "void \fBterm_print_str\fP (const char *str)"
+.br
+.ti -1c
+.RI "char * \fBterm_escape_character\fP (int ch)"
+.br
+.ti -1c
+.RI "char * \fBterm_escape_str\fP (char *out, const char *ch)"
+.br
+.ti -1c
+.RI "void \fBterm_begin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBterm_end\fP (void)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBterm_load\fP (char *path, const char *dbname)"
+.br
+.ti -1c
+.RI "void \fBterm_update_key\fP (void)"
+.br
+.ti -1c
+.RI "char * \fBterm_escape_make\fP (char *out, const char *\fBformat\fP, \fBtvariable_s\fP *param)"
+.br
+.ti -1c
+.RI "void \fBterm_escape_make_print\fP (const char *\fBformat\fP, \fBtvariable_s\fP *param)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBterm_escape_string\fP (char *out, char *name, \fBtvariable_s\fP *var)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBterm_escape_print\fP (char *name, \fBtvariable_s\fP *var)"
+.br
+.ti -1c
+.RI "int \fBterm_escape_bool\fP (char *name)"
+.br
+.ti -1c
+.RI "int \fBterm_escape_number\fP (char *name)"
+.br
+.ti -1c
+.RI "\fBtiData_s\fP * \fBterm_info\fP (const char *name)"
+.br
+.ti -1c
+.RI "int \fBterm_info_bool\fP (const char *name)"
+.br
+.ti -1c
+.RI "int \fBterm_info_number\fP (const char *name)"
+.br
+.ti -1c
+.RI "const char * \fBterm_info_string\fP (const char *name)"
+.br
+.ti -1c
+.RI "__always_inline \fBtvariable_s\fP \fB__tvariable_set_numeric\fP (long num)"
+.br
+.ti -1c
+.RI "__always_inline \fBtvariable_s\fP \fB__tvariable_set_string\fP (char *str)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define ENV_TERM   'TERM'"
+enviroment contains database name 
+.PP
+Definition at line 18 of file terminfo\&.h\&.
+.SS "#define ENV_TERMEF   'TERMEF'"
+extra enviroment contains unofficial cap for common terminal 
+.PP
+Definition at line 28 of file terminfo\&.h\&.
+.SS "#define ENV_TERMEX   'TERMEX'"
+extra enviroment contains unofficial cap for terminal 
+.PP
+Definition at line 23 of file terminfo\&.h\&.
+.SS "#define TERM_DATABASE_DIRECTORY   '/usr/lib/terminfo'"
+directory to find terminfo 
+.PP
+Definition at line 13 of file terminfo\&.h\&.
+.SS "#define TERM_EF_EXTEND   'ef\-term\-extend'"
+
+.PP
+Definition at line 31 of file terminfo\&.h\&.
+.SS "#define term_escape_f0(NAME)"
+\fBValue:\fP
+.PP
+.nf
+       term_escape_print(NAME, (tvariable_s[10]){\
+        [1] = { \&.type = 0, \&.l = 0 }\
+        }\
+    )
+.fi
+.PP
+Definition at line 215 of file terminfo\&.h\&.
+.SS "#define term_escape_f1(NAME, P1)"
+\fBValue:\fP
+.PP
+.nf
+        term_escape_print(NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1)\
+        }\
+    )
+.fi
+.PP
+Definition at line 220 of file terminfo\&.h\&.
+.SS "#define term_escape_f2(NAME, P1, P2)"
+\fBValue:\fP
+.PP
+.nf
+        term_escape_print(NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2)\
+        }\
+    )
+.fi
+.PP
+Definition at line 225 of file terminfo\&.h\&.
+.SS "#define term_escape_f3(NAME, P1, P2, P3)"
+\fBValue:\fP
+.PP
+.nf
+        term_escape_print(NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3)\
+        }\
+    )
+.fi
+.PP
+Definition at line 231 of file terminfo\&.h\&.
+.SS "#define term_escape_f4(NAME, P1, P2, P3, P4)"
+\fBValue:\fP
+.PP
+.nf
+        term_escape_print(NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4)\
+        }\
+    )
+.fi
+.PP
+Definition at line 238 of file terminfo\&.h\&.
+.SS "#define term_escape_f5(NAME, P1, P2, P3, P4, P5)"
+\fBValue:\fP
+.PP
+.nf
+        term_escape_print(NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4),\
+        [5] = TVARIABLE_AUTOTYPE(P5)\
+        }\
+    )
+.fi
+.PP
+Definition at line 246 of file terminfo\&.h\&.
+.SS "#define term_escape_f6(NAME, P1, P2, P3, P4, P5, P6)"
+\fBValue:\fP
+.PP
+.nf
+        term_escape_print(NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4),\
+        [5] = TVARIABLE_AUTOTYPE(P5),\
+        [6] = TVARIABLE_AUTOTYPE(P6)\
+        }\
+    )
+.fi
+.PP
+Definition at line 255 of file terminfo\&.h\&.
+.SS "#define term_escape_f7(NAME, P1, P2, P3, P4, P5, P6, P7)"
+\fBValue:\fP
+.PP
+.nf
+        term_escape_print(NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4),\
+        [5] = TVARIABLE_AUTOTYPE(P5),\
+        [6] = TVARIABLE_AUTOTYPE(P6),\
+        [7] = TVARIABLE_AUTOTYPE(P7)\
+        }\
+    )
+.fi
+.PP
+Definition at line 265 of file terminfo\&.h\&.
+.SS "#define term_escape_f8(NAME, P1, P2, P3, P4, P5, P6, P7, P8)"
+\fBValue:\fP
+.PP
+.nf
+        term_escape_print(NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4),\
+        [5] = TVARIABLE_AUTOTYPE(P5),\
+        [6] = TVARIABLE_AUTOTYPE(P6),\
+        [7] = TVARIABLE_AUTOTYPE(P7),\
+        [8] = TVARIABLE_AUTOTYPE(P8)\
+        }\
+    )
+.fi
+.PP
+Definition at line 277 of file terminfo\&.h\&.
+.SS "#define term_escape_f9(NAME, P1, P2, P3, P4, P5, P6, P7, P8, P9)"
+\fBValue:\fP
+.PP
+.nf
+        term_escape_print(NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4),\
+        [5] = TVARIABLE_AUTOTYPE(P5),\
+        [6] = TVARIABLE_AUTOTYPE(P6),\
+        [7] = TVARIABLE_AUTOTYPE(P7),\
+        [8] = TVARIABLE_AUTOTYPE(P8),\
+        [9] = TVARIABLE_AUTOTYPE(P9)\
+        }\
+    )
+.fi
+.PP
+Definition at line 289 of file terminfo\&.h\&.
+.SS "#define term_escape_mk0(OUT, NAME)"
+\fBValue:\fP
+.PP
+.nf
+      term_escape_string(OUT, NAME, (tvariable_s[10]){\
+        [1] = { \&.type = 0, \&.l = 0 }\
+        }\
+    )
+.fi
+.PP
+Definition at line 309 of file terminfo\&.h\&.
+.SS "#define term_escape_mk1(OUT, NAME, P1)"
+\fBValue:\fP
+.PP
+.nf
+      term_escape_string(OUT, NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1)\
+        }\
+    )
+.fi
+.PP
+Definition at line 314 of file terminfo\&.h\&.
+.SS "#define term_escape_mk2(OUT, NAME, P1, P2)"
+\fBValue:\fP
+.PP
+.nf
+      term_escape_string(OUT, NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2)\
+        }\
+    )
+.fi
+.PP
+Definition at line 319 of file terminfo\&.h\&.
+.SS "#define term_escape_mk3(OUT, NAME, P1, P2, P3)"
+\fBValue:\fP
+.PP
+.nf
+      term_escape_string(OUT, NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3)\
+        }\
+    )
+.fi
+.PP
+Definition at line 325 of file terminfo\&.h\&.
+.SS "#define term_escape_mk4(OUT, NAME, P1, P2, P3, P4)"
+\fBValue:\fP
+.PP
+.nf
+      term_escape_string(OUT, NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4)\
+        }\
+    )
+.fi
+.PP
+Definition at line 332 of file terminfo\&.h\&.
+.SS "#define term_escape_mk5(OUT, NAME, P1, P2, P3, P4, P5)"
+\fBValue:\fP
+.PP
+.nf
+      term_escape_string(OUT, NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4),\
+        [5] = TVARIABLE_AUTOTYPE(P5)\
+        }\
+    )
+.fi
+.PP
+Definition at line 340 of file terminfo\&.h\&.
+.SS "#define term_escape_mk6(OUT, NAME, P1, P2, P3, P4, P5, P6)"
+\fBValue:\fP
+.PP
+.nf
+      term_escape_string(OUT, NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4),\
+        [5] = TVARIABLE_AUTOTYPE(P5),\
+        [6] = TVARIABLE_AUTOTYPE(P6)\
+        }\
+    )
+.fi
+.PP
+Definition at line 349 of file terminfo\&.h\&.
+.SS "#define term_escape_mk7(OUT, NAME, P1, P2, P3, P4, P5, P6, P7)"
+\fBValue:\fP
+.PP
+.nf
+      term_escape_string(OUT, NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4),\
+        [5] = TVARIABLE_AUTOTYPE(P5),\
+        [6] = TVARIABLE_AUTOTYPE(P6),\
+        [7] = TVARIABLE_AUTOTYPE(P7)\
+        }\
+    )
+.fi
+.PP
+Definition at line 359 of file terminfo\&.h\&.
+.SS "#define term_escape_mk8(OUT, NAME, P1, P2, P3, P4, P5, P6, P7, P8)"
+\fBValue:\fP
+.PP
+.nf
+      term_escape_string(OUT, NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4),\
+        [5] = TVARIABLE_AUTOTYPE(P5),\
+        [6] = TVARIABLE_AUTOTYPE(P6),\
+        [7] = TVARIABLE_AUTOTYPE(P7),\
+        [8] = TVARIABLE_AUTOTYPE(P8)\
+        }\
+    )
+.fi
+.PP
+Definition at line 370 of file terminfo\&.h\&.
+.SS "#define term_escape_mk9(OUT, NAME, P1, P2, P3, P4, P5, P6, P7, P8, P9)"
+\fBValue:\fP
+.PP
+.nf
+      term_escape_string(OUT, NAME, (tvariable_s[10]){\
+        [1] = TVARIABLE_AUTOTYPE(P1),\
+        [2] = TVARIABLE_AUTOTYPE(P2),\
+        [3] = TVARIABLE_AUTOTYPE(P3),\
+        [4] = TVARIABLE_AUTOTYPE(P4),\
+        [5] = TVARIABLE_AUTOTYPE(P5),\
+        [6] = TVARIABLE_AUTOTYPE(P6),\
+        [7] = TVARIABLE_AUTOTYPE(P7),\
+        [8] = TVARIABLE_AUTOTYPE(P8),\
+        [9] = TVARIABLE_AUTOTYPE(P9)\
+        }\
+    )
+.fi
+.PP
+Definition at line 382 of file terminfo\&.h\&.
+.SS "#define term_escapef(NAME,  \&.\&.\&.)   \fB__CONCAT_EXPAND__\fP(term_escape_f,\fB__VA_COUNT__\fP(__VA_ARGS__))(NAME,##__VA_ARGS__)"
+same term_escape_print but with stdarg for tvariable_s 
+.PP
+Definition at line 304 of file terminfo\&.h\&.
+.SS "#define term_escapemk(OUT, NAME,  \&.\&.\&.)   \fB__CONCAT_EXPAND__\fP(term_escape_mk,\fB__VA_COUNT__\fP(__VA_ARGS__))(OUT,NAME,##__VA_ARGS__)"
+same term_escape_string but with stdarg for tvariable_s 
+.PP
+Definition at line 397 of file terminfo\&.h\&.
+.SS "#define term_flush()   fflush(stdout)"
+flush 
+.PP
+Definition at line 152 of file terminfo\&.h\&.
+.SS "#define TERM_MAGIC   282"
+
+.PP
+Definition at line 9 of file terminfo\&.h\&.
+.SS "#define term_print(STR)"
+\fBValue:\fP
+.PP
+.nf
+   _Generic((STR),\
+    utf_t: term_print_utf,\
+    utf8_t*: term_print_utf8,\
+    const utf8_t*: term_print_utf8,\
+    char: putchar,\
+    char*: term_print_str,\
+    const char*: puts\
+)(STR)
+.fi
+print 
+.PP
+Definition at line 113 of file terminfo\&.h\&.
+.SS "#define TVARIABLE_AUTOTYPE(V)"
+\fBValue:\fP
+.PP
+.nf
+   _Generic(V,\
+    int: __tvariable_set_numeric,\
+    unsigned int: __tvariable_set_numeric,\
+    long: __tvariable_set_numeric,\
+    unsigned long: __tvariable_set_numeric,\
+    unsigned char: __tvariable_set_numeric,\
+    char*: __tvariable_set_string,\
+    const char*: __tvariable_set_string\
+)(V)
+.fi
+.PP
+Definition at line 205 of file terminfo\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBkbData\fP \fBkbData_s\fP"
+
+.SS "typedef struct \fBtermInfo\fP \fBtermInfo_s\fP"
+
+.SS "typedef struct \fBtiData\fP \fBtiData_s\fP"
+
+.SS "typedef struct \fBtidatabase\fP \fBtidatabase_s\fP"
+
+.SS "typedef struct \fBtidbextend\fP \fBtidbextend_s\fP"
+
+.SS "typedef struct \fBtidbheader\fP \fBtidbheader_s\fP"
+
+.SS "typedef struct \fBtvariable\fP \fBtvariable_s\fP"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBtitype_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fITI_TYPE_UNSET \fP\fP
+.TP
+\fB\fITI_TYPE_BOOL \fP\fP
+.TP
+\fB\fITI_TYPE_NUM \fP\fP
+.TP
+\fB\fITI_TYPE_STR \fP\fP
+.PP
+Definition at line 33 of file terminfo\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "__always_inline \fBtvariable_s\fP __tvariable_set_numeric (long num)"
+
+.PP
+Definition at line 202 of file terminfo\&.h\&.
+.SS "__always_inline \fBtvariable_s\fP __tvariable_set_string (char * str)"
+
+.PP
+Definition at line 203 of file terminfo\&.h\&.
+.SS "void term_begin (void)"
+init term, call this before use other function 
+.SS "void term_end (void)"
+release resources of term 
+.SS "int term_escape_bool (char * name)"
+return a boolean cap value -1 for error 
+.SS "char* term_escape_character (int ch)"
+convert unescaped char in printable, escaped, string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIch\fP non printable char 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+escaped string rappresent ch 
+.RE
+.PP
+
+.SS "char* term_escape_make (char * out, const char * format, \fBtvariable_s\fP * param)"
+get a format cap, variable and build it on string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIout\fP builded escape 
+.br
+\fIformat\fP cap 
+.br
+\fIparam\fP variable for cap 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+out 
+.RE
+.PP
+
+.SS "void term_escape_make_print (const char * format, \fBtvariable_s\fP * param)"
+get a format cap, variable, build and print on stdout 
+.PP
+\fBParameters\fP
+.RS 4
+\fIformat\fP cap 
+.br
+\fIparam\fP variable for cap 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+out 
+.RE
+.PP
+
+.SS "int term_escape_number (char * name)"
+return a int cap value, -1 for error 
+.SS "\fBerr_t\fP term_escape_print (char * name, \fBtvariable_s\fP * var)"
+get a name of cap, variable, build it and print 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP name cap 
+.br
+\fIvar\fP variable for cap 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 for error 
+.RE
+.PP
+
+.SS "char* term_escape_str (char * out, const char * ch)"
+convert unescaped string to printable escaped string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIout\fP buffer where stored string 
+.br
+\fIch\fP string to escape 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+out 
+.RE
+.PP
+
+.SS "\fBerr_t\fP term_escape_string (char * out, char * name, \fBtvariable_s\fP * var)"
+get a name of cap, variable and build it on string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIout\fP builded escape 
+.br
+\fIname\fP name cap 
+.br
+\fIvar\fP variable for cap 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 for error 
+.RE
+.PP
+
+.SS "\fBtiData_s\fP* term_info (const char * name)"
+return a raw \fBtiData\fP for name 
+.SS "int term_info_bool (const char * name)"
+return cap bool 
+.SS "int term_info_number (const char * name)"
+return cap number 
+.SS "const char* term_info_string (const char * name)"
+return cap string 
+.SS "\fBerr_t\fP term_load (char * path, const char * dbname)"
+load terminal cap, add to previus database if loaded 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP null used TERM_DATABASE_DIRECTORY 
+.br
+\fIdbname\fP name database to load, <path>/<dbname[0]>/<dbname>, null use path without change for loading database 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error, 0 successfull 
+.RE
+.PP
+
+.SS "const char* term_name (void)"
+return terminal name 
+.SS "const char* term_name_ef (void)"
+return terminal common extend name if not eviroment is setted return TERM_EF_EXTEND 
+.SS "const char* term_name_extend (void)"
+return terminal extend name 
+.SS "void term_print_str (const char * str)"
+print string 
+.SS "void term_print_utf (\fButf_t\fP u)"
+print utf on terminal 
+.SS "void term_print_utf8 (const \fButf8_t\fP * str)"
+print utf string on terminal 
+.SS "void term_update_key (void)"
+after loading all database call update key if you need special key on input 
+.SS "\fButf_t\fP term_utf_custom (\fButf_t\fP u, const char * str)"
+create or cange custom utf 
+.PP
+\fBParameters\fP
+.RS 4
+\fIu\fP if 0 create new utf, otherwise change utf previus create with this function 
+.br
+\fIstr\fP string associated to utf 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+utf associated to string 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

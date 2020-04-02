@@ -1,7 +1,7 @@
 ###########
 # project #
 ###########
-project('EasyFramework', 'c', version: '0.5.0', license: 'gplv3')
+project('EasyFramework', 'c', version: '1.1.0', license: 'gplv3')
 projectName = 'ef'
 
 cc = meson.get_compiler('c')
@@ -57,6 +57,7 @@ src += [ 'ef/os/sys.c' ]
 src += [ 'ef/os/spawn.c' ]
 src += [ 'ef/os/inutility.c' ]
 src += [ 'ef/os/vectorization.c' ]
+src += [ 'ef/os/signal.c' ]
 
 src += [ 'ef/concurrency/threads.c' ]
 src += [ 'ef/concurrency/promise.c' ]
@@ -71,6 +72,20 @@ src += [ 'ef/www/imap.c' ]
 src += [ 'ef/www/tig.c' ]
 src += [ 'ef/www/oauth.c' ]
 
+src += [ 'ef/term/terminfo.c' ]
+src += [ 'ef/term/termlink.c' ]
+src += [ 'ef/term/pty.c' ]
+src += [ 'ef/term/termmode.c' ]
+src += [ 'ef/term/terminput.c' ]
+src += [ 'ef/term/termreadline.c' ]
+src += [ 'ef/term/tui.c' ]
+src += [ 'ef/term/tuiRoot.c' ]
+src += [ 'ef/term/tuiWindow.c' ]
+src += [ 'ef/term/tuiLabel.c' ]
+src += [ 'ef/term/tuiButton.c' ]
+src += [ 'ef/term/tuiText.c' ]
+src += [ 'ef/term/tuiList.c' ]
+
 ##################
 # compiler flags #
 ##################
@@ -84,6 +99,12 @@ add_global_arguments('-Wstrict-aliasing', language: 'c')
 add_global_arguments('-Wstrict-overflow', language: 'c')
 add_global_arguments('-Wfloat-equal', language: 'c')
 add_global_arguments('-Wvla', language: 'c')
+add_global_arguments('-Wduplicated-branches', language: 'c')
+add_global_arguments('-Wduplicated-cond', language: 'c')
+add_global_arguments('-Wlogical-op', language: 'c')
+#add_global_arguments('-fanalyzer', language: 'c')
+#add_global_arguments('-Wcast-qual', language: 'c')
+
 
 #reentrant malloc
 add_global_arguments('-pthread', language: 'c')
@@ -173,7 +194,7 @@ libDeps += [ dependency('libgit2', required: true) ]
 # software dependencies #
 #########################
 
-#perl = find_program('perl', required: true)
+tic = find_program('tic', required: true)
 
 #################
 # Configuration #
@@ -182,6 +203,13 @@ libDeps += [ dependency('libgit2', required: true) ]
 #################
 # Custom Target #
 #################
+
+tic_src = custom_target('tic',
+  output: 'ef-term-extend',
+  input: 'ti/ef-term-extend.ti',
+  command: [tic, '-x', '-o', '@OUTPUT@', '@INPUT@']
+)
+src += [ tic_src ]
 
 #########
 # debug #
@@ -196,6 +224,7 @@ if opt_debug > 0
   debugstr = debugstr.format(opt_debug)
   add_global_arguments(debugstr, language: 'c')
   add_global_arguments('-g', language: 'c')
+  add_global_arguments('-fstack-protector-strong', language: 'c')
   #add_global_arguments('-ftree-vectorizer-verbose=5', language:'c')
   #add_global_arguments('-fopt-info-loop-optimized', language:'c')
   #add_global_arguments('-fopt-info-vec-optimized', language:'c')
@@ -214,11 +243,24 @@ if get_option('assert') > 0
   add_global_arguments('-DASSERT_ENABLE=1', language: 'c')
 endif
 
+#######
+# pkg #
+#######
+
+pkg = import('pkgconfig')
+pkg.generate(
+  name: 'EasyFramework',
+  description : 'easy framework library.',
+  libraries: [ '-lef', '-lunistring' ],
+  version: meson.project_version(),
+)
+
 ###########
 # install #
 ###########
 
 install_subdir('include/ef', install_dir: 'include')
+install_subdir('ef-term-extend/e', install_dir: 'lib/terminfo') 
 
 if get_option('man') > 0
   manc = run_command('allman')

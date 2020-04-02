@@ -5,7 +5,6 @@
 
 /*@fn*/
 void test_trie(const char* a, __unused const char* b){
-	int engage = 1;
 	int ret = 1;
 
 	char** edata = data_word(a);
@@ -17,7 +16,7 @@ void test_trie(const char* a, __unused const char* b){
 	__trie_free trie_s* tr = trie_new(NULL);
 	
 	vector_foreach(&edata, i){
-		if( trie_insert(tr, edata[i], &engage) ){
+		if( trie_insert(tr, edata[i], edata[i]) ){
 			ret = 0;
 			break;
 		}
@@ -35,7 +34,8 @@ void test_trie(const char* a, __unused const char* b){
 	ret = 1;
 
 	vector_foreach(&edata, i){
-		if( !trie_search(tr, edata[i]) ){
+		char* s = trie_search(tr, edata[i]);
+		if( strcmp(s, edata[i]) ){
 			err_push("fail to search %s in trie", edata[i] );
 			ret = 0;
 			break;
@@ -47,6 +47,9 @@ void test_trie(const char* a, __unused const char* b){
 	}
 	printf("\r");
 	TESTT("trie search", ret == 1);
+	if( !ret ){
+		err_print();
+	}
 
 	data_word_free(edata, a);
 }

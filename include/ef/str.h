@@ -121,4 +121,10 @@ ssize_t str_chomp(char* str);
  */
 char* quote_printable_decode(size_t *len, const char* str);
 
+/** convert to upper*/
+void str_toupper(char* dst, const char* src);
+
+/** convert to lower*/
+void str_tolower(char* dst, const char* src);
+
 #endif

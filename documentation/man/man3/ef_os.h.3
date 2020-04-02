@@ -1,4 +1,4 @@
-.TH "include/ef/os.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/os.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -9,6 +9,13 @@ include/ef/os.h
 \fC#include <ef/type\&.h>\fP
 .br
 
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBos_getlocale\fP()   locale_charset()"
+.br
+.in -1c
 .SS "Functions"
 
 .in +1c
@@ -16,6 +23,12 @@ include/ef/os.h
 .RI "const char * \fBos_setlocale\fP (int category, const char *locale)"
 .br
 .in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define os_getlocale()   locale_charset()"
+get current locale 
+.PP
+Definition at line 10 of file os\&.h\&.
 .SH "Function Documentation"
 .PP 
 .SS "const char* os_setlocale (int category, const char * locale)"

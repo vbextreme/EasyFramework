@@ -1,0 +1,3489 @@
+.TH "include/ef/termcapstr.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/termcapstr.h
+.SH SYNOPSIS
+.br
+.PP
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBcap_auto_left_margin\fP   'auto_left_margin'"
+.br
+.ti -1c
+.RI "#define \fBcap_auto_right_margin\fP   'auto_right_margin'"
+.br
+.ti -1c
+.RI "#define \fBcap_no_esc_ctlc\fP   'no_esc_ctlc'"
+.br
+.ti -1c
+.RI "#define \fBcap_ceol_standout_glitch\fP   'ceol_standout_glitch'"
+.br
+.ti -1c
+.RI "#define \fBcap_eat_newline_glitch\fP   'eat_newline_glitch'"
+.br
+.ti -1c
+.RI "#define \fBcap_erase_overstrike\fP   'erase_overstrike'"
+.br
+.ti -1c
+.RI "#define \fBcap_generic_type\fP   'generic_type'"
+.br
+.ti -1c
+.RI "#define \fBcap_hard_copy\fP   'hard_copy'"
+.br
+.ti -1c
+.RI "#define \fBcap_has_meta_key\fP   'has_meta_key'"
+.br
+.ti -1c
+.RI "#define \fBcap_has_status_line\fP   'has_status_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_insert_null_glitch\fP   'insert_null_glitch'"
+.br
+.ti -1c
+.RI "#define \fBcap_memory_above\fP   'memory_above'"
+.br
+.ti -1c
+.RI "#define \fBcap_memory_below\fP   'memory_below'"
+.br
+.ti -1c
+.RI "#define \fBcap_move_insert_mode\fP   'move_insert_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_move_standout_mode\fP   'move_standout_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_over_strike\fP   'over_strike'"
+.br
+.ti -1c
+.RI "#define \fBcap_status_line_esc_ok\fP   'status_line_esc_ok'"
+.br
+.ti -1c
+.RI "#define \fBcap_dest_tabs_magic_smso\fP   'dest_tabs_magic_smso'"
+.br
+.ti -1c
+.RI "#define \fBcap_tilde_glitch\fP   'tilde_glitch'"
+.br
+.ti -1c
+.RI "#define \fBcap_transparent_underline\fP   'transparent_underline'"
+.br
+.ti -1c
+.RI "#define \fBcap_xon_xoff\fP   'xon_xoff'"
+.br
+.ti -1c
+.RI "#define \fBcap_needs_xon_xoff\fP   'needs_xon_xoff'"
+.br
+.ti -1c
+.RI "#define \fBcap_prtr_silent\fP   'prtr_silent'"
+.br
+.ti -1c
+.RI "#define \fBcap_hard_cursor\fP   'hard_cursor'"
+.br
+.ti -1c
+.RI "#define \fBcap_non_rev_rmcup\fP   'non_rev_rmcup'"
+.br
+.ti -1c
+.RI "#define \fBcap_no_pad_char\fP   'no_pad_char'"
+.br
+.ti -1c
+.RI "#define \fBcap_non_dest_scroll_region\fP   'non_dest_scroll_region'"
+.br
+.ti -1c
+.RI "#define \fBcap_can_change\fP   'can_change'"
+.br
+.ti -1c
+.RI "#define \fBcap_back_color_erase\fP   'back_color_erase'"
+.br
+.ti -1c
+.RI "#define \fBcap_hue_lightness_saturation\fP   'hue_lightness_saturation'"
+.br
+.ti -1c
+.RI "#define \fBcap_col_addr_glitch\fP   'col_addr_glitch'"
+.br
+.ti -1c
+.RI "#define \fBcap_cr_cancels_micro_mode\fP   'cr_cancels_micro_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_has_print_wheel\fP   'has_print_wheel'"
+.br
+.ti -1c
+.RI "#define \fBcap_row_addr_glitch\fP   'row_addr_glitch'"
+.br
+.ti -1c
+.RI "#define \fBcap_semi_auto_right_margin\fP   'semi_auto_right_margin'"
+.br
+.ti -1c
+.RI "#define \fBcap_cpi_changes_res\fP   'cpi_changes_res'"
+.br
+.ti -1c
+.RI "#define \fBcap_lpi_changes_res\fP   'lpi_changes_res'"
+.br
+.ti -1c
+.RI "#define \fBcap_backspaces_with_bs\fP   'backspaces_with_bs'"
+.br
+.ti -1c
+.RI "#define \fBcap_crt_no_scrolling\fP   'crt_no_scrolling'"
+.br
+.ti -1c
+.RI "#define \fBcap_no_correctly_working_cr\fP   'no_correctly_working_cr'"
+.br
+.ti -1c
+.RI "#define \fBcap_gnu_has_meta_key\fP   'gnu_has_meta_key'"
+.br
+.ti -1c
+.RI "#define \fBcap_linefeed_is_newline\fP   'linefeed_is_newline'"
+.br
+.ti -1c
+.RI "#define \fBcap_has_hardware_tabs\fP   'has_hardware_tabs'"
+.br
+.ti -1c
+.RI "#define \fBcap_return_does_clr_eol\fP   'return_does_clr_eol'"
+.br
+.ti -1c
+.RI "#define \fBcap_columns\fP   'columns'"
+.br
+.ti -1c
+.RI "#define \fBcap_init_tabs\fP   'init_tabs'"
+.br
+.ti -1c
+.RI "#define \fBcap_lines\fP   'lines'"
+.br
+.ti -1c
+.RI "#define \fBcap_lines_of_memory\fP   'lines_of_memory'"
+.br
+.ti -1c
+.RI "#define \fBcap_magic_cookie_glitch\fP   'magic_cookie_glitch'"
+.br
+.ti -1c
+.RI "#define \fBcap_padding_baud_rate\fP   'padding_baud_rate'"
+.br
+.ti -1c
+.RI "#define \fBcap_virtual_terminal\fP   'virtual_terminal'"
+.br
+.ti -1c
+.RI "#define \fBcap_width_status_line\fP   'width_status_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_num_labels\fP   'num_labels'"
+.br
+.ti -1c
+.RI "#define \fBcap_label_height\fP   'label_height'"
+.br
+.ti -1c
+.RI "#define \fBcap_label_width\fP   'label_width'"
+.br
+.ti -1c
+.RI "#define \fBcap_max_attributes\fP   'max_attributes'"
+.br
+.ti -1c
+.RI "#define \fBcap_maximum_windows\fP   'maximum_windows'"
+.br
+.ti -1c
+.RI "#define \fBcap_max_colors\fP   'max_colors'"
+.br
+.ti -1c
+.RI "#define \fBcap_max_pairs\fP   'max_pairs'"
+.br
+.ti -1c
+.RI "#define \fBcap_no_color_video\fP   'no_color_video'"
+.br
+.ti -1c
+.RI "#define \fBcap_buffer_capacity\fP   'buffer_capacity'"
+.br
+.ti -1c
+.RI "#define \fBcap_dot_vert_spacing\fP   'dot_vert_spacing'"
+.br
+.ti -1c
+.RI "#define \fBcap_dot_horz_spacing\fP   'dot_horz_spacing'"
+.br
+.ti -1c
+.RI "#define \fBcap_max_micro_address\fP   'max_micro_address'"
+.br
+.ti -1c
+.RI "#define \fBcap_max_micro_jump\fP   'max_micro_jump'"
+.br
+.ti -1c
+.RI "#define \fBcap_micro_col_size\fP   'micro_col_size'"
+.br
+.ti -1c
+.RI "#define \fBcap_micro_line_size\fP   'micro_line_size'"
+.br
+.ti -1c
+.RI "#define \fBcap_number_of_pins\fP   'number_of_pins'"
+.br
+.ti -1c
+.RI "#define \fBcap_output_res_char\fP   'output_res_char'"
+.br
+.ti -1c
+.RI "#define \fBcap_output_res_line\fP   'output_res_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_output_res_horz_inch\fP   'output_res_horz_inch'"
+.br
+.ti -1c
+.RI "#define \fBcap_output_res_vert_inch\fP   'output_res_vert_inch'"
+.br
+.ti -1c
+.RI "#define \fBcap_print_rate\fP   'print_rate'"
+.br
+.ti -1c
+.RI "#define \fBcap_wide_char_size\fP   'wide_char_size'"
+.br
+.ti -1c
+.RI "#define \fBcap_buttons\fP   'buttons'"
+.br
+.ti -1c
+.RI "#define \fBcap_bit_image_entwining\fP   'bit_image_entwining'"
+.br
+.ti -1c
+.RI "#define \fBcap_bit_image_type\fP   'bit_image_type'"
+.br
+.ti -1c
+.RI "#define \fBcap_magic_cookie_glitch_ul\fP   'magic_cookie_glitch_ul'"
+.br
+.ti -1c
+.RI "#define \fBcap_carriage_return_delay\fP   'carriage_return_delay'"
+.br
+.ti -1c
+.RI "#define \fBcap_new_line_delay\fP   'new_line_delay'"
+.br
+.ti -1c
+.RI "#define \fBcap_backspace_delay\fP   'backspace_delay'"
+.br
+.ti -1c
+.RI "#define \fBcap_horizontal_tab_delay\fP   'horizontal_tab_delay'"
+.br
+.ti -1c
+.RI "#define \fBcap_number_of_function_keys\fP   'number_of_function_keys'"
+.br
+.ti -1c
+.RI "#define \fBcap_back_tab\fP   'back_tab'"
+.br
+.ti -1c
+.RI "#define \fBcap_bell\fP   'bell'"
+.br
+.ti -1c
+.RI "#define \fBcap_carriage_return\fP   'carriage_return'"
+.br
+.ti -1c
+.RI "#define \fBcap_change_scroll_region\fP   'change_scroll_region'"
+.br
+.ti -1c
+.RI "#define \fBcap_clear_all_tabs\fP   'clear_all_tabs'"
+.br
+.ti -1c
+.RI "#define \fBcap_clear_screen\fP   'clear_screen'"
+.br
+.ti -1c
+.RI "#define \fBcap_clr_eol\fP   'clr_eol'"
+.br
+.ti -1c
+.RI "#define \fBcap_clr_eos\fP   'clr_eos'"
+.br
+.ti -1c
+.RI "#define \fBcap_column_address\fP   'column_address'"
+.br
+.ti -1c
+.RI "#define \fBcap_command_character\fP   'command_character'"
+.br
+.ti -1c
+.RI "#define \fBcap_cursor_address\fP   'cursor_address'"
+.br
+.ti -1c
+.RI "#define \fBcap_cursor_down\fP   'cursor_down'"
+.br
+.ti -1c
+.RI "#define \fBcap_cursor_home\fP   'cursor_home'"
+.br
+.ti -1c
+.RI "#define \fBcap_cursor_invisible\fP   'cursor_invisible'"
+.br
+.ti -1c
+.RI "#define \fBcap_cursor_left\fP   'cursor_left'"
+.br
+.ti -1c
+.RI "#define \fBcap_cursor_mem_address\fP   'cursor_mem_address'"
+.br
+.ti -1c
+.RI "#define \fBcap_cursor_normal\fP   'cursor_normal'"
+.br
+.ti -1c
+.RI "#define \fBcap_cursor_right\fP   'cursor_right'"
+.br
+.ti -1c
+.RI "#define \fBcap_cursor_to_ll\fP   'cursor_to_ll'"
+.br
+.ti -1c
+.RI "#define \fBcap_cursor_up\fP   'cursor_up'"
+.br
+.ti -1c
+.RI "#define \fBcap_cursor_visible\fP   'cursor_visible'"
+.br
+.ti -1c
+.RI "#define \fBcap_delete_character\fP   'delete_character'"
+.br
+.ti -1c
+.RI "#define \fBcap_delete_line\fP   'delete_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_dis_status_line\fP   'dis_status_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_down_half_line\fP   'down_half_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_alt_charset_mode\fP   'enter_alt_charset_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_blink_mode\fP   'enter_blink_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_bold_mode\fP   'enter_bold_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_ca_mode\fP   'enter_ca_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_delete_mode\fP   'enter_delete_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_dim_mode\fP   'enter_dim_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_insert_mode\fP   'enter_insert_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_secure_mode\fP   'enter_secure_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_protected_mode\fP   'enter_protected_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_reverse_mode\fP   'enter_reverse_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_standout_mode\fP   'enter_standout_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_underline_mode\fP   'enter_underline_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_alt_charset_mode\fP   'exit_alt_charset_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_attribute_mode\fP   'exit_attribute_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_ca_mode\fP   'exit_ca_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_delete_mode\fP   'exit_delete_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_insert_mode\fP   'exit_insert_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_standout_mode\fP   'exit_standout_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_underline_mode\fP   'exit_underline_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_flash_screen\fP   'flash_screen'"
+.br
+.ti -1c
+.RI "#define \fBcap_form_feed\fP   'form_feed'"
+.br
+.ti -1c
+.RI "#define \fBcap_from_status_line\fP   'from_status_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_init_1string\fP   'init_1string'"
+.br
+.ti -1c
+.RI "#define \fBcap_init_2string\fP   'init_2string'"
+.br
+.ti -1c
+.RI "#define \fBcap_init_3string\fP   'init_3string'"
+.br
+.ti -1c
+.RI "#define \fBcap_init_file\fP   'init_file'"
+.br
+.ti -1c
+.RI "#define \fBcap_insert_character\fP   'insert_character'"
+.br
+.ti -1c
+.RI "#define \fBcap_insert_line\fP   'insert_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_insert_padding\fP   'insert_padding'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_backspace\fP   'key_backspace'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_catab\fP   'key_catab'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_clear\fP   'key_clear'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_ctab\fP   'key_ctab'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_dc\fP   'key_dc'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_dl\fP   'key_dl'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_down\fP   'key_down'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_eic\fP   'key_eic'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_eol\fP   'key_eol'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_eos\fP   'key_eos'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f0\fP   'key_f0'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f1\fP   'key_f1'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f10\fP   'key_f10'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f2\fP   'key_f2'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f3\fP   'key_f3'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f4\fP   'key_f4'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f5\fP   'key_f5'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f6\fP   'key_f6'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f7\fP   'key_f7'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f8\fP   'key_f8'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f9\fP   'key_f9'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_home\fP   'key_home'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_ic\fP   'key_ic'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_il\fP   'key_il'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_left\fP   'key_left'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_ll\fP   'key_ll'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_npage\fP   'key_npage'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_ppage\fP   'key_ppage'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_right\fP   'key_right'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sf\fP   'key_sf'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sr\fP   'key_sr'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_stab\fP   'key_stab'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_up\fP   'key_up'"
+.br
+.ti -1c
+.RI "#define \fBcap_keypad_local\fP   'keypad_local'"
+.br
+.ti -1c
+.RI "#define \fBcap_keypad_xmit\fP   'keypad_xmit'"
+.br
+.ti -1c
+.RI "#define \fBcap_lab_f0\fP   'lab_f0'"
+.br
+.ti -1c
+.RI "#define \fBcap_lab_f1\fP   'lab_f1'"
+.br
+.ti -1c
+.RI "#define \fBcap_lab_f10\fP   'lab_f10'"
+.br
+.ti -1c
+.RI "#define \fBcap_lab_f2\fP   'lab_f2'"
+.br
+.ti -1c
+.RI "#define \fBcap_lab_f3\fP   'lab_f3'"
+.br
+.ti -1c
+.RI "#define \fBcap_lab_f4\fP   'lab_f4'"
+.br
+.ti -1c
+.RI "#define \fBcap_lab_f5\fP   'lab_f5'"
+.br
+.ti -1c
+.RI "#define \fBcap_lab_f6\fP   'lab_f6'"
+.br
+.ti -1c
+.RI "#define \fBcap_lab_f7\fP   'lab_f7'"
+.br
+.ti -1c
+.RI "#define \fBcap_lab_f8\fP   'lab_f8'"
+.br
+.ti -1c
+.RI "#define \fBcap_lab_f9\fP   'lab_f9'"
+.br
+.ti -1c
+.RI "#define \fBcap_meta_off\fP   'meta_off'"
+.br
+.ti -1c
+.RI "#define \fBcap_meta_on\fP   'meta_on'"
+.br
+.ti -1c
+.RI "#define \fBcap_newline\fP   'newline'"
+.br
+.ti -1c
+.RI "#define \fBcap_pad_char\fP   'pad_char'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_dch\fP   'parm_dch'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_delete_line\fP   'parm_delete_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_down_cursor\fP   'parm_down_cursor'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_ich\fP   'parm_ich'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_index\fP   'parm_index'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_insert_line\fP   'parm_insert_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_left_cursor\fP   'parm_left_cursor'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_right_cursor\fP   'parm_right_cursor'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_rindex\fP   'parm_rindex'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_up_cursor\fP   'parm_up_cursor'"
+.br
+.ti -1c
+.RI "#define \fBcap_pkey_key\fP   'pkey_key'"
+.br
+.ti -1c
+.RI "#define \fBcap_pkey_local\fP   'pkey_local'"
+.br
+.ti -1c
+.RI "#define \fBcap_pkey_xmit\fP   'pkey_xmit'"
+.br
+.ti -1c
+.RI "#define \fBcap_print_screen\fP   'print_screen'"
+.br
+.ti -1c
+.RI "#define \fBcap_prtr_off\fP   'prtr_off'"
+.br
+.ti -1c
+.RI "#define \fBcap_prtr_on\fP   'prtr_on'"
+.br
+.ti -1c
+.RI "#define \fBcap_repeat_char\fP   'repeat_char'"
+.br
+.ti -1c
+.RI "#define \fBcap_reset_1string\fP   'reset_1string'"
+.br
+.ti -1c
+.RI "#define \fBcap_reset_2string\fP   'reset_2string'"
+.br
+.ti -1c
+.RI "#define \fBcap_reset_3string\fP   'reset_3string'"
+.br
+.ti -1c
+.RI "#define \fBcap_reset_file\fP   'reset_file'"
+.br
+.ti -1c
+.RI "#define \fBcap_restore_cursor\fP   'restore_cursor'"
+.br
+.ti -1c
+.RI "#define \fBcap_row_address\fP   'row_address'"
+.br
+.ti -1c
+.RI "#define \fBcap_save_cursor\fP   'save_cursor'"
+.br
+.ti -1c
+.RI "#define \fBcap_scroll_forward\fP   'scroll_forward'"
+.br
+.ti -1c
+.RI "#define \fBcap_scroll_reverse\fP   'scroll_reverse'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_attributes\fP   'set_attributes'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_tab\fP   'set_tab'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_window\fP   'set_window'"
+.br
+.ti -1c
+.RI "#define \fBcap_tab\fP   'tab'"
+.br
+.ti -1c
+.RI "#define \fBcap_to_status_line\fP   'to_status_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_underline_char\fP   'underline_char'"
+.br
+.ti -1c
+.RI "#define \fBcap_up_half_line\fP   'up_half_line'"
+.br
+.ti -1c
+.RI "#define \fBcap_init_prog\fP   'init_prog'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_a1\fP   'key_a1'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_a3\fP   'key_a3'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_b2\fP   'key_b2'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_c1\fP   'key_c1'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_c3\fP   'key_c3'"
+.br
+.ti -1c
+.RI "#define \fBcap_prtr_non\fP   'prtr_non'"
+.br
+.ti -1c
+.RI "#define \fBcap_char_padding\fP   'char_padding'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_chars\fP   'acs_chars'"
+.br
+.ti -1c
+.RI "#define \fBcap_plab_norm\fP   'plab_norm'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_btab\fP   'key_btab'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_xon_mode\fP   'enter_xon_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_xon_mode\fP   'exit_xon_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_am_mode\fP   'enter_am_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_am_mode\fP   'exit_am_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_xon_character\fP   'xon_character'"
+.br
+.ti -1c
+.RI "#define \fBcap_xoff_character\fP   'xoff_character'"
+.br
+.ti -1c
+.RI "#define \fBcap_ena_acs\fP   'ena_acs'"
+.br
+.ti -1c
+.RI "#define \fBcap_label_on\fP   'label_on'"
+.br
+.ti -1c
+.RI "#define \fBcap_label_off\fP   'label_off'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_beg\fP   'key_beg'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_cancel\fP   'key_cancel'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_close\fP   'key_close'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_command\fP   'key_command'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_copy\fP   'key_copy'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_create\fP   'key_create'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_end\fP   'key_end'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_enter\fP   'key_enter'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_exit\fP   'key_exit'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_find\fP   'key_find'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_help\fP   'key_help'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_mark\fP   'key_mark'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_message\fP   'key_message'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_move\fP   'key_move'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_next\fP   'key_next'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_open\fP   'key_open'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_options\fP   'key_options'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_previous\fP   'key_previous'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_print\fP   'key_print'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_redo\fP   'key_redo'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_reference\fP   'key_reference'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_refresh\fP   'key_refresh'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_replace\fP   'key_replace'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_restart\fP   'key_restart'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_resume\fP   'key_resume'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_save\fP   'key_save'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_suspend\fP   'key_suspend'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_undo\fP   'key_undo'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sbeg\fP   'key_sbeg'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_scancel\fP   'key_scancel'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_scommand\fP   'key_scommand'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_scopy\fP   'key_scopy'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_screate\fP   'key_screate'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sdc\fP   'key_sdc'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sdl\fP   'key_sdl'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_select\fP   'key_select'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_send\fP   'key_send'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_seol\fP   'key_seol'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sexit\fP   'key_sexit'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sfind\fP   'key_sfind'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_shelp\fP   'key_shelp'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_shome\fP   'key_shome'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sic\fP   'key_sic'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sleft\fP   'key_sleft'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_smessage\fP   'key_smessage'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_smove\fP   'key_smove'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_snext\fP   'key_snext'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_soptions\fP   'key_soptions'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sprevious\fP   'key_sprevious'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sprint\fP   'key_sprint'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sredo\fP   'key_sredo'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sreplace\fP   'key_sreplace'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sright\fP   'key_sright'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_srsume\fP   'key_srsume'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_ssave\fP   'key_ssave'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_ssuspend\fP   'key_ssuspend'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_sundo\fP   'key_sundo'"
+.br
+.ti -1c
+.RI "#define \fBcap_req_for_input\fP   'req_for_input'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f11\fP   'key_f11'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f12\fP   'key_f12'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f13\fP   'key_f13'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f14\fP   'key_f14'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f15\fP   'key_f15'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f16\fP   'key_f16'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f17\fP   'key_f17'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f18\fP   'key_f18'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f19\fP   'key_f19'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f20\fP   'key_f20'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f21\fP   'key_f21'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f22\fP   'key_f22'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f23\fP   'key_f23'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f24\fP   'key_f24'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f25\fP   'key_f25'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f26\fP   'key_f26'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f27\fP   'key_f27'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f28\fP   'key_f28'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f29\fP   'key_f29'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f30\fP   'key_f30'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f31\fP   'key_f31'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f32\fP   'key_f32'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f33\fP   'key_f33'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f34\fP   'key_f34'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f35\fP   'key_f35'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f36\fP   'key_f36'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f37\fP   'key_f37'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f38\fP   'key_f38'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f39\fP   'key_f39'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f40\fP   'key_f40'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f41\fP   'key_f41'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f42\fP   'key_f42'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f43\fP   'key_f43'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f44\fP   'key_f44'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f45\fP   'key_f45'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f46\fP   'key_f46'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f47\fP   'key_f47'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f48\fP   'key_f48'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f49\fP   'key_f49'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f50\fP   'key_f50'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f51\fP   'key_f51'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f52\fP   'key_f52'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f53\fP   'key_f53'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f54\fP   'key_f54'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f55\fP   'key_f55'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f56\fP   'key_f56'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f57\fP   'key_f57'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f58\fP   'key_f58'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f59\fP   'key_f59'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f60\fP   'key_f60'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f61\fP   'key_f61'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f62\fP   'key_f62'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_f63\fP   'key_f63'"
+.br
+.ti -1c
+.RI "#define \fBcap_clr_bol\fP   'clr_bol'"
+.br
+.ti -1c
+.RI "#define \fBcap_clear_margins\fP   'clear_margins'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_left_margin\fP   'set_left_margin'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_right_margin\fP   'set_right_margin'"
+.br
+.ti -1c
+.RI "#define \fBcap_label_format\fP   'label_format'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_clock\fP   'set_clock'"
+.br
+.ti -1c
+.RI "#define \fBcap_display_clock\fP   'display_clock'"
+.br
+.ti -1c
+.RI "#define \fBcap_remove_clock\fP   'remove_clock'"
+.br
+.ti -1c
+.RI "#define \fBcap_create_window\fP   'create_window'"
+.br
+.ti -1c
+.RI "#define \fBcap_goto_window\fP   'goto_window'"
+.br
+.ti -1c
+.RI "#define \fBcap_hangup\fP   'hangup'"
+.br
+.ti -1c
+.RI "#define \fBcap_dial_phone\fP   'dial_phone'"
+.br
+.ti -1c
+.RI "#define \fBcap_quick_dial\fP   'quick_dial'"
+.br
+.ti -1c
+.RI "#define \fBcap_tone\fP   'tone'"
+.br
+.ti -1c
+.RI "#define \fBcap_pulse\fP   'pulse'"
+.br
+.ti -1c
+.RI "#define \fBcap_flash_hook\fP   'flash_hook'"
+.br
+.ti -1c
+.RI "#define \fBcap_fixed_pause\fP   'fixed_pause'"
+.br
+.ti -1c
+.RI "#define \fBcap_wait_tone\fP   'wait_tone'"
+.br
+.ti -1c
+.RI "#define \fBcap_user0\fP   'user0'"
+.br
+.ti -1c
+.RI "#define \fBcap_user1\fP   'user1'"
+.br
+.ti -1c
+.RI "#define \fBcap_user2\fP   'user2'"
+.br
+.ti -1c
+.RI "#define \fBcap_user3\fP   'user3'"
+.br
+.ti -1c
+.RI "#define \fBcap_user4\fP   'user4'"
+.br
+.ti -1c
+.RI "#define \fBcap_user5\fP   'user5'"
+.br
+.ti -1c
+.RI "#define \fBcap_user6\fP   'user6'"
+.br
+.ti -1c
+.RI "#define \fBcap_user7\fP   'user7'"
+.br
+.ti -1c
+.RI "#define \fBcap_user8\fP   'user8'"
+.br
+.ti -1c
+.RI "#define \fBcap_user9\fP   'user9'"
+.br
+.ti -1c
+.RI "#define \fBcap_orig_pair\fP   'orig_pair'"
+.br
+.ti -1c
+.RI "#define \fBcap_orig_colors\fP   'orig_colors'"
+.br
+.ti -1c
+.RI "#define \fBcap_initialize_color\fP   'initialize_color'"
+.br
+.ti -1c
+.RI "#define \fBcap_initialize_pair\fP   'initialize_pair'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_color_pair\fP   'set_color_pair'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_foreground\fP   'set_foreground'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_background\fP   'set_background'"
+.br
+.ti -1c
+.RI "#define \fBcap_change_char_pitch\fP   'change_char_pitch'"
+.br
+.ti -1c
+.RI "#define \fBcap_change_line_pitch\fP   'change_line_pitch'"
+.br
+.ti -1c
+.RI "#define \fBcap_change_res_horz\fP   'change_res_horz'"
+.br
+.ti -1c
+.RI "#define \fBcap_change_res_vert\fP   'change_res_vert'"
+.br
+.ti -1c
+.RI "#define \fBcap_define_char\fP   'define_char'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_doublewide_mode\fP   'enter_doublewide_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_draft_quality\fP   'enter_draft_quality'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_italics_mode\fP   'enter_italics_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_leftward_mode\fP   'enter_leftward_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_micro_mode\fP   'enter_micro_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_near_letter_quality\fP   'enter_near_letter_quality'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_normal_quality\fP   'enter_normal_quality'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_shadow_mode\fP   'enter_shadow_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_subscript_mode\fP   'enter_subscript_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_superscript_mode\fP   'enter_superscript_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_upward_mode\fP   'enter_upward_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_doublewide_mode\fP   'exit_doublewide_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_italics_mode\fP   'exit_italics_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_leftward_mode\fP   'exit_leftward_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_micro_mode\fP   'exit_micro_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_shadow_mode\fP   'exit_shadow_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_subscript_mode\fP   'exit_subscript_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_superscript_mode\fP   'exit_superscript_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_upward_mode\fP   'exit_upward_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_micro_column_address\fP   'micro_column_address'"
+.br
+.ti -1c
+.RI "#define \fBcap_micro_down\fP   'micro_down'"
+.br
+.ti -1c
+.RI "#define \fBcap_micro_left\fP   'micro_left'"
+.br
+.ti -1c
+.RI "#define \fBcap_micro_right\fP   'micro_right'"
+.br
+.ti -1c
+.RI "#define \fBcap_micro_row_address\fP   'micro_row_address'"
+.br
+.ti -1c
+.RI "#define \fBcap_micro_up\fP   'micro_up'"
+.br
+.ti -1c
+.RI "#define \fBcap_order_of_pins\fP   'order_of_pins'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_down_micro\fP   'parm_down_micro'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_left_micro\fP   'parm_left_micro'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_right_micro\fP   'parm_right_micro'"
+.br
+.ti -1c
+.RI "#define \fBcap_parm_up_micro\fP   'parm_up_micro'"
+.br
+.ti -1c
+.RI "#define \fBcap_select_char_set\fP   'select_char_set'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_bottom_margin\fP   'set_bottom_margin'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_bottom_margin_parm\fP   'set_bottom_margin_parm'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_left_margin_parm\fP   'set_left_margin_parm'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_right_margin_parm\fP   'set_right_margin_parm'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_top_margin\fP   'set_top_margin'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_top_margin_parm\fP   'set_top_margin_parm'"
+.br
+.ti -1c
+.RI "#define \fBcap_start_bit_image\fP   'start_bit_image'"
+.br
+.ti -1c
+.RI "#define \fBcap_start_char_set_def\fP   'start_char_set_def'"
+.br
+.ti -1c
+.RI "#define \fBcap_stop_bit_image\fP   'stop_bit_image'"
+.br
+.ti -1c
+.RI "#define \fBcap_stop_char_set_def\fP   'stop_char_set_def'"
+.br
+.ti -1c
+.RI "#define \fBcap_subscript_characters\fP   'subscript_characters'"
+.br
+.ti -1c
+.RI "#define \fBcap_superscript_characters\fP   'superscript_characters'"
+.br
+.ti -1c
+.RI "#define \fBcap_these_cause_cr\fP   'these_cause_cr'"
+.br
+.ti -1c
+.RI "#define \fBcap_zero_motion\fP   'zero_motion'"
+.br
+.ti -1c
+.RI "#define \fBcap_char_set_names\fP   'char_set_names'"
+.br
+.ti -1c
+.RI "#define \fBcap_key_mouse\fP   'key_mouse'"
+.br
+.ti -1c
+.RI "#define \fBcap_mouse_info\fP   'mouse_info'"
+.br
+.ti -1c
+.RI "#define \fBcap_req_mouse_pos\fP   'req_mouse_pos'"
+.br
+.ti -1c
+.RI "#define \fBcap_get_mouse\fP   'get_mouse'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_a_foreground\fP   'set_a_foreground'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_a_background\fP   'set_a_background'"
+.br
+.ti -1c
+.RI "#define \fBcap_pkey_plab\fP   'pkey_plab'"
+.br
+.ti -1c
+.RI "#define \fBcap_device_type\fP   'device_type'"
+.br
+.ti -1c
+.RI "#define \fBcap_code_set_init\fP   'code_set_init'"
+.br
+.ti -1c
+.RI "#define \fBcap_set0_des_seq\fP   'set0_des_seq'"
+.br
+.ti -1c
+.RI "#define \fBcap_set1_des_seq\fP   'set1_des_seq'"
+.br
+.ti -1c
+.RI "#define \fBcap_set2_des_seq\fP   'set2_des_seq'"
+.br
+.ti -1c
+.RI "#define \fBcap_set3_des_seq\fP   'set3_des_seq'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_lr_margin\fP   'set_lr_margin'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_tb_margin\fP   'set_tb_margin'"
+.br
+.ti -1c
+.RI "#define \fBcap_bit_image_repeat\fP   'bit_image_repeat'"
+.br
+.ti -1c
+.RI "#define \fBcap_bit_image_newline\fP   'bit_image_newline'"
+.br
+.ti -1c
+.RI "#define \fBcap_bit_image_carriage_return\fP   'bit_image_carriage_return'"
+.br
+.ti -1c
+.RI "#define \fBcap_color_names\fP   'color_names'"
+.br
+.ti -1c
+.RI "#define \fBcap_define_bit_image_region\fP   'define_bit_image_region'"
+.br
+.ti -1c
+.RI "#define \fBcap_end_bit_image_region\fP   'end_bit_image_region'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_color_band\fP   'set_color_band'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_page_length\fP   'set_page_length'"
+.br
+.ti -1c
+.RI "#define \fBcap_display_pc_char\fP   'display_pc_char'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_pc_charset_mode\fP   'enter_pc_charset_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_pc_charset_mode\fP   'exit_pc_charset_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_scancode_mode\fP   'enter_scancode_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_exit_scancode_mode\fP   'exit_scancode_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_pc_term_options\fP   'pc_term_options'"
+.br
+.ti -1c
+.RI "#define \fBcap_scancode_escape\fP   'scancode_escape'"
+.br
+.ti -1c
+.RI "#define \fBcap_alt_scancode_esc\fP   'alt_scancode_esc'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_horizontal_hl_mode\fP   'enter_horizontal_hl_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_left_hl_mode\fP   'enter_left_hl_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_low_hl_mode\fP   'enter_low_hl_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_right_hl_mode\fP   'enter_right_hl_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_top_hl_mode\fP   'enter_top_hl_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_enter_vertical_hl_mode\fP   'enter_vertical_hl_mode'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_a_attributes\fP   'set_a_attributes'"
+.br
+.ti -1c
+.RI "#define \fBcap_set_pglen_inch\fP   'set_pglen_inch'"
+.br
+.ti -1c
+.RI "#define \fBcap_termcap_init2\fP   'termcap_init2'"
+.br
+.ti -1c
+.RI "#define \fBcap_termcap_reset\fP   'termcap_reset'"
+.br
+.ti -1c
+.RI "#define \fBcap_linefeed_if_not_lf\fP   'linefeed_if_not_lf'"
+.br
+.ti -1c
+.RI "#define \fBcap_backspace_if_not_bs\fP   'backspace_if_not_bs'"
+.br
+.ti -1c
+.RI "#define \fBcap_other_non_function_keys\fP   'other_non_function_keys'"
+.br
+.ti -1c
+.RI "#define \fBcap_arrow_key_map\fP   'arrow_key_map'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_ulcorner\fP   'acs_ulcorner'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_llcorner\fP   'acs_llcorner'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_urcorner\fP   'acs_urcorner'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_lrcorner\fP   'acs_lrcorner'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_ltee\fP   'acs_ltee'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_rtee\fP   'acs_rtee'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_btee\fP   'acs_btee'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_ttee\fP   'acs_ttee'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_hline\fP   'acs_hline'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_vline\fP   'acs_vline'"
+.br
+.ti -1c
+.RI "#define \fBcap_acs_plus\fP   'acs_plus'"
+.br
+.ti -1c
+.RI "#define \fBcap_memory_lock\fP   'memory_lock'"
+.br
+.ti -1c
+.RI "#define \fBcap_memory_unlock\fP   'memory_unlock'"
+.br
+.ti -1c
+.RI "#define \fBcap_box_chars_1\fP   'box_chars_1'"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define cap_acs_btee   'acs_btee'"
+
+.PP
+Definition at line 506 of file termcapstr\&.h\&.
+.SS "#define cap_acs_chars   'acs_chars'"
+
+.PP
+Definition at line 246 of file termcapstr\&.h\&.
+.SS "#define cap_acs_hline   'acs_hline'"
+
+.PP
+Definition at line 508 of file termcapstr\&.h\&.
+.SS "#define cap_acs_llcorner   'acs_llcorner'"
+
+.PP
+Definition at line 501 of file termcapstr\&.h\&.
+.SS "#define cap_acs_lrcorner   'acs_lrcorner'"
+
+.PP
+Definition at line 503 of file termcapstr\&.h\&.
+.SS "#define cap_acs_ltee   'acs_ltee'"
+
+.PP
+Definition at line 504 of file termcapstr\&.h\&.
+.SS "#define cap_acs_plus   'acs_plus'"
+
+.PP
+Definition at line 510 of file termcapstr\&.h\&.
+.SS "#define cap_acs_rtee   'acs_rtee'"
+
+.PP
+Definition at line 505 of file termcapstr\&.h\&.
+.SS "#define cap_acs_ttee   'acs_ttee'"
+
+.PP
+Definition at line 507 of file termcapstr\&.h\&.
+.SS "#define cap_acs_ulcorner   'acs_ulcorner'"
+
+.PP
+Definition at line 500 of file termcapstr\&.h\&.
+.SS "#define cap_acs_urcorner   'acs_urcorner'"
+
+.PP
+Definition at line 502 of file termcapstr\&.h\&.
+.SS "#define cap_acs_vline   'acs_vline'"
+
+.PP
+Definition at line 509 of file termcapstr\&.h\&.
+.SS "#define cap_alt_scancode_esc   'alt_scancode_esc'"
+
+.PP
+Definition at line 485 of file termcapstr\&.h\&.
+.SS "#define cap_arrow_key_map   'arrow_key_map'"
+
+.PP
+Definition at line 499 of file termcapstr\&.h\&.
+.SS "#define cap_auto_left_margin   'auto_left_margin'"
+
+.PP
+Definition at line 8 of file termcapstr\&.h\&.
+.SS "#define cap_auto_right_margin   'auto_right_margin'"
+
+.PP
+Definition at line 9 of file termcapstr\&.h\&.
+.SS "#define cap_back_color_erase   'back_color_erase'"
+
+.PP
+Definition at line 36 of file termcapstr\&.h\&.
+.SS "#define cap_back_tab   'back_tab'"
+
+.PP
+Definition at line 101 of file termcapstr\&.h\&.
+.SS "#define cap_backspace_delay   'backspace_delay'"
+
+.PP
+Definition at line 93 of file termcapstr\&.h\&.
+.SS "#define cap_backspace_if_not_bs   'backspace_if_not_bs'"
+
+.PP
+Definition at line 497 of file termcapstr\&.h\&.
+.SS "#define cap_backspaces_with_bs   'backspaces_with_bs'"
+
+.PP
+Definition at line 45 of file termcapstr\&.h\&.
+.SS "#define cap_bell   'bell'"
+
+.PP
+Definition at line 102 of file termcapstr\&.h\&.
+.SS "#define cap_bit_image_carriage_return   'bit_image_carriage_return'"
+
+.PP
+Definition at line 472 of file termcapstr\&.h\&.
+.SS "#define cap_bit_image_entwining   'bit_image_entwining'"
+
+.PP
+Definition at line 88 of file termcapstr\&.h\&.
+.SS "#define cap_bit_image_newline   'bit_image_newline'"
+
+.PP
+Definition at line 471 of file termcapstr\&.h\&.
+.SS "#define cap_bit_image_repeat   'bit_image_repeat'"
+
+.PP
+Definition at line 470 of file termcapstr\&.h\&.
+.SS "#define cap_bit_image_type   'bit_image_type'"
+
+.PP
+Definition at line 89 of file termcapstr\&.h\&.
+.SS "#define cap_box_chars_1   'box_chars_1'"
+
+.PP
+Definition at line 513 of file termcapstr\&.h\&.
+.SS "#define cap_buffer_capacity   'buffer_capacity'"
+
+.PP
+Definition at line 73 of file termcapstr\&.h\&.
+.SS "#define cap_buttons   'buttons'"
+
+.PP
+Definition at line 87 of file termcapstr\&.h\&.
+.SS "#define cap_can_change   'can_change'"
+
+.PP
+Definition at line 35 of file termcapstr\&.h\&.
+.SS "#define cap_carriage_return   'carriage_return'"
+
+.PP
+Definition at line 103 of file termcapstr\&.h\&.
+.SS "#define cap_carriage_return_delay   'carriage_return_delay'"
+
+.PP
+Definition at line 91 of file termcapstr\&.h\&.
+.SS "#define cap_ceol_standout_glitch   'ceol_standout_glitch'"
+
+.PP
+Definition at line 11 of file termcapstr\&.h\&.
+.SS "#define cap_change_char_pitch   'change_char_pitch'"
+
+.PP
+Definition at line 404 of file termcapstr\&.h\&.
+.SS "#define cap_change_line_pitch   'change_line_pitch'"
+
+.PP
+Definition at line 405 of file termcapstr\&.h\&.
+.SS "#define cap_change_res_horz   'change_res_horz'"
+
+.PP
+Definition at line 406 of file termcapstr\&.h\&.
+.SS "#define cap_change_res_vert   'change_res_vert'"
+
+.PP
+Definition at line 407 of file termcapstr\&.h\&.
+.SS "#define cap_change_scroll_region   'change_scroll_region'"
+
+.PP
+Definition at line 104 of file termcapstr\&.h\&.
+.SS "#define cap_char_padding   'char_padding'"
+
+.PP
+Definition at line 245 of file termcapstr\&.h\&.
+.SS "#define cap_char_set_names   'char_set_names'"
+
+.PP
+Definition at line 454 of file termcapstr\&.h\&.
+.SS "#define cap_clear_all_tabs   'clear_all_tabs'"
+
+.PP
+Definition at line 105 of file termcapstr\&.h\&.
+.SS "#define cap_clear_margins   'clear_margins'"
+
+.PP
+Definition at line 370 of file termcapstr\&.h\&.
+.SS "#define cap_clear_screen   'clear_screen'"
+
+.PP
+Definition at line 106 of file termcapstr\&.h\&.
+.SS "#define cap_clr_bol   'clr_bol'"
+
+.PP
+Definition at line 369 of file termcapstr\&.h\&.
+.SS "#define cap_clr_eol   'clr_eol'"
+
+.PP
+Definition at line 107 of file termcapstr\&.h\&.
+.SS "#define cap_clr_eos   'clr_eos'"
+
+.PP
+Definition at line 108 of file termcapstr\&.h\&.
+.SS "#define cap_code_set_init   'code_set_init'"
+
+.PP
+Definition at line 463 of file termcapstr\&.h\&.
+.SS "#define cap_col_addr_glitch   'col_addr_glitch'"
+
+.PP
+Definition at line 38 of file termcapstr\&.h\&.
+.SS "#define cap_color_names   'color_names'"
+
+.PP
+Definition at line 473 of file termcapstr\&.h\&.
+.SS "#define cap_column_address   'column_address'"
+
+.PP
+Definition at line 109 of file termcapstr\&.h\&.
+.SS "#define cap_columns   'columns'"
+
+.PP
+Definition at line 57 of file termcapstr\&.h\&.
+.SS "#define cap_command_character   'command_character'"
+
+.PP
+Definition at line 110 of file termcapstr\&.h\&.
+.SS "#define cap_cpi_changes_res   'cpi_changes_res'"
+
+.PP
+Definition at line 43 of file termcapstr\&.h\&.
+.SS "#define cap_cr_cancels_micro_mode   'cr_cancels_micro_mode'"
+
+.PP
+Definition at line 39 of file termcapstr\&.h\&.
+.SS "#define cap_create_window   'create_window'"
+
+.PP
+Definition at line 377 of file termcapstr\&.h\&.
+.SS "#define cap_crt_no_scrolling   'crt_no_scrolling'"
+
+.PP
+Definition at line 46 of file termcapstr\&.h\&.
+.SS "#define cap_cursor_address   'cursor_address'"
+
+.PP
+Definition at line 111 of file termcapstr\&.h\&.
+.SS "#define cap_cursor_down   'cursor_down'"
+
+.PP
+Definition at line 112 of file termcapstr\&.h\&.
+.SS "#define cap_cursor_home   'cursor_home'"
+
+.PP
+Definition at line 113 of file termcapstr\&.h\&.
+.SS "#define cap_cursor_invisible   'cursor_invisible'"
+
+.PP
+Definition at line 114 of file termcapstr\&.h\&.
+.SS "#define cap_cursor_left   'cursor_left'"
+
+.PP
+Definition at line 115 of file termcapstr\&.h\&.
+.SS "#define cap_cursor_mem_address   'cursor_mem_address'"
+
+.PP
+Definition at line 116 of file termcapstr\&.h\&.
+.SS "#define cap_cursor_normal   'cursor_normal'"
+
+.PP
+Definition at line 117 of file termcapstr\&.h\&.
+.SS "#define cap_cursor_right   'cursor_right'"
+
+.PP
+Definition at line 118 of file termcapstr\&.h\&.
+.SS "#define cap_cursor_to_ll   'cursor_to_ll'"
+
+.PP
+Definition at line 119 of file termcapstr\&.h\&.
+.SS "#define cap_cursor_up   'cursor_up'"
+
+.PP
+Definition at line 120 of file termcapstr\&.h\&.
+.SS "#define cap_cursor_visible   'cursor_visible'"
+
+.PP
+Definition at line 121 of file termcapstr\&.h\&.
+.SS "#define cap_define_bit_image_region   'define_bit_image_region'"
+
+.PP
+Definition at line 474 of file termcapstr\&.h\&.
+.SS "#define cap_define_char   'define_char'"
+
+.PP
+Definition at line 408 of file termcapstr\&.h\&.
+.SS "#define cap_delete_character   'delete_character'"
+
+.PP
+Definition at line 122 of file termcapstr\&.h\&.
+.SS "#define cap_delete_line   'delete_line'"
+
+.PP
+Definition at line 123 of file termcapstr\&.h\&.
+.SS "#define cap_dest_tabs_magic_smso   'dest_tabs_magic_smso'"
+
+.PP
+Definition at line 25 of file termcapstr\&.h\&.
+.SS "#define cap_device_type   'device_type'"
+
+.PP
+Definition at line 462 of file termcapstr\&.h\&.
+.SS "#define cap_dial_phone   'dial_phone'"
+
+.PP
+Definition at line 380 of file termcapstr\&.h\&.
+.SS "#define cap_dis_status_line   'dis_status_line'"
+
+.PP
+Definition at line 124 of file termcapstr\&.h\&.
+.SS "#define cap_display_clock   'display_clock'"
+
+.PP
+Definition at line 375 of file termcapstr\&.h\&.
+.SS "#define cap_display_pc_char   'display_pc_char'"
+
+.PP
+Definition at line 478 of file termcapstr\&.h\&.
+.SS "#define cap_dot_horz_spacing   'dot_horz_spacing'"
+
+.PP
+Definition at line 75 of file termcapstr\&.h\&.
+.SS "#define cap_dot_vert_spacing   'dot_vert_spacing'"
+
+.PP
+Definition at line 74 of file termcapstr\&.h\&.
+.SS "#define cap_down_half_line   'down_half_line'"
+
+.PP
+Definition at line 125 of file termcapstr\&.h\&.
+.SS "#define cap_eat_newline_glitch   'eat_newline_glitch'"
+
+.PP
+Definition at line 12 of file termcapstr\&.h\&.
+.SS "#define cap_ena_acs   'ena_acs'"
+
+.PP
+Definition at line 255 of file termcapstr\&.h\&.
+.SS "#define cap_end_bit_image_region   'end_bit_image_region'"
+
+.PP
+Definition at line 475 of file termcapstr\&.h\&.
+.SS "#define cap_enter_alt_charset_mode   'enter_alt_charset_mode'"
+
+.PP
+Definition at line 126 of file termcapstr\&.h\&.
+.SS "#define cap_enter_am_mode   'enter_am_mode'"
+
+.PP
+Definition at line 251 of file termcapstr\&.h\&.
+.SS "#define cap_enter_blink_mode   'enter_blink_mode'"
+
+.PP
+Definition at line 127 of file termcapstr\&.h\&.
+.SS "#define cap_enter_bold_mode   'enter_bold_mode'"
+
+.PP
+Definition at line 128 of file termcapstr\&.h\&.
+.SS "#define cap_enter_ca_mode   'enter_ca_mode'"
+
+.PP
+Definition at line 129 of file termcapstr\&.h\&.
+.SS "#define cap_enter_delete_mode   'enter_delete_mode'"
+
+.PP
+Definition at line 130 of file termcapstr\&.h\&.
+.SS "#define cap_enter_dim_mode   'enter_dim_mode'"
+
+.PP
+Definition at line 131 of file termcapstr\&.h\&.
+.SS "#define cap_enter_doublewide_mode   'enter_doublewide_mode'"
+
+.PP
+Definition at line 409 of file termcapstr\&.h\&.
+.SS "#define cap_enter_draft_quality   'enter_draft_quality'"
+
+.PP
+Definition at line 410 of file termcapstr\&.h\&.
+.SS "#define cap_enter_horizontal_hl_mode   'enter_horizontal_hl_mode'"
+
+.PP
+Definition at line 486 of file termcapstr\&.h\&.
+.SS "#define cap_enter_insert_mode   'enter_insert_mode'"
+
+.PP
+Definition at line 132 of file termcapstr\&.h\&.
+.SS "#define cap_enter_italics_mode   'enter_italics_mode'"
+
+.PP
+Definition at line 411 of file termcapstr\&.h\&.
+.SS "#define cap_enter_left_hl_mode   'enter_left_hl_mode'"
+
+.PP
+Definition at line 487 of file termcapstr\&.h\&.
+.SS "#define cap_enter_leftward_mode   'enter_leftward_mode'"
+
+.PP
+Definition at line 412 of file termcapstr\&.h\&.
+.SS "#define cap_enter_low_hl_mode   'enter_low_hl_mode'"
+
+.PP
+Definition at line 488 of file termcapstr\&.h\&.
+.SS "#define cap_enter_micro_mode   'enter_micro_mode'"
+
+.PP
+Definition at line 413 of file termcapstr\&.h\&.
+.SS "#define cap_enter_near_letter_quality   'enter_near_letter_quality'"
+
+.PP
+Definition at line 414 of file termcapstr\&.h\&.
+.SS "#define cap_enter_normal_quality   'enter_normal_quality'"
+
+.PP
+Definition at line 415 of file termcapstr\&.h\&.
+.SS "#define cap_enter_pc_charset_mode   'enter_pc_charset_mode'"
+
+.PP
+Definition at line 479 of file termcapstr\&.h\&.
+.SS "#define cap_enter_protected_mode   'enter_protected_mode'"
+
+.PP
+Definition at line 134 of file termcapstr\&.h\&.
+.SS "#define cap_enter_reverse_mode   'enter_reverse_mode'"
+
+.PP
+Definition at line 135 of file termcapstr\&.h\&.
+.SS "#define cap_enter_right_hl_mode   'enter_right_hl_mode'"
+
+.PP
+Definition at line 489 of file termcapstr\&.h\&.
+.SS "#define cap_enter_scancode_mode   'enter_scancode_mode'"
+
+.PP
+Definition at line 481 of file termcapstr\&.h\&.
+.SS "#define cap_enter_secure_mode   'enter_secure_mode'"
+
+.PP
+Definition at line 133 of file termcapstr\&.h\&.
+.SS "#define cap_enter_shadow_mode   'enter_shadow_mode'"
+
+.PP
+Definition at line 416 of file termcapstr\&.h\&.
+.SS "#define cap_enter_standout_mode   'enter_standout_mode'"
+
+.PP
+Definition at line 136 of file termcapstr\&.h\&.
+.SS "#define cap_enter_subscript_mode   'enter_subscript_mode'"
+
+.PP
+Definition at line 417 of file termcapstr\&.h\&.
+.SS "#define cap_enter_superscript_mode   'enter_superscript_mode'"
+
+.PP
+Definition at line 418 of file termcapstr\&.h\&.
+.SS "#define cap_enter_top_hl_mode   'enter_top_hl_mode'"
+
+.PP
+Definition at line 490 of file termcapstr\&.h\&.
+.SS "#define cap_enter_underline_mode   'enter_underline_mode'"
+
+.PP
+Definition at line 137 of file termcapstr\&.h\&.
+.SS "#define cap_enter_upward_mode   'enter_upward_mode'"
+
+.PP
+Definition at line 419 of file termcapstr\&.h\&.
+.SS "#define cap_enter_vertical_hl_mode   'enter_vertical_hl_mode'"
+
+.PP
+Definition at line 491 of file termcapstr\&.h\&.
+.SS "#define cap_enter_xon_mode   'enter_xon_mode'"
+
+.PP
+Definition at line 249 of file termcapstr\&.h\&.
+.SS "#define cap_erase_overstrike   'erase_overstrike'"
+
+.PP
+Definition at line 13 of file termcapstr\&.h\&.
+.SS "#define cap_exit_alt_charset_mode   'exit_alt_charset_mode'"
+
+.PP
+Definition at line 138 of file termcapstr\&.h\&.
+.SS "#define cap_exit_am_mode   'exit_am_mode'"
+
+.PP
+Definition at line 252 of file termcapstr\&.h\&.
+.SS "#define cap_exit_attribute_mode   'exit_attribute_mode'"
+
+.PP
+Definition at line 139 of file termcapstr\&.h\&.
+.SS "#define cap_exit_ca_mode   'exit_ca_mode'"
+
+.PP
+Definition at line 140 of file termcapstr\&.h\&.
+.SS "#define cap_exit_delete_mode   'exit_delete_mode'"
+
+.PP
+Definition at line 141 of file termcapstr\&.h\&.
+.SS "#define cap_exit_doublewide_mode   'exit_doublewide_mode'"
+
+.PP
+Definition at line 420 of file termcapstr\&.h\&.
+.SS "#define cap_exit_insert_mode   'exit_insert_mode'"
+
+.PP
+Definition at line 142 of file termcapstr\&.h\&.
+.SS "#define cap_exit_italics_mode   'exit_italics_mode'"
+
+.PP
+Definition at line 421 of file termcapstr\&.h\&.
+.SS "#define cap_exit_leftward_mode   'exit_leftward_mode'"
+
+.PP
+Definition at line 422 of file termcapstr\&.h\&.
+.SS "#define cap_exit_micro_mode   'exit_micro_mode'"
+
+.PP
+Definition at line 423 of file termcapstr\&.h\&.
+.SS "#define cap_exit_pc_charset_mode   'exit_pc_charset_mode'"
+
+.PP
+Definition at line 480 of file termcapstr\&.h\&.
+.SS "#define cap_exit_scancode_mode   'exit_scancode_mode'"
+
+.PP
+Definition at line 482 of file termcapstr\&.h\&.
+.SS "#define cap_exit_shadow_mode   'exit_shadow_mode'"
+
+.PP
+Definition at line 424 of file termcapstr\&.h\&.
+.SS "#define cap_exit_standout_mode   'exit_standout_mode'"
+
+.PP
+Definition at line 143 of file termcapstr\&.h\&.
+.SS "#define cap_exit_subscript_mode   'exit_subscript_mode'"
+
+.PP
+Definition at line 425 of file termcapstr\&.h\&.
+.SS "#define cap_exit_superscript_mode   'exit_superscript_mode'"
+
+.PP
+Definition at line 426 of file termcapstr\&.h\&.
+.SS "#define cap_exit_underline_mode   'exit_underline_mode'"
+
+.PP
+Definition at line 144 of file termcapstr\&.h\&.
+.SS "#define cap_exit_upward_mode   'exit_upward_mode'"
+
+.PP
+Definition at line 427 of file termcapstr\&.h\&.
+.SS "#define cap_exit_xon_mode   'exit_xon_mode'"
+
+.PP
+Definition at line 250 of file termcapstr\&.h\&.
+.SS "#define cap_fixed_pause   'fixed_pause'"
+
+.PP
+Definition at line 385 of file termcapstr\&.h\&.
+.SS "#define cap_flash_hook   'flash_hook'"
+
+.PP
+Definition at line 384 of file termcapstr\&.h\&.
+.SS "#define cap_flash_screen   'flash_screen'"
+
+.PP
+Definition at line 145 of file termcapstr\&.h\&.
+.SS "#define cap_form_feed   'form_feed'"
+
+.PP
+Definition at line 146 of file termcapstr\&.h\&.
+.SS "#define cap_from_status_line   'from_status_line'"
+
+.PP
+Definition at line 147 of file termcapstr\&.h\&.
+.SS "#define cap_generic_type   'generic_type'"
+
+.PP
+Definition at line 14 of file termcapstr\&.h\&.
+.SS "#define cap_get_mouse   'get_mouse'"
+
+.PP
+Definition at line 458 of file termcapstr\&.h\&.
+.SS "#define cap_gnu_has_meta_key   'gnu_has_meta_key'"
+
+.PP
+Definition at line 48 of file termcapstr\&.h\&.
+.SS "#define cap_goto_window   'goto_window'"
+
+.PP
+Definition at line 378 of file termcapstr\&.h\&.
+.SS "#define cap_hangup   'hangup'"
+
+.PP
+Definition at line 379 of file termcapstr\&.h\&.
+.SS "#define cap_hard_copy   'hard_copy'"
+
+.PP
+Definition at line 15 of file termcapstr\&.h\&.
+.SS "#define cap_hard_cursor   'hard_cursor'"
+
+.PP
+Definition at line 31 of file termcapstr\&.h\&.
+.SS "#define cap_has_hardware_tabs   'has_hardware_tabs'"
+
+.PP
+Definition at line 50 of file termcapstr\&.h\&.
+.SS "#define cap_has_meta_key   'has_meta_key'"
+
+.PP
+Definition at line 16 of file termcapstr\&.h\&.
+.SS "#define cap_has_print_wheel   'has_print_wheel'"
+
+.PP
+Definition at line 40 of file termcapstr\&.h\&.
+.SS "#define cap_has_status_line   'has_status_line'"
+
+.PP
+Definition at line 17 of file termcapstr\&.h\&.
+.SS "#define cap_horizontal_tab_delay   'horizontal_tab_delay'"
+
+.PP
+Definition at line 94 of file termcapstr\&.h\&.
+.SS "#define cap_hue_lightness_saturation   'hue_lightness_saturation'"
+
+.PP
+Definition at line 37 of file termcapstr\&.h\&.
+.SS "#define cap_init_1string   'init_1string'"
+
+.PP
+Definition at line 148 of file termcapstr\&.h\&.
+.SS "#define cap_init_2string   'init_2string'"
+
+.PP
+Definition at line 149 of file termcapstr\&.h\&.
+.SS "#define cap_init_3string   'init_3string'"
+
+.PP
+Definition at line 150 of file termcapstr\&.h\&.
+.SS "#define cap_init_file   'init_file'"
+
+.PP
+Definition at line 151 of file termcapstr\&.h\&.
+.SS "#define cap_init_prog   'init_prog'"
+
+.PP
+Definition at line 238 of file termcapstr\&.h\&.
+.SS "#define cap_init_tabs   'init_tabs'"
+
+.PP
+Definition at line 58 of file termcapstr\&.h\&.
+.SS "#define cap_initialize_color   'initialize_color'"
+
+.PP
+Definition at line 399 of file termcapstr\&.h\&.
+.SS "#define cap_initialize_pair   'initialize_pair'"
+
+.PP
+Definition at line 400 of file termcapstr\&.h\&.
+.SS "#define cap_insert_character   'insert_character'"
+
+.PP
+Definition at line 152 of file termcapstr\&.h\&.
+.SS "#define cap_insert_line   'insert_line'"
+
+.PP
+Definition at line 153 of file termcapstr\&.h\&.
+.SS "#define cap_insert_null_glitch   'insert_null_glitch'"
+
+.PP
+Definition at line 18 of file termcapstr\&.h\&.
+.SS "#define cap_insert_padding   'insert_padding'"
+
+.PP
+Definition at line 154 of file termcapstr\&.h\&.
+.SS "#define cap_key_a1   'key_a1'"
+
+.PP
+Definition at line 239 of file termcapstr\&.h\&.
+.SS "#define cap_key_a3   'key_a3'"
+
+.PP
+Definition at line 240 of file termcapstr\&.h\&.
+.SS "#define cap_key_b2   'key_b2'"
+
+.PP
+Definition at line 241 of file termcapstr\&.h\&.
+.SS "#define cap_key_backspace   'key_backspace'"
+
+.PP
+Definition at line 155 of file termcapstr\&.h\&.
+.SS "#define cap_key_beg   'key_beg'"
+
+.PP
+Definition at line 258 of file termcapstr\&.h\&.
+.SS "#define cap_key_btab   'key_btab'"
+
+.PP
+Definition at line 248 of file termcapstr\&.h\&.
+.SS "#define cap_key_c1   'key_c1'"
+
+.PP
+Definition at line 242 of file termcapstr\&.h\&.
+.SS "#define cap_key_c3   'key_c3'"
+
+.PP
+Definition at line 243 of file termcapstr\&.h\&.
+.SS "#define cap_key_cancel   'key_cancel'"
+
+.PP
+Definition at line 259 of file termcapstr\&.h\&.
+.SS "#define cap_key_catab   'key_catab'"
+
+.PP
+Definition at line 156 of file termcapstr\&.h\&.
+.SS "#define cap_key_clear   'key_clear'"
+
+.PP
+Definition at line 157 of file termcapstr\&.h\&.
+.SS "#define cap_key_close   'key_close'"
+
+.PP
+Definition at line 260 of file termcapstr\&.h\&.
+.SS "#define cap_key_command   'key_command'"
+
+.PP
+Definition at line 261 of file termcapstr\&.h\&.
+.SS "#define cap_key_copy   'key_copy'"
+
+.PP
+Definition at line 262 of file termcapstr\&.h\&.
+.SS "#define cap_key_create   'key_create'"
+
+.PP
+Definition at line 263 of file termcapstr\&.h\&.
+.SS "#define cap_key_ctab   'key_ctab'"
+
+.PP
+Definition at line 158 of file termcapstr\&.h\&.
+.SS "#define cap_key_dc   'key_dc'"
+
+.PP
+Definition at line 159 of file termcapstr\&.h\&.
+.SS "#define cap_key_dl   'key_dl'"
+
+.PP
+Definition at line 160 of file termcapstr\&.h\&.
+.SS "#define cap_key_down   'key_down'"
+
+.PP
+Definition at line 161 of file termcapstr\&.h\&.
+.SS "#define cap_key_eic   'key_eic'"
+
+.PP
+Definition at line 162 of file termcapstr\&.h\&.
+.SS "#define cap_key_end   'key_end'"
+
+.PP
+Definition at line 264 of file termcapstr\&.h\&.
+.SS "#define cap_key_enter   'key_enter'"
+
+.PP
+Definition at line 265 of file termcapstr\&.h\&.
+.SS "#define cap_key_eol   'key_eol'"
+
+.PP
+Definition at line 163 of file termcapstr\&.h\&.
+.SS "#define cap_key_eos   'key_eos'"
+
+.PP
+Definition at line 164 of file termcapstr\&.h\&.
+.SS "#define cap_key_exit   'key_exit'"
+
+.PP
+Definition at line 266 of file termcapstr\&.h\&.
+.SS "#define cap_key_f0   'key_f0'"
+
+.PP
+Definition at line 165 of file termcapstr\&.h\&.
+.SS "#define cap_key_f1   'key_f1'"
+
+.PP
+Definition at line 166 of file termcapstr\&.h\&.
+.SS "#define cap_key_f10   'key_f10'"
+
+.PP
+Definition at line 167 of file termcapstr\&.h\&.
+.SS "#define cap_key_f11   'key_f11'"
+
+.PP
+Definition at line 316 of file termcapstr\&.h\&.
+.SS "#define cap_key_f12   'key_f12'"
+
+.PP
+Definition at line 317 of file termcapstr\&.h\&.
+.SS "#define cap_key_f13   'key_f13'"
+
+.PP
+Definition at line 318 of file termcapstr\&.h\&.
+.SS "#define cap_key_f14   'key_f14'"
+
+.PP
+Definition at line 319 of file termcapstr\&.h\&.
+.SS "#define cap_key_f15   'key_f15'"
+
+.PP
+Definition at line 320 of file termcapstr\&.h\&.
+.SS "#define cap_key_f16   'key_f16'"
+
+.PP
+Definition at line 321 of file termcapstr\&.h\&.
+.SS "#define cap_key_f17   'key_f17'"
+
+.PP
+Definition at line 322 of file termcapstr\&.h\&.
+.SS "#define cap_key_f18   'key_f18'"
+
+.PP
+Definition at line 323 of file termcapstr\&.h\&.
+.SS "#define cap_key_f19   'key_f19'"
+
+.PP
+Definition at line 324 of file termcapstr\&.h\&.
+.SS "#define cap_key_f2   'key_f2'"
+
+.PP
+Definition at line 168 of file termcapstr\&.h\&.
+.SS "#define cap_key_f20   'key_f20'"
+
+.PP
+Definition at line 325 of file termcapstr\&.h\&.
+.SS "#define cap_key_f21   'key_f21'"
+
+.PP
+Definition at line 326 of file termcapstr\&.h\&.
+.SS "#define cap_key_f22   'key_f22'"
+
+.PP
+Definition at line 327 of file termcapstr\&.h\&.
+.SS "#define cap_key_f23   'key_f23'"
+
+.PP
+Definition at line 328 of file termcapstr\&.h\&.
+.SS "#define cap_key_f24   'key_f24'"
+
+.PP
+Definition at line 329 of file termcapstr\&.h\&.
+.SS "#define cap_key_f25   'key_f25'"
+
+.PP
+Definition at line 330 of file termcapstr\&.h\&.
+.SS "#define cap_key_f26   'key_f26'"
+
+.PP
+Definition at line 331 of file termcapstr\&.h\&.
+.SS "#define cap_key_f27   'key_f27'"
+
+.PP
+Definition at line 332 of file termcapstr\&.h\&.
+.SS "#define cap_key_f28   'key_f28'"
+
+.PP
+Definition at line 333 of file termcapstr\&.h\&.
+.SS "#define cap_key_f29   'key_f29'"
+
+.PP
+Definition at line 334 of file termcapstr\&.h\&.
+.SS "#define cap_key_f3   'key_f3'"
+
+.PP
+Definition at line 169 of file termcapstr\&.h\&.
+.SS "#define cap_key_f30   'key_f30'"
+
+.PP
+Definition at line 335 of file termcapstr\&.h\&.
+.SS "#define cap_key_f31   'key_f31'"
+
+.PP
+Definition at line 336 of file termcapstr\&.h\&.
+.SS "#define cap_key_f32   'key_f32'"
+
+.PP
+Definition at line 337 of file termcapstr\&.h\&.
+.SS "#define cap_key_f33   'key_f33'"
+
+.PP
+Definition at line 338 of file termcapstr\&.h\&.
+.SS "#define cap_key_f34   'key_f34'"
+
+.PP
+Definition at line 339 of file termcapstr\&.h\&.
+.SS "#define cap_key_f35   'key_f35'"
+
+.PP
+Definition at line 340 of file termcapstr\&.h\&.
+.SS "#define cap_key_f36   'key_f36'"
+
+.PP
+Definition at line 341 of file termcapstr\&.h\&.
+.SS "#define cap_key_f37   'key_f37'"
+
+.PP
+Definition at line 342 of file termcapstr\&.h\&.
+.SS "#define cap_key_f38   'key_f38'"
+
+.PP
+Definition at line 343 of file termcapstr\&.h\&.
+.SS "#define cap_key_f39   'key_f39'"
+
+.PP
+Definition at line 344 of file termcapstr\&.h\&.
+.SS "#define cap_key_f4   'key_f4'"
+
+.PP
+Definition at line 170 of file termcapstr\&.h\&.
+.SS "#define cap_key_f40   'key_f40'"
+
+.PP
+Definition at line 345 of file termcapstr\&.h\&.
+.SS "#define cap_key_f41   'key_f41'"
+
+.PP
+Definition at line 346 of file termcapstr\&.h\&.
+.SS "#define cap_key_f42   'key_f42'"
+
+.PP
+Definition at line 347 of file termcapstr\&.h\&.
+.SS "#define cap_key_f43   'key_f43'"
+
+.PP
+Definition at line 348 of file termcapstr\&.h\&.
+.SS "#define cap_key_f44   'key_f44'"
+
+.PP
+Definition at line 349 of file termcapstr\&.h\&.
+.SS "#define cap_key_f45   'key_f45'"
+
+.PP
+Definition at line 350 of file termcapstr\&.h\&.
+.SS "#define cap_key_f46   'key_f46'"
+
+.PP
+Definition at line 351 of file termcapstr\&.h\&.
+.SS "#define cap_key_f47   'key_f47'"
+
+.PP
+Definition at line 352 of file termcapstr\&.h\&.
+.SS "#define cap_key_f48   'key_f48'"
+
+.PP
+Definition at line 353 of file termcapstr\&.h\&.
+.SS "#define cap_key_f49   'key_f49'"
+
+.PP
+Definition at line 354 of file termcapstr\&.h\&.
+.SS "#define cap_key_f5   'key_f5'"
+
+.PP
+Definition at line 171 of file termcapstr\&.h\&.
+.SS "#define cap_key_f50   'key_f50'"
+
+.PP
+Definition at line 355 of file termcapstr\&.h\&.
+.SS "#define cap_key_f51   'key_f51'"
+
+.PP
+Definition at line 356 of file termcapstr\&.h\&.
+.SS "#define cap_key_f52   'key_f52'"
+
+.PP
+Definition at line 357 of file termcapstr\&.h\&.
+.SS "#define cap_key_f53   'key_f53'"
+
+.PP
+Definition at line 358 of file termcapstr\&.h\&.
+.SS "#define cap_key_f54   'key_f54'"
+
+.PP
+Definition at line 359 of file termcapstr\&.h\&.
+.SS "#define cap_key_f55   'key_f55'"
+
+.PP
+Definition at line 360 of file termcapstr\&.h\&.
+.SS "#define cap_key_f56   'key_f56'"
+
+.PP
+Definition at line 361 of file termcapstr\&.h\&.
+.SS "#define cap_key_f57   'key_f57'"
+
+.PP
+Definition at line 362 of file termcapstr\&.h\&.
+.SS "#define cap_key_f58   'key_f58'"
+
+.PP
+Definition at line 363 of file termcapstr\&.h\&.
+.SS "#define cap_key_f59   'key_f59'"
+
+.PP
+Definition at line 364 of file termcapstr\&.h\&.
+.SS "#define cap_key_f6   'key_f6'"
+
+.PP
+Definition at line 172 of file termcapstr\&.h\&.
+.SS "#define cap_key_f60   'key_f60'"
+
+.PP
+Definition at line 365 of file termcapstr\&.h\&.
+.SS "#define cap_key_f61   'key_f61'"
+
+.PP
+Definition at line 366 of file termcapstr\&.h\&.
+.SS "#define cap_key_f62   'key_f62'"
+
+.PP
+Definition at line 367 of file termcapstr\&.h\&.
+.SS "#define cap_key_f63   'key_f63'"
+
+.PP
+Definition at line 368 of file termcapstr\&.h\&.
+.SS "#define cap_key_f7   'key_f7'"
+
+.PP
+Definition at line 173 of file termcapstr\&.h\&.
+.SS "#define cap_key_f8   'key_f8'"
+
+.PP
+Definition at line 174 of file termcapstr\&.h\&.
+.SS "#define cap_key_f9   'key_f9'"
+
+.PP
+Definition at line 175 of file termcapstr\&.h\&.
+.SS "#define cap_key_find   'key_find'"
+
+.PP
+Definition at line 267 of file termcapstr\&.h\&.
+.SS "#define cap_key_help   'key_help'"
+
+.PP
+Definition at line 268 of file termcapstr\&.h\&.
+.SS "#define cap_key_home   'key_home'"
+
+.PP
+Definition at line 176 of file termcapstr\&.h\&.
+.SS "#define cap_key_ic   'key_ic'"
+
+.PP
+Definition at line 177 of file termcapstr\&.h\&.
+.SS "#define cap_key_il   'key_il'"
+
+.PP
+Definition at line 178 of file termcapstr\&.h\&.
+.SS "#define cap_key_left   'key_left'"
+
+.PP
+Definition at line 179 of file termcapstr\&.h\&.
+.SS "#define cap_key_ll   'key_ll'"
+
+.PP
+Definition at line 180 of file termcapstr\&.h\&.
+.SS "#define cap_key_mark   'key_mark'"
+
+.PP
+Definition at line 269 of file termcapstr\&.h\&.
+.SS "#define cap_key_message   'key_message'"
+
+.PP
+Definition at line 270 of file termcapstr\&.h\&.
+.SS "#define cap_key_mouse   'key_mouse'"
+
+.PP
+Definition at line 455 of file termcapstr\&.h\&.
+.SS "#define cap_key_move   'key_move'"
+
+.PP
+Definition at line 271 of file termcapstr\&.h\&.
+.SS "#define cap_key_next   'key_next'"
+
+.PP
+Definition at line 272 of file termcapstr\&.h\&.
+.SS "#define cap_key_npage   'key_npage'"
+
+.PP
+Definition at line 181 of file termcapstr\&.h\&.
+.SS "#define cap_key_open   'key_open'"
+
+.PP
+Definition at line 273 of file termcapstr\&.h\&.
+.SS "#define cap_key_options   'key_options'"
+
+.PP
+Definition at line 274 of file termcapstr\&.h\&.
+.SS "#define cap_key_ppage   'key_ppage'"
+
+.PP
+Definition at line 182 of file termcapstr\&.h\&.
+.SS "#define cap_key_previous   'key_previous'"
+
+.PP
+Definition at line 275 of file termcapstr\&.h\&.
+.SS "#define cap_key_print   'key_print'"
+
+.PP
+Definition at line 276 of file termcapstr\&.h\&.
+.SS "#define cap_key_redo   'key_redo'"
+
+.PP
+Definition at line 277 of file termcapstr\&.h\&.
+.SS "#define cap_key_reference   'key_reference'"
+
+.PP
+Definition at line 278 of file termcapstr\&.h\&.
+.SS "#define cap_key_refresh   'key_refresh'"
+
+.PP
+Definition at line 279 of file termcapstr\&.h\&.
+.SS "#define cap_key_replace   'key_replace'"
+
+.PP
+Definition at line 280 of file termcapstr\&.h\&.
+.SS "#define cap_key_restart   'key_restart'"
+
+.PP
+Definition at line 281 of file termcapstr\&.h\&.
+.SS "#define cap_key_resume   'key_resume'"
+
+.PP
+Definition at line 282 of file termcapstr\&.h\&.
+.SS "#define cap_key_right   'key_right'"
+
+.PP
+Definition at line 183 of file termcapstr\&.h\&.
+.SS "#define cap_key_save   'key_save'"
+
+.PP
+Definition at line 283 of file termcapstr\&.h\&.
+.SS "#define cap_key_sbeg   'key_sbeg'"
+
+.PP
+Definition at line 286 of file termcapstr\&.h\&.
+.SS "#define cap_key_scancel   'key_scancel'"
+
+.PP
+Definition at line 287 of file termcapstr\&.h\&.
+.SS "#define cap_key_scommand   'key_scommand'"
+
+.PP
+Definition at line 288 of file termcapstr\&.h\&.
+.SS "#define cap_key_scopy   'key_scopy'"
+
+.PP
+Definition at line 289 of file termcapstr\&.h\&.
+.SS "#define cap_key_screate   'key_screate'"
+
+.PP
+Definition at line 290 of file termcapstr\&.h\&.
+.SS "#define cap_key_sdc   'key_sdc'"
+
+.PP
+Definition at line 291 of file termcapstr\&.h\&.
+.SS "#define cap_key_sdl   'key_sdl'"
+
+.PP
+Definition at line 292 of file termcapstr\&.h\&.
+.SS "#define cap_key_select   'key_select'"
+
+.PP
+Definition at line 293 of file termcapstr\&.h\&.
+.SS "#define cap_key_send   'key_send'"
+
+.PP
+Definition at line 294 of file termcapstr\&.h\&.
+.SS "#define cap_key_seol   'key_seol'"
+
+.PP
+Definition at line 295 of file termcapstr\&.h\&.
+.SS "#define cap_key_sexit   'key_sexit'"
+
+.PP
+Definition at line 296 of file termcapstr\&.h\&.
+.SS "#define cap_key_sf   'key_sf'"
+
+.PP
+Definition at line 184 of file termcapstr\&.h\&.
+.SS "#define cap_key_sfind   'key_sfind'"
+
+.PP
+Definition at line 297 of file termcapstr\&.h\&.
+.SS "#define cap_key_shelp   'key_shelp'"
+
+.PP
+Definition at line 298 of file termcapstr\&.h\&.
+.SS "#define cap_key_shome   'key_shome'"
+
+.PP
+Definition at line 299 of file termcapstr\&.h\&.
+.SS "#define cap_key_sic   'key_sic'"
+
+.PP
+Definition at line 300 of file termcapstr\&.h\&.
+.SS "#define cap_key_sleft   'key_sleft'"
+
+.PP
+Definition at line 301 of file termcapstr\&.h\&.
+.SS "#define cap_key_smessage   'key_smessage'"
+
+.PP
+Definition at line 302 of file termcapstr\&.h\&.
+.SS "#define cap_key_smove   'key_smove'"
+
+.PP
+Definition at line 303 of file termcapstr\&.h\&.
+.SS "#define cap_key_snext   'key_snext'"
+
+.PP
+Definition at line 304 of file termcapstr\&.h\&.
+.SS "#define cap_key_soptions   'key_soptions'"
+
+.PP
+Definition at line 305 of file termcapstr\&.h\&.
+.SS "#define cap_key_sprevious   'key_sprevious'"
+
+.PP
+Definition at line 306 of file termcapstr\&.h\&.
+.SS "#define cap_key_sprint   'key_sprint'"
+
+.PP
+Definition at line 307 of file termcapstr\&.h\&.
+.SS "#define cap_key_sr   'key_sr'"
+
+.PP
+Definition at line 185 of file termcapstr\&.h\&.
+.SS "#define cap_key_sredo   'key_sredo'"
+
+.PP
+Definition at line 308 of file termcapstr\&.h\&.
+.SS "#define cap_key_sreplace   'key_sreplace'"
+
+.PP
+Definition at line 309 of file termcapstr\&.h\&.
+.SS "#define cap_key_sright   'key_sright'"
+
+.PP
+Definition at line 310 of file termcapstr\&.h\&.
+.SS "#define cap_key_srsume   'key_srsume'"
+
+.PP
+Definition at line 311 of file termcapstr\&.h\&.
+.SS "#define cap_key_ssave   'key_ssave'"
+
+.PP
+Definition at line 312 of file termcapstr\&.h\&.
+.SS "#define cap_key_ssuspend   'key_ssuspend'"
+
+.PP
+Definition at line 313 of file termcapstr\&.h\&.
+.SS "#define cap_key_stab   'key_stab'"
+
+.PP
+Definition at line 186 of file termcapstr\&.h\&.
+.SS "#define cap_key_sundo   'key_sundo'"
+
+.PP
+Definition at line 314 of file termcapstr\&.h\&.
+.SS "#define cap_key_suspend   'key_suspend'"
+
+.PP
+Definition at line 284 of file termcapstr\&.h\&.
+.SS "#define cap_key_undo   'key_undo'"
+
+.PP
+Definition at line 285 of file termcapstr\&.h\&.
+.SS "#define cap_key_up   'key_up'"
+
+.PP
+Definition at line 187 of file termcapstr\&.h\&.
+.SS "#define cap_keypad_local   'keypad_local'"
+
+.PP
+Definition at line 188 of file termcapstr\&.h\&.
+.SS "#define cap_keypad_xmit   'keypad_xmit'"
+
+.PP
+Definition at line 189 of file termcapstr\&.h\&.
+.SS "#define cap_lab_f0   'lab_f0'"
+
+.PP
+Definition at line 190 of file termcapstr\&.h\&.
+.SS "#define cap_lab_f1   'lab_f1'"
+
+.PP
+Definition at line 191 of file termcapstr\&.h\&.
+.SS "#define cap_lab_f10   'lab_f10'"
+
+.PP
+Definition at line 192 of file termcapstr\&.h\&.
+.SS "#define cap_lab_f2   'lab_f2'"
+
+.PP
+Definition at line 193 of file termcapstr\&.h\&.
+.SS "#define cap_lab_f3   'lab_f3'"
+
+.PP
+Definition at line 194 of file termcapstr\&.h\&.
+.SS "#define cap_lab_f4   'lab_f4'"
+
+.PP
+Definition at line 195 of file termcapstr\&.h\&.
+.SS "#define cap_lab_f5   'lab_f5'"
+
+.PP
+Definition at line 196 of file termcapstr\&.h\&.
+.SS "#define cap_lab_f6   'lab_f6'"
+
+.PP
+Definition at line 197 of file termcapstr\&.h\&.
+.SS "#define cap_lab_f7   'lab_f7'"
+
+.PP
+Definition at line 198 of file termcapstr\&.h\&.
+.SS "#define cap_lab_f8   'lab_f8'"
+
+.PP
+Definition at line 199 of file termcapstr\&.h\&.
+.SS "#define cap_lab_f9   'lab_f9'"
+
+.PP
+Definition at line 200 of file termcapstr\&.h\&.
+.SS "#define cap_label_format   'label_format'"
+
+.PP
+Definition at line 373 of file termcapstr\&.h\&.
+.SS "#define cap_label_height   'label_height'"
+
+.PP
+Definition at line 66 of file termcapstr\&.h\&.
+.SS "#define cap_label_off   'label_off'"
+
+.PP
+Definition at line 257 of file termcapstr\&.h\&.
+.SS "#define cap_label_on   'label_on'"
+
+.PP
+Definition at line 256 of file termcapstr\&.h\&.
+.SS "#define cap_label_width   'label_width'"
+
+.PP
+Definition at line 67 of file termcapstr\&.h\&.
+.SS "#define cap_linefeed_if_not_lf   'linefeed_if_not_lf'"
+
+.PP
+Definition at line 496 of file termcapstr\&.h\&.
+.SS "#define cap_linefeed_is_newline   'linefeed_is_newline'"
+
+.PP
+Definition at line 49 of file termcapstr\&.h\&.
+.SS "#define cap_lines   'lines'"
+
+.PP
+Definition at line 59 of file termcapstr\&.h\&.
+.SS "#define cap_lines_of_memory   'lines_of_memory'"
+
+.PP
+Definition at line 60 of file termcapstr\&.h\&.
+.SS "#define cap_lpi_changes_res   'lpi_changes_res'"
+
+.PP
+Definition at line 44 of file termcapstr\&.h\&.
+.SS "#define cap_magic_cookie_glitch   'magic_cookie_glitch'"
+
+.PP
+Definition at line 61 of file termcapstr\&.h\&.
+.SS "#define cap_magic_cookie_glitch_ul   'magic_cookie_glitch_ul'"
+
+.PP
+Definition at line 90 of file termcapstr\&.h\&.
+.SS "#define cap_max_attributes   'max_attributes'"
+
+.PP
+Definition at line 68 of file termcapstr\&.h\&.
+.SS "#define cap_max_colors   'max_colors'"
+
+.PP
+Definition at line 70 of file termcapstr\&.h\&.
+.SS "#define cap_max_micro_address   'max_micro_address'"
+
+.PP
+Definition at line 76 of file termcapstr\&.h\&.
+.SS "#define cap_max_micro_jump   'max_micro_jump'"
+
+.PP
+Definition at line 77 of file termcapstr\&.h\&.
+.SS "#define cap_max_pairs   'max_pairs'"
+
+.PP
+Definition at line 71 of file termcapstr\&.h\&.
+.SS "#define cap_maximum_windows   'maximum_windows'"
+
+.PP
+Definition at line 69 of file termcapstr\&.h\&.
+.SS "#define cap_memory_above   'memory_above'"
+
+.PP
+Definition at line 19 of file termcapstr\&.h\&.
+.SS "#define cap_memory_below   'memory_below'"
+
+.PP
+Definition at line 20 of file termcapstr\&.h\&.
+.SS "#define cap_memory_lock   'memory_lock'"
+
+.PP
+Definition at line 511 of file termcapstr\&.h\&.
+.SS "#define cap_memory_unlock   'memory_unlock'"
+
+.PP
+Definition at line 512 of file termcapstr\&.h\&.
+.SS "#define cap_meta_off   'meta_off'"
+
+.PP
+Definition at line 201 of file termcapstr\&.h\&.
+.SS "#define cap_meta_on   'meta_on'"
+
+.PP
+Definition at line 202 of file termcapstr\&.h\&.
+.SS "#define cap_micro_col_size   'micro_col_size'"
+
+.PP
+Definition at line 78 of file termcapstr\&.h\&.
+.SS "#define cap_micro_column_address   'micro_column_address'"
+
+.PP
+Definition at line 428 of file termcapstr\&.h\&.
+.SS "#define cap_micro_down   'micro_down'"
+
+.PP
+Definition at line 429 of file termcapstr\&.h\&.
+.SS "#define cap_micro_left   'micro_left'"
+
+.PP
+Definition at line 430 of file termcapstr\&.h\&.
+.SS "#define cap_micro_line_size   'micro_line_size'"
+
+.PP
+Definition at line 79 of file termcapstr\&.h\&.
+.SS "#define cap_micro_right   'micro_right'"
+
+.PP
+Definition at line 431 of file termcapstr\&.h\&.
+.SS "#define cap_micro_row_address   'micro_row_address'"
+
+.PP
+Definition at line 432 of file termcapstr\&.h\&.
+.SS "#define cap_micro_up   'micro_up'"
+
+.PP
+Definition at line 433 of file termcapstr\&.h\&.
+.SS "#define cap_mouse_info   'mouse_info'"
+
+.PP
+Definition at line 456 of file termcapstr\&.h\&.
+.SS "#define cap_move_insert_mode   'move_insert_mode'"
+
+.PP
+Definition at line 21 of file termcapstr\&.h\&.
+.SS "#define cap_move_standout_mode   'move_standout_mode'"
+
+.PP
+Definition at line 22 of file termcapstr\&.h\&.
+.SS "#define cap_needs_xon_xoff   'needs_xon_xoff'"
+
+.PP
+Definition at line 29 of file termcapstr\&.h\&.
+.SS "#define cap_new_line_delay   'new_line_delay'"
+
+.PP
+Definition at line 92 of file termcapstr\&.h\&.
+.SS "#define cap_newline   'newline'"
+
+.PP
+Definition at line 203 of file termcapstr\&.h\&.
+.SS "#define cap_no_color_video   'no_color_video'"
+
+.PP
+Definition at line 72 of file termcapstr\&.h\&.
+.SS "#define cap_no_correctly_working_cr   'no_correctly_working_cr'"
+
+.PP
+Definition at line 47 of file termcapstr\&.h\&.
+.SS "#define cap_no_esc_ctlc   'no_esc_ctlc'"
+
+.PP
+Definition at line 10 of file termcapstr\&.h\&.
+.SS "#define cap_no_pad_char   'no_pad_char'"
+
+.PP
+Definition at line 33 of file termcapstr\&.h\&.
+.SS "#define cap_non_dest_scroll_region   'non_dest_scroll_region'"
+
+.PP
+Definition at line 34 of file termcapstr\&.h\&.
+.SS "#define cap_non_rev_rmcup   'non_rev_rmcup'"
+
+.PP
+Definition at line 32 of file termcapstr\&.h\&.
+.SS "#define cap_num_labels   'num_labels'"
+
+.PP
+Definition at line 65 of file termcapstr\&.h\&.
+.SS "#define cap_number_of_function_keys   'number_of_function_keys'"
+
+.PP
+Definition at line 95 of file termcapstr\&.h\&.
+.SS "#define cap_number_of_pins   'number_of_pins'"
+
+.PP
+Definition at line 80 of file termcapstr\&.h\&.
+.SS "#define cap_order_of_pins   'order_of_pins'"
+
+.PP
+Definition at line 434 of file termcapstr\&.h\&.
+.SS "#define cap_orig_colors   'orig_colors'"
+
+.PP
+Definition at line 398 of file termcapstr\&.h\&.
+.SS "#define cap_orig_pair   'orig_pair'"
+
+.PP
+Definition at line 397 of file termcapstr\&.h\&.
+.SS "#define cap_other_non_function_keys   'other_non_function_keys'"
+
+.PP
+Definition at line 498 of file termcapstr\&.h\&.
+.SS "#define cap_output_res_char   'output_res_char'"
+
+.PP
+Definition at line 81 of file termcapstr\&.h\&.
+.SS "#define cap_output_res_horz_inch   'output_res_horz_inch'"
+
+.PP
+Definition at line 83 of file termcapstr\&.h\&.
+.SS "#define cap_output_res_line   'output_res_line'"
+
+.PP
+Definition at line 82 of file termcapstr\&.h\&.
+.SS "#define cap_output_res_vert_inch   'output_res_vert_inch'"
+
+.PP
+Definition at line 84 of file termcapstr\&.h\&.
+.SS "#define cap_over_strike   'over_strike'"
+
+.PP
+Definition at line 23 of file termcapstr\&.h\&.
+.SS "#define cap_pad_char   'pad_char'"
+
+.PP
+Definition at line 204 of file termcapstr\&.h\&.
+.SS "#define cap_padding_baud_rate   'padding_baud_rate'"
+
+.PP
+Definition at line 62 of file termcapstr\&.h\&.
+.SS "#define cap_parm_dch   'parm_dch'"
+
+.PP
+Definition at line 205 of file termcapstr\&.h\&.
+.SS "#define cap_parm_delete_line   'parm_delete_line'"
+
+.PP
+Definition at line 206 of file termcapstr\&.h\&.
+.SS "#define cap_parm_down_cursor   'parm_down_cursor'"
+
+.PP
+Definition at line 207 of file termcapstr\&.h\&.
+.SS "#define cap_parm_down_micro   'parm_down_micro'"
+
+.PP
+Definition at line 435 of file termcapstr\&.h\&.
+.SS "#define cap_parm_ich   'parm_ich'"
+
+.PP
+Definition at line 208 of file termcapstr\&.h\&.
+.SS "#define cap_parm_index   'parm_index'"
+
+.PP
+Definition at line 209 of file termcapstr\&.h\&.
+.SS "#define cap_parm_insert_line   'parm_insert_line'"
+
+.PP
+Definition at line 210 of file termcapstr\&.h\&.
+.SS "#define cap_parm_left_cursor   'parm_left_cursor'"
+
+.PP
+Definition at line 211 of file termcapstr\&.h\&.
+.SS "#define cap_parm_left_micro   'parm_left_micro'"
+
+.PP
+Definition at line 436 of file termcapstr\&.h\&.
+.SS "#define cap_parm_right_cursor   'parm_right_cursor'"
+
+.PP
+Definition at line 212 of file termcapstr\&.h\&.
+.SS "#define cap_parm_right_micro   'parm_right_micro'"
+
+.PP
+Definition at line 437 of file termcapstr\&.h\&.
+.SS "#define cap_parm_rindex   'parm_rindex'"
+
+.PP
+Definition at line 213 of file termcapstr\&.h\&.
+.SS "#define cap_parm_up_cursor   'parm_up_cursor'"
+
+.PP
+Definition at line 214 of file termcapstr\&.h\&.
+.SS "#define cap_parm_up_micro   'parm_up_micro'"
+
+.PP
+Definition at line 438 of file termcapstr\&.h\&.
+.SS "#define cap_pc_term_options   'pc_term_options'"
+
+.PP
+Definition at line 483 of file termcapstr\&.h\&.
+.SS "#define cap_pkey_key   'pkey_key'"
+
+.PP
+Definition at line 215 of file termcapstr\&.h\&.
+.SS "#define cap_pkey_local   'pkey_local'"
+
+.PP
+Definition at line 216 of file termcapstr\&.h\&.
+.SS "#define cap_pkey_plab   'pkey_plab'"
+
+.PP
+Definition at line 461 of file termcapstr\&.h\&.
+.SS "#define cap_pkey_xmit   'pkey_xmit'"
+
+.PP
+Definition at line 217 of file termcapstr\&.h\&.
+.SS "#define cap_plab_norm   'plab_norm'"
+
+.PP
+Definition at line 247 of file termcapstr\&.h\&.
+.SS "#define cap_print_rate   'print_rate'"
+
+.PP
+Definition at line 85 of file termcapstr\&.h\&.
+.SS "#define cap_print_screen   'print_screen'"
+
+.PP
+Definition at line 218 of file termcapstr\&.h\&.
+.SS "#define cap_prtr_non   'prtr_non'"
+
+.PP
+Definition at line 244 of file termcapstr\&.h\&.
+.SS "#define cap_prtr_off   'prtr_off'"
+
+.PP
+Definition at line 219 of file termcapstr\&.h\&.
+.SS "#define cap_prtr_on   'prtr_on'"
+
+.PP
+Definition at line 220 of file termcapstr\&.h\&.
+.SS "#define cap_prtr_silent   'prtr_silent'"
+
+.PP
+Definition at line 30 of file termcapstr\&.h\&.
+.SS "#define cap_pulse   'pulse'"
+
+.PP
+Definition at line 383 of file termcapstr\&.h\&.
+.SS "#define cap_quick_dial   'quick_dial'"
+
+.PP
+Definition at line 381 of file termcapstr\&.h\&.
+.SS "#define cap_remove_clock   'remove_clock'"
+
+.PP
+Definition at line 376 of file termcapstr\&.h\&.
+.SS "#define cap_repeat_char   'repeat_char'"
+
+.PP
+Definition at line 221 of file termcapstr\&.h\&.
+.SS "#define cap_req_for_input   'req_for_input'"
+
+.PP
+Definition at line 315 of file termcapstr\&.h\&.
+.SS "#define cap_req_mouse_pos   'req_mouse_pos'"
+
+.PP
+Definition at line 457 of file termcapstr\&.h\&.
+.SS "#define cap_reset_1string   'reset_1string'"
+
+.PP
+Definition at line 222 of file termcapstr\&.h\&.
+.SS "#define cap_reset_2string   'reset_2string'"
+
+.PP
+Definition at line 223 of file termcapstr\&.h\&.
+.SS "#define cap_reset_3string   'reset_3string'"
+
+.PP
+Definition at line 224 of file termcapstr\&.h\&.
+.SS "#define cap_reset_file   'reset_file'"
+
+.PP
+Definition at line 225 of file termcapstr\&.h\&.
+.SS "#define cap_restore_cursor   'restore_cursor'"
+
+.PP
+Definition at line 226 of file termcapstr\&.h\&.
+.SS "#define cap_return_does_clr_eol   'return_does_clr_eol'"
+
+.PP
+Definition at line 51 of file termcapstr\&.h\&.
+.SS "#define cap_row_addr_glitch   'row_addr_glitch'"
+
+.PP
+Definition at line 41 of file termcapstr\&.h\&.
+.SS "#define cap_row_address   'row_address'"
+
+.PP
+Definition at line 227 of file termcapstr\&.h\&.
+.SS "#define cap_save_cursor   'save_cursor'"
+
+.PP
+Definition at line 228 of file termcapstr\&.h\&.
+.SS "#define cap_scancode_escape   'scancode_escape'"
+
+.PP
+Definition at line 484 of file termcapstr\&.h\&.
+.SS "#define cap_scroll_forward   'scroll_forward'"
+
+.PP
+Definition at line 229 of file termcapstr\&.h\&.
+.SS "#define cap_scroll_reverse   'scroll_reverse'"
+
+.PP
+Definition at line 230 of file termcapstr\&.h\&.
+.SS "#define cap_select_char_set   'select_char_set'"
+
+.PP
+Definition at line 439 of file termcapstr\&.h\&.
+.SS "#define cap_semi_auto_right_margin   'semi_auto_right_margin'"
+
+.PP
+Definition at line 42 of file termcapstr\&.h\&.
+.SS "#define cap_set0_des_seq   'set0_des_seq'"
+
+.PP
+Definition at line 464 of file termcapstr\&.h\&.
+.SS "#define cap_set1_des_seq   'set1_des_seq'"
+
+.PP
+Definition at line 465 of file termcapstr\&.h\&.
+.SS "#define cap_set2_des_seq   'set2_des_seq'"
+
+.PP
+Definition at line 466 of file termcapstr\&.h\&.
+.SS "#define cap_set3_des_seq   'set3_des_seq'"
+
+.PP
+Definition at line 467 of file termcapstr\&.h\&.
+.SS "#define cap_set_a_attributes   'set_a_attributes'"
+
+.PP
+Definition at line 492 of file termcapstr\&.h\&.
+.SS "#define cap_set_a_background   'set_a_background'"
+
+.PP
+Definition at line 460 of file termcapstr\&.h\&.
+.SS "#define cap_set_a_foreground   'set_a_foreground'"
+
+.PP
+Definition at line 459 of file termcapstr\&.h\&.
+.SS "#define cap_set_attributes   'set_attributes'"
+
+.PP
+Definition at line 231 of file termcapstr\&.h\&.
+.SS "#define cap_set_background   'set_background'"
+
+.PP
+Definition at line 403 of file termcapstr\&.h\&.
+.SS "#define cap_set_bottom_margin   'set_bottom_margin'"
+
+.PP
+Definition at line 440 of file termcapstr\&.h\&.
+.SS "#define cap_set_bottom_margin_parm   'set_bottom_margin_parm'"
+
+.PP
+Definition at line 441 of file termcapstr\&.h\&.
+.SS "#define cap_set_clock   'set_clock'"
+
+.PP
+Definition at line 374 of file termcapstr\&.h\&.
+.SS "#define cap_set_color_band   'set_color_band'"
+
+.PP
+Definition at line 476 of file termcapstr\&.h\&.
+.SS "#define cap_set_color_pair   'set_color_pair'"
+
+.PP
+Definition at line 401 of file termcapstr\&.h\&.
+.SS "#define cap_set_foreground   'set_foreground'"
+
+.PP
+Definition at line 402 of file termcapstr\&.h\&.
+.SS "#define cap_set_left_margin   'set_left_margin'"
+
+.PP
+Definition at line 371 of file termcapstr\&.h\&.
+.SS "#define cap_set_left_margin_parm   'set_left_margin_parm'"
+
+.PP
+Definition at line 442 of file termcapstr\&.h\&.
+.SS "#define cap_set_lr_margin   'set_lr_margin'"
+
+.PP
+Definition at line 468 of file termcapstr\&.h\&.
+.SS "#define cap_set_page_length   'set_page_length'"
+
+.PP
+Definition at line 477 of file termcapstr\&.h\&.
+.SS "#define cap_set_pglen_inch   'set_pglen_inch'"
+
+.PP
+Definition at line 493 of file termcapstr\&.h\&.
+.SS "#define cap_set_right_margin   'set_right_margin'"
+
+.PP
+Definition at line 372 of file termcapstr\&.h\&.
+.SS "#define cap_set_right_margin_parm   'set_right_margin_parm'"
+
+.PP
+Definition at line 443 of file termcapstr\&.h\&.
+.SS "#define cap_set_tab   'set_tab'"
+
+.PP
+Definition at line 232 of file termcapstr\&.h\&.
+.SS "#define cap_set_tb_margin   'set_tb_margin'"
+
+.PP
+Definition at line 469 of file termcapstr\&.h\&.
+.SS "#define cap_set_top_margin   'set_top_margin'"
+
+.PP
+Definition at line 444 of file termcapstr\&.h\&.
+.SS "#define cap_set_top_margin_parm   'set_top_margin_parm'"
+
+.PP
+Definition at line 445 of file termcapstr\&.h\&.
+.SS "#define cap_set_window   'set_window'"
+
+.PP
+Definition at line 233 of file termcapstr\&.h\&.
+.SS "#define cap_start_bit_image   'start_bit_image'"
+
+.PP
+Definition at line 446 of file termcapstr\&.h\&.
+.SS "#define cap_start_char_set_def   'start_char_set_def'"
+
+.PP
+Definition at line 447 of file termcapstr\&.h\&.
+.SS "#define cap_status_line_esc_ok   'status_line_esc_ok'"
+
+.PP
+Definition at line 24 of file termcapstr\&.h\&.
+.SS "#define cap_stop_bit_image   'stop_bit_image'"
+
+.PP
+Definition at line 448 of file termcapstr\&.h\&.
+.SS "#define cap_stop_char_set_def   'stop_char_set_def'"
+
+.PP
+Definition at line 449 of file termcapstr\&.h\&.
+.SS "#define cap_subscript_characters   'subscript_characters'"
+
+.PP
+Definition at line 450 of file termcapstr\&.h\&.
+.SS "#define cap_superscript_characters   'superscript_characters'"
+
+.PP
+Definition at line 451 of file termcapstr\&.h\&.
+.SS "#define cap_tab   'tab'"
+
+.PP
+Definition at line 234 of file termcapstr\&.h\&.
+.SS "#define cap_termcap_init2   'termcap_init2'"
+
+.PP
+Definition at line 494 of file termcapstr\&.h\&.
+.SS "#define cap_termcap_reset   'termcap_reset'"
+
+.PP
+Definition at line 495 of file termcapstr\&.h\&.
+.SS "#define cap_these_cause_cr   'these_cause_cr'"
+
+.PP
+Definition at line 452 of file termcapstr\&.h\&.
+.SS "#define cap_tilde_glitch   'tilde_glitch'"
+
+.PP
+Definition at line 26 of file termcapstr\&.h\&.
+.SS "#define cap_to_status_line   'to_status_line'"
+
+.PP
+Definition at line 235 of file termcapstr\&.h\&.
+.SS "#define cap_tone   'tone'"
+
+.PP
+Definition at line 382 of file termcapstr\&.h\&.
+.SS "#define cap_transparent_underline   'transparent_underline'"
+
+.PP
+Definition at line 27 of file termcapstr\&.h\&.
+.SS "#define cap_underline_char   'underline_char'"
+
+.PP
+Definition at line 236 of file termcapstr\&.h\&.
+.SS "#define cap_up_half_line   'up_half_line'"
+
+.PP
+Definition at line 237 of file termcapstr\&.h\&.
+.SS "#define cap_user0   'user0'"
+
+.PP
+Definition at line 387 of file termcapstr\&.h\&.
+.SS "#define cap_user1   'user1'"
+
+.PP
+Definition at line 388 of file termcapstr\&.h\&.
+.SS "#define cap_user2   'user2'"
+
+.PP
+Definition at line 389 of file termcapstr\&.h\&.
+.SS "#define cap_user3   'user3'"
+
+.PP
+Definition at line 390 of file termcapstr\&.h\&.
+.SS "#define cap_user4   'user4'"
+
+.PP
+Definition at line 391 of file termcapstr\&.h\&.
+.SS "#define cap_user5   'user5'"
+
+.PP
+Definition at line 392 of file termcapstr\&.h\&.
+.SS "#define cap_user6   'user6'"
+
+.PP
+Definition at line 393 of file termcapstr\&.h\&.
+.SS "#define cap_user7   'user7'"
+
+.PP
+Definition at line 394 of file termcapstr\&.h\&.
+.SS "#define cap_user8   'user8'"
+
+.PP
+Definition at line 395 of file termcapstr\&.h\&.
+.SS "#define cap_user9   'user9'"
+
+.PP
+Definition at line 396 of file termcapstr\&.h\&.
+.SS "#define cap_virtual_terminal   'virtual_terminal'"
+
+.PP
+Definition at line 63 of file termcapstr\&.h\&.
+.SS "#define cap_wait_tone   'wait_tone'"
+
+.PP
+Definition at line 386 of file termcapstr\&.h\&.
+.SS "#define cap_wide_char_size   'wide_char_size'"
+
+.PP
+Definition at line 86 of file termcapstr\&.h\&.
+.SS "#define cap_width_status_line   'width_status_line'"
+
+.PP
+Definition at line 64 of file termcapstr\&.h\&.
+.SS "#define cap_xoff_character   'xoff_character'"
+
+.PP
+Definition at line 254 of file termcapstr\&.h\&.
+.SS "#define cap_xon_character   'xon_character'"
+
+.PP
+Definition at line 253 of file termcapstr\&.h\&.
+.SS "#define cap_xon_xoff   'xon_xoff'"
+
+.PP
+Definition at line 28 of file termcapstr\&.h\&.
+.SS "#define cap_zero_motion   'zero_motion'"
+
+.PP
+Definition at line 453 of file termcapstr\&.h\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

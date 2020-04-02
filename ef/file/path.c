@@ -70,54 +70,85 @@ err_t path_home(char* path){
 }
 
 char* path_resolve(const char* path){
-	char tmp[PATH_MAX];
+	//dbg_info("get path:%s",path);
+	char cur[PATH_MAX];
+	char out[PATH_MAX];
 
-	if( *path == '~' ){
-		if( path_home(tmp) ){
+	size_t lpath = strlen(path);
+	if( lpath > PATH_MAX - 1 ){
+		err_push("path %s to long", path);
+		return NULL;
+	}
+
+	if( !str_equal(path, lpath, "~", 1) || !str_ancmp(path, "~/") ){
+		if( path_home(cur) ){
 			return NULL;
 		}
-		strcpy(&tmp[strlen(tmp)], &path[1]);
-		return str_dup(tmp,0);
+		if( lpath + strlen(cur) > PATH_MAX -1 ){
+			err_push("path %s + %s to long", cur, path);
+			return NULL;
+		}
+		if( path[1] && path[2] ){
+			strcpy(&cur[strlen(cur)], &path[2]);
+		}
 	}
-	else if( *path == '.' ){
-		path_current(tmp);
-		if( path[1] == '.' ){
-			path_kill_back(tmp);
-			if( path[2] ){
-				size_t l = strlen(tmp);
-				if( path[2] != '/' ){
-					tmp[l++] = '/';
-					tmp[l] = 0;
+	else if( !str_equal(path, lpath, ".", 1) || !str_ancmp(path, "./") ){
+		path_current(cur);
+		if( lpath + strlen(cur) > PATH_MAX - 1){
+			err_push("path %s + %s to long", cur, path);
+			return NULL;
+		}
+		if( path[1] && path[2] ){
+			strcpy(&cur[strlen(cur)], &path[1]);
+		}
+	}
+	else if( !str_equal(path, lpath, "..", 1) || !str_ancmp(path, "../") ){
+		path_current(cur);
+		path_kill_back(cur);
+		if( lpath + strlen(cur) > PATH_MAX - 1){
+			err_push("path %s + %s to long", cur, path);
+			return NULL;
+		}	
+		if( path[2] && path[3] ){
+			strcpy(&cur[strlen(cur)], &path[2]);
+		}
+	}
+	else{
+		strcpy(cur, path);
+	}
+
+	char* parse = cur;
+	char* pout = out;
+	while( *parse ){
+		if( *parse == '.' ){
+			if( *(parse+1) == '/' ){
+				parse += 2;
+				continue;
+			}
+			if( *(parse+1) == '.' ){
+				if( *(parse+2) == 0 ){
+					*pout = 0;
+					path_kill_back(out);
+					pout = out + strlen(out);
+					parse += 2;
+					continue;
 				}
-				strcpy(&tmp[strlen(tmp)], &path[2]);
-				return str_dup(tmp,0);
+				if ( *(parse+2) == '/' ){
+					*pout = 0;
+					path_kill_back(out);
+					pout = out + strlen(out);
+					parse += 2;
+					continue;
+				}
 			}
-			return str_dup(tmp, 0);
 		}
-		if( path[1] == '/' ){
-			size_t l = strlen(tmp);
-			if( path[1] != '/' ){
-				tmp[l++] = '/';
-				tmp[l] = 0;
-			}
-			strcpy(&tmp[strlen(tmp)], &path[2]);
-			return str_dup(tmp,0);
-		}
-		return str_dup(tmp, 0);
+		*pout++ = *parse++;
 	}
-	else if( *path != '/' ){
-		path_current(tmp);	
-		size_t l = strlen(tmp);
-		if( tmp[l-1] != '/' ){
-			tmp[l++] = '/';
-			tmp[l] = 0;
-		}
-		strcpy(&tmp[strlen(tmp)], path);
-		return str_dup(tmp,0);
-	}
-	return str_dup(path,0);
+	*pout = 0;
+	return str_dup(out, pout-out);
 }
 
+//TODO change same path resolve
 char* path_resolve_custom(const char* path, const char* home, const char* current){
 	char tmp[PATH_MAX];
 

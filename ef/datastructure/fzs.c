@@ -64,8 +64,8 @@ ssize_t fzs_vector_find(char** v, const char* str, size_t lens){
 }
 
 __private int fzs_cmp(const void* A, const void* B){
-	fzsElement_s* a = (fzsElement_s*)A;
-	fzsElement_s* b = (fzsElement_s*)B;
+	const fzsElement_s* a = (const fzsElement_s*)A;
+	const fzsElement_s* b = (const fzsElement_s*)B;
 	return a->distance - b->distance;
 }
 

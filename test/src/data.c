@@ -8,6 +8,7 @@ __private char* DATA[] = {
 	"andrea",
 	"hello world",
 	"any word",
+	"\x1B[1F",
 	NULL
 };
 

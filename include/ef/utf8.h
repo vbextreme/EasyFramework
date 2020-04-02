@@ -1,6 +1,8 @@
 #ifndef __EF_UTF8_H__
 #define __EF_UTF8_H__
 
+/* libunistring required in dest application link*/
+
 #include <ef/type.h>
 #include <locale.h>
 #include <ctype.h>
@@ -42,6 +44,12 @@ typedef struct utf8Iterator{
 }utf8Iterator_s;
 
 #define UTF_NOT_VALID 0xFFFD
+
+#define UTF_PRIVATE0_START 0xE800
+#define UTF_PRIVATE0_END   0xFFFD
+#define UTF_PRIVATE1_START 0x100000
+#define UTF_PRIVATE1_END   0x10FFFD
+
 
 /** check STR is valid unicode, return NULL if is valid or first uninvalid char*/
 #define utf_validate_n(STR,NCH) _Generic((STR),\

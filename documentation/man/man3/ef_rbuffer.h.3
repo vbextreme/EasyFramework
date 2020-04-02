@@ -1,4 +1,4 @@
-.TH "include/ef/rbuffer.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/rbuffer.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -84,6 +84,9 @@ include/ef/rbuffer.h
 .ti -1c
 .RI "void * \fBrbuffer_addr_w\fP (\fBrbuffer_s\fP *cb)"
 .br
+.ti -1c
+.RI "void \fBrbuffer_clear\fP (\fBrbuffer_s\fP *cb)"
+.br
 .in -1c
 .SH "Macro Definition Documentation"
 .PP 
@@ -164,6 +167,8 @@ size
 .RE
 .PP
 
+.SS "void rbuffer_clear (\fBrbuffer_s\fP * cb)"
+clear buffer 
 .SS "void rbuffer_free (\fBrbuffer_s\fP * cb)"
 free ring buffer 
 .PP
@@ -243,7 +248,7 @@ read data
 .PP
 \fBReturns\fP
 .RS 4
-0 ok -1 for error 
+0 ok, -1 for error or not have data to read 
 .RE
 .PP
 

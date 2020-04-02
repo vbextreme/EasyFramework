@@ -47,7 +47,7 @@ void trie_free_auto(trie_s** trie);
  */
 trieElement_s* trie_add(trieElement_s* node, char ch, void* data);
 
-/** insert string in trie
+/** insert string in trie, add ch 1 for last element
  * @param trie
  * @param str string to insert
  * @param data userdata for end node
@@ -55,14 +55,14 @@ trieElement_s* trie_add(trieElement_s* node, char ch, void* data);
  */
 err_t trie_insert(trie_s* trie, const char* str, void* data);
 
-/** step in trie
+/** step in trie, step with ch = 1 for last element
  * @param out out userdata if is an end node
  * @param el current element
  * @param ch char to check
  * @return trieStep
  * @see trieStep_e
  */
-trieStep_e trie_step(void** out, trieElement_s** el, char ch);
+trieStep_e trie_step(void* out, trieElement_s** el, char ch);
 
 /** search in trie
  * @param trie

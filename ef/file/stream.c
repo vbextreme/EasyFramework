@@ -13,7 +13,7 @@ stream_s* stream_open_fd(int fd, size_t chunk){
 	}
 	if( chunk == 0 ) chunk = STREAM_CHUNK;
 
-	stream_s* sm = malloc(sizeof(stream_s) + chunk * 2);
+	stream_s* sm = mem_flexible_structure_new(stream_s, sizeof(char), chunk * 2);
 	if( !sm ){
 		err_pushno("malloc");	
 		return NULL;
@@ -28,7 +28,7 @@ stream_s* stream_open_fd(int fd, size_t chunk){
 	sm->r.cursor = sm->w.cursor = 0;
 	sm->r.size = sm->w.size = chunk;
 	
-	sm->r.buf = &sm->rwbuffer[chunk]; 
+	sm->r.buf = &sm->rwbuffer[chunk];
 	sm->w.buf = &sm->rwbuffer[0];
 	return sm;
 }
@@ -98,6 +98,7 @@ __private ssize_t stream_rfill(stream_s* sm){
 	}
 	else{
 		nr = fd_read(sm->fd, sm->r.buf, sm->r.size);
+		//dbg_info("filled %ld", nr);
 	}
 	if( nr == -1 ) return -1;
 	sm->r.len = nr;
@@ -118,8 +119,7 @@ __private ssize_t stream_rfill(stream_s* sm){
 	}\
 	ret;\
 })
-
-		
+	
 ssize_t stream_read(stream_s* sm, void* buf, size_t size){
 	char* rd = buf;
 	//dbg_info("read(%lu)", size);
@@ -219,7 +219,11 @@ ssize_t stream_inp_string(stream_s* sm, char** out, char endch, int addch){
 	size_t len = 0;
 	char ch;
 	
-	while( stream_fast_read_char(sm, ch) == 1 && ch != endch ){
+	while( stream_fast_read_char(sm, ch) == 1 ){
+		if( ch == endch ){
+			if( addch ) str[len++] = ch;
+			break;
+		}
 		str[len++] = ch;
 		if( len >= size - (1+addch) ){
 			size += STREAM_STRING_CHUNK;
@@ -243,7 +247,7 @@ ssize_t stream_inp_string(stream_s* sm, char** out, char endch, int addch){
 		*out = NULL;
 		return 0;
 	}
-	if( addch ) str[len++] = endch;
+
 	str[len] = 0;
 #if STREAM_STRING_FIT_REALLOC == _Y_
 	*out = realloc(str, len+1);
@@ -265,7 +269,11 @@ ssize_t stream_inp_toanyof(stream_s* sm, char** out, char* endch, int addch){
 	size_t len = 0;
 	char ch;
 	
-	while( stream_fast_read_char(sm, ch) == 1 && !strchr(endch, ch) ){
+	while( stream_fast_read_char(sm, ch) == 1 ){
+		if( strchr(endch, ch) ){
+			if( addch ) str[len++] = ch;
+			break;
+		}
 		//dbg_info("readed:%d(%c)",ch,ch);
 		str[len++] = ch;
 		if( len >= size - (1+addch) ){
@@ -287,7 +295,6 @@ ssize_t stream_inp_toanyof(stream_s* sm, char** out, char* endch, int addch){
 		*out = NULL;
 		return 0;
 	}
-	if( addch ) str[len++] = ch;
 	str[len] = 0;
 #if STREAM_STRING_FIT_REALLOC == _Y_
 	*out = realloc(str, len+1);
@@ -311,8 +318,7 @@ ssize_t stream_inp_strstr(stream_s* sm, char** out, char* endstr, int addch){
 	size_t lenEnd = strlen(endstr);
 	size_t iEnd = 0;
 	
-	while( iEnd < lenEnd && stream_fast_read_char(sm, ch) == 1 ){
-		
+	while( iEnd < lenEnd && stream_fast_read_char(sm, ch) == 1 ){	
 		str[len++] = ch;
 		if( endstr[iEnd] == ch ){
 			++iEnd;

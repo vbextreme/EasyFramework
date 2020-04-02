@@ -4,7 +4,7 @@ meson configure -Defdbg=1 -Doptimize=0 -Dautovectorization=0
 ninja
 cd ..
 valgrind --undef-value-errors=no --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes\
-   	./build/testef -p
+   	./build/testef -E
 cd build
 meson configure -Defdbg=0 -Doptimize=2 -Dautovectorization=1
 

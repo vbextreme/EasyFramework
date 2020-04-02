@@ -1,4 +1,4 @@
-.TH "include/ef/trie.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/trie.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -65,7 +65,7 @@ include/ef/trie.h
 .RI "\fBerr_t\fP \fBtrie_insert\fP (\fBtrie_s\fP *\fBtrie\fP, const char *str, void *data)"
 .br
 .ti -1c
-.RI "\fBtrieStep_e\fP \fBtrie_step\fP (void **out, \fBtrieElement_s\fP **el, char ch)"
+.RI "\fBtrieStep_e\fP \fBtrie_step\fP (void *out, \fBtrieElement_s\fP **el, char ch)"
 .br
 .ti -1c
 .RI "void * \fBtrie_search\fP (\fBtrie_s\fP *\fBtrie\fP, const char *str)"
@@ -137,7 +137,7 @@ free trie, call free for each element
 .SS "void trie_free_auto (\fBtrie_s\fP ** trie)"
 
 .SS "\fBerr_t\fP trie_insert (\fBtrie_s\fP * trie, const char * str, void * data)"
-insert string in trie 
+insert string in trie, add ch 1 for last element 
 .PP
 \fBParameters\fP
 .RS 4
@@ -184,8 +184,8 @@ userdata if find endnode otherwise NULL
 .RE
 .PP
 
-.SS "\fBtrieStep_e\fP trie_step (void ** out, \fBtrieElement_s\fP ** el, char ch)"
-step in trie 
+.SS "\fBtrieStep_e\fP trie_step (void * out, \fBtrieElement_s\fP ** el, char ch)"
+step in trie, step with ch = 1 for last element 
 .PP
 \fBParameters\fP
 .RS 4

@@ -1,0 +1,73 @@
+.TH "include/ef/tuiRoot.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/tuiRoot.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/tui\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtuiRoot\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBtuiRoot\fP \fBtuiRoot_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_root_new\fP (void)"
+.br
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_root_get\fP (\fBtui_s\fP *any)"
+.br
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_root_focused\fP (\fBtui_s\fP *tr)"
+.br
+.ti -1c
+.RI "void \fBtui_root_focus_set\fP (\fBtui_s\fP *tr, \fBtui_s\fP *focus)"
+.br
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_root_getin\fP (\fBtui_s\fP *tr, int r, int c)"
+.br
+.ti -1c
+.RI "void \fBtui_root_loop\fP (\fBtui_s\fP *tr)"
+.br
+.ti -1c
+.RI "void \fBtui_root_wait\fP (\fBtui_s\fP *\fBtui\fP, \fBtui_s\fP *setFocus)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBtuiRoot\fP \fBtuiRoot_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "void tui_root_focus_set (\fBtui_s\fP * tr, \fBtui_s\fP * focus)"
+set focus to tui 
+.SS "\fBtui_s\fP* tui_root_focused (\fBtui_s\fP * tr)"
+get tui focused 
+.SS "\fBtui_s\fP* tui_root_get (\fBtui_s\fP * any)"
+get root from any tui 
+.SS "\fBtui_s\fP* tui_root_getin (\fBtui_s\fP * tr, int r, int c)"
+get tui in position r,c 
+.SS "void tui_root_loop (\fBtui_s\fP * tr)"
+loop key 
+.SS "\fBtui_s\fP* tui_root_new (void)"
+create new root tui, is always need for all tui application 
+.SS "void tui_root_wait (\fBtui_s\fP * tui, \fBtui_s\fP * setFocus)"
+create a loop key and wait it 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.
