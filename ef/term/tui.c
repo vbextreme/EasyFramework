@@ -1,6 +1,7 @@
 #include <ef/tui.h>
 #include <ef/memory.h>
 #include <ef/vector.h>
+#include <ef/tuiRoot.h>
 #include <ef/str.h>
 #include <ef/err.h>
 
@@ -68,10 +69,12 @@ void tui_begin(void){
 	term_input_enable();
 	tui_att_init();
 	term_ca_mode(1);
+	term_mouse(1);
 	term_flush();
 }
 
 void tui_end(){
+	term_mouse(0);
 	term_color_reset();
 	term_font_attribute(TERM_FONT_RESET);
 	term_ca_mode(0);
@@ -134,6 +137,7 @@ tui_s* tui_new(tui_s* parent, int id, utf8_t* name, int border, int r, int c, in
 	tui->draw = NULL;
 	tui->eventKey = NULL;
 	tui->eventFocus = NULL;
+	tui->eventMouse = NULL;
 
 	tui->attribute[0] = vector_new(utf_t, 2, 2);
 	tui->attribute[1] = vector_new(utf_t, 2, 2);
@@ -160,8 +164,8 @@ void tui_free(tui_s* tui){
 
 	if( tui->free ) tui->free(tui->usrdata);
 	if( tui->name ) free(tui->name);
-	if( tui->attribute[0] ) free(tui->attribute[0]);
-	if( tui->attribute[1] ) free(tui->attribute[1]);
+	vector_free(tui->attribute[0]);
+	vector_free(tui->attribute[1]);
 	free(tui);
 }
 
@@ -267,15 +271,12 @@ void tui_clear_area(tui_s* tui){
 }
 
 void tui_clear(tui_s* tui){
-	const unsigned h = tui->size.height + tui->position.r;
-	const unsigned w = tui->size.width + tui->position.c;
 	const unsigned xs = tui->position.c;
-	const unsigned ys = tui->position.r;
+	const unsigned ys = tui->position.r;	
+	const unsigned h = tui->size.height + ys;
+	const unsigned w = tui->size.width + xs;
 	
-	vector_foreach(tui->childs, i){
-		tui_clear(tui->childs[i]);
-	}
-
+	dbg_info("tui(%d).%s: clear r:%u c:%u h:%u w:%u", tui->id, tui->name,ys,xs,h,w);
 	tui_attribute_print(tui);
 	for(unsigned y = ys; y < h; ++y){
 		term_gotorc(y,xs);
@@ -284,6 +285,13 @@ void tui_clear(tui_s* tui){
 		}
 	}
 	term_gotorc(ys, xs);
+}
+
+void tui_clear_all(tui_s* tui){
+	vector_foreach(tui->childs, i){
+		tui_clear_all(tui->childs[i]);
+	}
+	tui_clear(tui);
 }
 
 void tui_draw_border(tui_s* tui){
@@ -319,6 +327,7 @@ void tui_draw_border(tui_s* tui){
 }
 
 void tui_draw(tui_s* tui){
+	tui_clear(tui);
 	dbg_info("tui[%d]:%s.draw",tui->id, tui->name);
 	if( tui->border ) tui_draw_border(tui) ;
 	if( tui->draw ) tui->draw(tui);
@@ -341,7 +350,7 @@ void tui_move(tui_s* tui, int r, int c){
 	tui_draw(tui);
 }
 
-int tui_default_event_key(__unused tui_s* tui, termKey_s key){
+int tui_default_event_key(tui_s* tui, termKey_s key){
 	dbg_info("key(%d)", tui->id);
 
 	switch( key.ch ){
@@ -361,6 +370,19 @@ int tui_default_event_key(__unused tui_s* tui, termKey_s key){
 
 		case TERM_KEY_DOWN:
 		return TUI_EVENT_RETURN_FOCUS_CHILD;
+
+		case TERM_KEY_MOUSE:{
+			termMouse_s mouse = term_mouse_event();
+			tui_s* sel = tui_root_getin(tui_root_get(tui), mouse.r, mouse.c);
+			if( !sel ) return TUI_EVENT_RETURN_EXIT;
+			if( sel->eventMouse ) {
+				return sel->eventMouse(sel, mouse);
+			}
+			else{
+				tui_root_focus_set(tui_root_get(tui), sel);
+			}
+		}
+		return 0;
 	}
 
 	return 0;

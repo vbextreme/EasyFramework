@@ -13,6 +13,7 @@ typedef struct tuiListElement{
 	int r;
 	int c;
 	void* usrdata;
+	tuiEventInt_f onpress;
 }tuiListElement_s;
 
 typedef struct tuiList{
@@ -36,7 +37,11 @@ int tui_list_event_focus(tui_s* tui, int enable);
 
 tui_s* tui_list_new(tui_s* parent, int id, utf8_t* name, int border, int r, int c, int width, int height);
 
-void tui_list_add(tui_s* tui, const utf8_t* name, int val, void* userdata);
+void tui_list_add(tui_s* tui, const utf8_t* name, int val, void* userdata, tuiEventInt_f fn);
+
+tuiListElement_s* tui_list_element(tui_s* tui, unsigned id);
+
+size_t tui_list_element_count(tui_s* tui);
 
 void tui_list_clear(tui_s* tui);
 

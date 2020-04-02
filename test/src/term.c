@@ -26,6 +26,14 @@ int btn_press(tui_s* tui, __unused int press){
 	return 0;
 }
 
+int lst_press(tui_s* tui, int index){
+	utf8_t* buttons[] = { U8("ok") };
+	tui_window_msgbox(tui_root_get(tui), 7, U8("press list"), 1, 4, 4, 28, 10, tui_list_element(tui, index)->name, buttons, 1);
+	//tui_window_msgbox(tui_root_get(tui), 7, U8("press list"), 1, 4, 4, 28, 10,  , buttons, 1);
+
+	return 0;
+}
+
 /*@fn*/
 void test_term(__unused const char* argA, __unused const char* argB){
 	err_enable();
@@ -33,34 +41,34 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	
 	tui_s* root = tui_root_new();
 	
-	tui_s* win = tui_window_new(root, 1, U8("msg box"), 1, 3, 3, 30,15);
+	tui_s* win = tui_window_new(root, 1, U8("Main Win"), 1, 3, 3, 30,15);
 	win->focusBorder = 1;
 	
 	tuiPosition_s pos = tui_area_position(win);
 	tuiSize_s size = tui_area_size(win);
-	tui_s* lbl = tui_label_new(win, 2, NULL, 0, pos.r, pos.c, size.width, size.height);
+	tui_s* lbl = tui_label_new(win, 2, U8("label"), 0, pos.r, pos.c, size.width, 3);
 	tui_label_set(lbl, U8("this is a message box, test of ef/tui"));
 
-	tui_s* btn = tui_button_new(win, 3, NULL, 0, pos.r + size.height - 2, pos.c + size.width - 10, 9, 1);
+	tui_s* btn = tui_button_new(win, 3, U8("button"), 0, pos.r + size.height - 2, pos.c + size.width - 10, 9, 1);
 	tui_button_set(btn, U8("click me"));
 	tui_button_onpress_set(btn, btn_press, NULL);
 	tui_attribute_add(btn, 1, tui_att_get(TUI_COLOR_LIGHT_GREEN_BK));
 	tui_attribute_add(btn, 1, tui_att_get(TUI_COLOR_BLACK));
 
-	tui_s* txt = tui_text_new(win, 4, NULL, 0, pos.r + size.height - 4, pos.c, 15, 3);
+	tui_s* txt = tui_text_new(win, 4, U8("text"), 0, pos.r + size.height - 4, pos.c, 15, 3);
 	term_readline_prompt_change(tui_text_readline(txt), U8("input:"));
 	
-	tui_s* lst = tui_list_new(win, 5, NULL, 0, pos.r+3, pos.c, 12,4);
-	tui_list_option(lst, TUI_LIST_VERTICAL, TUI_LIST_CHECK);
-	tui_list_add(lst, U8("a"), 0, NULL);
-	tui_list_add(lst, U8("b"), 0, NULL);
-	tui_list_add(lst, U8("c"), 0, NULL);
-	tui_list_add(lst, U8("d"), 0, NULL);
-	tui_list_add(lst, U8("e"), 0, NULL);
+	tui_s* lst = tui_list_new(win, 5, U8("list"), 0, pos.r+3, pos.c, 12,4);
+	tui_list_option(lst, TUI_LIST_VERTICAL, TUI_LIST_OPTION);
+	tui_list_add(lst, U8("a"), 0, NULL, lst_press);
+	tui_list_add(lst, U8("b"), 0, NULL, lst_press);
+	tui_list_add(lst, U8("c"), 0, NULL, lst_press);
+	tui_list_add(lst, U8("d"), 0, NULL, lst_press);
+	tui_list_add(lst, U8("e"), 0, NULL, lst_press);
 	
 	tui_draw(win);
 
-	tui_root_focus_set(root, btn);
+	tui_root_focus_set(root, lst);
 	term_flush();
 	tui_root_loop(root);
 	tui_free(root);

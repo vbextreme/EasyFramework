@@ -15,6 +15,8 @@ int tui_button_event_focus(tui_s* tui, int focus);
 
 int tui_button_event_key(tui_s* tui, termKey_s key);
 
+int tui_button_event_mouse(tui_s* tui, __unused termMouse_s mouse);
+
 tui_s* tui_button_new(tui_s* parent, int id, utf8_t* name, int border, int r, int c, int width, int height);
 
 void tui_button_set(tui_s* tl, const utf8_t* str);

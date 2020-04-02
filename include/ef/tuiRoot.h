@@ -15,6 +15,8 @@ tui_s* tui_root_focused(tui_s* tr);
 
 void tui_root_focus_set(tui_s* tr, tui_s* focus);
 
+tui_s* tui_root_getin(tui_s* tr, int r, int c);
+
 void tui_root_loop(tui_s* tr);
 
 void tui_root_wait(tui_s* tui, tui_s* setFocus);

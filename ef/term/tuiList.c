@@ -41,12 +41,22 @@ void tui_list_event_draw(tui_s* tui){
 	const int wt = lst->type == TUI_LIST_NORMAL ? 0 : 1;
 
 	vector_foreach(lst->elements, i){
-		if( (lst->mode == TUI_LIST_VERTICAL ) && i < lst->scrollRow) continue;
-		if( (lst->mode == TUI_LIST_HORIZONTAL || lst->mode == TUI_LIST_GRID) && c >= size.width + pos.c ) continue;
-		if( r >= pos.r + size.height ) break;
+		if( (lst->mode == TUI_LIST_VERTICAL ) && i < lst->scrollRow){
+			dbg_info("skip list %lu", i);
+			continue;
+		}
+		if( (lst->mode == TUI_LIST_HORIZONTAL || lst->mode == TUI_LIST_GRID) && c >= size.width + pos.c ){
+			dbg_info("skip list %lu", i);
+			continue;
+		}
+		if( r >= pos.r + size.height ){
+			dbg_info("break list r(%d) > height(%d)", r, pos.r + size.height);	
+			break;
+		}
+		dbg_info("lst draw %lu %d %d", i, r, c);	
 
-		term_gotorc(pos.r,pos.c);
-		tui_attribute_print(tui);
+		//term_gotorc(pos.r,pos.c);
+		//tui_attribute_print(tui);
 		lst->elements[i].r = r;
 		lst->elements[i].c = c;
 		
@@ -54,7 +64,7 @@ void tui_list_event_draw(tui_s* tui){
 			case TUI_LIST_HORIZONTAL:
 				we += utf_width(lst->elements[i].name) + wt;
 				if( we + c < size.width + pos.c ){
-					term_gotorc(pos.r,pos.c);
+					term_gotorc(r,c);
 					tui_attribute_print(tui);
 					print_type(lst, i);
 					term_print(lst->elements[i].name);
@@ -68,7 +78,7 @@ void tui_list_event_draw(tui_s* tui){
 			case TUI_LIST_GRID:
 				we += utf_width(lst->elements[i].name) + wt;
 				if( we + c < size.width + pos.c ){
-					term_gotorc(pos.r,pos.c);
+					term_gotorc(r,c);
 					tui_attribute_print(tui);
 					print_type(lst, i);
 					term_print(lst->elements[i].name);
@@ -78,7 +88,7 @@ void tui_list_event_draw(tui_s* tui){
 					++r;
 					if( r < pos.r + size.height ){
 						c = pos.c;
-						term_gotorc(pos.r,pos.c);
+						term_gotorc(r,c);
 						tui_attribute_print(tui);
 						print_type(lst, i);
 						term_print(lst->elements[i].name);
@@ -91,10 +101,9 @@ void tui_list_event_draw(tui_s* tui){
 			break;
 
 			case TUI_LIST_VERTICAL:
-				term_gotorc(pos.r,pos.c);
+				term_gotorc(r,c);
 				tui_attribute_print(tui);
 				print_type(lst, i);
-				term_print(lst->elements[i].name);
 				term_print(lst->elements[i].name);
 				++r;
 			break;
@@ -104,7 +113,9 @@ void tui_list_event_draw(tui_s* tui){
 
 __private void list_set_cursor(tui_s* tui){
 	tuiList_s* lst = tui->usrdata;
+	dbg_info("[%u %lu]set cursor at %d %d",lst->sel, lst->scrollRow, lst->elements[lst->sel+lst->scrollRow].r, lst->elements[lst->sel+lst->scrollRow].c);
 	term_gotorc(lst->elements[lst->sel+lst->scrollRow].r, lst->elements[lst->sel+lst->scrollRow].c);
+	term_flush();
 }
 
 int tui_list_event_key(tui_s* tui, termKey_s key){
@@ -115,6 +126,7 @@ int tui_list_event_key(tui_s* tui, termKey_s key){
 		return TUI_EVENT_RETURN_FOCUS_PARENT;
 		
 		case '\n':
+			if( lst->elements[lst->sel+lst->scrollRow].onpress ) lst->elements[lst->sel+lst->scrollRow].onpress(tui, lst->sel+lst->scrollRow);
 			if( lst->type == TUI_LIST_CHECK ){
 				lst->elements[lst->sel+lst->scrollRow].val = !lst->elements[lst->sel+lst->scrollRow].val;
 			}
@@ -137,9 +149,10 @@ int tui_list_event_key(tui_s* tui, termKey_s key){
 				}
 				else{
 					lst->sel = vector_count(lst->elements) - 1;
-					lst->scrollRow = lst->sel - tui_area_size(tui).height;
+					lst->scrollRow = lst->sel - (tui_area_size(tui).height-1);
 					lst->sel -= lst->scrollRow;
 				}
+				tui_list_event_draw(tui);
 			}
 			else{
 				--lst->sel;
@@ -155,14 +168,15 @@ int tui_list_event_key(tui_s* tui, termKey_s key){
 
 		case TERM_KEY_DOWN:
 			if( lst->mode == TUI_LIST_HORIZONTAL ) return TUI_EVENT_RETURN_FOCUS_NEXT;
-			if( (int)lst->sel >= tui_area_size(tui).height ){
-			   	if( lst->scrollRow + 1 + lst->sel < vector_count(lst->elements) - 1 ){
+			if( (int)lst->sel >= tui_area_size(tui).height - 1 ){
+			   	if( lst->scrollRow + lst->sel + 1 < vector_count(lst->elements) ){
 					++lst->scrollRow;
 				}
 				else{
 					lst->sel = 0;
 					lst->scrollRow = 0;
 				}
+				tui_list_event_draw(tui);
 			}
 			else{
 				++lst->sel;
@@ -171,7 +185,7 @@ int tui_list_event_key(tui_s* tui, termKey_s key){
 		return 0;
 	}
 
-	return 0;
+	return tui_default_event_key(tui, key);
 }
 
 int tui_list_event_focus(tui_s* tui, int enable){
@@ -197,16 +211,29 @@ tui_s* tui_list_new(tui_s* parent, int id, utf8_t* name, int border, int r, int 
 	lst->type = TUI_LIST_NORMAL;
 	lst->elements = vector_new(tuiListElement_s, 8, 32);
 	lst->sel = 0;
+	lst->scrollRow = 0;
 
 	return tr;
 }
 
-void tui_list_add(tui_s* tui, const utf8_t* name, int val, void* userdata){
+void tui_list_add(tui_s* tui, const utf8_t* name, int val, void* userdata, tuiEventInt_f fn){
 	tuiList_s* lst = tui->usrdata;
 	tuiListElement_s* el = vector_get_push_back(lst->elements);
 	el->name = U8(str_dup((const char*)name, 0));
 	el->val = val;
 	el->usrdata = userdata;
+	el->onpress = fn;
+}
+
+tuiListElement_s* tui_list_element(tui_s* tui, unsigned id){
+	tuiList_s* lst = tui->usrdata;
+	if( id > vector_count(lst->elements)-1 ) return NULL;
+	return &lst->elements[id];
+}
+
+size_t tui_list_element_count(tui_s* tui){
+	tuiList_s* lst = tui->usrdata;
+	return vector_count(lst->elements);
 }
 
 void tui_list_clear(tui_s* tui){
@@ -221,3 +248,5 @@ void tui_list_option(tui_s* tui, tuiListMode_e mode, tuiListType_e type){
 	lst->mode = mode;
 	lst->type = type;
 }
+
+

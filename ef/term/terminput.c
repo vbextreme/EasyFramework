@@ -1,6 +1,7 @@
 #include <ef/terminput.h>
 #include <ef/termmode.h>
 #include <ef/terminfo.h>
+#include <ef/termkey.h>
 #include <ef/sig.h>
 #include <ef/rbuffer.h>
 #include <ef/trie.h>
@@ -9,7 +10,7 @@
 
 __private volatile int updateResize = 0;
 __private rbuffer_s* uinp = NULL; 
-
+__private termMouse_s mouse;
 
 __private void sig_resize(__unused int sig, __unused siginfo_t* sinfo, __unused void* context){
 	updateResize = 1;
@@ -102,6 +103,8 @@ termKey_s term_input_utf8(void){
 }
 
 termMouse_s term_input_mouse(void){
+	dbg_info("reading mouse position");
+
 	termMouse_s mouse = {0};
 	int button = term_input_extend().ch;
 
@@ -146,6 +149,10 @@ termMouse_s term_input_mouse(void){
 	return mouse;
 }
 
+termMouse_s term_mouse_event(void){
+	return mouse;
+}
+
 __private termKey_s term_input_unroll(termKey_s* unb, size_t count){
 	for(size_t i = 1; i < count; ++i){
 		term_input_ungetch(unb[i]);
@@ -178,6 +185,7 @@ termKey_s term_input_extend(void){
 					key[0].ch = 0;
 					key[0].escape = kbd->id + TERM_INPUT_EXTEND_OFFSET;
 					term_input_ungetch(key[count-1]);
+					if( key[0].escape == TERM_KEY_MOUSE ) mouse = term_input_mouse();
 					return key[0];
 				}
 				//dbg_info("trie step error");
@@ -190,6 +198,7 @@ termKey_s term_input_extend(void){
 						dbg_info("kbd.name:%s", kbd->name);
 						key[0].ch = 0;
 						key[0].escape = kbd->id + TERM_INPUT_EXTEND_OFFSET;
+						if( key[0].escape == TERM_KEY_MOUSE ) mouse = term_input_mouse();
 						return key[0];
 					}
 					//dbg_info("no kbhit, return");
@@ -201,6 +210,7 @@ termKey_s term_input_extend(void){
 				dbg_info("kbd.name:%s", kbd->name);
 				key[0].ch = 0;
 				key[0].escape = kbd->id + TERM_INPUT_EXTEND_OFFSET;
+				if( key[0].escape == TERM_KEY_MOUSE ) mouse = term_input_mouse();
 			return key[0];
 		}
 	}

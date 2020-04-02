@@ -40,6 +40,24 @@ void tui_root_focus_set(tui_s* tr, tui_s* focus){
 	if( focus->eventFocus ) focus->eventFocus(focus, 1);
 }
 
+tui_s* tui_root_getin(tui_s* tr, int r, int c){
+	vector_foreach(tr->childs, i){
+		tui_s* ret = tui_root_getin(tr->childs[i], r, c);
+		if( ret ) return ret;
+	}
+
+	dbg_info("%d.%s::mouse.r:%d mouse.c:%d pos.r:%d pos.c%d, size.h:%d size.w:%d", tr->id, (char*)tr->name, r, c, tr->position.r, tr->position.c, tr->size.height, tr->size.width);
+	if( 
+		r >= tr->position.r && c >= tr->position.c &&
+		r <= tr->position.r + tr->size.height &&
+		c <= tr->position.c + tr->size.width
+	){
+		return tr;
+	}
+	//never return NULL, mouse is always inside a root
+	return NULL;
+}	
+
 __private void tui_root_focus_child_next(tui_s* tr){
 	iassert(tr->type == TUI_TYPE_ROOT);
 	tuiRoot_s* root = tr->usrdata;
@@ -98,8 +116,10 @@ void tui_root_wait(tui_s* tui, tui_s* setFocus){
 	tui_s* root = tui_root_get(tui);
 	tui_s* old = tui_root_focused(root);
 
-	tui_draw(tui);
+	tui_root_focus_set(root, tui);
+	//tui_draw(tui);
 	tui_root_focus_set(root, setFocus);
+	term_flush();
 	tui_root_loop(root);
 	tui_clear(tui);
 	tui_root_focused(root)->eventFocus = NULL;
@@ -109,3 +129,4 @@ void tui_root_wait(tui_s* tui, tui_s* setFocus){
 	tui_draw(root);
 	term_flush();
 }
+

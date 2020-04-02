@@ -58,4 +58,7 @@ termKey_s term_input_extend(void);
 /** when receved TERM_KEY_MOUSE, call this function to get mouse position */
 termMouse_s term_input_mouse(void);
 
+/** if use term_input_extend use this for reading mouse value, not term_input_mouse */
+termMouse_s term_mouse_event(void);
+
 #endif 

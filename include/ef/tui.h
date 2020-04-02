@@ -63,9 +63,8 @@ typedef enum {
 typedef struct tui tui_s;
 
 typedef void(*tuiFree_f)(void*);
-
 typedef void(*tuiDraw_f)(tui_s* tui);
-
+typedef int(*tuiEventMouse_f)(tui_s* tui, termMouse_s mouse);
 typedef int(*tuiEventKey_f)(tui_s* tui, termKey_s key);
 typedef int(*tuiEventInt_f)(tui_s* tui, int val);
 
@@ -89,6 +88,7 @@ typedef struct tui{
 	void* usrdata;
 	tuiFree_f free;
 	tuiDraw_f draw;
+	tuiEventMouse_f eventMouse;
 	tuiEventKey_f eventKey;
 	tuiEventInt_f eventFocus;
 	utf_t clearchar;
@@ -140,6 +140,8 @@ void tui_area_goto(tui_s* tui);
 void tui_clear_area(tui_s* tui);
 
 void tui_clear(tui_s* tui);
+
+void tui_clear_all(tui_s* tui);
 
 void tui_draw_border(tui_s* tui);
 

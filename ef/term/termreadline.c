@@ -175,8 +175,8 @@ __private void term_readline_print(termReadLine_s* rl, utf8_t* str, int* r, unsi
 		else{
 			term_print(utf);
 			++(*c);
-			dbg_warning("c:%d col:%u w:%u", *c, rl->position.col, rl->position.width);
-			dbg_warning("r:%d row:%u h:%u", *r, rl->position.row, rl->position.height);
+			//dbg_warning("c:%d col:%u w:%u", *c, rl->position.col, rl->position.width);
+			//dbg_warning("r:%d row:%u h:%u", *r, rl->position.row, rl->position.height);
 
 			if( utf == '\n' || *c - rl->position.col >= rl->position.width ){
 				++(*r);
@@ -256,7 +256,7 @@ __private void term_readline_cursor_update(termReadLine_s* rl, int promptr, unsi
 	utf8Iterator_s it = utf8_iterator(rl->text.str, 0);
 
 	if( scrolly ){
-		dbg_warning("skip row:%u", rl->cursor.scrollrow);
+		//dbg_warning("skip row:%u", rl->cursor.scrollrow);
 		unsigned offsety = rl->cursor.scrollrow;
 	   	unsigned width = scrollx ? UINT_MAX : rl->position.width - rl->prompt.len;
 		utf_t utf;

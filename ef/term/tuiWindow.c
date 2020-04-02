@@ -24,7 +24,7 @@ tui_s* tui_window_new(tui_s* parent, int id, utf8_t* name, int border, int r, in
 __private int msgbox_key(tui_s* tui, termKey_s key){
 	if(key.escape == TERM_KEY_LEFT) key.escape = TERM_KEY_RIGHT;
 	else if( key.escape == TERM_KEY_RIGHT) key.escape = TERM_KEY_LEFT;
-	return tui_default_event_key(tui,key);
+	return tui_button_event_key(tui,key);
 }
 
 __private int msgbox_press(tui_s* tui, __unused int press){
@@ -39,7 +39,7 @@ int tui_window_msgbox(tui_s* root, int id, utf8_t* name, int border, int r, int 
 	tuiPosition_s pos = tui_area_position(msgbox);
 	tuiSize_s siz = tui_area_size(msgbox);
 	
-	tui_s* lbl = tui_label_new(msgbox, id+1000, NULL, 0, pos.r, pos.c, siz.width, siz.height);	
+	tui_s* lbl = tui_label_new(msgbox, id+1000, NULL, 0, pos.r, pos.c, siz.width, siz.height - 1);
 	lbl->eventKey = msgbox_key;
 	tui_label_set(lbl, text);
 	

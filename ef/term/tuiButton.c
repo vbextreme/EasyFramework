@@ -49,6 +49,13 @@ int tui_button_event_key(tui_s* tui, termKey_s key){
 	return tui_default_event_key(tui, key);
 }
 
+int tui_button_event_mouse(tui_s* tui, __unused termMouse_s mouse){
+	iassert(tui->type == TUI_TYPE_BUTTON);
+	tuiButton_s* btn = tui->usrdata;
+	if( btn->onpress ) return btn->onpress(tui, 1);
+	return 0;
+}
+
 tui_s* tui_button_new(tui_s* parent, int id, utf8_t* name, int border, int r, int c, int width, int height){
 	tuiButton_s* btn = mem_new(tuiButton_s);
 	if( !btn ) err_fail("malloc");
@@ -59,12 +66,13 @@ tui_s* tui_button_new(tui_s* parent, int id, utf8_t* name, int border, int r, in
 	tr->draw = tui_button_event_draw;
 	tr->eventKey = tui_button_event_key;
 	tr->eventFocus = tui_default_event_focus;
+	tr->eventMouse = tui_button_event_mouse;
 	tr->type = TUI_TYPE_BUTTON;
 	
 	btn->str = NULL;
 	btn->onpress = NULL;
 	btn->usrdata = NULL;
-
+	
 	return tr;
 }
 
