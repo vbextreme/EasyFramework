@@ -1,0 +1,1326 @@
+.TH "include/ef/termkey.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/termkey.h
+.SH SYNOPSIS
+.br
+.PP
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBTERM_KEY_BACKSPACE\fP   1024"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_CATAB\fP   1025"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_CLEAR\fP   1026"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_CTAB\fP   1027"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_DC\fP   1028"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_DL\fP   1029"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_DOWN\fP   1030"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_EIC\fP   1031"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_EOL\fP   1032"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_EOS\fP   1033"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F0\fP   1034"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F1\fP   1035"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F10\fP   1036"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F2\fP   1037"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F3\fP   1038"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F4\fP   1039"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F5\fP   1040"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F6\fP   1041"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F7\fP   1042"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F8\fP   1043"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F9\fP   1044"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_HOME\fP   1045"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_IC\fP   1046"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_IL\fP   1047"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LEFT\fP   1048"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LL\fP   1049"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_NPAGE\fP   1050"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_PPAGE\fP   1051"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_RIGHT\fP   1052"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SF\fP   1053"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SR\fP   1054"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_STAB\fP   1055"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_UP\fP   1056"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEYPAD_LOCAL\fP   1057"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEYPAD_XMIT\fP   1058"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LAB_F0\fP   1059"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LAB_F1\fP   1060"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LAB_F10\fP   1061"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LAB_F2\fP   1062"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LAB_F3\fP   1063"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LAB_F4\fP   1064"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LAB_F5\fP   1065"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LAB_F6\fP   1066"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LAB_F7\fP   1067"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LAB_F8\fP   1068"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_LAB_F9\fP   1069"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_META_OFF\fP   1070"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_META_ON\fP   1071"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_PKEY_KEY\fP   1072"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_PKEY_LOCAL\fP   1073"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_PKEY_XMIT\fP   1074"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_PRINT_SCREEN\fP   1075"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_PRTR_OFF\fP   1076"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_PRTR_ON\fP   1077"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_REPEAT_CHAR\fP   1078"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_A1\fP   1079"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_A3\fP   1080"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_B2\fP   1081"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_C1\fP   1082"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_C3\fP   1083"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_BTAB\fP   1084"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_BEG\fP   1085"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_CANCEL\fP   1086"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_CLOSE\fP   1087"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_COMMAND\fP   1088"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_COPY\fP   1089"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_CREATE\fP   1090"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_END\fP   1091"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_ENTER\fP   1092"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_EXIT\fP   1093"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_FIND\fP   1094"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_HELP\fP   1095"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_MARK\fP   1096"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_MESSAGE\fP   1097"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_MOVE\fP   1098"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_NEXT\fP   1099"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_OPEN\fP   1100"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_OPTIONS\fP   1101"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_PREVIOUS\fP   1102"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_PRINT\fP   1103"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_REDO\fP   1104"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_REFERENCE\fP   1105"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_REFRESH\fP   1106"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_REPLACE\fP   1107"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_RESTART\fP   1108"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_RESUME\fP   1109"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SAVE\fP   1110"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SUSPEND\fP   1111"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_UNDO\fP   1112"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SBEG\fP   1113"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SCANCEL\fP   1114"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SCOMMAND\fP   1115"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SCOPY\fP   1116"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SCREATE\fP   1117"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SDC\fP   1118"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SDL\fP   1119"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SELECT\fP   1120"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SEND\fP   1121"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SEOL\fP   1122"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SEXIT\fP   1123"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SFIND\fP   1124"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SHELP\fP   1125"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SHOME\fP   1126"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SIC\fP   1127"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SLEFT\fP   1128"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SMESSAGE\fP   1129"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SMOVE\fP   1130"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SNEXT\fP   1131"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SOPTIONS\fP   1132"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SPREVIOUS\fP   1133"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SPRINT\fP   1134"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SREDO\fP   1135"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SREPLACE\fP   1136"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SRIGHT\fP   1137"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SRSUME\fP   1138"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SSAVE\fP   1139"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SSUSPEND\fP   1140"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SUNDO\fP   1141"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F11\fP   1142"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F12\fP   1143"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F13\fP   1144"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F14\fP   1145"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F15\fP   1146"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F16\fP   1147"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F17\fP   1148"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F18\fP   1149"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F19\fP   1150"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F20\fP   1151"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F21\fP   1152"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F22\fP   1153"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F23\fP   1154"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F24\fP   1155"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F25\fP   1156"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F26\fP   1157"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F27\fP   1158"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F28\fP   1159"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F29\fP   1160"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F30\fP   1161"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F31\fP   1162"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F32\fP   1163"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F33\fP   1164"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F34\fP   1165"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F35\fP   1166"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F36\fP   1167"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F37\fP   1168"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F38\fP   1169"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F39\fP   1170"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F40\fP   1171"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F41\fP   1172"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F42\fP   1173"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F43\fP   1174"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F44\fP   1175"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F45\fP   1176"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F46\fP   1177"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F47\fP   1178"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F48\fP   1179"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F49\fP   1180"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F50\fP   1181"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F51\fP   1182"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F52\fP   1183"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F53\fP   1184"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F54\fP   1185"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F55\fP   1186"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F56\fP   1187"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F57\fP   1188"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F58\fP   1189"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F59\fP   1190"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F60\fP   1191"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F61\fP   1192"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F62\fP   1193"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_F63\fP   1194"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_MICRO_COLUMN_ADDRESS\fP   1195"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_MICRO_DOWN\fP   1196"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_MICRO_LEFT\fP   1197"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_MICRO_RIGHT\fP   1198"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_MICRO_ROW_ADDRESS\fP   1199"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_MICRO_UP\fP   1200"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_MOUSE\fP   1201"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_PKEY_PLAB\fP   1202"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SHIFT_UP\fP   1203"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SHIFT_DOWN\fP   1204"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SHIFT_LEFT\fP   1205"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_SHIFT_RIGHT\fP   1206"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_CTRL_UP\fP   1207"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_CTRL_DOWN\fP   1208"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_CTRL_LEFT\fP   1209"
+.br
+.ti -1c
+.RI "#define \fBTERM_KEY_CTRL_RIGHT\fP   1210"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define TERM_KEY_A1   1079"
+
+.PP
+Definition at line 59 of file termkey\&.h\&.
+.SS "#define TERM_KEY_A3   1080"
+
+.PP
+Definition at line 60 of file termkey\&.h\&.
+.SS "#define TERM_KEY_B2   1081"
+
+.PP
+Definition at line 61 of file termkey\&.h\&.
+.SS "#define TERM_KEY_BACKSPACE   1024"
+
+.PP
+Definition at line 4 of file termkey\&.h\&.
+.SS "#define TERM_KEY_BEG   1085"
+
+.PP
+Definition at line 65 of file termkey\&.h\&.
+.SS "#define TERM_KEY_BTAB   1084"
+
+.PP
+Definition at line 64 of file termkey\&.h\&.
+.SS "#define TERM_KEY_C1   1082"
+
+.PP
+Definition at line 62 of file termkey\&.h\&.
+.SS "#define TERM_KEY_C3   1083"
+
+.PP
+Definition at line 63 of file termkey\&.h\&.
+.SS "#define TERM_KEY_CANCEL   1086"
+
+.PP
+Definition at line 66 of file termkey\&.h\&.
+.SS "#define TERM_KEY_CATAB   1025"
+
+.PP
+Definition at line 5 of file termkey\&.h\&.
+.SS "#define TERM_KEY_CLEAR   1026"
+
+.PP
+Definition at line 6 of file termkey\&.h\&.
+.SS "#define TERM_KEY_CLOSE   1087"
+
+.PP
+Definition at line 67 of file termkey\&.h\&.
+.SS "#define TERM_KEY_COMMAND   1088"
+
+.PP
+Definition at line 68 of file termkey\&.h\&.
+.SS "#define TERM_KEY_COPY   1089"
+
+.PP
+Definition at line 69 of file termkey\&.h\&.
+.SS "#define TERM_KEY_CREATE   1090"
+
+.PP
+Definition at line 70 of file termkey\&.h\&.
+.SS "#define TERM_KEY_CTAB   1027"
+
+.PP
+Definition at line 7 of file termkey\&.h\&.
+.SS "#define TERM_KEY_CTRL_DOWN   1208"
+
+.PP
+Definition at line 188 of file termkey\&.h\&.
+.SS "#define TERM_KEY_CTRL_LEFT   1209"
+
+.PP
+Definition at line 189 of file termkey\&.h\&.
+.SS "#define TERM_KEY_CTRL_RIGHT   1210"
+
+.PP
+Definition at line 190 of file termkey\&.h\&.
+.SS "#define TERM_KEY_CTRL_UP   1207"
+
+.PP
+Definition at line 187 of file termkey\&.h\&.
+.SS "#define TERM_KEY_DC   1028"
+
+.PP
+Definition at line 8 of file termkey\&.h\&.
+.SS "#define TERM_KEY_DL   1029"
+
+.PP
+Definition at line 9 of file termkey\&.h\&.
+.SS "#define TERM_KEY_DOWN   1030"
+
+.PP
+Definition at line 10 of file termkey\&.h\&.
+.SS "#define TERM_KEY_EIC   1031"
+
+.PP
+Definition at line 11 of file termkey\&.h\&.
+.SS "#define TERM_KEY_END   1091"
+
+.PP
+Definition at line 71 of file termkey\&.h\&.
+.SS "#define TERM_KEY_ENTER   1092"
+
+.PP
+Definition at line 72 of file termkey\&.h\&.
+.SS "#define TERM_KEY_EOL   1032"
+
+.PP
+Definition at line 12 of file termkey\&.h\&.
+.SS "#define TERM_KEY_EOS   1033"
+
+.PP
+Definition at line 13 of file termkey\&.h\&.
+.SS "#define TERM_KEY_EXIT   1093"
+
+.PP
+Definition at line 73 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F0   1034"
+
+.PP
+Definition at line 14 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F1   1035"
+
+.PP
+Definition at line 15 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F10   1036"
+
+.PP
+Definition at line 16 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F11   1142"
+
+.PP
+Definition at line 122 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F12   1143"
+
+.PP
+Definition at line 123 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F13   1144"
+
+.PP
+Definition at line 124 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F14   1145"
+
+.PP
+Definition at line 125 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F15   1146"
+
+.PP
+Definition at line 126 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F16   1147"
+
+.PP
+Definition at line 127 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F17   1148"
+
+.PP
+Definition at line 128 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F18   1149"
+
+.PP
+Definition at line 129 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F19   1150"
+
+.PP
+Definition at line 130 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F2   1037"
+
+.PP
+Definition at line 17 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F20   1151"
+
+.PP
+Definition at line 131 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F21   1152"
+
+.PP
+Definition at line 132 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F22   1153"
+
+.PP
+Definition at line 133 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F23   1154"
+
+.PP
+Definition at line 134 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F24   1155"
+
+.PP
+Definition at line 135 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F25   1156"
+
+.PP
+Definition at line 136 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F26   1157"
+
+.PP
+Definition at line 137 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F27   1158"
+
+.PP
+Definition at line 138 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F28   1159"
+
+.PP
+Definition at line 139 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F29   1160"
+
+.PP
+Definition at line 140 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F3   1038"
+
+.PP
+Definition at line 18 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F30   1161"
+
+.PP
+Definition at line 141 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F31   1162"
+
+.PP
+Definition at line 142 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F32   1163"
+
+.PP
+Definition at line 143 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F33   1164"
+
+.PP
+Definition at line 144 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F34   1165"
+
+.PP
+Definition at line 145 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F35   1166"
+
+.PP
+Definition at line 146 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F36   1167"
+
+.PP
+Definition at line 147 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F37   1168"
+
+.PP
+Definition at line 148 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F38   1169"
+
+.PP
+Definition at line 149 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F39   1170"
+
+.PP
+Definition at line 150 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F4   1039"
+
+.PP
+Definition at line 19 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F40   1171"
+
+.PP
+Definition at line 151 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F41   1172"
+
+.PP
+Definition at line 152 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F42   1173"
+
+.PP
+Definition at line 153 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F43   1174"
+
+.PP
+Definition at line 154 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F44   1175"
+
+.PP
+Definition at line 155 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F45   1176"
+
+.PP
+Definition at line 156 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F46   1177"
+
+.PP
+Definition at line 157 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F47   1178"
+
+.PP
+Definition at line 158 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F48   1179"
+
+.PP
+Definition at line 159 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F49   1180"
+
+.PP
+Definition at line 160 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F5   1040"
+
+.PP
+Definition at line 20 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F50   1181"
+
+.PP
+Definition at line 161 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F51   1182"
+
+.PP
+Definition at line 162 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F52   1183"
+
+.PP
+Definition at line 163 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F53   1184"
+
+.PP
+Definition at line 164 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F54   1185"
+
+.PP
+Definition at line 165 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F55   1186"
+
+.PP
+Definition at line 166 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F56   1187"
+
+.PP
+Definition at line 167 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F57   1188"
+
+.PP
+Definition at line 168 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F58   1189"
+
+.PP
+Definition at line 169 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F59   1190"
+
+.PP
+Definition at line 170 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F6   1041"
+
+.PP
+Definition at line 21 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F60   1191"
+
+.PP
+Definition at line 171 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F61   1192"
+
+.PP
+Definition at line 172 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F62   1193"
+
+.PP
+Definition at line 173 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F63   1194"
+
+.PP
+Definition at line 174 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F7   1042"
+
+.PP
+Definition at line 22 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F8   1043"
+
+.PP
+Definition at line 23 of file termkey\&.h\&.
+.SS "#define TERM_KEY_F9   1044"
+
+.PP
+Definition at line 24 of file termkey\&.h\&.
+.SS "#define TERM_KEY_FIND   1094"
+
+.PP
+Definition at line 74 of file termkey\&.h\&.
+.SS "#define TERM_KEY_HELP   1095"
+
+.PP
+Definition at line 75 of file termkey\&.h\&.
+.SS "#define TERM_KEY_HOME   1045"
+
+.PP
+Definition at line 25 of file termkey\&.h\&.
+.SS "#define TERM_KEY_IC   1046"
+
+.PP
+Definition at line 26 of file termkey\&.h\&.
+.SS "#define TERM_KEY_IL   1047"
+
+.PP
+Definition at line 27 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LAB_F0   1059"
+
+.PP
+Definition at line 39 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LAB_F1   1060"
+
+.PP
+Definition at line 40 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LAB_F10   1061"
+
+.PP
+Definition at line 41 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LAB_F2   1062"
+
+.PP
+Definition at line 42 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LAB_F3   1063"
+
+.PP
+Definition at line 43 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LAB_F4   1064"
+
+.PP
+Definition at line 44 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LAB_F5   1065"
+
+.PP
+Definition at line 45 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LAB_F6   1066"
+
+.PP
+Definition at line 46 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LAB_F7   1067"
+
+.PP
+Definition at line 47 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LAB_F8   1068"
+
+.PP
+Definition at line 48 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LAB_F9   1069"
+
+.PP
+Definition at line 49 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LEFT   1048"
+
+.PP
+Definition at line 28 of file termkey\&.h\&.
+.SS "#define TERM_KEY_LL   1049"
+
+.PP
+Definition at line 29 of file termkey\&.h\&.
+.SS "#define TERM_KEY_MARK   1096"
+
+.PP
+Definition at line 76 of file termkey\&.h\&.
+.SS "#define TERM_KEY_MESSAGE   1097"
+
+.PP
+Definition at line 77 of file termkey\&.h\&.
+.SS "#define TERM_KEY_META_OFF   1070"
+
+.PP
+Definition at line 50 of file termkey\&.h\&.
+.SS "#define TERM_KEY_META_ON   1071"
+
+.PP
+Definition at line 51 of file termkey\&.h\&.
+.SS "#define TERM_KEY_MICRO_COLUMN_ADDRESS   1195"
+
+.PP
+Definition at line 175 of file termkey\&.h\&.
+.SS "#define TERM_KEY_MICRO_DOWN   1196"
+
+.PP
+Definition at line 176 of file termkey\&.h\&.
+.SS "#define TERM_KEY_MICRO_LEFT   1197"
+
+.PP
+Definition at line 177 of file termkey\&.h\&.
+.SS "#define TERM_KEY_MICRO_RIGHT   1198"
+
+.PP
+Definition at line 178 of file termkey\&.h\&.
+.SS "#define TERM_KEY_MICRO_ROW_ADDRESS   1199"
+
+.PP
+Definition at line 179 of file termkey\&.h\&.
+.SS "#define TERM_KEY_MICRO_UP   1200"
+
+.PP
+Definition at line 180 of file termkey\&.h\&.
+.SS "#define TERM_KEY_MOUSE   1201"
+
+.PP
+Definition at line 181 of file termkey\&.h\&.
+.SS "#define TERM_KEY_MOVE   1098"
+
+.PP
+Definition at line 78 of file termkey\&.h\&.
+.SS "#define TERM_KEY_NEXT   1099"
+
+.PP
+Definition at line 79 of file termkey\&.h\&.
+.SS "#define TERM_KEY_NPAGE   1050"
+
+.PP
+Definition at line 30 of file termkey\&.h\&.
+.SS "#define TERM_KEY_OPEN   1100"
+
+.PP
+Definition at line 80 of file termkey\&.h\&.
+.SS "#define TERM_KEY_OPTIONS   1101"
+
+.PP
+Definition at line 81 of file termkey\&.h\&.
+.SS "#define TERM_KEY_PKEY_KEY   1072"
+
+.PP
+Definition at line 52 of file termkey\&.h\&.
+.SS "#define TERM_KEY_PKEY_LOCAL   1073"
+
+.PP
+Definition at line 53 of file termkey\&.h\&.
+.SS "#define TERM_KEY_PKEY_PLAB   1202"
+
+.PP
+Definition at line 182 of file termkey\&.h\&.
+.SS "#define TERM_KEY_PKEY_XMIT   1074"
+
+.PP
+Definition at line 54 of file termkey\&.h\&.
+.SS "#define TERM_KEY_PPAGE   1051"
+
+.PP
+Definition at line 31 of file termkey\&.h\&.
+.SS "#define TERM_KEY_PREVIOUS   1102"
+
+.PP
+Definition at line 82 of file termkey\&.h\&.
+.SS "#define TERM_KEY_PRINT   1103"
+
+.PP
+Definition at line 83 of file termkey\&.h\&.
+.SS "#define TERM_KEY_PRINT_SCREEN   1075"
+
+.PP
+Definition at line 55 of file termkey\&.h\&.
+.SS "#define TERM_KEY_PRTR_OFF   1076"
+
+.PP
+Definition at line 56 of file termkey\&.h\&.
+.SS "#define TERM_KEY_PRTR_ON   1077"
+
+.PP
+Definition at line 57 of file termkey\&.h\&.
+.SS "#define TERM_KEY_REDO   1104"
+
+.PP
+Definition at line 84 of file termkey\&.h\&.
+.SS "#define TERM_KEY_REFERENCE   1105"
+
+.PP
+Definition at line 85 of file termkey\&.h\&.
+.SS "#define TERM_KEY_REFRESH   1106"
+
+.PP
+Definition at line 86 of file termkey\&.h\&.
+.SS "#define TERM_KEY_REPEAT_CHAR   1078"
+
+.PP
+Definition at line 58 of file termkey\&.h\&.
+.SS "#define TERM_KEY_REPLACE   1107"
+
+.PP
+Definition at line 87 of file termkey\&.h\&.
+.SS "#define TERM_KEY_RESTART   1108"
+
+.PP
+Definition at line 88 of file termkey\&.h\&.
+.SS "#define TERM_KEY_RESUME   1109"
+
+.PP
+Definition at line 89 of file termkey\&.h\&.
+.SS "#define TERM_KEY_RIGHT   1052"
+
+.PP
+Definition at line 32 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SAVE   1110"
+
+.PP
+Definition at line 90 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SBEG   1113"
+
+.PP
+Definition at line 93 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SCANCEL   1114"
+
+.PP
+Definition at line 94 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SCOMMAND   1115"
+
+.PP
+Definition at line 95 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SCOPY   1116"
+
+.PP
+Definition at line 96 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SCREATE   1117"
+
+.PP
+Definition at line 97 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SDC   1118"
+
+.PP
+Definition at line 98 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SDL   1119"
+
+.PP
+Definition at line 99 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SELECT   1120"
+
+.PP
+Definition at line 100 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SEND   1121"
+
+.PP
+Definition at line 101 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SEOL   1122"
+
+.PP
+Definition at line 102 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SEXIT   1123"
+
+.PP
+Definition at line 103 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SF   1053"
+
+.PP
+Definition at line 33 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SFIND   1124"
+
+.PP
+Definition at line 104 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SHELP   1125"
+
+.PP
+Definition at line 105 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SHIFT_DOWN   1204"
+
+.PP
+Definition at line 184 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SHIFT_LEFT   1205"
+
+.PP
+Definition at line 185 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SHIFT_RIGHT   1206"
+
+.PP
+Definition at line 186 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SHIFT_UP   1203"
+
+.PP
+Definition at line 183 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SHOME   1126"
+
+.PP
+Definition at line 106 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SIC   1127"
+
+.PP
+Definition at line 107 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SLEFT   1128"
+
+.PP
+Definition at line 108 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SMESSAGE   1129"
+
+.PP
+Definition at line 109 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SMOVE   1130"
+
+.PP
+Definition at line 110 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SNEXT   1131"
+
+.PP
+Definition at line 111 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SOPTIONS   1132"
+
+.PP
+Definition at line 112 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SPREVIOUS   1133"
+
+.PP
+Definition at line 113 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SPRINT   1134"
+
+.PP
+Definition at line 114 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SR   1054"
+
+.PP
+Definition at line 34 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SREDO   1135"
+
+.PP
+Definition at line 115 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SREPLACE   1136"
+
+.PP
+Definition at line 116 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SRIGHT   1137"
+
+.PP
+Definition at line 117 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SRSUME   1138"
+
+.PP
+Definition at line 118 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SSAVE   1139"
+
+.PP
+Definition at line 119 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SSUSPEND   1140"
+
+.PP
+Definition at line 120 of file termkey\&.h\&.
+.SS "#define TERM_KEY_STAB   1055"
+
+.PP
+Definition at line 35 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SUNDO   1141"
+
+.PP
+Definition at line 121 of file termkey\&.h\&.
+.SS "#define TERM_KEY_SUSPEND   1111"
+
+.PP
+Definition at line 91 of file termkey\&.h\&.
+.SS "#define TERM_KEY_UNDO   1112"
+
+.PP
+Definition at line 92 of file termkey\&.h\&.
+.SS "#define TERM_KEY_UP   1056"
+
+.PP
+Definition at line 36 of file termkey\&.h\&.
+.SS "#define TERM_KEYPAD_LOCAL   1057"
+
+.PP
+Definition at line 37 of file termkey\&.h\&.
+.SS "#define TERM_KEYPAD_XMIT   1058"
+
+.PP
+Definition at line 38 of file termkey\&.h\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

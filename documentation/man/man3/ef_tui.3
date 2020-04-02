@@ -1,0 +1,149 @@
+.TH "tui" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+tui
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <tui\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "\fButf8_t\fP * \fBname\fP"
+.br
+.ti -1c
+.RI "\fButf_t\fP * \fBattribute\fP [2]"
+.br
+.ti -1c
+.RI "\fBtuiPosition_s\fP \fBposition\fP"
+.br
+.ti -1c
+.RI "\fBtuiSize_s\fP \fBsize\fP"
+.br
+.ti -1c
+.RI "struct \fBtui\fP * \fBparent\fP"
+.br
+.ti -1c
+.RI "struct \fBtui\fP ** \fBchilds\fP"
+.br
+.ti -1c
+.RI "void * \fBusrdata\fP"
+.br
+.ti -1c
+.RI "\fBtuiFree_f\fP \fBfree\fP"
+.br
+.ti -1c
+.RI "\fBtuiDraw_f\fP \fBdraw\fP"
+.br
+.ti -1c
+.RI "\fBtuiEventMouse_f\fP \fBeventMouse\fP"
+.br
+.ti -1c
+.RI "\fBtuiEventKey_f\fP \fBeventKey\fP"
+.br
+.ti -1c
+.RI "\fBtuiEventInt_f\fP \fBeventFocus\fP"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fBclearchar\fP"
+.br
+.ti -1c
+.RI "int \fBid\fP"
+.br
+.ti -1c
+.RI "int \fBtype\fP"
+.br
+.ti -1c
+.RI "int \fBborder\fP"
+.br
+.ti -1c
+.RI "int \fBfocusBorder\fP"
+.br
+.ti -1c
+.RI "int \fBfocused\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 81 of file tui\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "\fButf_t\fP* tui::attribute[2]"
+
+.PP
+Definition at line 83 of file tui\&.h\&.
+.SS "int tui::border"
+
+.PP
+Definition at line 97 of file tui\&.h\&.
+.SS "struct \fBtui\fP** tui::childs"
+
+.PP
+Definition at line 87 of file tui\&.h\&.
+.SS "\fButf_t\fP tui::clearchar"
+
+.PP
+Definition at line 94 of file tui\&.h\&.
+.SS "\fBtuiDraw_f\fP tui::draw"
+
+.PP
+Definition at line 90 of file tui\&.h\&.
+.SS "\fBtuiEventInt_f\fP tui::eventFocus"
+
+.PP
+Definition at line 93 of file tui\&.h\&.
+.SS "\fBtuiEventKey_f\fP tui::eventKey"
+
+.PP
+Definition at line 92 of file tui\&.h\&.
+.SS "\fBtuiEventMouse_f\fP tui::eventMouse"
+
+.PP
+Definition at line 91 of file tui\&.h\&.
+.SS "int tui::focusBorder"
+
+.PP
+Definition at line 98 of file tui\&.h\&.
+.SS "int tui::focused"
+
+.PP
+Definition at line 100 of file tui\&.h\&.
+.SS "\fBtuiFree_f\fP tui::free"
+
+.PP
+Definition at line 89 of file tui\&.h\&.
+.SS "int tui::id"
+
+.PP
+Definition at line 95 of file tui\&.h\&.
+.SS "\fButf8_t\fP* tui::name"
+
+.PP
+Definition at line 82 of file tui\&.h\&.
+.SS "struct \fBtui\fP* tui::parent"
+
+.PP
+Definition at line 86 of file tui\&.h\&.
+.SS "\fBtuiPosition_s\fP tui::position"
+
+.PP
+Definition at line 84 of file tui\&.h\&.
+.SS "\fBtuiSize_s\fP tui::size"
+
+.PP
+Definition at line 85 of file tui\&.h\&.
+.SS "int tui::type"
+
+.PP
+Definition at line 96 of file tui\&.h\&.
+.SS "void* tui::usrdata"
+
+.PP
+Definition at line 88 of file tui\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

@@ -1,4 +1,4 @@
-.TH "include/ef/str.h" 3 "Tue Mar 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/str.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -66,6 +66,12 @@ include/ef/str.h
 .br
 .ti -1c
 .RI "char * \fBquote_printable_decode\fP (size_t *len, const char *str)"
+.br
+.ti -1c
+.RI "void \fBstr_toupper\fP (char *dst, const char *src)"
+.br
+.ti -1c
+.RI "void \fBstr_tolower\fP (char *dst, const char *src)"
 .br
 .in -1c
 .SH "Macro Definition Documentation"
@@ -256,6 +262,10 @@ swap two string content, the array of char need to have same size
 .RE
 .PP
 
+.SS "void str_tolower (char * dst, const char * src)"
+convert to lower 
+.SS "void str_toupper (char * dst, const char * src)"
+convert to upper 
 .SS "char* str_vprintf (const char * format, va_list va1, va_list va2)"
 create string from formst 
 .PP

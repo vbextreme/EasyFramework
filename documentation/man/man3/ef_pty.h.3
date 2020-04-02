@@ -1,0 +1,109 @@
+.TH "include/ef/pty.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/pty.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <termios\&.h>\fP
+.br
+\fC#include <sys/ioctl\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBTERM_MAX_SLAVE_NAME\fP   32"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBterm_ptm_open\fP (char **slaveName)"
+.br
+.ti -1c
+.RI "pid_t \fBpty_fork\fP (int *masterFd, char **slaveName, struct termios *slaveTermios, struct winsize *slaveWS)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define TERM_MAX_SLAVE_NAME   32"
+
+.PP
+Definition at line 9 of file pty\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "pid_t pty_fork (int * masterFd, char ** slaveName, struct termios * slaveTermios, struct winsize * slaveWS)"
+create master and slave pty 
+.PP
+\fBParameters\fP
+.RS 4
+\fImasterFd\fP pty master fd returned only in master process 
+.br
+\fIslaveName\fP return slave name in master and slave, need to free 
+.br
+\fIslaveTermios\fP if not null store termios setting only in slave process 
+.br
+\fIslaveWS\fP if not null store winsize setting only in slave process 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+slave pid for master, 0 for slave, -1 for error 
+.PP
+.nf
+void screen_example(){
+ int mfd;
+ char* slaveName;
+ pid_t p = term_pty_fork(&mfd, &slaveName, NULL, NULL);
+
+ if( p == 0 ){
+    puts("slave write");
+    fflush(stdout);
+    delay_ms(5000);
+    puts("slave exit");
+    fflush(stdout);
+    exit(0);
+ }
+
+ puts("master write in term");
+ //write(mfd, "master write in mfd", 19);
+ ssize_t nr;
+ if( (nr=read(mfd,slaveName,1024))>0 ){
+    slaveName[nr] = 0;
+    printf("master rec::%s\n",slaveName);
+ }
+ //fgets(slaveName,1024,stdin);
+
+ fsync(mfd);
+ wait(NULL);
+ }
+
+.fi
+.PP
+ 
+.RE
+.PP
+
+.SS "int term_ptm_open (char ** slaveName)"
+open pt master return 
+.PP
+\fBParameters\fP
+.RS 4
+\fIslaveName\fP pointer to str where stored slave name, remember to free 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+master fd 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

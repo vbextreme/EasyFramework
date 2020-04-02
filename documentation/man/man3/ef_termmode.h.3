@@ -1,0 +1,108 @@
+.TH "include/ef/termmode.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/termmode.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <termios\&.h>\fP
+.br
+\fC#include <sys/ioctl\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBterm_settings_fdget\fP(FD,  PTR_SETTINGS)   tcgetattr(FD, PTR_SETTINGS)"
+.br
+.ti -1c
+.RI "#define \fBterm_settings_fdset\fP(FD,  PTR_SETTINGS)   tcsetattr(FD, TCSANOW, PTR_SETTINGS)"
+.br
+.ti -1c
+.RI "#define \fBterm_settings_get\fP(PTR_SETTINGS)   \fBterm_settings_fdget\fP(0, PTR_SETTINGS)"
+.br
+.ti -1c
+.RI "#define \fBterm_settings_set\fP(PTR_SETTINGS)   \fBterm_settings_fdset\fP(0, PTR_SETTINGS)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct termios \fBtermios_s\fP"
+.br
+.ti -1c
+.RI "typedef struct winsize \fBwinsize_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBerr_t\fP \fBterm_buff_same_screen\fP (void)"
+.br
+.ti -1c
+.RI "void \fBterm_buff_end\fP (void)"
+.br
+.ti -1c
+.RI "void \fBterm_raw_mode\fP (\fBtermios_s\fP *old)"
+.br
+.ti -1c
+.RI "void \fBterm_raw_enable\fP (void)"
+.br
+.ti -1c
+.RI "void \fBterm_raw_disable\fP (void)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBterm_winsize_get\fP (\fBwinsize_s\fP *ws)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define term_settings_fdget(FD, PTR_SETTINGS)   tcgetattr(FD, PTR_SETTINGS)"
+get termios setting 
+.PP
+Definition at line 18 of file termmode\&.h\&.
+.SS "#define term_settings_fdset(FD, PTR_SETTINGS)   tcsetattr(FD, TCSANOW, PTR_SETTINGS)"
+set termios setting 
+.PP
+Definition at line 21 of file termmode\&.h\&.
+.SS "#define term_settings_get(PTR_SETTINGS)   \fBterm_settings_fdget\fP(0, PTR_SETTINGS)"
+get termios setting 
+.PP
+Definition at line 24 of file termmode\&.h\&.
+.SS "#define term_settings_set(PTR_SETTINGS)   \fBterm_settings_fdset\fP(0, PTR_SETTINGS)"
+set termios setting 
+.PP
+Definition at line 27 of file termmode\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct termios \fBtermios_s\fP"
+
+.PP
+Definition at line 8 of file termmode\&.h\&.
+.SS "typedef struct winsize \fBwinsize_s\fP"
+
+.PP
+Definition at line 9 of file termmode\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void term_buff_end (void)"
+destroy buffer 
+.SS "\fBerr_t\fP term_buff_same_screen (void)"
+set fullbuffered with buf size (w*h+1)*4 
+.SS "void term_raw_disable (void)"
+exit from raw mode 
+.SS "void term_raw_enable (void)"
+enter in raw mode 
+.SS "void term_raw_mode (\fBtermios_s\fP * old)"
+set raw mode and get termios 
+.SS "\fBerr_t\fP term_winsize_get (\fBwinsize_s\fP * ws)"
+read winsize struct 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

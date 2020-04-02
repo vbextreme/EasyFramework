@@ -1,0 +1,277 @@
+.TH "include/ef/termlink.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/termlink.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBtermClearMode_e\fP { \fBTERM_CLEAR_RELOAD\fP = -1, \fBTERM_CLEAR\fP, \fBTERM_CLEAR_BEGIN_LINE\fP, \fBTERM_CLEAR_END_OF_LINE\fP, \fBTERM_CLEAR_END_OF_SCREEN\fP, \fBTERM_CLEAR_COUNT\fP }"
+.br
+.ti -1c
+.RI "enum \fBtermCursor_e\fP { \fBTERM_CURSOR_RELOAD\fP = -1, \fBTERM_CURSOR_LEFT\fP, \fBTERM_CURSOR_RIGHT\fP, \fBTERM_CURSOR_DOWN\fP, \fBTERM_CURSOR_UP\fP, \fBTERM_CURSOR_HOME\fP, \fBTERM_CURSOR_END\fP, \fBTERM_CURSOR_COUNT\fP }"
+.br
+.ti -1c
+.RI "enum \fBtermColor_e\fP { \fBTERM_COLOR_RELOAD\fP = -1, \fBTERM_COLOR_BLACK\fP, \fBTERM_COLOR_RED\fP, \fBTERM_COLOR_GREEN\fP, \fBTERM_COLOR_YELLOW\fP, \fBTERM_COLOR_BLUE\fP, \fBTERM_COLOR_MAGENTA\fP, \fBTERM_COLOR_CYAN\fP, \fBTERM_COLOR_GRAY\fP, \fBTERM_COLOR_LIGHT_GRAY\fP = 60, \fBTERM_COLOR_LIGHT_RED\fP, \fBTERM_COLOR_LIGHT_GREEN\fP, \fBTERM_COLOR_LIGHT_YELLOW\fP, \fBTERM_COLOR_LIGHT_BLUE\fP, \fBTERM_COLOR_LIGHT_MAGENTA\fP, \fBTERM_COLOR_LIGHT_CYAN\fP, \fBTERM_COLOR_WHYTE\fP }"
+.br
+.ti -1c
+.RI "enum \fBtermFontAttribute_e\fP { \fBTERM_FONT_RELOAD\fP = -1, \fBTERM_FONT_BOLT\fP, \fBTERM_FONT_ITALIC\fP, \fBTERM_FONT_UNDERLINE\fP, \fBTERM_FONT_RESET\fP, \fBTERM_FONT_COUNT\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBterm_ca_mode\fP (int ee)"
+.br
+.ti -1c
+.RI "void \fBterm_gotorc\fP (int r, int c)"
+.br
+.ti -1c
+.RI "void \fBterm_clear\fP (\fBtermClearMode_e\fP mode)"
+.br
+.ti -1c
+.RI "void \fBterm_cursor\fP (\fBtermCursor_e\fP mode)"
+.br
+.ti -1c
+.RI "void \fBterm_cursor_visible\fP (int v)"
+.br
+.ti -1c
+.RI "void \fBterm_cursor_mem\fP (int store)"
+.br
+.ti -1c
+.RI "void \fBterm_color16_bk\fP (\fBtermColor_e\fP color)"
+.br
+.ti -1c
+.RI "void \fBterm_color16_fg\fP (\fBtermColor_e\fP color)"
+.br
+.ti -1c
+.RI "void \fBterm_color256_bk\fP (int color)"
+.br
+.ti -1c
+.RI "void \fBterm_color256_fg\fP (int color)"
+.br
+.ti -1c
+.RI "void \fBterm_color24_bk\fP (unsigned char r, unsigned char g, unsigned char b)"
+.br
+.ti -1c
+.RI "void \fBterm_color24_fg\fP (unsigned char r, unsigned char g, unsigned char b)"
+.br
+.ti -1c
+.RI "void \fBterm_color_reset\fP (void)"
+.br
+.ti -1c
+.RI "void \fBterm_font_attribute\fP (\fBtermFontAttribute_e\fP att)"
+.br
+.ti -1c
+.RI "void \fBterm_change_scroll_region\fP (int startRow, int endRow)"
+.br
+.ti -1c
+.RI "void \fBterm_resize\fP (int w, int h)"
+.br
+.ti -1c
+.RI "void \fBterm_mouse\fP (int enable)"
+.br
+.ti -1c
+.RI "void \fBterm_mouse_move\fP (int enable)"
+.br
+.ti -1c
+.RI "void \fBterm_mouse_focus\fP (int enable)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBterm_cursor_position\fP (int *r, int *c)"
+.br
+.ti -1c
+.RI "void \fBterm_endon_sigint\fP (void)"
+.br
+.in -1c
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBtermClearMode_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fITERM_CLEAR_RELOAD \fP\fP
+reload cap 
+.TP
+\fB\fITERM_CLEAR \fP\fP
+clear all screen 
+.TP
+\fB\fITERM_CLEAR_BEGIN_LINE \fP\fP
+clear to begin line 
+.TP
+\fB\fITERM_CLEAR_END_OF_LINE \fP\fP
+clear to end of line 
+.TP
+\fB\fITERM_CLEAR_END_OF_SCREEN \fP\fP
+clear to end of screen 
+.TP
+\fB\fITERM_CLEAR_COUNT \fP\fP
+private not used 
+.PP
+Definition at line 12 of file termlink\&.h\&.
+.SS "enum \fBtermColor_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fITERM_COLOR_RELOAD \fP\fP
+.TP
+\fB\fITERM_COLOR_BLACK \fP\fP
+.TP
+\fB\fITERM_COLOR_RED \fP\fP
+.TP
+\fB\fITERM_COLOR_GREEN \fP\fP
+.TP
+\fB\fITERM_COLOR_YELLOW \fP\fP
+.TP
+\fB\fITERM_COLOR_BLUE \fP\fP
+.TP
+\fB\fITERM_COLOR_MAGENTA \fP\fP
+.TP
+\fB\fITERM_COLOR_CYAN \fP\fP
+.TP
+\fB\fITERM_COLOR_GRAY \fP\fP
+.TP
+\fB\fITERM_COLOR_LIGHT_GRAY \fP\fP
+.TP
+\fB\fITERM_COLOR_LIGHT_RED \fP\fP
+.TP
+\fB\fITERM_COLOR_LIGHT_GREEN \fP\fP
+.TP
+\fB\fITERM_COLOR_LIGHT_YELLOW \fP\fP
+.TP
+\fB\fITERM_COLOR_LIGHT_BLUE \fP\fP
+.TP
+\fB\fITERM_COLOR_LIGHT_MAGENTA \fP\fP
+.TP
+\fB\fITERM_COLOR_LIGHT_CYAN \fP\fP
+.TP
+\fB\fITERM_COLOR_WHYTE \fP\fP
+.PP
+Definition at line 47 of file termlink\&.h\&.
+.SS "enum \fBtermCursor_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fITERM_CURSOR_RELOAD \fP\fP
+.TP
+\fB\fITERM_CURSOR_LEFT \fP\fP
+.TP
+\fB\fITERM_CURSOR_RIGHT \fP\fP
+.TP
+\fB\fITERM_CURSOR_DOWN \fP\fP
+.TP
+\fB\fITERM_CURSOR_UP \fP\fP
+.TP
+\fB\fITERM_CURSOR_HOME \fP\fP
+.TP
+\fB\fITERM_CURSOR_END \fP\fP
+.TP
+\fB\fITERM_CURSOR_COUNT \fP\fP
+.PP
+Definition at line 27 of file termlink\&.h\&.
+.SS "enum \fBtermFontAttribute_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fITERM_FONT_RELOAD \fP\fP
+.TP
+\fB\fITERM_FONT_BOLT \fP\fP
+.TP
+\fB\fITERM_FONT_ITALIC \fP\fP
+.TP
+\fB\fITERM_FONT_UNDERLINE \fP\fP
+.TP
+\fB\fITERM_FONT_RESET \fP\fP
+.TP
+\fB\fITERM_FONT_COUNT \fP\fP
+.PP
+Definition at line 88 of file termlink\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void term_ca_mode (int ee)"
+alternate mode, 1 enter, 0 exit -1 reload cap 
+.SS "void term_change_scroll_region (int startRow, int endRow)"
+change scroll region 
+.SS "void term_clear (\fBtermClearMode_e\fP mode)"
+clear line or screen 
+.PP
+\fBSee also\fP
+.RS 4
+\fBtermClearMode_e\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fImode\fP mode to clear 
+.RE
+.PP
+
+.SS "void term_color16_bk (\fBtermColor_e\fP color)"
+set background color 16 
+.SS "void term_color16_fg (\fBtermColor_e\fP color)"
+set foreground color 16 
+.SS "void term_color24_bk (unsigned char r, unsigned char g, unsigned char b)"
+set background color 24k 
+.SS "void term_color24_fg (unsigned char r, unsigned char g, unsigned char b)"
+set foreground color 24k 
+.SS "void term_color256_bk (int color)"
+set background color 256 
+.SS "void term_color256_fg (int color)"
+set foreground color 256 
+.SS "void term_color_reset (void)"
+reset to default color 
+.SS "void term_cursor (\fBtermCursor_e\fP mode)"
+move cursor 
+.SS "void term_cursor_mem (int store)"
+1 store / 0 load cursor 
+.SS "\fBerr_t\fP term_cursor_position (int * r, int * c)"
+read cursor position, origin 0,0 
+.PP
+\fBParameters\fP
+.RS 4
+\fIr\fP row 
+.br
+\fIc\fP columns 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error 0 successfull 
+.RE
+.PP
+
+.SS "void term_cursor_visible (int v)"
+set visible or invisible cursor 
+.SS "void term_endon_sigint (void)"
+call this function intercept sigint and restore all terminal attribute before exit(1) 
+.SS "void term_font_attribute (\fBtermFontAttribute_e\fP att)"
+set font attribute 
+.SS "void term_gotorc (int r, int c)"
+move cursor, origin 0,0, if r || c < 0 reload cap 
+.SS "void term_mouse (int enable)"
+enable mouse event 
+.SS "void term_mouse_focus (int enable)"
+enable mouse focus report 
+.SS "void term_mouse_move (int enable)"
+enable mouse move report 
+.SS "void term_resize (int w, int h)"
+resize terminal 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

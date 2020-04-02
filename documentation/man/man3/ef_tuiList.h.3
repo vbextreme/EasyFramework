@@ -1,0 +1,163 @@
+.TH "include/ef/tuiList.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/tuiList.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/tui\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtuiListElement\fP"
+.br
+.ti -1c
+.RI "struct \fBtuiList\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBTUI_LIST_CHECKED_TRUE\fP   \fBU8\fP('☑')"
+.br
+.ti -1c
+.RI "#define \fBTUI_LIST_CHECKED_FALSE\fP   \fBU8\fP('☐')"
+.br
+.ti -1c
+.RI "#define \fBTUI_LIST_OPTION_TRUE\fP   \fBU8\fP('◉')"
+.br
+.ti -1c
+.RI "#define \fBTUI_LIST_OPTION_FALSE\fP   \fBU8\fP('⊙')"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBtuiListElement\fP \fBtuiListElement_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtuiList\fP \fBtuiList_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBtuiListMode_e\fP { \fBTUI_LIST_VERTICAL\fP, \fBTUI_LIST_HORIZONTAL\fP, \fBTUI_LIST_GRID\fP }"
+.br
+.ti -1c
+.RI "enum \fBtuiListType_e\fP { \fBTUI_LIST_NORMAL\fP, \fBTUI_LIST_CHECK\fP, \fBTUI_LIST_OPTION\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBtui_list_event_draw\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "int \fBtui_list_event_key\fP (\fBtui_s\fP *\fBtui\fP, \fBtermKey_s\fP key)"
+.br
+.ti -1c
+.RI "int \fBtui_list_event_focus\fP (\fBtui_s\fP *\fBtui\fP, int enable)"
+.br
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_list_new\fP (\fBtui_s\fP *parent, int id, \fButf8_t\fP *name, int border, int r, int c, int width, int height)"
+.br
+.ti -1c
+.RI "void \fBtui_list_add\fP (\fBtui_s\fP *\fBtui\fP, const \fButf8_t\fP *name, int val, void *userdata, \fBtuiEventInt_f\fP fn)"
+.br
+.ti -1c
+.RI "\fBtuiListElement_s\fP * \fBtui_list_element\fP (\fBtui_s\fP *\fBtui\fP, unsigned id)"
+.br
+.ti -1c
+.RI "size_t \fBtui_list_element_count\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_list_clear\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "void \fBtui_list_option\fP (\fBtui_s\fP *\fBtui\fP, \fBtuiListMode_e\fP mode, \fBtuiListType_e\fP type)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define TUI_LIST_CHECKED_FALSE   \fBU8\fP('☐')"
+
+.PP
+Definition at line 28 of file tuiList\&.h\&.
+.SS "#define TUI_LIST_CHECKED_TRUE   \fBU8\fP('☑')"
+
+.PP
+Definition at line 27 of file tuiList\&.h\&.
+.SS "#define TUI_LIST_OPTION_FALSE   \fBU8\fP('⊙')"
+
+.PP
+Definition at line 30 of file tuiList\&.h\&.
+.SS "#define TUI_LIST_OPTION_TRUE   \fBU8\fP('◉')"
+
+.PP
+Definition at line 29 of file tuiList\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBtuiList\fP \fBtuiList_s\fP"
+
+.SS "typedef struct \fBtuiListElement\fP \fBtuiListElement_s\fP"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBtuiListMode_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fITUI_LIST_VERTICAL \fP\fP
+.TP
+\fB\fITUI_LIST_HORIZONTAL \fP\fP
+.TP
+\fB\fITUI_LIST_GRID \fP\fP
+.PP
+Definition at line 7 of file tuiList\&.h\&.
+.SS "enum \fBtuiListType_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fITUI_LIST_NORMAL \fP\fP
+.TP
+\fB\fITUI_LIST_CHECK \fP\fP
+.TP
+\fB\fITUI_LIST_OPTION \fP\fP
+.PP
+Definition at line 8 of file tuiList\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void tui_list_add (\fBtui_s\fP * tui, const \fButf8_t\fP * name, int val, void * userdata, \fBtuiEventInt_f\fP fn)"
+add list element 
+.SS "void tui_list_clear (\fBtui_s\fP * tui)"
+clear all elements 
+.SS "\fBtuiListElement_s\fP* tui_list_element (\fBtui_s\fP * tui, unsigned id)"
+get list element 
+.SS "size_t tui_list_element_count (\fBtui_s\fP * tui)"
+get count list elements 
+.SS "void tui_list_event_draw (\fBtui_s\fP * tui)"
+event draw 
+.SS "int tui_list_event_focus (\fBtui_s\fP * tui, int enable)"
+event focus 
+.SS "int tui_list_event_key (\fBtui_s\fP * tui, \fBtermKey_s\fP key)"
+event key 
+.SS "\fBtui_s\fP* tui_list_new (\fBtui_s\fP * parent, int id, \fButf8_t\fP * name, int border, int r, int c, int width, int height)"
+create new list 
+.SS "void tui_list_option (\fBtui_s\fP * tui, \fBtuiListMode_e\fP mode, \fBtuiListType_e\fP type)"
+set mode list 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

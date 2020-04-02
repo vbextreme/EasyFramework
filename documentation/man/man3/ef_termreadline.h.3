@@ -1,0 +1,254 @@
+.TH "include/ef/termreadline.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/termreadline.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/utf8\&.h>\fP
+.br
+\fC#include <ef/terminput\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtermRLArea\fP"
+.br
+.ti -1c
+.RI "struct \fBtermRLText\fP"
+.br
+.ti -1c
+.RI "struct \fBtermRLCursor\fP"
+.br
+.ti -1c
+.RI "struct \fBtermReadLine\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBTERM_READLINE_MODE_INSERT\fP   0x01"
+.br
+.ti -1c
+.RI "#define \fBTERM_READLINE_MODE_REPLACE\fP   0x02"
+.br
+.ti -1c
+.RI "#define \fBTERM_READLINE_MODE_SCROLL_COL\fP   0x04"
+.br
+.ti -1c
+.RI "#define \fBTERM_READLINE_MODE_SCROLL_ROW\fP   0x08"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBtermRLArea\fP \fBtermRLArea_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtermRLText\fP \fBtermRLText_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtermRLCursor\fP \fBtermRLCursor_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtermReadLine\fP \fBtermReadLine_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBtermReadLine_s\fP * \fBterm_readline_new\fP (\fButf8_t\fP *prompt, int r, int c, int w, int h)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_free\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_prompt_change\fP (\fBtermReadLine_s\fP *rl, \fButf8_t\fP *prompt)"
+.br
+.ti -1c
+.RI "size_t \fBterm_readline_line_left_width\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "size_t \fBterm_readline_line_right_width\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_draw\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_mode\fP (\fBtermReadLine_s\fP *rl, int mode)"
+.br
+.ti -1c
+.RI "\fButf8_t\fP * \fBterm_readline_str\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "const \fButf8_t\fP * \fBterm_readline_str_raw\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_put\fP (\fBtermReadLine_s\fP *rl, \fButf_t\fP utf)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_puts\fP (\fBtermReadLine_s\fP *rl, \fButf8_t\fP *str)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_del\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_backspace\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_cursor_next\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_cursor_prev\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_cursor_end\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_cursor_home\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_cursor_scroll_left\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_cursor_scroll_right\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_cursor_up\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_cursor_down\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_cursor_pagdn\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_cursor_pagup\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_mode_ir\fP (\fBtermReadLine_s\fP *rl)"
+.br
+.ti -1c
+.RI "void \fBterm_readline_process_key\fP (\fBtermReadLine_s\fP *rl, \fBtermKey_s\fP key)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define TERM_READLINE_MODE_INSERT   0x01"
+enable insetr mode 
+.PP
+Definition at line 9 of file termreadline\&.h\&.
+.SS "#define TERM_READLINE_MODE_REPLACE   0x02"
+enable replace mode 
+.PP
+Definition at line 11 of file termreadline\&.h\&.
+.SS "#define TERM_READLINE_MODE_SCROLL_COL   0x04"
+enable columns scroll 
+.PP
+Definition at line 13 of file termreadline\&.h\&.
+.SS "#define TERM_READLINE_MODE_SCROLL_ROW   0x08"
+enable rows scroll 
+.PP
+Definition at line 15 of file termreadline\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBtermReadLine\fP \fBtermReadLine_s\fP"
+
+.SS "typedef struct \fBtermRLArea\fP \fBtermRLArea_s\fP"
+
+.SS "typedef struct \fBtermRLCursor\fP \fBtermRLCursor_s\fP"
+
+.SS "typedef struct \fBtermRLText\fP \fBtermRLText_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "void term_readline_backspace (\fBtermReadLine_s\fP * rl)"
+backspace 
+.SS "void term_readline_cursor_down (\fBtermReadLine_s\fP * rl)"
+move cursor down 
+.SS "void term_readline_cursor_end (\fBtermReadLine_s\fP * rl)"
+move cursor to end line 
+.SS "void term_readline_cursor_home (\fBtermReadLine_s\fP * rl)"
+move cursor to begin line 
+.SS "void term_readline_cursor_next (\fBtermReadLine_s\fP * rl)"
+move cursor to next 
+.SS "void term_readline_cursor_pagdn (\fBtermReadLine_s\fP * rl)"
+pagup 
+.SS "void term_readline_cursor_pagup (\fBtermReadLine_s\fP * rl)"
+pagdw 
+.SS "void term_readline_cursor_prev (\fBtermReadLine_s\fP * rl)"
+move cursor prev 
+.SS "void term_readline_cursor_scroll_left (\fBtermReadLine_s\fP * rl)"
+scroll left 
+.SS "void term_readline_cursor_scroll_right (\fBtermReadLine_s\fP * rl)"
+scroll right 
+.SS "void term_readline_cursor_up (\fBtermReadLine_s\fP * rl)"
+move cursor up 
+.SS "void term_readline_del (\fBtermReadLine_s\fP * rl)"
+delete a glyph 
+.SS "void term_readline_draw (\fBtermReadLine_s\fP * rl)"
+draw readline 
+.SS "void term_readline_free (\fBtermReadLine_s\fP * rl)"
+free readline 
+.SS "size_t term_readline_line_left_width (\fBtermReadLine_s\fP * rl)"
+get number of glyph before cursor 
+.SS "size_t term_readline_line_right_width (\fBtermReadLine_s\fP * rl)"
+get number of glyph after cursor 
+.SS "void term_readline_mode (\fBtermReadLine_s\fP * rl, int mode)"
+set readline mode 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrl\fP readline object 
+.br
+\fImode\fP any of TERM_READLINE_MODE_ 
+.RE
+.PP
+
+.SS "void term_readline_mode_ir (\fBtermReadLine_s\fP * rl)"
+toggle input/replace mode 
+.SS "\fBtermReadLine_s\fP* term_readline_new (\fButf8_t\fP * prompt, int r, int c, int w, int h)"
+create new readline 
+.PP
+\fBParameters\fP
+.RS 4
+\fIprompt\fP text before input 
+.br
+\fIr\fP row position, if -1 get current row 
+.br
+\fIc\fP col position, if -1 get current col 
+.br
+\fIw\fP width, if -1 get screen width 
+.br
+\fIh\fP height, if -1 get screen height 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+new readline or NULL for error 
+.RE
+.PP
+
+.SS "void term_readline_process_key (\fBtermReadLine_s\fP * rl, \fBtermKey_s\fP key)"
+after read key, process key with this functiona and after this draw and flush 
+.SS "void term_readline_prompt_change (\fBtermReadLine_s\fP * rl, \fButf8_t\fP * prompt)"
+change prompt 
+.SS "void term_readline_put (\fBtermReadLine_s\fP * rl, \fButf_t\fP utf)"
+write a unicode to readline 
+.SS "void term_readline_puts (\fBtermReadLine_s\fP * rl, \fButf8_t\fP * str)"
+write a string 
+.SS "\fButf8_t\fP* term_readline_str (\fBtermReadLine_s\fP * rl)"
+return a unicode string with contains a readline text, remember to free return value 
+.SS "const \fButf8_t\fP* term_readline_str_raw (\fBtermReadLine_s\fP * rl)"
+same term_readline_str but return utf attribute in text and not need to free value returned 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

@@ -1,0 +1,48 @@
+.TH "include/ef/tuiWindow.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/tuiWindow.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/tui\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtuiWindow\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBtuiWindow\fP \fBtuiWindow_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_window_new\fP (\fBtui_s\fP *parent, int id, \fButf8_t\fP *name, int border, int r, int c, int width, int height)"
+.br
+.ti -1c
+.RI "int \fBtui_window_msgbox\fP (\fBtui_s\fP *root, int id, \fButf8_t\fP *name, int border, int r, int c, int w, int h, \fButf8_t\fP *text, \fButf8_t\fP **buttonName, unsigned buttonCount)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBtuiWindow\fP \fBtuiWindow_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "int tui_window_msgbox (\fBtui_s\fP * root, int id, \fButf8_t\fP * name, int border, int r, int c, int w, int h, \fButf8_t\fP * text, \fButf8_t\fP ** buttonName, unsigned buttonCount)"
+create a message box 
+.SS "\fBtui_s\fP* tui_window_new (\fBtui_s\fP * parent, int id, \fButf8_t\fP * name, int border, int r, int c, int width, int height)"
+create new window 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

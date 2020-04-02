@@ -1,0 +1,69 @@
+.TH "include/ef/sig.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/sig.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <signal\&.h>\fP
+.br
+
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct sigaction \fBsigaction_s\fP"
+.br
+.ti -1c
+.RI "typedef siginfo_t \fBsiginfo_s\fP"
+.br
+.ti -1c
+.RI "typedef void(* \fBsignal_f\fP) (int, \fBsiginfo_s\fP *, void *)"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBerr_t\fP \fBos_signal_get_status\fP (sigset_t *mask)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBos_signal_set\fP (\fBsigaction_s\fP *old, int num, \fBsignal_f\fP fnc)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBos_signal_restore\fP (int num, \fBsigaction_s\fP *sa)"
+.br
+.ti -1c
+.RI "void \fBos_signal_wait\fP (void)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct sigaction \fBsigaction_s\fP"
+
+.PP
+Definition at line 7 of file sig\&.h\&.
+.SS "typedef siginfo_t \fBsiginfo_s\fP"
+
+.PP
+Definition at line 8 of file sig\&.h\&.
+.SS "typedef void(* signal_f) (int, \fBsiginfo_s\fP *, void *)"
+
+.PP
+Definition at line 10 of file sig\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "\fBerr_t\fP os_signal_get_status (sigset_t * mask)"
+
+.SS "\fBerr_t\fP os_signal_restore (int num, \fBsigaction_s\fP * sa)"
+
+.SS "\fBerr_t\fP os_signal_set (\fBsigaction_s\fP * old, int num, \fBsignal_f\fP fnc)"
+
+.SS "void os_signal_wait (void)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

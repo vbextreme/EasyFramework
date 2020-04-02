@@ -83,7 +83,7 @@ void term_readline_draw(termReadLine_s* rl);
 //err_t term_readline_attribute_change(termReadLine_s* rl, utf_t utf, char* att);
 
 /** set readline mode
- * @param readline
+ * @param rl readline object
  * @param mode any of TERM_READLINE_MODE_
  */
 void term_readline_mode(termReadLine_s* rl, int mode);

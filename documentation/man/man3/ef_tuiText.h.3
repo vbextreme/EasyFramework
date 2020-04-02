@@ -1,0 +1,40 @@
+.TH "include/ef/tuiText.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/tuiText.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/tui\&.h>\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBtui_text_event_draw\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "int \fBtui_text_event_key\fP (\fBtui_s\fP *txt, \fBtermKey_s\fP key)"
+.br
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_text_new\fP (\fBtui_s\fP *parent, int id, \fButf8_t\fP *name, int border, int r, int c, int width, int height)"
+.br
+.ti -1c
+.RI "\fBtermReadLine_s\fP * \fBtui_text_readline\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void tui_text_event_draw (\fBtui_s\fP * tui)"
+event draw 
+.SS "int tui_text_event_key (\fBtui_s\fP * txt, \fBtermKey_s\fP key)"
+event key 
+.SS "\fBtui_s\fP* tui_text_new (\fBtui_s\fP * parent, int id, \fButf8_t\fP * name, int border, int r, int c, int width, int height)"
+create new teu text 
+.SS "\fBtermReadLine_s\fP* tui_text_readline (\fBtui_s\fP * tui)"
+get readline object from tui 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

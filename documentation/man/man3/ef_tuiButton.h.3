@@ -1,0 +1,78 @@
+.TH "include/ef/tuiButton.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/tuiButton.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/tui\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtuiButton\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBtuiButton\fP \fBtuiButton_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBtui_button_event_draw\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.ti -1c
+.RI "int \fBtui_button_event_focus\fP (\fBtui_s\fP *\fBtui\fP, int focus)"
+.br
+.ti -1c
+.RI "int \fBtui_button_event_key\fP (\fBtui_s\fP *\fBtui\fP, \fBtermKey_s\fP key)"
+.br
+.ti -1c
+.RI "int \fBtui_button_event_mouse\fP (\fBtui_s\fP *\fBtui\fP, \fB__unused\fP \fBtermMouse_s\fP mouse)"
+.br
+.ti -1c
+.RI "\fBtui_s\fP * \fBtui_button_new\fP (\fBtui_s\fP *parent, int id, \fButf8_t\fP *name, int border, int r, int c, int width, int height)"
+.br
+.ti -1c
+.RI "void \fBtui_button_set\fP (\fBtui_s\fP *tl, const \fButf8_t\fP *str)"
+.br
+.ti -1c
+.RI "void \fBtui_button_onpress_set\fP (\fBtui_s\fP *tl, \fBtuiEventInt_f\fP fn, void *userdata)"
+.br
+.ti -1c
+.RI "void * \fBtui_button_userdata\fP (\fBtui_s\fP *\fBtui\fP)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBtuiButton\fP \fBtuiButton_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "void tui_button_event_draw (\fBtui_s\fP * tui)"
+event draw 
+.SS "int tui_button_event_focus (\fBtui_s\fP * tui, int focus)"
+event focus 
+.SS "int tui_button_event_key (\fBtui_s\fP * tui, \fBtermKey_s\fP key)"
+event key 
+.SS "int tui_button_event_mouse (\fBtui_s\fP * tui, \fB__unused\fP \fBtermMouse_s\fP mouse)"
+event mouse 
+.SS "\fBtui_s\fP* tui_button_new (\fBtui_s\fP * parent, int id, \fButf8_t\fP * name, int border, int r, int c, int width, int height)"
+create new button 
+.SS "void tui_button_onpress_set (\fBtui_s\fP * tl, \fBtuiEventInt_f\fP fn, void * userdata)"
+on press event 
+.SS "void tui_button_set (\fBtui_s\fP * tl, const \fButf8_t\fP * str)"
+set button caption 
+.SS "void* tui_button_userdata (\fBtui_s\fP * tui)"
+get button userdata 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

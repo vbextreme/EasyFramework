@@ -1,0 +1,151 @@
+.TH "include/ef/terminput.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/terminput.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/utf8\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtermMouse_s\fP"
+.br
+.ti -1c
+.RI "struct \fBtermKey\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBTERM_INPUT_CHAR_SCREEN\fP   \-2"
+.br
+.ti -1c
+.RI "#define \fBTERM_INPUT_CHAR_ESC\fP   0x1B"
+.br
+.ti -1c
+.RI "#define \fBTERM_INPUT_EXTEND_SCREEN\fP   256"
+.br
+.ti -1c
+.RI "#define \fBTERM_INPUT_EXTEND_OFFSET\fP   1024"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBtermMouse_s\fP \fBtermMouse_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBtermKey\fP \fBtermKey_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBerr_t\fP \fBterm_screen_size_get\fP (unsigned *rows, unsigned *cols)"
+.br
+.ti -1c
+.RI "void \fBterm_screen_size_enable\fP (void)"
+.br
+.ti -1c
+.RI "void \fBterm_flushin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBterm_input_enable\fP (void)"
+.br
+.ti -1c
+.RI "void \fBterm_input_disable\fP (void)"
+.br
+.ti -1c
+.RI "int \fBterm_kbhit\fP (void)"
+.br
+.ti -1c
+.RI "void \fBterm_input_ungetch\fP (\fBtermKey_s\fP key)"
+.br
+.ti -1c
+.RI "\fBtermKey_s\fP \fBterm_input_utf8\fP (void)"
+.br
+.ti -1c
+.RI "\fBtermKey_s\fP \fBterm_input_extend\fP (void)"
+.br
+.ti -1c
+.RI "\fBtermMouse_s\fP \fBterm_input_mouse\fP (void)"
+.br
+.ti -1c
+.RI "\fBtermMouse_s\fP \fBterm_mouse_event\fP (void)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define TERM_INPUT_CHAR_ESC   0x1B"
+
+.PP
+Definition at line 8 of file terminput\&.h\&.
+.SS "#define TERM_INPUT_CHAR_SCREEN   \-2"
+
+.PP
+Definition at line 7 of file terminput\&.h\&.
+.SS "#define TERM_INPUT_EXTEND_OFFSET   1024"
+
+.PP
+Definition at line 11 of file terminput\&.h\&.
+.SS "#define TERM_INPUT_EXTEND_SCREEN   256"
+
+.PP
+Definition at line 10 of file terminput\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBtermKey\fP \fBtermKey_s\fP"
+
+.SS "typedef struct \fBtermMouse_s\fP \fBtermMouse_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "void term_flushin (void)"
+flush stdin 
+.SS "void term_input_disable (void)"
+disable terminal input 
+.SS "void term_input_enable (void)"
+enable terminal input 
+.SS "\fBtermKey_s\fP term_input_extend (void)"
+return term_input_utf8 or an escape 
+.SS "\fBtermMouse_s\fP term_input_mouse (void)"
+when receved TERM_KEY_MOUSE, call this function to get mouse position 
+.SS "void term_input_ungetch (\fBtermKey_s\fP key)"
+ungetch key 
+.SS "\fBtermKey_s\fP term_input_utf8 (void)"
+return a key, screen resize 
+.SS "int term_kbhit (void)"
+return data available on stdin 
+.SS "\fBtermMouse_s\fP term_mouse_event (void)"
+if use term_input_extend use this for reading mouse value, not term_input_mouse 
+.SS "void term_screen_size_enable (void)"
+enable screen update size 
+.SS "\fBerr_t\fP term_screen_size_get (unsigned * rows, unsigned * cols)"
+return numbers of rows and cols 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrows\fP if not null return rows 
+.br
+\fIcols\fP if not null return cols 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 successfull -1 error 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.
