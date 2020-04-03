@@ -7,3 +7,6 @@ const char* os_setlocale(int category, const char* locale){
 	return previous;
 }
 
+void os_begin(void){
+	__cpu_init();
+}
