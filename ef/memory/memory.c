@@ -63,3 +63,84 @@ err_t mem_resize_raw(void** mem, const size_t size){
 	*mem = raw;
 	return 0;
 }
+
+void mem_swap(void* restrict a, size_t sizeA, void* restrict b, size_t sizeB){
+	if( sizeA >= sizeof(size_t) && sizeB >= sizeof(size_t) ){
+		const size_t la = sizeA - (sizeA % sizeof(size_t));
+		const size_t lb = sizeB - (sizeB % sizeof(size_t));
+		const size_t bcount = MTH_MIN(la, lb);
+		const size_t count = bcount / sizeof(size_t);
+		size_t* memA = a;
+		size_t* memB = b;
+
+		for( size_t i = 0; i < count; ++i ){
+			SWAP(memA[i], memB[i]);
+		}
+
+		sizeA -= bcount;
+		sizeB -= bcount;
+		a = &memA[count];
+		b = &memB[count];
+	}
+	
+	if( sizeA >= sizeof(unsigned) && sizeB >= sizeof(unsigned) ){
+		const size_t la = sizeA - (sizeA % sizeof(unsigned));
+		const size_t lb = sizeB - (sizeB % sizeof(unsigned));
+		const size_t bcount = MTH_MIN(la, lb);
+		const size_t count = bcount / sizeof(unsigned);
+		unsigned* memA = a;
+		unsigned* memB = b;
+
+		for( size_t i = 0; i < count; ++i ){
+			SWAP(memA[i], memB[i]);
+		}
+
+		sizeA -= bcount;
+		sizeB -= bcount;
+		a = &memA[count];
+		b = &memB[count];
+	}
+
+	if( sizeA >= sizeof(unsigned short) && sizeB >= sizeof(unsigned short) ){
+		const size_t la = sizeA - (sizeA % sizeof(unsigned short));
+		const size_t lb = sizeB - (sizeB % sizeof(unsigned short));
+		const size_t bcount = MTH_MIN(la, lb);
+		const size_t count = bcount / sizeof(unsigned short);
+		unsigned* memA = a;
+		unsigned* memB = b;
+
+		for( size_t i = 0; i < count; ++i ){
+			SWAP(memA[i], memB[i]);
+		}
+
+		sizeA -= bcount;
+		sizeB -= bcount;
+		a = &memA[count];
+		b = &memB[count];
+	}
+
+	{
+		const size_t count = MTH_MIN(sizeA, sizeB);
+		char* memA = a;
+		char* memB = b;
+	
+		for(size_t i = 0; i < count; ++i){
+			SWAP(memA[i], memB[i]);
+		}
+		a = &memA[count];
+		b = &memB[count];
+		sizeA -= count;
+		sizeB -= count;
+	}
+
+	iassert( sizeA == 0 || sizeB == 0);
+
+	if( sizeA == 0 && sizeB == 0 ) return;
+
+	if( sizeA == 0 ){
+		memcpy(a, b, sizeB);	
+	}
+	else if( sizeB == 0 ){
+		memcpy(b, a, sizeA);
+	}
+}

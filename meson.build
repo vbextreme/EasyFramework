@@ -86,6 +86,12 @@ src += [ 'ef/term/tuiButton.c' ]
 src += [ 'ef/term/tuiText.c' ]
 src += [ 'ef/term/tuiList.c' ]
 
+src += [ 'ef/graphics/image.c' ]
+src += [ 'ef/graphics/imageFiles.c' ]
+src += [ 'ef/graphics/imagePng.c' ]
+src += [ 'ef/graphics/imageFonts.c' ]
+
+
 ##################
 # compiler flags #
 ##################
@@ -174,10 +180,14 @@ libDeps += [ cc.find_library('rt', required: true) ]
 libDeps += [ cc.find_library('pcre2-8', required : true) ]
 libDeps += [ cc.find_library('unistring', required : true) ]
 libDeps += [ cc.find_library('tar', required: true) ]
+libDeps += [ cc.find_library('png', required : true) ]
 libDeps += [ dependency('zlib', required: true) ]
 libDeps += [ dependency('gnutls', required: true) ]
 libDeps += [ dependency('libcurl', required: true) ]
 libDeps += [ dependency('libgit2', required: true) ]
+libDeps += [ dependency('freetype2', required: true) ]
+libDeps += [ dependency('fontconfig', required: true) ]
+
 
 #rl_dep = dependency('readline', required: true)
 #sql_dep = dependency('sqlite3', required: true)

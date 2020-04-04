@@ -31,7 +31,7 @@ rbhash_s* rbhash_new(size_t size, size_t min, size_t keysize, rbhash_f hashing, 
 
 	rbhashElement_s* table = rbh->table;
 	for( size_t i = 0; i < rbh->size; ++i, table = rbhash_element_next(table,rbh->elementSize)){
-		table->key[0] = 0;
+		table->len = 0;
 	}
 
 	return rbh;

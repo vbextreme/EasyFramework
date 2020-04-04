@@ -12,7 +12,7 @@ typedef struct rbhashElement{
 	uint32_t hash;     /**< hash */
 	uint32_t len;      /**< len of key*/
 	uint16_t distance; /**< distance from hash*/
-	char key[];        /**< flexible key*/
+	char key[0];       /**< flexible key*/
 }rbhashElement_s;
 
 typedef struct rbhash{

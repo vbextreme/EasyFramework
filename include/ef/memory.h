@@ -223,4 +223,12 @@ err_t mem_protect(pkey_t* key, void* addr, size_t size, unsigned int mode);
 /** changhe memory protection*/
 err_t mem_protect_change(pkey_t key, unsigned int mode, void* addr);
 
+/** swap block of memory, destination size need to equal, content size can be different
+ * @param a block a
+ * @param sizeA content size
+ * @param b block b
+ * @param sizeB content size
+ */
+void mem_swap(void* restrict a, size_t sizeA, void* restrict b, size_t sizeB);
+
 #endif
