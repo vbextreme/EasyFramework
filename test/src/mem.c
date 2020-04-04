@@ -26,5 +26,36 @@ void test_mem(__unused const char* argA, __unused const char* argB){
 	TESTT("mem_heap_alloc", mem=mem_heap_alloc(&size));
 	TESTT("mem_heap_alloc size", size);
 	mem_heap_close(mem, size);
+
+	{
+		size_t a = ~(size_t)0;
+		size_t b = 0;
+		mem_swap(&a, sizeof a, &b, sizeof b);
+		TESTT("mem_swap size_t", a == 0 && b == ~(size_t)0);
+	}
+	{
+		int a = -7777;
+		int b = 5555;
+		mem_swap(&a, sizeof a, &b, sizeof b);
+		TESTT("mem_swap int", a == 5555 && b == -7777);
+	}
+	{
+		char va[128] = "hello";
+		char vb[128] = "world";
+		mem_swap(va, strlen(va) + 1, vb, strlen(vb) + 1);
+		TESTT("mem_swap str ==", !strcmp(va, "world") && !strcmp(vb, "hello"));
+	}
+	{
+		char va[128] = "va";
+		char vb[128] = "le of vb";
+		mem_swap(va, strlen(va) + 1, vb, strlen(vb) + 1);
+		TESTT("mem_swap str <", !strcmp(va, "le of vb") && !strcmp(vb, "va"));
+	}
+	{
+		char va[128] = "va gr of";
+		char vb[128] = "vb";
+		mem_swap(va, strlen(va) + 1, vb, strlen(vb) + 1);
+		TESTT("mem_swap str >", !strcmp(va, "vb") && !strcmp(vb, "va gr of"));
+	}
 }
 

@@ -86,10 +86,10 @@ src += [ 'ef/term/tuiButton.c' ]
 src += [ 'ef/term/tuiText.c' ]
 src += [ 'ef/term/tuiList.c' ]
 
-src += [ 'ef/graphics/image.c' ]
-src += [ 'ef/graphics/imageFiles.c' ]
-src += [ 'ef/graphics/imagePng.c' ]
-src += [ 'ef/graphics/imageFonts.c' ]
+#src += [ 'ef/graphics/image.c' ]
+#src += [ 'ef/graphics/imageFiles.c' ]
+#src += [ 'ef/graphics/imagePng.c' ]
+#src += [ 'ef/graphics/imageFonts.c' ]
 
 
 ##################

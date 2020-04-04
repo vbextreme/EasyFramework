@@ -1413,7 +1413,7 @@ err_t term_escape_print(char* name, tvariable_s* var){
 
 tiData_s* term_info(const char* name){
 	static tiData_s err = {.type = TI_TYPE_UNSET, .str = NULL};
-	tiData_s* ret = rbhash_find(localTermInfo.cap, name, strlen(name));
+	tiData_s* ret = rbhash_find(localTermInfo.cap, (void*)name, strlen(name));
 	return ret ? ret : &err;
 }
 
