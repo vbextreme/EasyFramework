@@ -18,6 +18,10 @@ typedef struct eerr{
 #define ERR_ENABLED    0x01
 #define ERR_RESTORE_STACK_SIZE 32
 
+#ifdef __clang__
+	#define thread_local 
+#endif
+
 #ifndef ERR_DEC_OBJ
 	extern thread_local eerr_s gerr;
 #endif

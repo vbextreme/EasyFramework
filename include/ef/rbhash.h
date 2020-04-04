@@ -3,7 +3,7 @@
 
 #include <ef/type.h>
 
-typedef void(*rbhashfree_f)(uint32_t hash, const char* name, void* a);
+typedef void(*rbhashfree_f)(uint32_t hash, void* key, void* a);
 typedef uint32_t(*rbhash_f)(const char* name, size_t len);
 typedef int(*rbhashcmp_f)(void* a, size_t lenA, uint32_t hash, void* data, void* b, size_t lenB);
 
