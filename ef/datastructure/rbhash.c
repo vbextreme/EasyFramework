@@ -20,7 +20,7 @@ rbhash_s* rbhash_new(size_t size, size_t min, size_t keysize, rbhash_f hashing, 
 	rbh->maxdistance = 0;
 	rbh->keySize = keysize;
 	rbh->elementSize = ROUND_UP(sizeof(rbhashElement_s), sizeof(void*));
-	rbh->elementSize = ROUND_UP(rbh->elementSize + keysize + 1, sizeof(void*)); /*add 1 elements for internal use*/
+	rbh->elementSize = ROUND_UP(rbh->elementSize + keysize, sizeof(void*)); 
 	iassert((rbh->elementSize % sizeof(void*)) == 0);
 	rbh->table = malloc( rbh->elementSize * rbh->size );
 	if( rbh->table == NULL ){
@@ -40,7 +40,7 @@ rbhash_s* rbhash_new(size_t size, size_t min, size_t keysize, rbhash_f hashing, 
 void rbhash_free(rbhash_s* rbh){
 	rbhashElement_s* table = rbh->table;
 	for( size_t i = 0; i < rbh->size; ++i, table = rbhash_element_next(table,rbh->elementSize) ){
-		if( table->key[0] == 0 ) continue;
+		if( table->len == 0 ) continue;
 		if( rbh->del && table->data){
 			rbh->del(table->hash, table->key, table->data);
 		}
@@ -62,7 +62,7 @@ __private void rbhash_swapdown(rbhashElement_s* table, const size_t size, const 
 
 	rbhashElement_s* tbl = rbhash_element_slot(table, esize, bucket);
 	size_t i = 0;
-	while( i < size && tbl->key[0] != 0 ){
+	while( i < size && tbl->len != 0 ){
 		if(  nw->distance > tbl->distance ){
 			SWAP(tbl->data, nw->data);
 			SWAP(tbl->distance, nw->distance);
@@ -120,7 +120,7 @@ err_t rbhash_add_hash(rbhash_s* rbh, uint32_t hash, void* key, size_t len, void*
 		return -1;
 	}
 	
-	rbhashElement_s* el = malloc(rbh->elementSize);
+	__mem_free rbhashElement_s* el = malloc(rbh->elementSize);
 	el->data = data;
 	el->distance = 0;
 	el->hash = hash;
