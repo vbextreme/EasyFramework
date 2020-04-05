@@ -22,7 +22,7 @@ rbhash_s* rbhash_new(size_t size, size_t min, size_t keysize, rbhash_f hashing, 
 	rbh->elementSize = ROUND_UP(sizeof(rbhashElement_s), sizeof(void*));
 	rbh->elementSize = ROUND_UP(rbh->elementSize + keysize + 1, sizeof(void*)); /*add 1 elements for internal use*/
 	iassert((rbh->elementSize % sizeof(void*)) == 0);
-	rbh->table = malloc( rbh->elementSize * (rbh->size+1) );
+	rbh->table = malloc( rbh->elementSize * rbh->size );
 	if( rbh->table == NULL ){
 		err_pushno("malloc");
 		free(rbh);
@@ -89,7 +89,7 @@ __private err_t rbhash_upsize(rbhash_s* rbh){
 	
 	const size_t newsize = ROUND_UP_POW_TWO32(pm);
 	
-	rbhashElement_s* newtable =  malloc(rbh->elementSize * (newsize+1));
+	rbhashElement_s* newtable =  malloc(rbh->elementSize * newsize);
 	if( newtable == NULL ){
 		err_pushno("malloc");
 		return -1;
@@ -120,7 +120,7 @@ err_t rbhash_add_hash(rbhash_s* rbh, uint32_t hash, void* key, size_t len, void*
 		return -1;
 	}
 	
-	rbhashElement_s* el = &rbh->table[rbh->size];
+	rbhashElement_s* el = malloc(rbh->elementSize);
 	el->data = data;
 	el->distance = 0;
 	el->hash = hash;

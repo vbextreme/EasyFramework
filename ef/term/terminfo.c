@@ -1397,6 +1397,7 @@ err_t term_escape_string(char* out, char* name, tvariable_s* var){
 }
 
 err_t term_escape_print(char* name, tvariable_s* var){
+	iassert(name);
 	tiData_s* dt = rbhash_find(localTermInfo.cap, name, strlen(name));
 	if( !dt ){
 		dbg_warning("cap %s not exists", name);
@@ -1407,11 +1408,14 @@ err_t term_escape_print(char* name, tvariable_s* var){
 		dbg_error("cap %s is not a string", name);
 		return -1;
 	}
+	iassert(dt->str);
 	term_escape_make_print(dt->str, var);
 	return 0;
 }
 
 tiData_s* term_info(const char* name){
+	iassert(name);
+	iassert(localTermInfo.cap);
 	static tiData_s err = {.type = TI_TYPE_UNSET, .str = NULL};
 	tiData_s* ret = rbhash_find(localTermInfo.cap, (void*)name, strlen(name));
 	return ret ? ret : &err;

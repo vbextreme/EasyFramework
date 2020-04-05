@@ -61,7 +61,7 @@ __private void tui_att_init(void){
 void tui_begin(void){
 	term_begin();
 	term_load(NULL, term_name());
-	term_load(NULL, term_name_extend());
+	//term_load(NULL, term_name_extend());
 	term_load(NULL, term_name_ef());
 	term_update_key();
 	term_endon_sigint();

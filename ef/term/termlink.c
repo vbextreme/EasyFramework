@@ -16,7 +16,7 @@ __private int camode;
 #define def_cap_val_null(CAP) static tiData_s* em = NULL;\
 	if( !em ){\
 		em = term_info(CAP); \
-		if( !em ) err_fail("%s", CAP);\
+		if( !em ) dbg_fail("cap %s not exists", CAP);\
 	}\
 	tvariable_s var[10] = { \
 		[1].type = 0, [1].l = 0,\
@@ -27,7 +27,7 @@ __private int camode;
 	if( VAL < 0 || !em[0] ){\
 		em[0] = term_info(CAP_TRUE);\
 		em[1] = term_info(CAP_FALSE);\
-		if( !em[0] || !em[1] ){\
+		if( !em[0]->str || !em[1]->str ){\
 			err_fail("%s || %s", CAP_FALSE, CAP_TRUE);\
 		}\
 		if( VAL < 0 ) return;\

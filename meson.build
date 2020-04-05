@@ -158,6 +158,7 @@ elif( get_option('optimize') == 1 )
   add_global_link_arguments('-flto', language: 'c')
 else
   message('no optimization enabled')
+  add_global_arguments('-O0', language: 'c')
 endif
 
 #enable autovectorization

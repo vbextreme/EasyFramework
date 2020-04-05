@@ -10,7 +10,7 @@ cc = meson.get_compiler('c')
 # include #
 ###########
 
-includeDir = include_directories(['../include' ])
+includeDir = include_directories(['../include', '/usr/include/freetype2' ])
 
 ###############
 # source file #
@@ -57,7 +57,7 @@ add_global_arguments('-Wvla', language: 'c')
 
 # TODO to CFLAGS libef
 # stack size
-#add_global_arguments('-Wl,--stack,16000', language: 'c')
+#add_global_link_arguments('-Wl,--stack,16000', language: 'c')
 
 #reentrant malloc
 add_global_arguments('-pthread', language: 'c')
@@ -136,15 +136,15 @@ libDeps = [ ef_dep ]
 
 # TODO to cflags ef
 libDeps += [ cc.find_library('unistring', required : true) ]
-libDeps += [ dependency('freetype2', required: true) ]
-libDeps += [ dependency('fontconfig', required: true) ]
-libDeps += [ dependency('xcb', required: true) ] 
-libDeps += [ dependency('xcb-composite', required: true) ]
-libDeps += [ dependency('xcb-util', required: true) ]
-libDeps += [ dependency('xcb-image', required: true) ]
-libDeps += [ dependency('xcb-randr', required: true) ]
-libDeps += [ dependency('xkbcommon', required: true) ]
-libDeps += [ dependency('xkbcommon-x11', required: true) ]
+#libDeps += [ dependency('freetype2', required: true) ]
+#libDeps += [ dependency('fontconfig', required: true) ]
+#libDeps += [ dependency('xcb', required: true) ] 
+#libDeps += [ dependency('xcb-composite', required: true) ]
+#libDeps += [ dependency('xcb-util', required: true) ]
+#libDeps += [ dependency('xcb-image', required: true) ]
+#libDeps += [ dependency('xcb-randr', required: true) ]
+#libDeps += [ dependency('xkbcommon', required: true) ]
+#libDeps += [ dependency('xkbcommon-x11', required: true) ]
 
 
 
