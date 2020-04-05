@@ -38,7 +38,7 @@
 #define XORG_MOUSE_DBLCLICL_MS 350
 
 typedef enum {
-	XORG_ATOM_NET_ACTIVE_WINDOW,
+	XORG_ATOM_NET_ACTIVE_WINDOW = 0,
 	XORG_ATOM_NET_NUMBER_OF_DESKTOPS,
 	XORG_ATOM_NET_CURRENT_DESKTOP,
 	XORG_ATOM_NET_DESKTOP_NAMES,
@@ -78,8 +78,6 @@ typedef struct monitor{
 typedef struct xorg{
 	xcb_connection_t* connection;
 	xcb_screen_t* screen;
-	int screenDefault;
-	int screenCurrent;
 	monitor_s* monitor;
 	size_t monitorCount;
 	monitor_s* monitorCurrent;
@@ -94,6 +92,8 @@ typedef struct xorg{
 	long dblclickms;
 	long _mousetime;
 	unsigned _mousestate;
+	int screenDefault;
+	int screenCurrent;
 }xorg_s;
 
 #define XORG_WINDOW_HINTS_FLAGS_URGENCY(XWPTR)  ((XWPTR)->hints.flags & XCB_ICCCM_WM_HINT_X_URGENCY)

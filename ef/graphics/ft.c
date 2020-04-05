@@ -24,6 +24,10 @@ __private FT_Library ftlib;
 __private const char* ftStrError[] = 
 #include FT_ERRORS_H
 
+__private unsigned nohash_utf(const char* name, __unused size_t len){
+	return *(utf_t*)name;
+}
+
 err_t ft_begin(void){
 	err_t err;
 	if( (err=FT_Init_FreeType(&ftlib)) ){
@@ -37,7 +41,7 @@ void ft_end(void){
 	FT_Done_FreeType(ftlib);
 }
 
-__private void rbh_ft_glyph_free(__unused uint32_t hash, __unused void* key, void* a){
+__private void rbh_ft_glyph_free(__unused uint32_t hash, __unused const char* key, void* a){
 	ft_glyph_free(a);
 }
 
@@ -52,7 +56,7 @@ ftFonts_s* ft_fonts_new(void){
 		free(fonts);
 		return NULL;
 	}
-	fonts->charmap = rbhash_new(FONT_GLYPH_MAX, FONT_GLYPH_MIN, FONT_GLYPH_KEY, NULL, rbh_ft_glyph_free);
+	fonts->charmap = rbhash_new(FONT_GLYPH_MAX, FONT_GLYPH_MIN, FONT_GLYPH_KEY, nohash_utf, rbh_ft_glyph_free);
 	if( !fonts->charmap ){
 		vector_free(fonts->font);
 		free(fonts);
@@ -226,7 +230,7 @@ err_t ft_font_size_dpi(ftFont_s* font, long w, long h, long dpiw, long dpih){
 }
 
 ftRender_s* ft_glyph_get(ftFonts_s* fonts, utf_t utf){
-	return rbhash_find_hash(fonts->charmap, utf, &utf, FONT_GLYPH_KEY);
+	return rbhash_find_hash(fonts->charmap, utf, (char*)&utf, FONT_GLYPH_KEY);
 }
 
 __private void ft_glyph_render_hori_mono_byte(ftRender_s* glyph, unsigned char* buf, g2dMode_e mode){
@@ -397,7 +401,7 @@ __private ftRender_s* ft_font_glyph_load(ftFonts_s* fonts, ftFont_s* font, utf_t
 	glyph->descender = font->descender;
 	glyph->utf = utf;
 	
-	if( rbhash_add_hash(fonts->charmap, utf, &utf, FONT_GLYPH_KEY, glyph) ){
+	if( rbhash_add_hash(fonts->charmap, utf, (char*)&utf, FONT_GLYPH_KEY, glyph) ){
 		err_push("fail to add new glyph");
 		free(glyph);
 		return NULL;

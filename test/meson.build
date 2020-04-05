@@ -10,6 +10,7 @@ cc = meson.get_compiler('c')
 # include #
 ###########
 
+#TODO to pkgconfig
 includeDir = include_directories(['../include', '/usr/include/freetype2' ])
 
 ###############
@@ -135,10 +136,11 @@ endif
 libDeps = [ ef_dep ]
 
 # TODO to cflags ef
+libDeps += [ dependency('xcb', required: true) ] 
 libDeps += [ cc.find_library('unistring', required : true) ]
+
 #libDeps += [ dependency('freetype2', required: true) ]
 #libDeps += [ dependency('fontconfig', required: true) ]
-#libDeps += [ dependency('xcb', required: true) ] 
 #libDeps += [ dependency('xcb-composite', required: true) ]
 #libDeps += [ dependency('xcb-util', required: true) ]
 #libDeps += [ dependency('xcb-image', required: true) ]
@@ -146,7 +148,8 @@ libDeps += [ cc.find_library('unistring', required : true) ]
 #libDeps += [ dependency('xkbcommon', required: true) ]
 #libDeps += [ dependency('xkbcommon-x11', required: true) ]
 
-
+#TODO to pkgconfig
+add_global_arguments('-DXCB_ERROR_ENABLE', language: 'c')
 
 #########################
 # software dependencies #

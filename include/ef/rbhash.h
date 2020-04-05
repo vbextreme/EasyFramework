@@ -3,7 +3,7 @@
 
 #include <ef/type.h>
 
-typedef void(*rbhashfree_f)(uint32_t hash, void* key, void* a);
+typedef void(*rbhashfree_f)(uint32_t hash, const char* name, void* a);
 typedef uint32_t(*rbhash_f)(const char* name, size_t len);
 typedef int(*rbhashcmp_f)(void* a, size_t lenA, uint32_t hash, void* data, void* b, size_t lenB);
 
@@ -12,7 +12,7 @@ typedef struct rbhashElement{
 	uint32_t hash;     /**< hash */
 	uint32_t len;      /**< len of key*/
 	uint16_t distance; /**< distance from hash*/
-	char key[0];       /**< flexible key*/
+	char key[];        /**< flexible key*/
 }rbhashElement_s;
 
 typedef struct rbhash{
@@ -75,7 +75,7 @@ void rbhash_free_auto(rbhash_s** rbh);
  * @param data userdata associated to key
  * @return 0 successfull -1 error, fail if no space left on hash table, EFBIG if key > keysize, err is pushed and errno is setted
  */
-err_t rbhash_add_hash(rbhash_s* rbh, uint32_t hash, void* key, size_t len, void* data);
+err_t rbhash_add_hash(rbhash_s* rbh, uint32_t hash, const char* key, size_t len, void* data);
 
 /** add new element to hash table, call rbhash_add_hash calcolated hash with rbhash->hashing
  * @param rbh hashtable
@@ -84,7 +84,7 @@ err_t rbhash_add_hash(rbhash_s* rbh, uint32_t hash, void* key, size_t len, void*
  * @param data userdata associated to key
  * @return 0 successfull -1 error, fail if no space left on hash table, EFBIG if key > keysize, err is pushed and errno is setted
  */
-err_t rbhash_add(rbhash_s* rbh, void* key, size_t len, void* data);
+err_t rbhash_add(rbhash_s* rbh, const char* key, size_t len, void* data);
 
 /** add new element to hash table only if key not exists, call rbhash_find and use rbhash->hashing
  * @param rbh hashtable
@@ -93,7 +93,7 @@ err_t rbhash_add(rbhash_s* rbh, void* key, size_t len, void* data);
  * @param data userdata associated to key
  * @return 0 successfull -1 error, fail if no space left on hash table, EFBIG if key > keysize, err is pushed and errno is setted
  */
-err_t rbhash_add_unique(rbhash_s* rbh, void* key, size_t len, void* data);
+err_t rbhash_add_unique(rbhash_s* rbh, const char* key, size_t len, void* data);
 
 /** find rbhashElement
  * @param rbh hashtable
@@ -102,7 +102,7 @@ err_t rbhash_add_unique(rbhash_s* rbh, void* key, size_t len, void* data);
  * @param len len of key, 0 auto call strlen(key)
  * @return rbhashElement or NULL for error
  */
-rbhashElement_s* rbhash_find_hash_raw(rbhash_s* rbh, uint32_t hash, void* key, size_t len);
+rbhashElement_s* rbhash_find_hash_raw(rbhash_s* rbh, uint32_t hash, const char* key, size_t len);
 
 /** find rbhashElement
  * @param rbh hashtable
@@ -111,7 +111,7 @@ rbhashElement_s* rbhash_find_hash_raw(rbhash_s* rbh, uint32_t hash, void* key, s
  * @param len len of key, 0 auto call strlen(key)
  * @return user data associated to key or NULL for error
  */
-void* rbhash_find_hash(rbhash_s* rbh, uint32_t hash, void* key, size_t len);
+void* rbhash_find_hash(rbhash_s* rbh, uint32_t hash, const char* key, size_t len);
 
 /** find rbhashElement, use rbhash_find_hash called with rbhash->hashing
  * @param rbh hashtable
@@ -119,7 +119,7 @@ void* rbhash_find_hash(rbhash_s* rbh, uint32_t hash, void* key, size_t len);
  * @param len len of key, 0 auto call strlen(key)
  * @return user data associated to key or NULL for error
  */
-void* rbhash_find(rbhash_s* rbh, void* key, size_t len);
+void* rbhash_find(rbhash_s* rbh, const char* key, size_t len);
 
 /** remove element from hash table, automatic call delete function to user data
  * @param rbh hashtable
@@ -128,7 +128,7 @@ void* rbhash_find(rbhash_s* rbh, void* key, size_t len);
  * @param len len of key, 0 auto call strlen(key)
  * @return 0 successfull -1 error
  */
-err_t rbhash_remove_hash(rbhash_s* rbh, uint32_t hash, void* key, size_t len);
+err_t rbhash_remove_hash(rbhash_s* rbh, uint32_t hash, const char* key, size_t len);
 
 /** remove element from hash table, automatic call delete function to user data, call rbhash_remove_hash with rbhash->hashing
  * @param ht hashtable
@@ -136,7 +136,7 @@ err_t rbhash_remove_hash(rbhash_s* rbh, uint32_t hash, void* key, size_t len);
  * @param len len of key, 0 auto call strlen(key)
  * @return 0 successfull -1 error
  */
-err_t rbhash_remove(rbhash_s* ht, void* key, size_t len);
+err_t rbhash_remove(rbhash_s* ht, const char* key, size_t len);
 
 /** total memory usage
  * @param rbh

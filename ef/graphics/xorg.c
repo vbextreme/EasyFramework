@@ -19,6 +19,11 @@ err_t xorg_client_init(xorg_s* x){
 		dbg_error("on xcb connect");
 		return -1;
 	}
+	if( xcb_connection_has_error(x->connection) ){
+		dbg_error("on xcb connect");
+		return -1;
+	}
+
 	if( xkb_x11_setup_xkb_extension(x->connection, XKB_X11_MIN_MAJOR_XKB_VERSION, XKB_X11_MIN_MINOR_XKB_VERSION, 0, NULL, NULL, NULL, NULL) != 1){
         xcb_disconnect(x->connection);
 		dbg_fail("xkb enable extension");
@@ -53,12 +58,12 @@ err_t xorg_client_init(xorg_s* x){
 	xorg_root_init(x, -1);
 	xorg_randr_monitor_refresh(x);
 	xorg_monitor_primary(x);
-
+	
 	x->clickms = XORG_MOUSE_CLICK_MS;
 	x->dblclickms = XORG_MOUSE_DBLCLICL_MS;
 	x->_mousetime = 0;
 	x->_mousestate = 0;
-
+	dbg_info("xorg initializated");
 	return 0;
 }
 

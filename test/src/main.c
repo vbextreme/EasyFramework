@@ -49,10 +49,12 @@ int main(int argc, char* argv[]){
 
 	for( size_t i = 0; tfn[i]; ++i){
 		if( opt_enabled(args, ARG_AUTO+i) ){
+			dbg_info("start");
 			tfn[i](a,b);
+			dbg_info("end");
 		}
 	}
-
+	dbg_info("end");
 	err_end();
 	return 0;
 }
