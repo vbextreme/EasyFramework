@@ -10,7 +10,7 @@ cc = meson.get_compiler('c')
 # include #
 ###########
 
-includeDir = include_directories(['../include'])
+includeDir = include_directories(['../include' ])
 
 ###############
 # source file #
@@ -23,6 +23,7 @@ src += [ 'src/err.c' ]
 src += [ 'src/file.c' ]
 src += [ 'src/ftp.c' ]
 src += [ 'src/fuzzys.c' ]
+src += [ 'src/gui.c' ]
 src += [ 'src/hash.c' ]
 src += [ 'src/imap.c' ]
 src += [ 'src/json.c' ]
@@ -54,13 +55,20 @@ add_global_arguments('-Wstrict-overflow', language: 'c')
 add_global_arguments('-Wfloat-equal', language: 'c')
 add_global_arguments('-Wvla', language: 'c')
 
+# TODO to CFLAGS libef
+# stack size
+#add_global_arguments('-Wl,--stack,16000', language: 'c')
+
 #reentrant malloc
 add_global_arguments('-pthread', language: 'c')
 add_global_link_arguments('-pthread', language:'c')
+
 #resolve RTLD_LAZY
 add_global_link_arguments('-rdynamic', language:'c')
+
 # standard
 add_global_arguments('-std=gnu11', language: 'c')
+
 # open mp
 if get_option('openmp') > 0
   message('openmp enabled')
@@ -126,28 +134,18 @@ else
 endif
 libDeps = [ ef_dep ]
 
+# TODO to cflags ef
 libDeps += [ cc.find_library('unistring', required : true) ]
+libDeps += [ dependency('freetype2', required: true) ]
+libDeps += [ dependency('fontconfig', required: true) ]
+libDeps += [ dependency('xcb', required: true) ] 
+libDeps += [ dependency('xcb-composite', required: true) ]
+libDeps += [ dependency('xcb-util', required: true) ]
+libDeps += [ dependency('xcb-image', required: true) ]
+libDeps += [ dependency('xcb-randr', required: true) ]
+libDeps += [ dependency('xkbcommon', required: true) ]
+libDeps += [ dependency('xkbcommon-x11', required: true) ]
 
-#math_dep = cc.find_library('m', required : true)
-#dynamic_dep = cc.find_library('dl', required : true)
-#rlt_dep = cc.find_library('rt', required: true)
-#rl_dep = dependency('readline', required: true)
-#sql_dep = dependency('sqlite3', required: true)
-#curl_dep = dependency('libcurl', required: true)
-#pcre2_dep = cc.find_library('pcre2-8', required : true)
-#utf8_dep = cc.find_library('unistring', required : true)
-#tar_dep = cc.find_library('tar', required: true)
-#zlib_dep = dependency('zlib', required: true)
-#git2_dep = dependency('libgit2', required: true)
-#libDeps = [math_dep, dynamic_dep, curl_dep, pcre2_dep, utf8_dep, tar_dep, zlib_dep, git2_dep, rl_dep, sql_dep ]
-#libDeps = [ math_dep, dynamic_dep, rlt_dep ]
-
-#tcc_dep = cc.find_library('tcc', required: false)
-#if tcc_dep.found()
-#  add_global_arguments('-DSCRIPTC_TCC', language:'c')
-#  message('enable scriptc tcc')
-#  libDeps += [ tcc_dep ]
-#endif
 
 
 #########################

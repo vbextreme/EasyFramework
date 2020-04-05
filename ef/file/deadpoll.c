@@ -125,7 +125,7 @@ int deadpoll_event(deadpoll_s* dp, long* timems){
 	struct epoll_event epollEvent[DEADPOLL_POLLING_EVENTS];
 	memset(epollEvent, 0, sizeof(struct epoll_event) * DEADPOLL_POLLING_EVENTS);
 	long timer = time_ms();
-
+	
 	switch( (eventCount=epoll_wait(dp->pollfd, epollEvent, DEADPOLL_POLLING_EVENTS, *timems)) ){
 		case -1:
 			dbg_error("deadpoll");
@@ -147,7 +147,6 @@ int deadpoll_event(deadpoll_s* dp, long* timems){
 					dbg_warning("no fd on %ld",i); 
 					continue;
 				}
-				
 				if( ev->callback(dp, epollEvent[i].events, ev->arg) ){
 					return DEADPOLL_ERROR;
 				}

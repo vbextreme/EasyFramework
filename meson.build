@@ -90,7 +90,7 @@ src += [ 'ef/graphics/image.c' ]
 src += [ 'ef/graphics/imageFiles.c' ]
 src += [ 'ef/graphics/imagePng.c' ]
 src += [ 'ef/graphics/ft.c' ]
-
+src += [ 'ef/graphics/xorg.c' ]
 
 ##################
 # compiler flags #
@@ -187,7 +187,22 @@ libDeps += [ dependency('libcurl', required: true) ]
 libDeps += [ dependency('libgit2', required: true) ]
 libDeps += [ dependency('freetype2', required: true) ]
 libDeps += [ dependency('fontconfig', required: true) ]
+libDeps += [ dependency('xcb', required: true) ] 
+libDeps += [ dependency('xcb-composite', required: true) ]
+libDeps += [ dependency('xcb-util', required: true) ]
+libDeps += [ dependency('xcb-image', required: true) ]
+libDeps += [ dependency('xcb-randr', required: true) ]
+libDeps += [ dependency('xkbcommon', required: true) ]
+libDeps += [ dependency('xkbcommon-x11', required: true) ]
 
+xcb_error_dep = dependency('xcb-errors', required: false)
+if xcb_error_dep.found()
+  message('enable xcb_error')
+  add_global_arguments('-DXCB_ERROR_ENABLE', language: 'c')
+  libDeps += [ xcb_error_dep ]
+else
+   message('disable xcb_error')
+endif
 
 #rl_dep = dependency('readline', required: true)
 #sql_dep = dependency('sqlite3', required: true)

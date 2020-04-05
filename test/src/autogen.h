@@ -6,6 +6,7 @@
 { 0, 'f', "file", ARGDEF_NOARG, NULL, "test file use argva for get config file, default ../config.test"},\
 { 0, 't', "ftp", ARGDEF_NOARG, NULL, "test ftp"},\
 { 0, 'F', "fuzzy-search", ARGDEF_NOARG, NULL, "test fuzzy search, use arg-a for data, use arg-b for search string, default is vbextreme"},\
+{ 0, 'g', "gui", ARGDEF_NOARG, NULL, "test gui"},\
 { 0, 'H', "hash", ARGDEF_NOARG, NULL, "test function hash, use arg-a for file data, without a use internal data"},\
 { 0, 'i', "imap", ARGDEF_NOARG, NULL, "test imap, -a imaps://server.com;myemail@email.com -b <ls><show:from:to:dir><delete:id:dir><info:dir>"},\
 { 0, 'j', "json", ARGDEF_NOARG, NULL, "test json, if argA is setted print json error, if argB is setted exit after first error"},\
@@ -27,6 +28,7 @@ void test_err(__unused const char* argA, __unused const char* argB);\
 void test_file(const char* argA, __unused const char* argB);\
 void test_ftp(__unused const char* argA, __unused const char* argB);\
 void test_fuzzysearch(const char* a, const char* b);\
+void test_gui(__unused const char* argA, __unused const char* argB);\
 void test_hash(const char* a, __unused const char*b);\
 void test_imap(const char* argA, __unused const char* argB);\
 void test_json(const char* argA, const char* argB);\
@@ -48,6 +50,7 @@ test_err,\
 test_file,\
 test_ftp,\
 test_fuzzysearch,\
+test_gui,\
 test_hash,\
 test_imap,\
 test_json,\

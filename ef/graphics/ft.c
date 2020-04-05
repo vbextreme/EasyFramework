@@ -6,7 +6,7 @@
 #include <ef/vector.h>
 #include <ef/err.h>
 
-#include <freetype2/ft2build.h>
+//#include <freetype2/ft2build.h>
 #include <fontconfig/fontconfig.h>
 
 #define FONT_GLYPH_MIN 10
