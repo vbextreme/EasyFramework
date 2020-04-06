@@ -138,8 +138,6 @@ typedef enum {XORG_MOUSE_RELEASE, XORG_MOUSE_PRESS, XORG_MOUSE_MOVE, XORG_MOUSE_
 typedef enum {XORG_KEY_RELEASE, XORG_KEY_PRESS} xorgKey_e;
 
 typedef struct xorgMouse{
-	xorg_s* x;
-	void* user;
 	xorgMouse_e event;
 	g2dPoint_s absolute;
 	g2dPoint_s relative;
@@ -149,8 +147,6 @@ typedef struct xorgMouse{
 }xorgMouse_s;
 
 typedef struct xorgKeyboard{
-	xorg_s* x;
-	void* user;
 	xorgKey_e event;
 	g2dPoint_s absolute;
 	g2dPoint_s relative;
@@ -162,12 +158,62 @@ typedef struct xorgKeyboard{
 }xorgKeyboard_s;
 
 typedef struct xorgMove{
-	xorg_s* x;
-	void* user;
 	g2dCoord_s coord;
 	unsigned border;
 }xorgMove_s;
 
+typedef struct xorgCreate{
+	int x;
+	int y;
+	int w;
+	int h;
+	int border;
+}xorgCreate_s;
+
+typedef struct xorgDraw{
+	int x;
+	int y;
+	int w;
+	int h;
+}xorgDraw_s;
+
+typedef struct xorgFocus{
+	int outin;
+}xorgFocus_s;
+
+typedef struct xorgVisible{
+	int visible;
+}xorgVisible_s;
+
+typedef struct xorgProperty{
+	xcb_atom_t atom;
+}xorgProperty_s;
+
+typedef struct xorgClient{
+	xcb_atom_t type;
+	uint8_t format;
+	uint8_t data[20];
+}xorgClient_s;
+
+typedef struct xorgEvent{
+	int type;
+	void* userdata;
+	xorg_s* x;
+	xcb_window_t win;
+	union{
+		xorgMouse_s mouse;
+		xorgKeyboard_s keyboard;
+		xorgMove_s move;
+		xorgCreate_s create;
+		xorgDraw_s draw;
+		xorgFocus_s focus;
+		xorgVisible_s visible;
+		xorgProperty_s property;
+		xorgClient_s client;
+	};
+}xorgEvent_s;	
+
+/*
 typedef void(*xorgGeneric_f)(xorg_s*, void* user);
 typedef void(*xorgCoord_f)(xorg_s*, void* user, g2dCoord_s*);
 typedef void(*xorgValue_f)(xorg_s* x, void* user, int value);
@@ -193,6 +239,7 @@ typedef struct xorgCallbackEvent{
 	xorgMessage_f message;
 	void* user;
 }xorgCallbackEvent_s;
+*/
 
 #define xorg_root(XORG) ((XORG)->screen->root)
 #define xorg_root_x(XORG) ((XORG)->monitorCurrent->size.x)
@@ -421,9 +468,10 @@ void xorg_win_destroy(xorg_s* x, xcb_window_t id);
 /** set focus on window*/
 void xorg_win_focus(xorg_s* x, xcb_window_t id);
 
-/** parse and create events, -2 exit event*/
-err_t xorg_win_event(xorg_s* x, xorgCallbackEvent_s* callback, int async);
+/** get new event, remember to release event*/
+xorgEvent_s* xorg_event_new(xorg_s* x, int async, void* userdata);
 
-
+/** free message*/
+void xorg_event_free(xorgEvent_s* ev);
 
 #endif 

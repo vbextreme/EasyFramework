@@ -1337,289 +1337,276 @@ void xorg_win_focus(xorg_s* x, xcb_window_t id){
 	xcb_set_input_focus(x->connection, XCB_INPUT_FOCUS_NONE, id, time(NULL));
 }
 
-err_t xorg_win_event(xorg_s* x, xorgCallbackEvent_s* callback, int async){
-
+xorgEvent_s* xorg_event_new(xorg_s* x, int async, void* userdata){
 	xcb_generic_event_t* event;
 	if( !async )
 		event = xcb_wait_for_event(x->connection);
 	else
 		event = xcb_poll_for_event(x->connection);
+	if( !event ) return NULL;
 
-	if( !event ){
-		dbg_info("no events");	
-		return -1;
-	}
+	xorgEvent_s* ev = mem_new(xorgEvent_s);
+	if( !event ) err_fail("malloc");
 
-	switch( event->response_type & ~0x80 ){
-		case XCB_CREATE_NOTIFY: 
-			if( callback->creat ){
-				dbg_info("create");
-				callback->creat(x, callback->user);
-			}
+
+	ev->type = event->response_type & ~0x80;
+	ev->x = x;
+	ev->userdata = userdata;
+
+	switch( ev->type ){
+		case XCB_CREATE_NOTIFY:{
+			dbg_info("create");
+			xcb_create_notify_event_t* noty = (xcb_create_notify_event_t*) event;
+			ev->win = noty->window;
+			ev->create.x = noty->x;
+			ev->create.y = noty->y;
+			ev->create.w = noty->width;
+			ev->create.h = noty->height;
+		}
 		break;
 
-		case XCB_DESTROY_NOTIFY:
-			if( callback->destroy ){
-				dbg_info("destroy");
-				callback->destroy(x, callback->user);
-			}
-		return -2;
+		case XCB_DESTROY_NOTIFY:{
+			dbg_info("destroy");
+			xcb_destroy_notify_event_t* noty = (xcb_destroy_notify_event_t*) event;
+			ev->win = noty->window;
+		}
+		break;
 				
-		case XCB_EXPOSE:
-			if( callback->redraw ){
-				xcb_expose_event_t* expose = (xcb_expose_event_t*)event;
-				g2dCoord_s damaged = { .x = expose->x, .y = expose->y, .w = expose->width, .h = expose->height };
-				dbg_info("redraw damaged : .x=%u .y=%u .w=%u .h=%u", damaged.x, damaged.y, damaged.w, damaged. h);
-				callback->redraw(x, callback->user, &damaged);
-			}
+		case XCB_EXPOSE:{
+			xcb_expose_event_t* expose = (xcb_expose_event_t*)event;
+			ev->win = expose->window;
+			ev->draw.x = expose->x;
+		   	ev->draw.y = expose->y;
+			ev->draw.w = expose->width;
+			ev->draw.h = expose->height;
+			dbg_info("redraw damaged : .x=%u .y=%u .w=%u .h=%u", ev->draw.x, ev->draw.y, ev->draw.w, ev->draw.h);
+		}
 		break;
 		
-		case XCB_KEY_PRESS:
-			if( callback->keyboard ){
-				xcb_key_press_event_t* xk = (xcb_key_press_event_t*)event;
-				xorgKeyboard_s key = {
-					.x = x,
-					.user = callback->user,
-					.event = XORG_KEY_PRESS,
-					.absolute.x = xk->root_x,
-					.absolute.y = xk->root_y,
-					.relative.x = xk->event_x,
-					.relative.y = xk->event_y,
-					.button = xk->state,
-					.time = xk->time,
-					.keycode = xk->detail
-				};
-				struct xkb_state* state;
-				if( (state = xkb_x11_state_new_from_device(x->key.keymap, x->connection, x->key.device)) ){
-					key.keysym = xkb_state_key_get_one_sym(state, key.keycode);
-					int size = xkb_state_key_get_utf8(state, key.keycode, NULL, 0) + 1;
-					if( size > 1 && size < XKB_UTF_MAX ){
-						xkb_state_key_get_utf8(state, key.keycode, (char*)key.utf8, size);
-					}
-					else{
-						key.utf8[0] = 0;
-					}
-					dbg_info("key press button: %u keycode: %lu keysym: %lu utf: %s", key.button, key.keycode, key.keysym, key.utf8);
-					xkb_state_unref(state);
-					callback->keyboard(&key);
+		case XCB_KEY_PRESS:{
+			xcb_key_press_event_t* xk = (xcb_key_press_event_t*)event;
+			
+			ev->win = xk->event;
+			ev->keyboard.event = XORG_KEY_PRESS;
+			ev->keyboard.absolute.x = xk->root_x;
+			ev->keyboard.absolute.y = xk->root_y;
+			ev->keyboard.relative.x = xk->event_x;
+			ev->keyboard.relative.y = xk->event_y;
+			ev->keyboard.button = xk->state;
+			ev->keyboard.time = xk->time;
+			ev->keyboard.keycode = xk->detail;
+			ev->keyboard.utf8[0] = 0;
+
+			struct xkb_state* state;
+			if( (state = xkb_x11_state_new_from_device(x->key.keymap, x->connection, x->key.device)) ){
+				ev->keyboard.keysym = xkb_state_key_get_one_sym(state, ev->keyboard.keycode);
+				int size = xkb_state_key_get_utf8(state, ev->keyboard.keycode, NULL, 0) + 1;
+				if( size > 1 && size < XKB_UTF_MAX ){
+					xkb_state_key_get_utf8(state, ev->keyboard.keycode, (char*)ev->keyboard.utf8, size);
 				}
+				xkb_state_unref(state);
 			}
+			dbg_info("key press button: %u keycode: %lu keysym: %lu utf: %s", ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf8);
+		}
 		break;
 		
-		case XCB_KEY_RELEASE:
-			if( callback->keyboard ){
-				xcb_key_release_event_t* xk = (xcb_key_release_event_t*)event;
-				xorgKeyboard_s key = {
-					.x = x,
-					.user = callback->user,
-					.event = XORG_KEY_RELEASE,
-					.absolute.x = xk->root_x,
-					.absolute.y = xk->root_y,
-					.relative.x = xk->event_x,
-					.relative.y = xk->event_y,
-					.button = xk->state,
-					.time = xk->time,
-					.keycode = xk->detail
-				};
-				struct xkb_state* state;
-				if( (state = xkb_x11_state_new_from_device(x->key.keymap, x->connection, x->key.device)) ){
-					key.keysym = xkb_state_key_get_one_sym(state, key.keycode);
-					int size = xkb_state_key_get_utf8(state, key.keycode, NULL, 0) + 1;
-					if( size > 1 && size < XKB_UTF_MAX ){
-						xkb_state_key_get_utf8(state, key.keycode, (char*)key.utf8, size);
-					}
-					else{
-						key.utf8[0] = 0;
-					}
-					dbg_info("key release button: %u keycode: %lu keysym: %lu utf: %s", key.button, key.keycode, key.keysym, key.utf8);
-					xkb_state_unref(state);
-					callback->keyboard(&key);
+		case XCB_KEY_RELEASE:{
+			xcb_key_release_event_t* xk = (xcb_key_press_event_t*)event;
+			
+			ev->win = xk->event;
+			ev->keyboard.event = XORG_KEY_RELEASE;
+			ev->keyboard.absolute.x = xk->root_x;
+			ev->keyboard.absolute.y = xk->root_y;
+			ev->keyboard.relative.x = xk->event_x;
+			ev->keyboard.relative.y = xk->event_y;
+			ev->keyboard.button = xk->state;
+			ev->keyboard.time = xk->time;
+			ev->keyboard.keycode = xk->detail;
+			ev->keyboard.utf8[0] = 0;
+
+			struct xkb_state* state;
+			if( (state = xkb_x11_state_new_from_device(x->key.keymap, x->connection, x->key.device)) ){
+				ev->keyboard.keysym = xkb_state_key_get_one_sym(state, ev->keyboard.keycode);
+				int size = xkb_state_key_get_utf8(state, ev->keyboard.keycode, NULL, 0) + 1;
+				if( size > 1 && size < XKB_UTF_MAX ){
+					xkb_state_key_get_utf8(state, ev->keyboard.keycode, (char*)ev->keyboard.utf8, size);
 				}
+				xkb_state_unref(state);
 			}
+			dbg_info("key press button: %u keycode: %lu keysym: %lu utf: %s", ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf8);
+		}
 		break;
 		
-		case XCB_BUTTON_PRESS:
-			if( callback->mouse ){
-				xcb_button_press_event_t* button = (xcb_button_press_event_t*)event;
-				xorgMouse_s mouse = {
-					.x = x,
-					.user = callback->user,
-					.event = XORG_MOUSE_PRESS,
-					.absolute.x = button->root_x,
-					.absolute.y = button->root_y,
-					.relative.x = button->event_x,
-					.relative.y = button->event_y,
-					.button = button->detail,
-					.key = button->state,
-					.time = button->time
-				};
-				if( mouse.button < 4 && mouse.time - x->_mousetime > x->dblclickms ){
-					x->_mousetime = button->time;
+		case XCB_BUTTON_PRESS:{
+
+			xcb_button_press_event_t* button = (xcb_button_press_event_t*)event;
+			
+			ev->win = button->event;
+			ev->mouse.event = XORG_MOUSE_PRESS;
+			ev->mouse.absolute.x = button->root_x;
+			ev->mouse.absolute.y = button->root_y;
+			ev->mouse.relative.x = button->event_x;
+			ev->mouse.relative.y = button->event_y;
+			ev->mouse.button = button->detail;
+			ev->mouse.key = button->state;
+			ev->mouse.time = button->time;
+			if( ev->mouse.button < 4 && ev->mouse.time - x->_mousetime > x->dblclickms ){
+				x->_mousetime = button->time;
 					x->_mousestate = 1;
 				}
-				dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
-						mouse.event, mouse.absolute.x, mouse.absolute.y, mouse.relative.x, mouse.relative.y, mouse.button, mouse.time);
-				callback->mouse(&mouse);
+			
 			}
+			dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+				ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);	
 		break;
 
-		case XCB_BUTTON_RELEASE:
-			if( callback->mouse ){
-				xcb_button_press_event_t* button = (xcb_button_press_event_t*)event;
-				xorgMouse_s mouse = {
-					.x = x,
-					.user = callback->user,
-					.event = XORG_MOUSE_RELEASE,
-					.absolute.x = button->root_x,
-					.absolute.y = button->root_y,
-					.relative.x = button->event_x,
-					.relative.y = button->event_y,
-					.button = button->detail,
-					.key = button->state,
-					.time = button->time
-				};
-				if( mouse.button < 4 && x->_mousestate == 1 && mouse.time - x->_mousetime < x->clickms){
-					mouse.event = XORG_MOUSE_CLICK;
-					x->_mousestate = 2;
-				}
-				else if( mouse.button < 4 && x->_mousestate == 2 && mouse.time - x->_mousetime < x->dblclickms ){
-					mouse.event = XORG_MOUSE_DBLCLICK;
-				}
-				dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
-						mouse.event, mouse.absolute.x, mouse.absolute.y, mouse.relative.x, mouse.relative.y, mouse.button, mouse.time);
-				if( callback->mouse ) callback->mouse(&mouse);
+		case XCB_BUTTON_RELEASE:{
+			xcb_button_press_event_t* button = (xcb_button_press_event_t*)event;
+			ev->win = button->event;
+			ev->mouse.event = XORG_MOUSE_RELEASE;
+			ev->mouse.absolute.x = button->root_x;
+			ev->mouse.absolute.y = button->root_y;
+			ev->mouse.relative.x = button->event_x;
+			ev->mouse.relative.y = button->event_y;
+			ev->mouse.button = button->detail;
+			ev->mouse.key = button->state;
+			ev->mouse.time = button->time;
+			
+			if( ev->mouse.button < 4 && x->_mousestate == 1 && ev->mouse.time - x->_mousetime < x->clickms){
+				ev->mouse.event = XORG_MOUSE_CLICK;
+				x->_mousestate = 2;
 			}
+			else if( ev->mouse.button < 4 && x->_mousestate == 2 && ev->mouse.time - x->_mousetime < x->dblclickms ){
+				ev->mouse.event = XORG_MOUSE_DBLCLICK;
+			}
+			dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+					ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
+		}
 		break;
 
-		case XCB_MOTION_NOTIFY:
-			if( callback->mouse ){
-				xcb_motion_notify_event_t* button = (xcb_motion_notify_event_t*)event;
-				xorgMouse_s mouse = {
-					.x = x,
-					.user = callback->user,
-					.event = XORG_MOUSE_MOVE,
-					.absolute.x = button->root_x,
-					.absolute.y = button->root_y,
-					.relative.x = button->event_x,
-					.relative.y = button->event_y,
-					.button = button->detail,
-					.key = button->state,
-					.time = button->time
-				};
-				dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
-						mouse.event, mouse.absolute.x, mouse.absolute.y, mouse.relative.x, mouse.relative.y, mouse.button, mouse.time);
-				callback->mouse(&mouse);
-			}
+		case XCB_MOTION_NOTIFY:{
+			xcb_motion_notify_event_t* button = (xcb_motion_notify_event_t*)event;
+			ev->win = button->event;
+			ev->mouse.event = XORG_MOUSE_MOVE;
+			ev->mouse.absolute.x = button->root_x;
+			ev->mouse.absolute.y = button->root_y;
+			ev->mouse.relative.x = button->event_x;
+			ev->mouse.relative.y = button->event_y;
+			ev->mouse.button = button->detail;
+			ev->mouse.key = button->state;
+			ev->mouse.time = button->time;
+			dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+					ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
+		}
 		break;
 
-		case XCB_ENTER_NOTIFY:
-			if( callback->mouse ){
-				xcb_motion_notify_event_t* button = (xcb_motion_notify_event_t*)event;
-				xorgMouse_s mouse = {
-					.x = x,
-					.user = callback->user,
-					.event = XORG_MOUSE_ENTER,
-					.absolute.x = button->root_x,
-					.absolute.y = button->root_y,
-					.relative.x = button->event_x,
-					.relative.y = button->event_y,
-					.button = button->detail,
-					.key = button->state,
-					.time = button->time
-				};
-				dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
-						mouse.event, mouse.absolute.x, mouse.absolute.y, mouse.relative.x, mouse.relative.y, mouse.button, mouse.time);
-				callback->mouse(&mouse);
-			}
+		case XCB_ENTER_NOTIFY:{
+			xcb_motion_notify_event_t* button = (xcb_motion_notify_event_t*)event;
+			ev->win = button->event;
+			ev->mouse.event = XORG_MOUSE_ENTER;
+			ev->mouse.absolute.x = button->root_x;
+			ev->mouse.absolute.y = button->root_y;
+			ev->mouse.relative.x = button->event_x;
+			ev->mouse.relative.y = button->event_y;
+			ev->mouse.button = button->detail;
+			ev->mouse.key = button->state;
+			ev->mouse.time = button->time;
+			dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+					ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
+		}
 		break;
 
-		case XCB_LEAVE_NOTIFY:
-			if( callback->mouse ){
-				xcb_motion_notify_event_t* button = (xcb_motion_notify_event_t*)event;
-				xorgMouse_s mouse = {
-					.x = x,
-					.user = callback->user,
-					.event = XORG_MOUSE_LEAVE,
-					.absolute.x = button->root_x,
-					.absolute.y = button->root_y,
-					.relative.x = button->event_x,
-					.relative.y = button->event_y,
-					.button = button->detail,
-					.key = button->state,
-					.time = button->time
-				};
-				dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
-						mouse.event, mouse.absolute.x, mouse.absolute.y, mouse.relative.x, mouse.relative.y, mouse.button, mouse.time);
-				callback->mouse(&mouse);
-			}
+		case XCB_LEAVE_NOTIFY:{
+			xcb_motion_notify_event_t* button = (xcb_motion_notify_event_t*)event;
+			ev->win = button->event;
+			ev->mouse.event = XORG_MOUSE_LEAVE;
+			ev->mouse.absolute.x = button->root_x;
+			ev->mouse.absolute.y = button->root_y;
+			ev->mouse.relative.x = button->event_x;
+			ev->mouse.relative.y = button->event_y;
+			ev->mouse.button = button->detail;
+			ev->mouse.key = button->state;
+			ev->mouse.time = button->time;
+			dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+					ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
+		}
 		break;
 
-		case XCB_FOCUS_IN:
-			if( callback->focus ){
-				dbg_info("focus in");
-				callback->focus(x, callback->user, 1);
-			}
+		case XCB_FOCUS_IN:{
+			xcb_focus_in_event_t* focus = (xcb_focus_in_event_t*)event;
+			ev->win = focus->event;
+			ev->focus.outin = 1;
+			dbg_info("focus in");
+		}
 		break;
 		
-		case XCB_FOCUS_OUT:
-			if( callback->focus ){
-				dbg_info("focus out");
-				callback->focus(x, callback->user, 0);
-			}
+		case XCB_FOCUS_OUT:{
+			xcb_focus_out_event_t* focus = (xcb_focus_out_event_t*)event;
+			ev->win = focus->event;
+			ev->focus.outin = 0;
+			dbg_info("focus out");
+		}
 		break;
 
-		case XCB_MAP_NOTIFY:
-			if( callback->visibility ){
-				dbg_info("map");
-				callback->visibility(x, callback->user, 1);
-			}
+		case XCB_MAP_NOTIFY:{
+			xcb_map_notify_event_t* map = (xcb_map_notify_event_t*)event;
+			ev->win = map->window;
+			ev->visible.visible = 1;
+			dbg_info("map");
+		}
 		break;
 
-		case XCB_UNMAP_NOTIFY:
-			if( callback->visibility ){
-				dbg_info("unmap");
-				callback->visibility(x, callback->user, 0);
-			}
+		case XCB_UNMAP_NOTIFY:{
+			xcb_unmap_notify_event_t* map = (xcb_unmap_notify_event_t*)event;
+			ev->win = map->window;
+			ev->visible.visible = 0;
+			dbg_info("unmap");
+		}
 		break;
 
-		case XCB_CONFIGURE_NOTIFY:
-			if( callback->move ){
-				xcb_configure_notify_event_t* conf = (xcb_configure_notify_event_t*)event;
-				xorgMove_s move = { 
-					.x = x,
-					.user = callback->user,
-					.border = conf->border_width,
-					.coord.x = conf->x, 
-					.coord.y = conf->y, 
-					.coord.w = conf->width, 
-					.coord.h = conf->height 
-				};
-				dbg_info("move .x %u .y %u .w %u .h %u .b %u", move.coord.x, move.coord.y, move.coord.w, move.coord.h, move.border);
-				callback->move(&move);
-			}
+		case XCB_CONFIGURE_NOTIFY:{
+			xcb_configure_notify_event_t* conf = (xcb_configure_notify_event_t*)event;
+			
+			ev->win = conf->window;
+			ev->move.border = conf->border_width;
+			ev->move.coord.x = conf->x; 
+			ev->move.coord.y = conf->y;
+			ev->move.coord.w = conf->width;
+			ev->move.coord.h = conf->height;
+			
+			dbg_info("move .x %u .y %u .w %u .h %u .b %u", ev->move.coord.x, ev->move.coord.y, ev->move.coord.w, ev->move.coord.h, ev->move.border);
+		}
 		break;
 
-		case XCB_PROPERTY_NOTIFY:
-			if( callback->atom ){
-				xcb_property_notify_event_t* prop = (xcb_property_notify_event_t*)event;
-				dbg_info("property atom %u name %s", prop->atom, xorg_atom_name(x, prop->atom));
-				callback->atom(x, callback->user, prop->atom);
-			}
+		case XCB_PROPERTY_NOTIFY:{
+			xcb_property_notify_event_t* prop = (xcb_property_notify_event_t*)event;
+
+			ev->win = prop->window;
+			ev->property.atom = prop->atom;
+			dbg_info("property atom %u name %s", prop->atom, xorg_atom_name(x, prop->atom));
+		}
 		break;
 
-		case XCB_CLIENT_MESSAGE:
-			if( callback->message ){
-				xcb_client_message_event_t* msg = (xcb_client_message_event_t*)event;
-				dbg_info("message %u %s", msg->type, xorg_atom_name(x, msg->type));
-				callback->message(x, callback->user, msg->format, msg->type, &msg->data.data8[0]);
-			}
+		case XCB_CLIENT_MESSAGE:{
+			xcb_client_message_event_t* msg = (xcb_client_message_event_t*)event;
+			
+			ev->win = msg->window;
+			ev->client.type = msg->type;
+			ev->client.format = msg->format;
+			memcpy(ev->client.data, msg->data.data8, 20);
+			dbg_info("message %u %s", msg->type, xorg_atom_name(x, msg->type));
+		}
 		break;
 
 		default:
 			dbg_info("unknown %u", event->response_type & ~0x80 );
 		break;
 	}
-	return 0;
+
+	return ev;
 }
 
+void xorg_event_free(xorgEvent_s* ev){
+	free(ev);
+}
 
