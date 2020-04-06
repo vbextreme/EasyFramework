@@ -1337,21 +1337,25 @@ void xorg_win_focus(xorg_s* x, xcb_window_t id){
 	xcb_set_input_focus(x->connection, XCB_INPUT_FOCUS_NONE, id, time(NULL));
 }
 
-xorgEvent_s* xorg_event_new(xorg_s* x, int async, void* userdata){
+xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 	xcb_generic_event_t* event;
+	
 	if( !async )
 		event = xcb_wait_for_event(x->connection);
 	else
 		event = xcb_poll_for_event(x->connection);
-	if( !event ) return NULL;
+	
+	if( !event ){
+		return NULL;
+	}
 
 	xorgEvent_s* ev = mem_new(xorgEvent_s);
-	if( !event ) err_fail("malloc");
+	if( !ev ) err_fail("malloc");
 
 
 	ev->type = event->response_type & ~0x80;
 	ev->x = x;
-	ev->userdata = userdata;
+	ev->userdata = NULL;
 
 	switch( ev->type ){
 		case XCB_CREATE_NOTIFY:{
@@ -1406,7 +1410,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async, void* userdata){
 				}
 				xkb_state_unref(state);
 			}
-			dbg_info("key press button: %u keycode: %lu keysym: %lu utf: %s", ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf8);
+			dbg_info("key press:: button: %u keycode: %lu keysym: %lu utf: %s", ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf8);
 		}
 		break;
 		
@@ -1433,7 +1437,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async, void* userdata){
 				}
 				xkb_state_unref(state);
 			}
-			dbg_info("key press button: %u keycode: %lu keysym: %lu utf: %s", ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf8);
+			dbg_info("key release:: button: %u keycode: %lu keysym: %lu utf: %s", ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf8);
 		}
 		break;
 		
@@ -1456,7 +1460,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async, void* userdata){
 				}
 			
 			}
-			dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+			dbg_info("mouse press:: button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
 				ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);	
 		break;
 
@@ -1479,7 +1483,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async, void* userdata){
 			else if( ev->mouse.button < 4 && x->_mousestate == 2 && ev->mouse.time - x->_mousetime < x->dblclickms ){
 				ev->mouse.event = XORG_MOUSE_DBLCLICK;
 			}
-			dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+			dbg_info("mouse release:: button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
 					ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
 		}
 		break;
@@ -1495,7 +1499,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async, void* userdata){
 			ev->mouse.button = button->detail;
 			ev->mouse.key = button->state;
 			ev->mouse.time = button->time;
-			dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+			dbg_info("mouse move:: button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
 					ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
 		}
 		break;

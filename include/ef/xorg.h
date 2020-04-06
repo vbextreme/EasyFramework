@@ -469,7 +469,7 @@ void xorg_win_destroy(xorg_s* x, xcb_window_t id);
 void xorg_win_focus(xorg_s* x, xcb_window_t id);
 
 /** get new event, remember to release event*/
-xorgEvent_s* xorg_event_new(xorg_s* x, int async, void* userdata);
+xorgEvent_s* xorg_event_new(xorg_s* x, int async);
 
 /** free message*/
 void xorg_event_free(xorgEvent_s* ev);
