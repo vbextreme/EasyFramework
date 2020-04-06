@@ -14,7 +14,7 @@ typedef void (*imgDraw_f)(g2dImage_s* img);
 typedef struct xwin{
 	xorg_s* x;
 	xorgCallbackEvent_s xce;
-	xorgSurface_s surf;
+	xorgSurface_s* surf;
 	xcb_window_t id;
 	imgDraw_f draw;
 }xwin_s;
@@ -30,14 +30,14 @@ __private void x_def_key(xorgKeyboard_s* k){
 
 __private void x_def_move(xorgMove_s* move){
 	xwin_s* win = move->user;
-	if( move->coord.w != win->surf.img.w || move->coord.h != win->surf.img.h)
-	   	xorg_surface_resize(&win->surf, move->coord.w, move->coord.h);
-	win->draw(&win->surf.img);
+	if( move->coord.w != win->surf->img->w || move->coord.h != win->surf->img->h)
+	   	xorg_surface_resize(win->surf, move->coord.w, move->coord.h);
+	win->draw(win->surf->img);
 }
 
 __private void x_def_draw(__unused xorg_s* x, void* user, __unused g2dCoord_s* damaged){
 	xwin_s* win = user;
-	xorg_win_surface_redraw(win->x, win->id, &win->surf);
+	xorg_win_surface_redraw(win->x, win->id, win->surf);
 }
 
 void simple_draw(g2dImage_s* img){
@@ -74,24 +74,23 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	
 	deadpoll_s* dp = deadpoll_new();
 
-	xorg_s x = {0};
-	xorg_client_init(&x);
-	xorg_register_events(&x, xorg_root(&x), XCB_EVENT_MASK_PROPERTY_CHANGE);
+	xorg_s* x = xorg_client_new(NULL, 0);
+	xorg_register_events(x, xorg_root(x), XCB_EVENT_MASK_PROPERTY_CHANGE);
 	
 	xwin_s win = {0};
 	win.xce.user = &win;
 	win.xce.keyboard = x_def_key;
 	win.xce.redraw = x_def_draw;
 	win.xce.move = x_def_move;
-	win.x = &x;
+	win.x = x;
 	simple_win(&win);
 
-	deadpoll_register(dp, xorg_fd(&x), x_events, &win, 0, NULL);
+	deadpoll_register(dp, xorg_fd(x), x_events, &win, 0, NULL);
 	deadpoll_loop(dp, -1);
 	deadpoll_free(dp);
 	
 	ft_end();
-	xorg_surface_destroy(&x,&win.surf);
-	xorg_client_terminate(&x);
+	xorg_surface_destroy(x, win.surf);
+	xorg_client_free(x);
 }
 
