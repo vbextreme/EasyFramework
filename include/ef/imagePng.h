@@ -3,6 +3,7 @@
 
 #include <ef/image.h>
 
-err_t g2d_load_png(g2dImage_s* img, char const* path);
+/** load png image, set errno to 666 if not a png image*/
+g2dImage_s* g2d_load_png(char const* path);
 
 #endif 

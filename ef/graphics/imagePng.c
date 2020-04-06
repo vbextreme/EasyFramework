@@ -13,18 +13,21 @@ __private int file_is_png(FILE* fd){
 	return(!png_sig_cmp(buf, (png_size_t)0, PNG_BYTES_TO_CHECK));
 }
 
-err_t g2d_load_png(g2dImage_s* img, char const* path){	
+g2dImage_s* g2d_load_png(char const* path){	
+	g2dImage_s* img = NULL;
+
 	volatile FILE* fd = fopen(path, "r");
 	if( fd == NULL ){
 		err_pushno("open png");
 		dbg_error("open png");
 		dbg_errno();
-		return -2;
+		return NULL;
 	}
 	if( !file_is_png((FILE*)fd) ){
 		dbg_warning("is not png");
 		fclose((FILE*)fd);
-		return -2;
+		errno = 666;
+		return NULL;
 	}
 
 	volatile png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -32,7 +35,7 @@ err_t g2d_load_png(g2dImage_s* img, char const* path){
 		err_push("on create read struct");
 		dbg_error("on create read struct");
 		fclose((FILE*)fd);
-		return -1;
+		return NULL;
 	}
 
 	volatile png_infop info = png_create_info_struct(png);
@@ -41,16 +44,16 @@ err_t g2d_load_png(g2dImage_s* img, char const* path){
 		dbg_error("on create info struct");
 		png_destroy_read_struct((png_structp*)&png, NULL, NULL);
 		fclose((FILE*)fd);
-		return -1;
+		return NULL;
 	}
 
 	if( setjmp(png_jmpbuf(png)) ){
 		err_push("on load png");
 		dbg_error("on load png");
 		png_destroy_read_struct((png_structp*)&png, NULL, NULL);
-		g2d_unload(img);
+		g2d_free(img);
 		fclose((FILE*)fd);
-		return -1;
+		return NULL;
 	}	
 	
 	png_init_io(png, (FILE*)fd);
@@ -63,7 +66,7 @@ err_t g2d_load_png(g2dImage_s* img, char const* path){
     png_byte bit_depth = png_get_bit_depth(png, info);
 	
 	dbg_info("png size %u*%u", width, height);
-	g2d_init(img, width, height, G2D_MODE_ARGB);
+	img = g2d_new(width, height, -1);
 
 	if( bit_depth == 16 )
 		png_set_strip_16(png);
@@ -93,6 +96,6 @@ err_t g2d_load_png(g2dImage_s* img, char const* path){
 	
 	png_destroy_read_struct((png_structp*)&png, NULL, NULL);
 	fclose((FILE*)fd);
-	return 0;
+	return img;
 }
 

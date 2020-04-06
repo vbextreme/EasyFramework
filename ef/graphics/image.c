@@ -67,78 +67,16 @@ UNSAFE_END
 /************************************** RAW IMAGE ******************************/
 /*******************************************************************************/
 
-void g2d_zero(g2dImage_s* img){
-	memset(img, 0, sizeof(g2dImage_s));
-}
-
-void g2d_init(g2dImage_s* img, unsigned w, unsigned h, g2dMode_e mode){
-	if( img->pixel ){
-		dbg_info("img already init");
-		if( img->w == w && img->h == h ) return;
-		dbg_info("free");
-		free(img->pixel);
-	}
-	img->h = h;
-	img->w = w;
-	img->p = w * 4;
-	size_t size = h*img->p;
-	img->pixel = mem_many_aligned(unsigned char, &size, 16);
-	if( !img->pixel ) err_fail("malloc");
-	
-	img->mode = mode;
-	switch( mode ){
-		case G2D_MODE_ARGB:
-			img->sa = 24;
-			img->sr = 16;
-			img->sg = 8;
-			img->sb = 0;
-		break;
-		case G2D_MODE_RGBA:
-			img->sa = 0;
-			img->sr = 24;
-			img->sg = 16;
-			img->sb = 8;
-		break;
-		case G2D_MODE_BGRA:
-			img->sa = 0;
-			img->sr = 8;
-			img->sg = 16;
-			img->sb = 24;
-		break;
-		case G2D_MODE_ABGR:
-			img->sa = 24;
-			img->sr = 0;
-			img->sg = 8;
-			img->sb = 16;
-		break;
-	}
-	img->ma = 0xFF << img->sa;
-	img->mr = 0xFF << img->sr;
-	img->mg = 0xFF << img->sg;
-	img->mb = 0xFF << img->sb;
-	dbg_info("%u*%u", img->w, img->h);
-}
-
-g2dImage_s g2d_new(unsigned w, unsigned h, g2dMode_e mode){
-	g2dImage_s img = {0};
-	g2d_init(&img, w, h, mode);
-	return img;
-}
-
-void g2d_clone(g2dImage_s* img, unsigned w, unsigned h, g2dMode_e mode, uint8_t* pixels){
-	if( img->pixel ){
-		dbg_info("img already init");
-		if( img->w == w && img->h == h ) return;
-		dbg_info("free");
-		free(img->pixel);
-	}
+g2dImage_s* g2d_clone(unsigned w, unsigned h, g2dMode_e mode, unsigned char* pixels){
+	g2dImage_s* img = mem_new(g2dImage_s);
+	if( !img ) err_fail("malloc");
 	img->h = h;
 	img->w = w;
 	img->p = w * 4;
 	img->pixel = pixels;
 	img->mode = mode;
 	switch( mode ){
-		case G2D_MODE_ARGB:
+		default: case G2D_MODE_ARGB:
 			img->sa = 24;
 			img->sr = 16;
 			img->sg = 8;
@@ -167,15 +105,19 @@ void g2d_clone(g2dImage_s* img, unsigned w, unsigned h, g2dMode_e mode, uint8_t*
 	img->mr = 0xFF << img->sr;
 	img->mg = 0xFF << img->sg;
 	img->mb = 0xFF << img->sb;
+	dbg_info("image: %u*%u", img->w, img->h);
+	return img;
 }
 
-void g2d_unload(g2dImage_s* img){
-	if( img->pixel ) free(img->pixel);
-	img->pixel = NULL;
+g2dImage_s* g2d_new(unsigned w, unsigned h, g2dMode_e mode){
+	size_t size = h*(w*4);
+	unsigned char* pixels = mem_many_aligned(unsigned char, &size, 16);
+	if( !pixels ) err_fail("malloc");
+	return g2d_clone(w, h, mode, pixels);
 }
 
 void g2d_free(g2dImage_s* img){
-	g2d_unload(img);
+	if( img->pixel ) free( img->pixel );
 	free(img);
 }
 
@@ -188,7 +130,7 @@ void g2d_ratio(int modeAWH, unsigned sw, unsigned sh, unsigned* w, unsigned* h){
 	double scalingY = (double)sh / (double)*h;
 
 	switch( modeAWH ){
-		case 0:{
+		default: case 0:{
 			double scaling = scalingX > scalingY ? scalingX : scalingY;
 			*w = sw / scaling;
 			*h = sh / scaling;
@@ -218,13 +160,11 @@ g2dColor_t g2d_color_gen(g2dMode_e mode, unsigned a, unsigned r, unsigned g, uns
 
 __target_default 
 __private void g2d_copy_default(g2dImage_s* dst, g2dImage_s* src){
-	g2d_init(dst, src->w, src->h, src->mode);
 	memcpy(dst->pixel, src->pixel, src->p * src->h);
 }
 
 __target_vectorization 
 __private void g2d_copy_vectorize(g2dImage_s* dst, g2dImage_s* src){
-	g2d_init(dst, src->w, src->h, src->mode);
 	unsigned const h = src->h;
 	unsigned const w = src->w;
 	unsigned ali = (w * h) / 4;
@@ -240,15 +180,18 @@ __private void g2d_copy_vectorize(g2dImage_s* dst, g2dImage_s* src){
 	}
 }
 
-void g2d_copy(g2dImage_s* dst, g2dImage_s* src){
+g2dImage_s* g2d_copy(g2dImage_s* src){
+	g2dImage_s* img = g2d_new(src->w, src->h, src->mode);
+
 	if( __cpu_supports_vectorization() ){
 		dbg_info("vectorized");
-		g2d_copy_vectorize(dst, src);
+		g2d_copy_vectorize(img, src);
 	}
 	else{
 		dbg_warning("not vectorized");
-		g2d_copy_default(dst,src);
+		g2d_copy_default(img, src);
 	}
+	return img;
 }
 
 __private err_t g2d_bitblt_validate(g2dImage_s* dst, g2dCoord_s* cod, g2dCoord_s* cos){
@@ -937,22 +880,22 @@ __private g2dColor_t sample_bicubic(g2dImage_s* img, float u, float v){
 	return g2d_color_make(img, alpha, red, green, blue);
 } 
        
-void g2d_resize(g2dImage_s* dst, g2dImage_s* src, unsigned w, unsigned h, int ratio){
-	g2d_ratio(ratio, src->w, src->h, &w, &h);
-	g2d_init(dst, w, h, src->mode);
+g2dImage_s* g2d_resize(g2dImage_s* src, unsigned w, unsigned h){
+	g2dImage_s* img = g2d_new(w, h, src->mode);
 	dbg_info("resize %u*%u -> %u*%u", src->w, src->h, w, h);
 	for( unsigned y = 0; y < h; ++y ){
 		float v = (float)y / (float)(h - 1);
-		unsigned const row = g2d_row(dst, y);
-		g2dColor_t* dcol = g2d_color(dst, row, 0);
+		unsigned const row = g2d_row(img, y);
+		g2dColor_t* dcol = g2d_color(img, row, 0);
         __parallef for( unsigned x = 0; x < w; ++x ){
             float u = (float)x / (float)(w - 1);
             dcol[x] = sample_bicubic(src, u, v);
         }
     }
+	return img;
 }
 
-void g2d_rotate(g2dImage_s* dst, g2dImage_s* src, unsigned cx, unsigned cy, float grad){
+g2dImage_s* g2d_rotate(g2dImage_s* src, unsigned cx, unsigned cy, float grad){
 	float const rads = (grad * 3.14159265)/180.0;
 	float const cosi = cos(rads);
 	float const sine = sin(rads);
@@ -975,7 +918,7 @@ void g2d_rotate(g2dImage_s* dst, g2dImage_s* src, unsigned cx, unsigned cy, floa
     cx -= src->w / 2;
     cy -= src->h / 2;
 	
-    g2d_init(dst, wi, he, src->mode);
+    g2dImage_s* dst = g2d_new(wi, he, src->mode);
 	g2dColor_t bk = g2d_color_make(dst, 255, 0, 0, 0);
 	g2dCoord_s co = {.x = 0, .y = 0, .w = wi, .h = he };
 	g2d_clear(dst, bk, &co);
@@ -995,6 +938,7 @@ void g2d_rotate(g2dImage_s* dst, g2dImage_s* src, unsigned cx, unsigned cy, floa
 			}
         }
     }
+	return dst;
 }
 
 void g2d_char(g2dImage_s* dst, g2dCoord_s* coord, g2dImage_s* ch, g2dColor_t col){

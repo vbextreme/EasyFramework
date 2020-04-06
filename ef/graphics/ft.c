@@ -233,18 +233,14 @@ ftRender_s* ft_glyph_get(ftFonts_s* fonts, utf_t utf){
 	return rbhash_find_hash(fonts->charmap, utf, (char*)&utf, FONT_GLYPH_KEY);
 }
 
-__private void ft_glyph_render_hori_mono_byte(ftRender_s* glyph, unsigned char* buf, g2dMode_e mode){
-	if( glyph->img.pixel ) return;
+__private void ft_glyph_render_hori_mono_byte(ftRender_s* glyph, const unsigned w, const unsigned h, unsigned char* buf, g2dMode_e mode){
+	glyph->img = g2d_new(w, h, mode);
 
-	unsigned const w = glyph->img.w;
-	unsigned const h = glyph->img.h;
-	g2d_init(&glyph->img, w, h, mode);
-
-	g2dColor_t whyte = g2d_color_make(&glyph->img, 255, 255, 255, 255);
-	g2dColor_t black = g2d_color_make(&glyph->img, 255, 0, 0, 0);
+	g2dColor_t whyte = g2d_color_make(glyph->img, 255, 255, 255, 255);
+	g2dColor_t black = g2d_color_make(glyph->img, 255, 0, 0, 0);
 
 	g2dCoord_s pos = {.x = 0, .y = 0, .w = w, .h = h};
-	g2d_clear(&glyph->img, whyte, &pos);
+	g2d_clear(glyph->img, whyte, &pos);
 	
 	unsigned const gw = glyph->width;
 	unsigned const gh = (glyph->height > h) ? h : glyph->height;
@@ -252,7 +248,7 @@ __private void ft_glyph_render_hori_mono_byte(ftRender_s* glyph, unsigned char* 
 	unsigned y = ((h - (-glyph->descender)) - glyph->horiBearingY) < 0 ? 0 : ((h - (-glyph->descender)) - glyph->horiBearingY);
 
 	for( unsigned gy = 0; gy < gh && gy < h; ++y, ++gy ){
-		unsigned const row = g2d_row(&glyph->img, y);
+		unsigned const row = g2d_row(glyph->img, y);
 		unsigned const gr = gy * p;
 		for( 
 				unsigned gx = 0, ix = glyph->horiBearingX; 
@@ -260,31 +256,27 @@ __private void ft_glyph_render_hori_mono_byte(ftRender_s* glyph, unsigned char* 
 			   	++gx, ++ix
 		){
 			if( (buf[gr+gx/8] << gx%8) & 0x80 ){
-				g2dColor_t* pixel = g2d_color(&glyph->img, row, ix);
+				g2dColor_t* pixel = g2d_color(glyph->img, row, ix);
 				*pixel = black;
 			}
 		}
 	}
 }
 
-__private void ft_glyph_render_graphics(ftRender_s* glyph, unsigned char* buf, g2dMode_e mode){
-	if( glyph->img.pixel ) return;
+__private void ft_glyph_render_graphics(ftRender_s* glyph, const unsigned w, const unsigned h, unsigned char* buf, g2dMode_e mode){
+	glyph->img = g2d_new(w, h, mode);
 
-	unsigned const w = glyph->img.w;
-	unsigned const h = glyph->img.h;
-	g2d_init(&glyph->img, w, h, mode);
-
-	g2dColor_t whyte = g2d_color_make(&glyph->img, 0, 255, 255, 255);
+	g2dColor_t whyte = g2d_color_make(glyph->img, 0, 255, 255, 255);
 
 	g2dCoord_s pos = {.x = 0, .y = 0, .w = w, .h = h};
-	g2d_clear(&glyph->img, whyte, &pos);
+	g2d_clear(glyph->img, whyte, &pos);
 	
 	unsigned const gw = glyph->width;
 	unsigned const gh = (glyph->height > h) ? h : glyph->height;
 	unsigned y = ((h - (-glyph->descender)) - glyph->horiBearingY) < 0 ? 0 : ((h - (-glyph->descender)) - glyph->horiBearingY);
 
 	for( unsigned gy = 0; gy < gh && gy < h; ++y, ++gy ){
-		unsigned const row = g2d_row(&glyph->img, y);
+		unsigned const row = g2d_row(glyph->img, y);
 		unsigned const gr = gy * gw;
 		for( 
 				unsigned gx = 0, ix = glyph->horiBearingX; 
@@ -293,8 +285,8 @@ __private void ft_glyph_render_graphics(ftRender_s* glyph, unsigned char* buf, g
 		){
 			unsigned char gc = buf[ gr + gx ];
 			unsigned char bw = gc ? 0 : 255;
-			g2dColor_t* pixel = g2d_color(&glyph->img, row, ix);
-			*pixel = g2d_color_make(&glyph->img, gc, bw, bw, bw); 
+			g2dColor_t* pixel = g2d_color(glyph->img, row, ix);
+			*pixel = g2d_color_make(glyph->img, gc, bw, bw, bw); 
 		}
 	}
 	
@@ -395,9 +387,9 @@ __private ftRender_s* ft_font_glyph_load(ftFonts_s* fonts, ftFont_s* font, utf_t
 	glyph->vertAdvance = font->face->glyph->metrics.vertAdvance/64;
 	glyph->linearHoriAdvance = font->face->glyph->linearHoriAdvance/65536;
 	glyph->linearVertAdvance = font->face->glyph->linearVertAdvance/65536;
-	glyph->img.pixel = NULL;
-	glyph->img.h = font->height;
-	glyph->img.w  = font->width;
+	glyph->img = NULL;
+	//glyph->img.h = font->height;
+	//glyph->img.w  = font->width;
 	glyph->descender = font->descender;
 	glyph->utf = utf;
 	
@@ -409,11 +401,11 @@ __private ftRender_s* ft_font_glyph_load(ftFonts_s* fonts, ftFont_s* font, utf_t
 
 	if( mode & FT_RENDER_BYTE ){
 		dbg_info("mono");
-		ft_glyph_render_hori_mono_byte(glyph, font->face->glyph->bitmap.buffer, G2D_MODE_BGRA);
+		ft_glyph_render_hori_mono_byte(glyph, font->width, font->height, font->face->glyph->bitmap.buffer, G2D_MODE_BGRA);
 	}
 	else if( mode & FT_RENDER_ANTIALIASED ){
 		dbg_info("antialaised");
-		ft_glyph_render_graphics(glyph, font->face->glyph->bitmap.buffer, G2D_MODE_ARGB);
+		ft_glyph_render_graphics(glyph, font->width, font->height, font->face->glyph->bitmap.buffer, G2D_MODE_ARGB);
 	}
 	else{
 		dbg_fail("not implemented");
@@ -434,7 +426,7 @@ ftRender_s* ft_fonts_glyph_load(ftFonts_s* fonts, utf_t utf, unsigned mode){
 }
 
 void ft_glyph_free(ftRender_s* glyph){
-	g2d_unload(&glyph->img);
+	g2d_free(glyph->img);
 	free(glyph);
 }
 
@@ -591,7 +583,7 @@ unsigned ft_line_height(ftFonts_s* fonts){
 		err_push("char not find");
 		return 0;
 	}
-	return rch->img.h;
+	return rch->img->h;
 }
 
 unsigned ft_line_lenght(ftFonts_s* fonts, utf8_t* str){
@@ -603,8 +595,8 @@ unsigned ft_line_lenght(ftFonts_s* fonts, utf8_t* str){
 	utf8Iterator_s it = utf8_iterator(str, 0);
 	utf_t u;	
 	while( (u = utf8_iterator_next(&it)) ){
-		ftRender_s* rch = ft_fonts_glyph_load(fonts, u, FT_RENDER_ANTIALIASED);
-		lenght += rch->horiAdvance;
+		ftRender_s* rch = ft_fonts_glyph_load(fonts, u, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
+		if( rch ) lenght += rch->horiAdvance;
 	}
 	return lenght;
 }	
@@ -631,8 +623,8 @@ unsigned ft_autowrap_height(ftFonts_s* fonts, utf8_t* str, unsigned width){
 			height += monoh;
 			lenght = 0;
 		}	
-		ftRender_s* rch = ft_fonts_glyph_load(fonts, *str, FT_RENDER_ANTIALIASED);
-		lenght += rch->horiAdvance;
+		ftRender_s* rch = ft_fonts_glyph_load(fonts, *str, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
+		if( rch ) lenght += rch->horiAdvance;
 	}
 
 	return height;
@@ -645,14 +637,15 @@ void g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2d
 		return;
 	}
 	
-	ftRender_s* rch = ft_fonts_glyph_load(fonts, ch, FT_RENDER_ANTIALIASED);
-	pos->w = rch->img.w;
+	ftRender_s* rch = ft_fonts_glyph_load(fonts, ch, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
+	if( !rch ) return;
+	pos->w = rch->img->w;
 	if( pos->x + pos->w > dst->w ) return;
-	if( pos->y + rch->img.h > dst->h ) return;
+	if( pos->y + rch->img->h > dst->h ) return;
 	if( cls ) g2d_clear(dst, back, pos);
 	unsigned const oh = pos->h;
-	pos->h = rch->img.h;
-	g2d_char(dst, pos, &rch->img, fore);
+	pos->h = rch->img->h;
+	g2d_char(dst, pos, rch->img, fore);
 	pos->h = oh;
 	pos->x += rch->horiAdvance;
 }
@@ -665,15 +658,15 @@ void g2d_putch_autowrap(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_
 	}
 	
 	ftRender_s* rch = ft_fonts_glyph_load(fonts, ch, FT_RENDER_ANTIALIASED);
-	pos->w = rch->img.w;
-	pos->h = rch->img.h;
+	pos->w = rch->img->w;
+	pos->h = rch->img->h;
 	if( pos->x + pos->w > dst->w ){
 	   	pos->y += ft_line_height(fonts);
 		pos->x = originX;	
 	}
 	if( pos->y + pos->h > dst->h ) return;
 	if( cls ) g2d_clear(dst, back, pos);
-	g2d_char(dst, pos, &rch->img, fore);
+	g2d_char(dst, pos, rch->img, fore);
 	pos->x += rch->horiAdvance;
 }
 
@@ -717,7 +710,7 @@ void g2d_string_replace(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8
 	while( (of = utf8_iterator_next(&ot)) ){
 		ftRender_s* rch = ft_fonts_glyph_load(fonts, utf, FT_RENDER_ANTIALIASED);
 		pos->w = rch->horiAdvance;
-		pos->h = rch->img.h;
+		pos->h = rch->img->h;
 		g2d_clear(dst, b, pos);
 		pos->x += rch->horiAdvance;
 	}

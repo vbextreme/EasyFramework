@@ -1,5 +1,7 @@
 #include <ef/xorg.h>
 #include <ef/memory.h>
+#include <ef/err.h>
+
 #include <xkbcommon/xkbcommon-x11.h>
 #include <xcb/randr.h>
 
@@ -13,43 +15,40 @@
 	#define XCB_ERR_FREE do{}while(0)
 #endif
 
-err_t xorg_client_init(xorg_s* x){
+xorg_s* xorg_client_new(const char* display, int defaultScreen){
+	xorg_s* x = mem_zero_many(xorg_s,1);
+	if( !x ) err_fail("malloc");
+	x->display = display;
+	x->screenDefault = defaultScreen;
+
 	x->connection = xcb_connect(x->display,&x->screenDefault);
-	if( x->connection == NULL ){
-		dbg_error("on xcb connect");
-		return -1;
-	}
-	if( xcb_connection_has_error(x->connection) ){
-		dbg_error("on xcb connect");
-		return -1;
+	if( x->connection == NULL || xcb_connection_has_error(x->connection) ){
+		err_push("on xcb connect");
+		free(x);
+		return NULL;
 	}
 
 	if( xkb_x11_setup_xkb_extension(x->connection, XKB_X11_MIN_MAJOR_XKB_VERSION, XKB_X11_MIN_MINOR_XKB_VERSION, 0, NULL, NULL, NULL, NULL) != 1){
         xcb_disconnect(x->connection);
-		dbg_fail("xkb enable extension");
-		return -1;
+		err_fail("xkb enable extension");
 	}
 	if( (x->key.ctx = xkb_context_new(XKB_CONTEXT_NO_FLAGS)) == NULL ){
 		xcb_disconnect(x->connection);
-		dbg_fail("xkb create context");
-		return -1;
+		err_fail("xkb create context");
 	}
 	if( (x->key.device = xkb_x11_get_core_keyboard_device_id(x->connection)) == -1 ){
 		xcb_disconnect(x->connection);
-		dbg_fail("xkb get device keyboard");
-		return -1;
+		err_fail("xkb get device keyboard");
 	}
 	if( !(x->key.keymap = xkb_x11_keymap_new_from_device(x->key.ctx, x->connection, x->key.device, XKB_KEYMAP_COMPILE_NO_FLAGS)) ){
 		xcb_disconnect(x->connection);
-		dbg_fail("xkb get device keyboard");
-		return -1;
+		err_fail("xkb get device keyboard");
 	}
 	
 #ifdef XCB_ERROR_ENABLE
-	x->err = NULL;
 	if( xcb_errors_context_new(x->connection, &x->err) ){
 		xcb_disconnect(x->connection);
-		dbg_fail("xcb util errors");
+		err_fail("xcb util errors");
 	}
 #endif
 
@@ -64,21 +63,21 @@ err_t xorg_client_init(xorg_s* x){
 	x->_mousetime = 0;
 	x->_mousestate = 0;
 	dbg_info("xorg initializated");
-	return 0;
+	return x;
 }
 
-void xorg_client_terminate(xorg_s* x){
+void xorg_client_free(xorg_s* x){
 	xkb_keymap_unref(x->key.keymap);
 	xkb_context_unref(x->key.ctx);
 #ifdef XCB_ERROR_ENABLE
 	xcb_errors_context_free(x->err);
 #endif
 	if( x->connection ) xcb_disconnect(x->connection);
-	x->connection = NULL;
 	for(size_t i = 0; i < x->monitorCount; ++i){
 		free(x->monitor[i].name);
 	}
 	free(x->monitor);
+	free(x);
 }
 
 err_t xorg_root_init(xorg_s* x, int onscreen){
@@ -1152,20 +1151,18 @@ uint8_t* xorg_ximage_root_get(unsigned* outW, unsigned* outH, unsigned* outV, un
     return data;
 }
 
-err_t xorg_image_grab(g2dImage_s* dst, xorg_s* x, xcb_window_t id){
+g2dImage_s* xorg_image_grab(xorg_s* x, xcb_window_t id){
 	unsigned w,h,v,d;
 	uint8_t* data = xorg_ximage_get_composite(&w, &h, &v, &d, x, id);
-	if( !data ) return -1;
-	g2d_clone(dst, w, h, X_COLOR_MODE, data);
-	return 0;
+	if( !data ) return NULL;
+	return g2d_clone(w, h, X_COLOR_MODE, data);
 }
 
-err_t xorg_root_image_grab(g2dImage_s* dst, xorg_s* x){
+g2dImage_s* xorg_root_image_grab(xorg_s* x){
 	unsigned w,h,v,d;
 	uint8_t* data = xorg_ximage_root_get(&w, &h, &v, &d, x);
-	if( !data ) return -1;
-	g2d_clone(dst, w, h, X_COLOR_MODE, data);
-	return 0;
+	if( !data ) return NULL;
+	return g2d_clone(w, h, X_COLOR_MODE, data);
 }
 
 void xorg_win_title(xorg_s* x, xcb_window_t id, char const* name){
@@ -1205,7 +1202,6 @@ void xorg_win_size(g2dCoord_s* out, unsigned* outBorder, xorg_s* x, xcb_window_t
 	xcb_get_geometry_cookie_t geom = xcb_get_geometry(x->connection, idxcb);
 	xorg_xcb_geometry(x, geom, &out->x, &out->y, &out->w, &out->h, outBorder);
 }
-
 
 void xorg_win_surface_redraw(xorg_s* x, xcb_window_t id,  xorgSurface_s* surface){
 	dbg_info("");
@@ -1269,7 +1265,7 @@ void xorg_register_events(xorg_s* x, xcb_window_t window, unsigned int eventmask
 #endif
 }
 
-xcb_window_t xorg_win_new(xorgSurface_s* surface, xorg_s* x, xcb_window_t parent, g2dCoord_s* pos, unsigned border, g2dColor_t background){
+xcb_window_t xorg_win_new(xorgSurface_s** surface, xorg_s* x, xcb_window_t parent, g2dCoord_s* pos, unsigned border, g2dColor_t background){
 	unsigned event = X_WIN_EVENT;
 	dbg_info("create window %d %d %d*%d", pos->x, pos->y, pos->w, pos->h);
 	xcb_window_t win = xcb_generate_id(x->connection);
@@ -1280,46 +1276,48 @@ xcb_window_t xorg_win_new(xorgSurface_s* surface, xorg_s* x, xcb_window_t parent
 		   	xorg_root_visual(x), XCB_CW_EVENT_MASK, &event);
 	
 	if( surface ){
-		g2d_init(&surface->img, pos->w, pos->h, X_COLOR_MODE);
+		*surface = mem_zero(xorgSurface_s);
+		if( !*surface ) err_fail("malloc");
+		(*surface)->img = g2d_new(pos->w, pos->h, X_COLOR_MODE);
 		g2dCoord_s area = { .x = 0, .y = 0, .w = pos->w, .h = pos->h };
-		g2d_clear(&surface->img, background, &area);
-		surface->ximage = xcb_image_create(
+		g2d_clear((*surface)->img, background, &area);
+		(*surface)->ximage = xcb_image_create(
 				pos->w, pos->h,
 				XCB_IMAGE_FORMAT_Z_PIXMAP, 32, 24, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
-				surface->img.pixel, surface->img.p * surface->img.h, surface->img.pixel);
-		surface->gc = xcb_generate_id(x->connection);
-		xcb_create_gc(x->connection, surface->gc, win, 0, 0);
+				(*surface)->img->pixel, (*surface)->img->p * (*surface)->img->h, (*surface)->img->pixel);
+		(*surface)->gc = xcb_generate_id(x->connection);
+		xcb_create_gc(x->connection, (*surface)->gc, win, 0, 0);
 	}
 	return win;
 }
 
 void xorg_surface_resize(xorgSurface_s* surface, unsigned w, unsigned h){
-	g2d_unload(&surface->img);
-	g2d_init(&surface->img, w, h, X_COLOR_MODE);
+	g2d_free(surface->img);
+	surface->img = g2d_new(w, h, X_COLOR_MODE);
 	free(surface->ximage);
 	surface->ximage = xcb_image_create(
 		w, h,
 		XCB_IMAGE_FORMAT_Z_PIXMAP, 32, 24, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
-		surface->img.pixel, surface->img.p * surface->img.h, surface->img.pixel
+		surface->img->pixel, surface->img->p * surface->img->h, surface->img->pixel
 	);
 }
 
 void xorg_surface_resize_bitblt(xorgSurface_s* surface, unsigned w, unsigned h){
-	g2dImage_s new = g2d_new(w, h, X_COLOR_MODE);
+	g2dImage_s* new = g2d_new(w, h, X_COLOR_MODE);
 	g2dCoord_s blt = {
 		.x = 0,
 		.y = 0,
-		.w = w > surface->img.w ? surface->img.w : w,
-		.h = h > surface->img.h ? surface->img.h : h,
+		.w = w > surface->img->w ? surface->img->w : w,
+		.h = h > surface->img->h ? surface->img->h : h,
 	};
-	g2d_bitblt(&new, &blt, &surface->img, &blt);
-	g2d_unload(&surface->img);
+	g2d_bitblt(new, &blt, surface->img, &blt);
+	g2d_free(surface->img);
 	surface->img = new;
 	free(surface->ximage);
 	surface->ximage = xcb_image_create(
 		w, h,
 		XCB_IMAGE_FORMAT_Z_PIXMAP, 32, 24, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
-		surface->img.pixel, surface->img.p * surface->img.h, surface->img.pixel
+		surface->img->pixel, surface->img->p * surface->img->h, surface->img->pixel
 	);
 }
 
@@ -1327,7 +1325,7 @@ void xorg_surface_destroy(xorg_s* x, xorgSurface_s* surface){
 	dbg_info("destroy surface");
 	xcb_free_gc(x->connection, surface->gc);
 	free(surface->ximage);
-	g2d_unload(&surface->img);
+	g2d_free(surface->img);
 }
 
 void xorg_win_destroy(xorg_s* x, xcb_window_t id){

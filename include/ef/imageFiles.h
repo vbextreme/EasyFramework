@@ -3,6 +3,11 @@
 
 #include <ef/image.h>
 
-err_t g2d_load(g2dImage_s* img, char const* path);
+/** load image, supported png
+ * @param path absolute path
+ * @return new image or null for error
+ */
+g2dImage_s* g2d_load(char const* path);
+
 
 #endif 

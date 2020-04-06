@@ -66,7 +66,7 @@ typedef struct xkb{
 typedef struct xorgSurface{
 	xcb_gcontext_t gc;
 	xcb_image_t* ximage;
-	g2dImage_s img;
+	g2dImage_s* img;
 }xorgSurface_s;
 
 typedef struct monitor{
@@ -82,7 +82,7 @@ typedef struct xorg{
 	size_t monitorCount;
 	monitor_s* monitorCurrent;
 	monitor_s* monitorPrimary;
-	char* display;
+	const char* display;
 	xkb_s key;
 #ifdef XCB_ERROR_ENABLE
 	xcb_errors_context_t* err;
@@ -202,82 +202,226 @@ typedef struct xorgCallbackEvent{
 #define xorg_root_visual(XORG) ((XORG)->screen->root_visual)
 #define xorg_fd(XORG) xcb_get_file_descriptor((XORG)->connection)
 
-err_t xorg_client_init(xorg_s* x);
-void xorg_client_terminate(xorg_s* x);
+/** create new xorg client*/
+xorg_s* xorg_client_new(const char* display, int defaultScreen);
+
+/** free xorg client*/
+void xorg_client_free(xorg_s* x);
+
+/** initialized root to screen, this function is called inside client_new*/
 err_t xorg_root_init(xorg_s* x, int onscreen);
+
+/** flush a request, not really need*/
 void xorg_client_flush(xorg_s* x);
+
+/** sync connectoion, not really need*/
 void xorg_client_sync(xorg_s* x);
+
 #ifdef XCB_ERROR_ENABLE
 const char* xorg_error_major(xorg_s* x, xcb_generic_error_t* err);
 const char* xorg_error_minor(xorg_s* x, xcb_generic_error_t* err);
 const char* xorg_error_string(xorg_s* x, xcb_generic_error_t* err, const char** extensionname);
 #endif
+
+/** return screen from idscreen*/
 xcb_screen_t* xorg_screen_get(xorg_s* x, int idScreen);
+
+/** refresh randr monitor*/
 void xorg_randr_monitor_refresh(xorg_s* x);
+
+/** set monitor by name*/
 err_t xorg_monitor_byname(xorg_s* x, char const* name);
+
+/** set monitor in position size*/
 err_t xorg_monitor_bysize(xorg_s* x, g2dCoord_s* size);
+
+/** set primary monitor*/
 err_t xorg_monitor_primary(xorg_s* x);
+
+/** get name from atom*/
 const char* xorg_atom_name(xorg_s* x, xcb_atom_t atom);
+
+/** get atom friom name*/
 xcb_atom_t xorg_atom_id(xorg_s* x, const char* name);
+
+/** create new atom*/
 xcb_atom_t xorg_atom_new_id(xorg_s* x, const char* name);
+
+/** load default atom*/
 void xorg_atom_load(xorg_s* x);
-int xorg_xcb_property_cardinal(xorg_s* x, xcb_get_property_cookie_t cookie);
-xcb_get_property_cookie_t xorg_xcb_property_cookie_string(xorg_s* x, xcb_window_t win, xcb_atom_t atom);
-char* xorg_xcb_property_string(xorg_s* x, xcb_get_property_cookie_t cookie);
-err_t xorg_xcb_property_structure(void* out, xorg_s* x, xcb_get_property_cookie_t cookie, xcb_atom_t type, size_t size, size_t minsize);
-xcb_pixmap_t xorg_xcb_property_pixmap(xorg_s* x, xcb_get_property_cookie_t cookie);
+
+/** xcp wrap*/
 int xorg_xcb_attribute(xorg_s* x, xcb_get_window_attributes_cookie_t cookie);
+
+/** xcb wrap*/
 err_t xorg_xcb_geometry(xorg_s* x, xcb_get_geometry_cookie_t cookie, unsigned* X, unsigned* Y, unsigned* W, unsigned* H, unsigned* B);
+
+/** xcb wrap*/
+int xorg_xcb_property_cardinal(xorg_s* x, xcb_get_property_cookie_t cookie);
+
+/** xcb wrap*/
+xcb_get_property_cookie_t xorg_xcb_property_cookie_string(xorg_s* x, xcb_window_t win, xcb_atom_t atom);
+
+/** xcb wrap*/
+char* xorg_xcb_property_string(xorg_s* x, xcb_get_property_cookie_t cookie);
+
+/** xcb wrap*/
+err_t xorg_xcb_property_structure(void* out, xorg_s* x, xcb_get_property_cookie_t cookie, xcb_atom_t type, size_t size, size_t minsize);
+
+/** xcb wrap*/
+xcb_pixmap_t xorg_xcb_property_pixmap(xorg_s* x, xcb_get_property_cookie_t cookie);
+
+/** send creat message*/
 void xorg_send_creat(xorg_s* x, xcb_window_t parent, xcb_window_t win, int px, int py, int w, int h);
+
+/** send destroy message*/
 void xorg_send_destroy(xorg_s* x, xcb_window_t win);
+
+/** send expose, redraw, message*/
 void xorg_send_expose(xorg_s* x, xcb_window_t win, int px, int py, int w, int h);
+
+/** send key press message*/
 void xorg_send_key_press(xorg_s* x, xcb_window_t win, xcb_keycode_t keycode, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen);
+
+/** send key release message*/
 void xorg_send_key_release(xorg_s* x, xcb_window_t win, xcb_keycode_t keycode, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen);
+
+/** send button press*/
 void xorg_send_button_press(xorg_s* x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen);
+
+/** send button release*/
 void xorg_send_button_release(xorg_s* x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen);
+
+/** send mouse move*/
 void xorg_send_motion(xorg_s* x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen);
+
+/** send mouse enter*/
 void xorg_send_enter(xorg_s* x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen);
+
+/** send mouse exit*/
 void xorg_send_leave(xorg_s* x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen);
+
+/** send focus in*/
 void xorg_send_focus_in(xorg_s* x, xcb_window_t win);
+
+/** send focus out*/
 void xorg_send_focus_out(xorg_s* x, xcb_window_t win);
+
+/** send map/visible*/
 void xorg_send_map(xorg_s* x, xcb_window_t win);
+
+/** send unmap/hide*/
 void xorg_send_unmap(xorg_s* x, xcb_window_t win);
+
+/** send configure*/
 void xorg_send_configure(xorg_s* x, xcb_window_t win, int px, int py, int w, int h, int border);
+
+/** send property*/
 void xorg_send_property(xorg_s* x, xcb_window_t win, xcb_atom_t atom);
+
+/** send client*/
 void xorg_send_client(xorg_s* x, xcb_window_t win, uint8_t type, xcb_atom_t atom, uint8_t* data, size_t len);
+
+/** send client 32*/
 void xorg_send_client32(xorg_s* x, xcb_window_t win, xcb_window_t dest, xcb_atom_t atom, const uint32_t* data, size_t len);
+
+/** send active window*/
 void xorg_send_active_window(xorg_s* x, xcb_window_t current, xcb_window_t activate);
+
+/** send current desktop*/
 void xorg_send_current_desktop(xorg_s* x, uint32_t desktop);
+
+/** send set desktop*/
 void xorg_send_set_desktop(xorg_s* x, xcb_window_t win, uint32_t desktop);
+
+/** free window */
 void xorg_window_release(xorgWindow_s* win);
+
+/** tree of window*/
 xorgWindow_s* xorg_query_tree(size_t* count, xorg_s* x, xcb_window_t root);
+
+/** tree of window app*/
 xorgWindow_s* xorg_window_application(xorg_s* x,  size_t nworkspace, xcb_window_t id, xorgWindow_s* stack, size_t* appCount);
+
+/** return countr of workspace*/
 unsigned xorg_workspace_count(xorg_s* x);
+
+/** return active workspace*/
 unsigned xorg_workspace_active(xorg_s* x);
+
+/** get workspace name*/
 char** xorg_workspace_name_get(xorg_s* x);
+
+/** return buffer ximage*/
 uint8_t* xorg_ximage_get_composite(unsigned* outW, unsigned* outH, unsigned* outV, unsigned* outD, xorg_s* x, xcb_window_t id);
+
+/** get root pixmap*/
 xcb_pixmap_t xorg_root_pixmap_get(xorg_s* x);
+
+/** get pixel root image*/
 uint8_t* xorg_ximage_root_get(unsigned* outW, unsigned* outH, unsigned* outV, unsigned* outD, xorg_s* x);
-err_t xorg_image_grab(g2dImage_s* dst, xorg_s* x, xcb_window_t id);
-err_t xorg_root_image_grab(g2dImage_s* dst, xorg_s* x);
+
+/** grab image of app*/
+g2dImage_s* xorg_image_grab(xorg_s* x, xcb_window_t id);
+
+/** grab root image*/
+g2dImage_s* xorg_root_image_grab(xorg_s* x);
+
+/** set window title*/
 void xorg_win_title(xorg_s* x, xcb_window_t id, char const* name);
+
+/** set window class*/
 void xorg_win_class(xorg_s* x, xcb_window_t id, char const* name);
+
+/** show windo*/
 void xorg_win_show(xorg_s* x, xcb_window_t id, int show);
+
+/** move window*/
 void xorg_win_move(xorg_s* x, xcb_window_t id, unsigned X, unsigned y);
+
+/** resize window*/
 void xorg_win_resize(xorg_s* x, xcb_window_t id, unsigned w, unsigned h);
+
+/** set window coordinate*/
 void xorg_win_coord(xorg_s* x, xcb_window_t id, g2dCoord_s* pos);
+
+/** set window size*/
 void xorg_win_size(g2dCoord_s* out, unsigned* outBorder, xorg_s* x, xcb_window_t idxcb);
+
+/** redraw surface*/
 void xorg_win_surface_redraw(xorg_s* x, xcb_window_t id,  xorgSurface_s* surface);
+
+/** set window as dock*/
 void xorg_win_dock(xorg_s* x, xcb_window_t id);
+
+/** reserve dock space*/
 void xorg_wm_reserve_dock_space_on_top(xorg_s* x, xcb_window_t id, unsigned X, unsigned w, unsigned h);
+
+/** reserve dock space*/
 void xorg_wm_reserve_dock_space_on_bottom(xorg_s* x, xcb_window_t id, unsigned X, unsigned w, unsigned h);
+
+/** register event on window*/
 void xorg_register_events(xorg_s* x, xcb_window_t window, unsigned int eventmask);
-xcb_window_t xorg_win_new(xorgSurface_s* surface, xorg_s* x, xcb_window_t parent, g2dCoord_s* pos, unsigned border, g2dColor_t background);
+
+/** create new window, if surface return new surface, remember to free*/
+xcb_window_t xorg_win_new(xorgSurface_s** surface, xorg_s* x, xcb_window_t parent, g2dCoord_s* pos, unsigned border, g2dColor_t background);
+
+/** resize surface*/
 void xorg_surface_resize(xorgSurface_s* surface, unsigned w, unsigned h);
+
+/** resize a surface, blitting img*/
 void xorg_surface_resize_bitblt(xorgSurface_s* surface, unsigned w, unsigned h);
+
+/** destroy/free sourface*/
 void xorg_surface_destroy(xorg_s* x, xorgSurface_s* surface);
+
+/** destroy window*/
 void xorg_win_destroy(xorg_s* x, xcb_window_t id);
+
+/** set focus on window*/
 void xorg_win_focus(xorg_s* x, xcb_window_t id);
+
+/** parse and create events, -2 exit event*/
 err_t xorg_win_event(xorg_s* x, xorgCallbackEvent_s* callback, int async);
 
 
