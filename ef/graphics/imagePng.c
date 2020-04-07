@@ -68,23 +68,37 @@ g2dImage_s* g2d_load_png(char const* path){
 	dbg_info("png size %u*%u", width, height);
 	img = g2d_new(width, height, -1);
 
-	if( bit_depth == 16 )
+	png_set_bgr(png);
+
+	if( bit_depth == 16 ){
+		dbg_info("16bit");
 		png_set_strip_16(png);
+	}
 
-	if( color_type == PNG_COLOR_TYPE_PALETTE )
+	if( color_type == PNG_COLOR_TYPE_PALETTE ){
+		dbg_info("set palette");
 		png_set_palette_to_rgb(png);
+	}
 
-	if( color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8 )
+	if( color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8 ){
+		dbg_info("low gray");
 		png_set_expand_gray_1_2_4_to_8(png);
+	}
 
-	if( png_get_valid(png, info, PNG_INFO_tRNS) )
+	if( png_get_valid(png, info, PNG_INFO_tRNS) ){
+		dbg_info("set rns alpha");
 		png_set_tRNS_to_alpha(png);
+	}
 
-	if(color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_PALETTE)
+	if(color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_PALETTE){
+		dbg_info("set filler 0xFF filler after");
 	  	png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
+	}
 
-	if(color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+	if(color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA){
+		dbg_info("gray to rgb");
 		png_set_gray_to_rgb(png);
+	}
 	
 	png_read_update_info(png, info);
 

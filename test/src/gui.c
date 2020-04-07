@@ -12,6 +12,7 @@
 typedef void (*imgDraw_f)(g2dImage_s* img);
 typedef int (*xev_f)(xorgEvent_s* ev);
 
+g2dImage_s* bkimg;
 
 typedef struct xwin{
 	xorg_s* x;
@@ -100,9 +101,10 @@ __private void main_redraw(g2dImage_s* img){
 }
 
 __private void child_redraw(g2dImage_s* img){
-	g2dColor_t bkcol = g2d_color_gen(X_COLOR_MODE, 255, 25, 25, 185); 
-	g2dCoord_s gw = { .x = 0, .y = 0, .w = img->w, .h = img->h };
-	g2d_clear(img, bkcol, &gw);
+	__g2d_free g2dImage_s* resize = g2d_resize(bkimg, img->w, img->h);
+	g2dCoord_s s = { .x = 0, .y =0, .w =img->w, .h = img->h };
+	g2dCoord_s d = { .x = 0, .y =0, .w =img->w, .h = img->h };
+	g2d_bitblt(img, &d, resize, &s);	
 }
 
 xwin_s* main_win(xorg_s* x){
@@ -136,9 +138,9 @@ xwin_s* main_win(xorg_s* x){
 
 	pos.x = win->child->px;
 	pos.y = win->child->py;
-	pos.w = 80;
-	pos.h = 60;
-	bkcol = g2d_color_gen(X_COLOR_MODE, 255, 25,200,25); 
+	pos.w = 400;
+	pos.h = 300;
+	bkcol = g2d_color_gen(X_COLOR_MODE, 255, 0, 0, 0); 
 	win->child->id = xorg_win_new(&win->child->surf, win->x, win->id, &pos, 0, bkcol);
 	win->child->redraw = child_redraw;
 
@@ -206,10 +208,16 @@ __private err_t x_events(__unused deadpoll_s* dp, __unused int ev, void* arg){
 
 /*@fn*/
 void test_gui(__unused const char* argA, __unused const char* argB){
+	err_enable();
 	utf_begin();
 	os_begin();	
 	ft_begin();
-	
+
+	bkimg = g2d_load("/home/vbextreme/Immagini/meme/i.png");
+	if( !bkimg ){
+		err_fail("loading image");
+	}
+
 	deadpoll_s* dp = deadpoll_new();
 
 	xorg_s* x = xorg_client_new(NULL, 0);
@@ -224,5 +232,6 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	ft_end();
 	//xorg_surface_destroy(x, win.surf);
 	xorg_client_free(x);
+	err_restore();
 }
 

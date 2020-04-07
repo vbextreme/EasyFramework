@@ -64,7 +64,7 @@ void g2d_free(g2dImage_s* img);
 void g2d_autofree(g2dImage_s** img);
 
 /** cleanup */
-#define __g2d_free __cleanup(_g2d_autofree)
+#define __g2d_free __cleanup(g2d_autofree)
 
 /** calcolate new w*h scaling ratio
  * @param modeAWH 0 automatic scaling to majour, 1 use sw / *w, 2 use sh / *h
