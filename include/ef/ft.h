@@ -47,6 +47,14 @@ typedef struct ftFonts{
 	rbhash_s* charmap;
 }ftFonts_s;
 
+typedef void (*ftUtfCustom_f)(utf_t u, ftFonts_s** fonts, unsigned* x, unsigned* y, g2dColor_t* fore, void* userdata);
+
+typedef struct ftUtfCustom{
+	utf_t utf;
+	ftUtfCustom_f fn;
+	void* userdata;
+}ftUtfCustom_s;
+	
 #define FT_RENDER_ANTIALIASED 0x1
 #define FT_RENDER_VERT        0x2
 #define FT_RENDER_VALID       0x4
@@ -153,5 +161,11 @@ void g2d_string_autowrap(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf
 
 /** write a string but not rewrite previus char*/
 void g2d_string_replace(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, utf8_t const* old, g2dColor_t f, g2dColor_t b, unsigned originX);
+
+/** create new custom utf */
+utf_t ft_utf_custom(utf_t u, ftUtfCustom_f fn, void* userdata);
+
+/** get custom utf*/
+ftUtfCustom_s* ft_utf_custom_get(utf_t utf);
 
 #endif

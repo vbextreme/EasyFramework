@@ -24,6 +24,10 @@ __private FT_Library ftlib;
 __private const char* ftStrError[] = 
 #include FT_ERRORS_H
 
+
+__private ftUtfCustom_s* utfCustom;
+
+
 __private unsigned nohash_utf(const char* name, __unused size_t len){
 	return *(utf_t*)name;
 }
@@ -34,10 +38,12 @@ err_t ft_begin(void){
 		err_push("freetype2 error %d: %s", err, ftStrError[err]);
 		return -1;
 	}
+	utfCustom = vector_new(ftUtfCustom_s, 24, 12);
 	return 0;
 }
 
 void ft_end(void){
+	vector_free(utfCustom);
 	FT_Done_FreeType(ftlib);
 }
 
@@ -595,6 +601,9 @@ unsigned ft_line_lenght(ftFonts_s* fonts, utf8_t* str){
 	utf8Iterator_s it = utf8_iterator(str, 0);
 	utf_t u;	
 	while( (u = utf8_iterator_next(&it)) ){
+		if( u >= UTF_PRIVATE0_START ){
+			continue;
+		}
 		ftRender_s* rch = ft_fonts_glyph_load(fonts, u, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
 		if( rch ) lenght += rch->horiAdvance;
 	}
@@ -614,6 +623,9 @@ unsigned ft_autowrap_height(ftFonts_s* fonts, utf8_t* str, unsigned width){
 	utf8Iterator_s it = utf8_iterator(str, 0);
 	utf_t utf;
 	while( (utf = utf8_iterator_next(&it)) ){
+		if( utf >= UTF_PRIVATE0_START ){
+			continue;
+		}
 		if( utf == '\n' ){
 			height += monoh;
 			lenght = 0;
@@ -631,6 +643,7 @@ unsigned ft_autowrap_height(ftFonts_s* fonts, utf8_t* str, unsigned width){
 }	
 
 void g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dColor_t fore, g2dColor_t back, unsigned originX, int cls){
+
 	if( ch == '\n' ){
 		pos->y += ft_line_height(fonts);
 		pos->x = originX;
@@ -674,6 +687,11 @@ void g2d_string(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const
 	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
 	utf_t utf;
 	while( (utf = utf8_iterator_next(&it)) ){
+		if( utf >= UTF_PRIVATE0_START ){
+			ftUtfCustom_s* fuc = ft_utf_custom_get(utf);
+			fuc->fn(utf, &fonts, &pos->x, &pos->y, &col, fuc->userdata);
+			continue;
+		}
 		g2d_putch(dst, pos, fonts, utf, col, 0,  originX, 0);
 	}
 }
@@ -682,6 +700,11 @@ void g2d_string_autowrap(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf
 	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
 	utf_t utf;
 	while( (utf = utf8_iterator_next(&it)) ){
+		if( utf >= UTF_PRIVATE0_START ){
+			ftUtfCustom_s* fuc = ft_utf_custom_get(utf);
+			fuc->fn(utf, &fonts, &pos->x, &pos->y, &col, fuc->userdata);
+			continue;
+		}
 		g2d_putch_autowrap(dst, pos, fonts, utf, col, 0,  originX, 0);
 	}
 }
@@ -692,6 +715,11 @@ void g2d_string_replace(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8
 	utf8Iterator_s ot = utf8_iterator((utf8_t*)old, 0);
 	utf_t utf, of;
 	while( (utf = utf8_iterator_next(&it)) ){
+		if( utf >= UTF_PRIVATE0_START ){
+			ftUtfCustom_s* fuc = ft_utf_custom_get(utf);
+			fuc->fn(utf, &fonts, &pos->x, &pos->y, &f, fuc->userdata);
+			continue;
+		}
 		of = utf8_iterator_next(&ot);
 		if( of == utf ){
 			ftRender_s* rch = ft_fonts_glyph_load(fonts, utf, FT_RENDER_ANTIALIASED);
@@ -716,13 +744,25 @@ void g2d_string_replace(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8
 	}
 }
 
+utf_t ft_utf_custom(utf_t u, ftUtfCustom_f fn, void* userdata){
+	if( u == 0 ){
+		ftUtfCustom_s* fuc = vector_get_push_back(utfCustom);
+		u = fuc->utf = UTF_PRIVATE0_START + vector_count(utfCustom);
+		fuc->fn = fn;
+		fuc->userdata = userdata;
+	}
+	else{
+		unsigned index = (u - UTF_PRIVATE0_START)-1;
+		if( index >= vector_count(utfCustom) ) return 0;
+		utfCustom[index].fn = fn;
+		utfCustom[index].userdata = userdata;
+	}	
+	return u;
+}
 
-
-
-
-
-
-
-
-
+ftUtfCustom_s* ft_utf_custom_get(utf_t utf){
+	unsigned index = (utf - UTF_PRIVATE0_START)-1;
+	if( index >= vector_count(utfCustom) ) return 0;
+	return &utfCustom[index];
+}
 
