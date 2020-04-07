@@ -14,7 +14,7 @@ __private int file_is_png(FILE* fd){
 }
 
 g2dImage_s* g2d_load_png(char const* path){	
-	g2dImage_s* img = NULL;
+	volatile g2dImage_s* img = NULL;
 
 	volatile FILE* fd = fopen(path, "r");
 	if( fd == NULL ){
@@ -51,7 +51,7 @@ g2dImage_s* g2d_load_png(char const* path){
 		err_push("on load png");
 		dbg_error("on load png");
 		png_destroy_read_struct((png_structp*)&png, NULL, NULL);
-		g2d_free(img);
+		g2d_free((g2dImage_s*)img);
 		fclose((FILE*)fd);
 		return NULL;
 	}	
@@ -110,6 +110,6 @@ g2dImage_s* g2d_load_png(char const* path){
 	
 	png_destroy_read_struct((png_structp*)&png, NULL, NULL);
 	fclose((FILE*)fd);
-	return img;
+	return (g2dImage_s*)img;
 }
 
