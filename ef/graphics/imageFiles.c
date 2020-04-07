@@ -1,5 +1,6 @@
 #include <ef/imageFiles.h>
 #include <ef/imagePng.h>
+#include <ef/imageJpeg.h>
 #include <ef/file.h>
 #include <ef/err.h>
 
@@ -14,6 +15,14 @@ g2dImage_s* g2d_load(char const* path){
 	if( ret ) return ret;
 	if( !ret && errno != 666 ){
 		err_push("on load png");
+		return NULL;
+	}
+
+	errno = 0;
+	ret = g2d_load_jpeg(path);
+	if( ret ) return ret;
+	if( !ret && errno != 666 ){
+		err_push("on load jpeg");
 		return NULL;
 	}
 
