@@ -63,6 +63,38 @@ UNSAFE_END
 	return isnan(H)?0:round(H);
 }
 
+//from stackoverflow https://stackoverflow.com/questions/2792443/finding-the-centroid-of-a-polygon
+g2dPoint_s g2d_centroid(g2dPoint_s* points){
+	double centroidX = 0.0;
+	double centroidY = 0.0;
+	double signedArea = 0.0;
+	double x0 = 0.0;
+	double y0 = 0.0;
+	double x1 = 0.0;
+	double y1 = 0.0;
+	double a = 0.0;
+
+    vector_foreach(points, i){
+        x0 = points[i].x;
+        y0 = points[i].y;
+        x1 = points[(i+1) % vector_count(points)].x;
+        y1 = points[(i+1) % vector_count(points)].y;
+        a = x0*y1 - x1*y0;
+        signedArea += a;
+        centroidX += (x0 + x1)*a;
+        centroidY += (y0 + y1)*a;
+    }
+
+    signedArea *= 0.5;
+    centroidX /= (6.0*signedArea);
+    centroidY /= (6.0*signedArea);
+
+	g2dPoint_s cent = {.x = centroidX, .y = centroidY };
+    return cent;
+}
+
+	
+
 /*******************************************************************************/
 /************************************** RAW IMAGE ******************************/
 /*******************************************************************************/

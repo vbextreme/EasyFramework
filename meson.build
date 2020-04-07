@@ -10,7 +10,7 @@ cc = meson.get_compiler('c')
 # include #
 ###########
 
-includeDir = include_directories(['./include'])
+includeDir = include_directories(['./include', '/usr/include/cairo' ])
 
 ###############
 # source file #
@@ -90,6 +90,7 @@ src += [ 'ef/graphics/image.c' ]
 src += [ 'ef/graphics/imageFiles.c' ]
 src += [ 'ef/graphics/imagePng.c' ]
 src += [ 'ef/graphics/imageJpeg.c' ]
+src += [ 'ef/graphics/imageSvg.c' ]
 src += [ 'ef/graphics/ft.c' ]
 src += [ 'ef/graphics/xorg.c' ]
 
@@ -184,6 +185,8 @@ libDeps += [ cc.find_library('unistring', required : true) ]
 libDeps += [ cc.find_library('tar', required: true) ]
 libDeps += [ cc.find_library('png', required : true) ]
 libDeps += [ cc.find_library('jpeg', required: true) ]
+libDeps += [ dependency('librsvg-2.0', required: true) ]
+#libDeps += [ dependency('cairo', required: true) ]
 libDeps += [ dependency('zlib', required: true) ]
 libDeps += [ dependency('gnutls', required: true) ]
 libDeps += [ dependency('libcurl', required: true) ]

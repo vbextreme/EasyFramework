@@ -101,12 +101,11 @@ __private void main_redraw(g2dImage_s* img){
 }
 
 __private void child_redraw(g2dImage_s* img){
-	__g2d_free g2dImage_s* resize = g2d_resize(bkimg, img->w, img->h);
+//	__g2d_free g2dImage_s* resize = g2d_resize(bkimg, img->w, img->h);
 	g2dCoord_s s = { .x = 0, .y =0, .w =img->w, .h = img->h };
 	g2dCoord_s d = { .x = 0, .y =0, .w =img->w, .h = img->h };
-	g2d_bitblt(img, &d, resize, &s);	
-//	g2d_bitblt(img, &d, bkimg, &s);
-
+//	g2d_bitblt(img, &d, resize, &s);	
+	g2d_bitblt(img, &d, bkimg, &s);
 }
 
 xwin_s* main_win(xorg_s* x){
@@ -215,7 +214,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	os_begin();	
 	ft_begin();
 
-	bkimg = g2d_load("/home/vbextreme/Immagini/180245.gif");
+	bkimg = g2d_load("/home/vbextreme/Immagini/test/tigre.svg", 400, 300);
 	if( !bkimg ){
 		err_fail("loading image");
 	}

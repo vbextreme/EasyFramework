@@ -40,6 +40,9 @@ unsigned char img_rgb_to_gray(unsigned char r, unsigned char g, unsigned char b)
 /** convert rgb to hue*/
 int img_color_h(int R, int G, int B);
 
+/** find centroid from vector of points*/
+g2dPoint_s g2d_centroid(g2dPoint_s* points);
+
 /** create new image with pixel set to pixels
  * @param w width
  * @param h height
