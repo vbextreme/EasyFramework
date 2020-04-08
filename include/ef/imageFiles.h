@@ -3,12 +3,7 @@
 
 #include <ef/image.h>
 
-//TODO
-//gif
-//svg
-//bmp
-
-/** load image, supported png, jpg
+/** load image, supported png, jpeg, svg, bmp, gif only with g2d_load_gif
  * @param path absolute path
  * @param width if 0 no scaling
  * @param height if 0 no scaling

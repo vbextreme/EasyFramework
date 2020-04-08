@@ -2,10 +2,12 @@
 #include <ef/ft.h>
 #include <ef/image.h>
 #include <ef/imageFiles.h>
+#include <ef/imageGif.h>
 #include <ef/xorg.h>
 #include <ef/os.h>
 #include <ef/utf8.h>
 #include <ef/deadpoll.h>
+#include <ef/delay.h>
 
 /*@test -g --gui 'test gui'*/
 
@@ -13,6 +15,7 @@ typedef void (*imgDraw_f)(g2dImage_s* img);
 typedef int (*xev_f)(xorgEvent_s* ev);
 
 g2dImage_s* bkimg;
+gif_s* gif;
 
 typedef struct xwin{
 	xorg_s* x;
@@ -101,11 +104,32 @@ __private void main_redraw(g2dImage_s* img){
 }
 
 __private void child_redraw(g2dImage_s* img){
-//	__g2d_free g2dImage_s* resize = g2d_resize(bkimg, img->w, img->h);
+	
+	__g2d_free g2dImage_s* resize = g2d_resize(bkimg, img->w, img->h);
 	g2dCoord_s s = { .x = 0, .y =0, .w =img->w, .h = img->h };
 	g2dCoord_s d = { .x = 0, .y =0, .w =img->w, .h = img->h };
-//	g2d_bitblt(img, &d, resize, &s);	
-	g2d_bitblt(img, &d, bkimg, &s);
+	g2d_bitblt(img, &d, resize, &s);	
+//	g2dColor_t bkcol = g2d_color_gen(X_COLOR_MODE, 255, 0, 200, 125); 
+//	g2d_clear(img, bkcol, &d);
+//	g2d_bitblt_alpha(img, &d, bkimg, &s);
+
+}
+
+__private int child_draw(xorgEvent_s* ev){
+	dbg_warning("REDRAW GIF");
+	xwin_s* win = ev->userdata;
+	vector_foreach(gif->frames,i){
+		g2dCoord_s s = { .x = 0, .y =0, .w = gif->frames[i].img->w, .h = gif->frames[i].img->h };
+		g2dCoord_s d = { .x = 0, .y =0, .w = win->surf->img->w, .h = win->surf->img->h };
+		g2d_bitblt_alpha(win->surf->img, &d, gif->frames[i].img, &s);	
+
+		xorg_win_surface_redraw(ev->x, ev->win, win->surf);
+		xorg_client_flush(ev->x);
+		xorg_client_sync(ev->x);
+		delay_ms(gif->frames[i].delay);
+		//delay_ms(1500);
+	}
+	return 0;
 }
 
 xwin_s* main_win(xorg_s* x){
@@ -131,6 +155,7 @@ xwin_s* main_win(xorg_s* x){
 	win->child->px = 30;
 	win->child->py = 20;
 	win->child->x = x;
+	//win->child->draw = child_draw;
 	win->child->draw = main_draw;
 	win->child->key = child_key;
 	win->child->move = NULL;
@@ -139,8 +164,8 @@ xwin_s* main_win(xorg_s* x){
 
 	pos.x = win->child->px;
 	pos.y = win->child->py;
-	pos.w = 400;
-	pos.h = 300;
+	pos.w = 320;
+	pos.h = 180;
 	bkcol = g2d_color_gen(X_COLOR_MODE, 255, 0, 0, 0); 
 	win->child->id = xorg_win_new(&win->child->surf, win->x, win->id, &pos, 0, bkcol);
 	win->child->redraw = child_redraw;
@@ -153,9 +178,6 @@ xwin_s* main_win(xorg_s* x){
 
 	xorg_win_show(win->x, win->id, 1);
 	xorg_win_show(win->x, win->child->id, 1);
-
-//	xorg_client_flush(win->x);
-//	xorg_client_sync(win->x);
 
 	return win;
 }
@@ -214,7 +236,16 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	os_begin();	
 	ft_begin();
 
-	bkimg = g2d_load("/home/vbextreme/Immagini/test/tigre.svg", 400, 300);
+	bkimg = g2d_load("/home/vbextreme/Immagini/test/sample.bmp", 0,0);
+	
+	dbg_warning("TEST GIF");
+	//gif = g2d_load_gif("/home/vbextreme/Immagini/test/catto.gif");
+	//gif = g2d_load_gif("/home/vbextreme/Immagini/test/catto2.gif");
+	//gif = g2d_load_gif("/home/vbextreme/Immagini/test/meme0.gif");
+	//if( !gif ) err_fail("gif");
+	//g2d_gif_resize(gif, 320, 180);
+
+	//bkimg = g2d_load("/home/vbextreme/Immagini/Sfondi/ALICE_WONDERLAND_fantasy_fairy_adventure_comedy_depp_disney_2560x1440.jpg",0,0);
 	if( !bkimg ){
 		err_fail("loading image");
 	}

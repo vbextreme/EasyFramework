@@ -2,8 +2,6 @@
 #include <ef/memory.h>
 #include <ef/file.h>
 #include <ef/err.h>
-#include <ef/vector.h>
-#include <ef/ft.h>
 #include <librsvg-2.0/librsvg/rsvg.h>
 
 //only for ycm

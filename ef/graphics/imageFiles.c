@@ -2,6 +2,7 @@
 #include <ef/imagePng.h>
 #include <ef/imageJpeg.h>
 #include <ef/imageSvg.h>
+#include <ef/imageBmp.h>
 #include <ef/file.h>
 #include <ef/err.h>
 
@@ -38,6 +39,21 @@ g2dImage_s* g2d_load(char const* path, unsigned width, unsigned height){
 	}
 	if( errno != 666 ){
 		err_push("on load jpeg");
+		return NULL;
+	}
+
+	errno = 0;
+	ret = g2d_load_bmp(path);
+	if( ret ){
+		if( width && height ){
+			g2dImage_s* scaled = g2d_resize(ret, width, height);
+			g2d_free(ret);
+			ret = scaled;
+		}
+		return ret;
+	}
+	if( errno != 666 ){
+		err_push("on load bmp");
 		return NULL;
 	}
 
