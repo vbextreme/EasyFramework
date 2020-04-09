@@ -66,7 +66,6 @@ media_s* media_load(const char* path){
 		return NULL;
 	}
 
-	// loop though all the streams and print its main information
 	for( unsigned i = 0; i < media->avfctx->nb_streams; i++){
 		AVCodecParameters *lccodecpar = media->avfctx->streams[i]->codecpar;
 
@@ -135,8 +134,11 @@ media_s* media_load(const char* path){
 	return media;
 }
 
+#define RNDTO2(X) ((X) & 0xFFFFFFFE)
+
 void media_resize_set(media_s* media, g2dImage_s* img){
 	media->frameScaled = img;
+	dbg_error("VALID:: %u*%u", RNDTO2(img->w), RNDTO2(img->h));
 }
 
 __always_inline __private float cubic_hermite(float A, float B, float C, float D, float t){
@@ -216,17 +218,27 @@ __private g2dColor_t sample_bicubic(g2dImage_s* dst, AVFrame* frame, float u, fl
 	}
 
 	float value = cubic_hermite(col[0][0], col[1][0], col[2][0], col[3][0], yfract);
-	const unsigned char Y = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
+	const double Y = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
 
 	value = cubic_hermite(col[0][1], col[1][1], col[2][1], col[3][1], yfract);
-	const unsigned char U = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
+	const double U = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
 	
 	value = cubic_hermite(col[0][2], col[1][2], col[2][2], col[3][2], yfract);
-	const unsigned char V = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
+	const double V = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
 	
-	const unsigned char r = Y + 1.402 * (V-128);
-	const unsigned char g = Y - 0.344 * (U-128) - 0.714*(V-128);
-	const unsigned char b = Y + 1.772*(U-128);	
+	int r = Y + 1.402 * (V-128);
+	int g = Y - 0.344 * (U-128) - 0.714*(V-128);
+	int b = Y + 1.772 * (U-128);
+	if( r > 255 ) r = 255;
+	else if( r < 0 ) r = 0;
+	if( g > 255 ) g = 255;
+	else if( g < 0 ) g = 0;
+	if( b > 255 ) b = 255;
+	else if( b < 0 ) b = 0;
+
+	//const unsigned char r = Y + 1.402 * (V-128);
+	//const unsigned char g = Y - 0.344 * (U-128) - 0.714*(V-128);
+	//const unsigned char b = Y + 1.772*(U-128);	
 
 	return g2d_color_make(dst, 255, r, g, b);
 } 
@@ -254,19 +266,237 @@ __private void frame_yuv_to_rgb(g2dImage_s* dst, AVFrame* frame){
 		const unsigned rowVFrame = frame->linesize[2] * (y>>1);
 		__parallef
 		for( size_t x = 0; x < dst->w; ++x ){
-			const uint8_t Y = frame->data[0][rowYFrame + x];
-			const uint8_t U = frame->data[1][rowUFrame + (x>>1)];
-			const uint8_t V = frame->data[2][rowVFrame + (x>>1)];
-			const unsigned char r = Y + 1.402 * (V-128);
-			const unsigned char g = Y - 0.344 * (U-128) - 0.714*(V-128);
-		   	const unsigned char b = Y + 1.772*(U-128);
-			pix[x] = g2d_color_make(dst, 255, r, g, b);
+			const double Y = frame->data[0][rowYFrame + x];
+			const double U = frame->data[1][rowUFrame + (x>>1)];
+			const double V = frame->data[2][rowVFrame + (x>>1)];
+			int r = Y + 1.402 * (V-128);
+			int g = Y - 0.344 * (U-128) - 0.714*(V-128);
+		   	int b = Y + 1.772 * (U-128);
+			if( r > 255 ) r = 255;
+			else if( r < 0 ) r = 0;
+			if( g > 255 ) g = 255;
+			else if( g < 0 ) g = 0;
+			if( b > 255 ) b = 255;
+			else if( b < 0 ) b = 0;
 
+			pix[x] = g2d_color_make(dst, 255, r, g, b);
 		}
 	}
 }
 
-#include <ef/delay.h>
+#ifdef DEBUG_ENABLE
+void dbg_format(enum AVPixelFormat format){
+    switch( format ){
+	case AV_PIX_FMT_NONE:
+	case AV_PIX_FMT_YUV420P: dbg_info("format AV_PIX_FMT_YUV420P"); break; 
+	case AV_PIX_FMT_YUYV422: dbg_info("format AV_PIX_FMT_YUYV422"); break;  
+	case AV_PIX_FMT_RGB24: dbg_info("format AV_PIX_FMT_RGB24"); break;  
+	case AV_PIX_FMT_BGR24: dbg_info("format AV_PIX_FMT_BGR24"); break;     
+	case AV_PIX_FMT_YUV422P: dbg_info("format AV_PIX_FMT_YUV422P"); break;
+	case AV_PIX_FMT_YUV444P: dbg_info("format AV_PIX_FMT_YUV444P"); break;  
+	case AV_PIX_FMT_YUV410P: dbg_info("format AV_PIX_FMT_YUV410P"); break;   
+	case AV_PIX_FMT_YUV411P: dbg_info("format AV_PIX_FMT_YUV411P"); break;   
+	case AV_PIX_FMT_GRAY8: dbg_info("format AV_PIX_FMT_GRAY8"); break;  
+	case AV_PIX_FMT_MONOWHITE: dbg_info("format AV_PIX_FMT_MONOWHITE"); break;
+	case AV_PIX_FMT_MONOBLACK: dbg_info("format AV_PIX_FMT_MONOBLACK"); break;
+	case AV_PIX_FMT_PAL8: dbg_info("format AV_PIX_FMT_PAL8"); break;
+	case AV_PIX_FMT_YUVJ420P: dbg_info("format AV_PIX_FMT_YUVJ420P"); break;
+	case AV_PIX_FMT_YUVJ422P: dbg_info("format AV_PIX_FMT_YUVJ422P"); break;
+	case AV_PIX_FMT_YUVJ444P: dbg_info("format AV_PIX_FMT_YUVJ444P"); break;
+#if FF_API_XVMC
+	case AV_PIX_FMT_XVMC_MPEG2_MC: dbg_info("format AV_PIX_FMT_XVMC_MPEG2_MC"); break;
+	case AV_PIX_FMT_XVMC_MPEG2_IDCT: dbg_info("format AV_PIX_FMT_XVMC_MPEG2_IDCT"); break;
+	case AV_PIX_FMT_XVMC: dbg_info("format AV_PIX_FMT_XVMC"); break;
+	case AV_PIX_FMT_XVMC_MPEG2_IDCT: dbg_info("format AV_PIX_FMT_XVMC_MPEG2_IDCT"); break;
+#endif
+	case AV_PIX_FMT_UYVY422: dbg_info("format AV_PIX_FMT_UYVY422"); break;
+	case AV_PIX_FMT_UYYVYY411: dbg_info("format AV_PIX_FMT_UYYVYY411"); break; 
+	case AV_PIX_FMT_BGR8: dbg_info("format AV_PIX_FMT_BGR8"); break;      
+	case AV_PIX_FMT_BGR4: dbg_info("format AV_PIX_FMT_BGR4"); break;      
+	case AV_PIX_FMT_BGR4_BYTE: dbg_info("format AV_PIX_FMT_BGR4_BYTE"); break; 
+	case AV_PIX_FMT_RGB8: dbg_info("format AV_PIX_FMT_RGB8"); break;      
+	case AV_PIX_FMT_RGB4: dbg_info("format AV_PIX_FMT_RGB4"); break;      
+	case AV_PIX_FMT_RGB4_BYTE: dbg_info("format AV_PIX_FMT_RGB4_BYTE"); break; 
+	case AV_PIX_FMT_NV12: dbg_info("format AV_PIX_FMT_NV12"); break;      
+	case AV_PIX_FMT_NV21: dbg_info("format AV_PIX_FMT_NV21"); break;      
+
+	case AV_PIX_FMT_ARGB: dbg_info("format AV_PIX_FMT_ARGB"); break;      
+	case AV_PIX_FMT_RGBA: dbg_info("format AV_PIX_FMT_RGBA"); break;      
+	case AV_PIX_FMT_ABGR: dbg_info("format AV_PIX_FMT_ABGR"); break;      
+	case AV_PIX_FMT_BGRA: dbg_info("format AV_PIX_FMT_BGRA"); break;      
+
+	case AV_PIX_FMT_GRAY16BE: dbg_info("format AV_PIX_FMT_GRAY16BE"); break;  
+	case AV_PIX_FMT_GRAY16LE: dbg_info("format AV_PIX_FMT_GRAY16LE"); break;  
+	case AV_PIX_FMT_YUV440P: dbg_info("format AV_PIX_FMT_YUV440P"); break;   
+	case AV_PIX_FMT_YUVJ440P: dbg_info("format AV_PIX_FMT_YUVJ440P"); break;  
+	case AV_PIX_FMT_YUVA420P: dbg_info("format AV_PIX_FMT_YUVA420P"); break;  
+#if FF_API_VDPAU
+	case AV_PIX_FMT_VDPAU_H264: dbg_info("format AV_PIX_FMT_VDPAU_H264"); break;
+	case AV_PIX_FMT_VDPAU_MPEG1: dbg_info("format AV_PIX_FMT_VDPAU_MPEG1"); break;
+	case AV_PIX_FMT_VDPAU_MPEG2: dbg_info("format AV_PIX_FMT_VDPAU_MPEG2"); break;
+	case AV_PIX_FMT_VDPAU_WMV3: dbg_info("format AV_PIX_FMT_VDPAU_WMV3"); break;
+	case AV_PIX_FMT_VDPAU_VC1: dbg_info("format AV_PIX_FMT_VDPAU_VC1"); break; 
+#endif
+	case AV_PIX_FMT_RGB48BE: dbg_info("format AV_PIX_FMT_RGB48BE"); break;   
+	case AV_PIX_FMT_RGB48LE: dbg_info("format AV_PIX_FMT_RGB48LE"); break;   
+	case AV_PIX_FMT_RGB565BE: dbg_info("format AV_PIX_FMT_RGB565BE"); break;  
+	case AV_PIX_FMT_RGB565LE: dbg_info("format AV_PIX_FMT_RGB565LE"); break;  
+	case AV_PIX_FMT_RGB555BE: dbg_info("format AV_PIX_FMT_RGB555BE"); break;  
+	case AV_PIX_FMT_RGB555LE: dbg_info("format AV_PIX_FMT_RGB555LE"); break;  
+	case AV_PIX_FMT_BGR565BE: dbg_info("format AV_PIX_FMT_BGR565BE"); break;  
+	case AV_PIX_FMT_BGR565LE: dbg_info("format AV_PIX_FMT_BGR565LE"); break;  
+	case AV_PIX_FMT_BGR555BE: dbg_info("format AV_PIX_FMT_BGR555BE"); break;  
+	case AV_PIX_FMT_BGR555LE: dbg_info("format AV_PIX_FMT_BGR555LE"); break;  
+#if FF_API_VAAPI
+	case AV_PIX_FMT_VAAPI_MOCO: dbg_info("format AV_PIX_FMT_VAAPI_MOCO"); break; 
+	case AV_PIX_FMT_VAAPI_IDCT: dbg_info("format AV_PIX_FMT_VAAPI_IDCT"); break; 
+	case AV_PIX_FMT_VAAPI_VLD: dbg_info("format AV_PIX_FMT_VAAPI_VLD"); break;  
+	//case AV_PIX_FMT_VAAPI: dbg_info("format AV_PIX_FMT_VAAPI"); break;
+	//case AV_PIX_FMT_VAAPI_VLD: dbg_info("format AV_PIX_FMT_VAAPI_VLD"); break;
+#else
+	case AV_PIX_FMT_VAAPI: dbg_info("format AV_PIX_FMT_VAAPI"); break;
+#endif
+	case AV_PIX_FMT_YUV420P16LE: dbg_info("format AV_PIX_FMT_YUV420P16LE"); break;  
+	case AV_PIX_FMT_YUV420P16BE: dbg_info("format AV_PIX_FMT_YUV420P16BE"); break;  
+	case AV_PIX_FMT_YUV422P16LE: dbg_info("format AV_PIX_FMT_YUV422P16LE"); break;  
+	case AV_PIX_FMT_YUV422P16BE: dbg_info("format AV_PIX_FMT_YUV422P16BE"); break;  
+	case AV_PIX_FMT_YUV444P16LE: dbg_info("format AV_PIX_FMT_YUV444P16LE"); break;  
+	case AV_PIX_FMT_YUV444P16BE: dbg_info("format AV_PIX_FMT_YUV444P16BE"); break;  
+#if FF_API_VDPAU
+	case AV_PIX_FMT_VDPAU_MPEG4: dbg_info("format AV_PIX_FMT_VDPAU_MPEG4"); break;  
+#endif
+	case AV_PIX_FMT_DXVA2_VLD: dbg_info("format AV_PIX_FMT_DXVA2_VLD"); break;    
+	case AV_PIX_FMT_RGB444LE: dbg_info("format AV_PIX_FMT_RGB444LE"); break;  
+	case AV_PIX_FMT_RGB444BE: dbg_info("format AV_PIX_FMT_RGB444BE"); break;  
+	case AV_PIX_FMT_BGR444LE: dbg_info("format AV_PIX_FMT_BGR444LE"); break;  
+	case AV_PIX_FMT_BGR444BE: dbg_info("format AV_PIX_FMT_BGR444BE"); break;  
+	case AV_PIX_FMT_YA8: dbg_info("format AV_PIX_FMT_YA8"); break;       
+	//case AV_PIX_FMT_Y400A: dbg_info("format AV_PIX_FMT_Y400A"); break;
+	//case AV_PIX_FMT_YA8: dbg_info("format AV_PIX_FMT_YA8"); break; 
+	//case AV_PIX_FMT_GRAY8A
+	//case AV_PIX_FMT_YA8: dbg_info("format AV_PIX_FMT_YA8"); break; 
+	case AV_PIX_FMT_BGR48BE: dbg_info("format AV_PIX_FMT_BGR48BE"); break;   
+	case AV_PIX_FMT_BGR48LE: dbg_info("format AV_PIX_FMT_BGR48LE"); break;   
+	case AV_PIX_FMT_YUV420P9BE: dbg_info("format AV_PIX_FMT_YUV420P9BE"); break; 
+	case AV_PIX_FMT_YUV420P9LE: dbg_info("format AV_PIX_FMT_YUV420P9LE"); break; 
+	case AV_PIX_FMT_YUV420P10BE: dbg_info("format AV_PIX_FMT_YUV420P10BE"); break;
+	case AV_PIX_FMT_YUV420P10LE: dbg_info("format AV_PIX_FMT_YUV420P10LE"); break;
+	case AV_PIX_FMT_YUV422P10BE: dbg_info("format AV_PIX_FMT_YUV422P10BE"); break;
+	case AV_PIX_FMT_YUV422P10LE: dbg_info("format AV_PIX_FMT_YUV422P10LE"); break;
+	case AV_PIX_FMT_YUV444P9BE: dbg_info("format AV_PIX_FMT_YUV444P9BE"); break; 
+	case AV_PIX_FMT_YUV444P9LE: dbg_info("format AV_PIX_FMT_YUV444P9LE"); break; 
+	case AV_PIX_FMT_YUV444P10BE: dbg_info("format AV_PIX_FMT_YUV444P10BE"); break;
+	case AV_PIX_FMT_YUV444P10LE: dbg_info("format AV_PIX_FMT_YUV444P10LE"); break;
+	case AV_PIX_FMT_YUV422P9BE: dbg_info("format AV_PIX_FMT_YUV422P9BE"); break; 
+	case AV_PIX_FMT_YUV422P9LE: dbg_info("format AV_PIX_FMT_YUV422P9LE"); break; 
+	//case AV_PIX_FMT_VDA_VLD: dbg_info("format AV_PIX_FMT_VDA_VLD"); break;    
+	case AV_PIX_FMT_GBRP: dbg_info("format AV_PIX_FMT_GBRP"); break;      
+	//case AV_PIX_FMT_GBR24P: dbg_info("format AV_PIX_FMT_GBR24P"); break;
+	//case AV_PIX_FMT_GBRP: dbg_info("format AV_PIX_FMT_GBRP"); break;
+	case AV_PIX_FMT_GBRP9BE: dbg_info("format AV_PIX_FMT_GBRP9BE"); break;   
+	case AV_PIX_FMT_GBRP9LE: dbg_info("format AV_PIX_FMT_GBRP9LE"); break;   
+	case AV_PIX_FMT_GBRP10BE: dbg_info("format AV_PIX_FMT_GBRP10BE"); break;  
+	case AV_PIX_FMT_GBRP10LE: dbg_info("format AV_PIX_FMT_GBRP10LE"); break;  
+	case AV_PIX_FMT_GBRP16BE: dbg_info("format AV_PIX_FMT_GBRP16BE"); break;  
+	case AV_PIX_FMT_GBRP16LE: dbg_info("format AV_PIX_FMT_GBRP16LE"); break;  
+	case AV_PIX_FMT_YUVA422P: dbg_info("format AV_PIX_FMT_YUVA422P"); break;  
+	case AV_PIX_FMT_YUVA444P: dbg_info("format AV_PIX_FMT_YUVA444P"); break;  
+	case AV_PIX_FMT_YUVA420P9BE: dbg_info("format AV_PIX_FMT_YUVA420P9BE"); break;  
+	case AV_PIX_FMT_YUVA420P9LE: dbg_info("format AV_PIX_FMT_YUVA420P9LE"); break;  
+	case AV_PIX_FMT_YUVA422P9BE: dbg_info("format AV_PIX_FMT_YUVA422P9BE"); break;  
+	case AV_PIX_FMT_YUVA422P9LE: dbg_info("format AV_PIX_FMT_YUVA422P9LE"); break;  
+	case AV_PIX_FMT_YUVA444P9BE: dbg_info("format AV_PIX_FMT_YUVA444P9BE"); break;  
+	case AV_PIX_FMT_YUVA444P9LE: dbg_info("format AV_PIX_FMT_YUVA444P9LE"); break;  
+	case AV_PIX_FMT_YUVA420P10BE: dbg_info("format AV_PIX_FMT_YUVA420P10BE"); break; 
+	case AV_PIX_FMT_YUVA420P10LE: dbg_info("format AV_PIX_FMT_YUVA420P10LE"); break; 
+	case AV_PIX_FMT_YUVA422P10BE: dbg_info("format AV_PIX_FMT_YUVA422P10BE"); break; 
+	case AV_PIX_FMT_YUVA422P10LE: dbg_info("format AV_PIX_FMT_YUVA422P10LE"); break; 
+	case AV_PIX_FMT_YUVA444P10BE: dbg_info("format AV_PIX_FMT_YUVA444P10BE"); break; 
+	case AV_PIX_FMT_YUVA444P10LE: dbg_info("format AV_PIX_FMT_YUVA444P10LE"); break; 
+	case AV_PIX_FMT_YUVA420P16BE: dbg_info("format AV_PIX_FMT_YUVA420P16BE"); break; 
+	case AV_PIX_FMT_YUVA420P16LE: dbg_info("format AV_PIX_FMT_YUVA420P16LE"); break; 
+	case AV_PIX_FMT_YUVA422P16BE: dbg_info("format AV_PIX_FMT_YUVA422P16BE"); break; 
+	case AV_PIX_FMT_YUVA422P16LE: dbg_info("format AV_PIX_FMT_YUVA422P16LE"); break; 
+	case AV_PIX_FMT_YUVA444P16BE: dbg_info("format AV_PIX_FMT_YUVA444P16BE"); break; 
+	case AV_PIX_FMT_YUVA444P16LE: dbg_info("format AV_PIX_FMT_YUVA444P16LE"); break; 
+	case AV_PIX_FMT_VDPAU: dbg_info("format AV_PIX_FMT_VDPAU"); break;     
+	case AV_PIX_FMT_XYZ12LE: dbg_info("format AV_PIX_FMT_XYZ12LE"); break;      
+	case AV_PIX_FMT_XYZ12BE: dbg_info("format AV_PIX_FMT_XYZ12BE"); break;      
+	case AV_PIX_FMT_NV16: dbg_info("format AV_PIX_FMT_NV16"); break;         
+	case AV_PIX_FMT_NV20LE: dbg_info("format AV_PIX_FMT_NV20LE"); break;       
+	case AV_PIX_FMT_NV20BE: dbg_info("format AV_PIX_FMT_NV20BE"); break;       
+	case AV_PIX_FMT_RGBA64BE: dbg_info("format AV_PIX_FMT_RGBA64BE"); break;     
+	case AV_PIX_FMT_RGBA64LE: dbg_info("format AV_PIX_FMT_RGBA64LE"); break;     
+	case AV_PIX_FMT_BGRA64BE: dbg_info("format AV_PIX_FMT_BGRA64BE"); break;     
+	case AV_PIX_FMT_BGRA64LE: dbg_info("format AV_PIX_FMT_BGRA64LE"); break;     
+	case AV_PIX_FMT_YVYU422: dbg_info("format AV_PIX_FMT_YVYU422"); break;   
+	//case AV_PIX_FMT_VDA: dbg_info("format AV_PIX_FMT_VDA"); break;          
+	case AV_PIX_FMT_YA16BE: dbg_info("format AV_PIX_FMT_YA16BE"); break;       
+	case AV_PIX_FMT_YA16LE: dbg_info("format AV_PIX_FMT_YA16LE"); break;       
+	case AV_PIX_FMT_GBRAP: dbg_info("format AV_PIX_FMT_GBRAP"); break;        
+	case AV_PIX_FMT_GBRAP16BE: dbg_info("format AV_PIX_FMT_GBRAP16BE"); break;    
+	case AV_PIX_FMT_GBRAP16LE: dbg_info("format AV_PIX_FMT_GBRAP16LE"); break;    
+	case AV_PIX_FMT_QSV: dbg_info("format AV_PIX_FMT_QSV"); break;
+	case AV_PIX_FMT_MMAL: dbg_info("format AV_PIX_FMT_MMAL"); break;
+	case AV_PIX_FMT_D3D11VA_VLD: dbg_info("format AV_PIX_FMT_D3D11VA_VLD"); break;  
+	case AV_PIX_FMT_CUDA: dbg_info("format AV_PIX_FMT_CUDA"); break;
+	case AV_PIX_FMT_0RGB: dbg_info("format AV_PIX_FMT_0RGB"); break;
+	case AV_PIX_FMT_RGB0: dbg_info("format AV_PIX_FMT_RGB0"); break;        
+	case AV_PIX_FMT_0BGR: dbg_info("format AV_PIX_FMT_0BGR"); break;        
+	case AV_PIX_FMT_BGR0: dbg_info("format AV_PIX_FMT_BGR0"); break;        
+	case AV_PIX_FMT_YUV420P12BE: dbg_info("format AV_PIX_FMT_YUV420P12BE"); break; 
+	case AV_PIX_FMT_YUV420P12LE: dbg_info("format AV_PIX_FMT_YUV420P12LE"); break; 
+	case AV_PIX_FMT_YUV420P14BE: dbg_info("format AV_PIX_FMT_YUV420P14BE"); break; 
+	case AV_PIX_FMT_YUV420P14LE: dbg_info("format AV_PIX_FMT_YUV420P14LE"); break; 
+	case AV_PIX_FMT_YUV422P12BE: dbg_info("format AV_PIX_FMT_YUV422P12BE"); break; 
+	case AV_PIX_FMT_YUV422P12LE: dbg_info("format AV_PIX_FMT_YUV422P12LE"); break; 
+	case AV_PIX_FMT_YUV422P14BE: dbg_info("format AV_PIX_FMT_YUV422P14BE"); break; 
+	case AV_PIX_FMT_YUV422P14LE: dbg_info("format AV_PIX_FMT_YUV422P14LE"); break; 
+	case AV_PIX_FMT_YUV444P12BE: dbg_info("format AV_PIX_FMT_YUV444P12BE"); break; 
+	case AV_PIX_FMT_YUV444P12LE: dbg_info("format AV_PIX_FMT_YUV444P12LE"); break; 
+	case AV_PIX_FMT_YUV444P14BE: dbg_info("format AV_PIX_FMT_YUV444P14BE"); break; 
+	case AV_PIX_FMT_YUV444P14LE: dbg_info("format AV_PIX_FMT_YUV444P14LE"); break; 
+	case AV_PIX_FMT_GBRP12BE: dbg_info("format AV_PIX_FMT_GBRP12BE"); break;    
+	case AV_PIX_FMT_GBRP12LE: dbg_info("format AV_PIX_FMT_GBRP12LE"); break;    
+	case AV_PIX_FMT_GBRP14BE: dbg_info("format AV_PIX_FMT_GBRP14BE"); break;    
+	case AV_PIX_FMT_GBRP14LE: dbg_info("format AV_PIX_FMT_GBRP14LE"); break;    
+	case AV_PIX_FMT_YUVJ411P: dbg_info("format AV_PIX_FMT_YUVJ411P"); break;    
+	case AV_PIX_FMT_BAYER_BGGR8: dbg_info("format AV_PIX_FMT_BAYER_BGGR8"); break;    
+	case AV_PIX_FMT_BAYER_RGGB8: dbg_info("format AV_PIX_FMT_BAYER_RGGB8"); break;    
+	case AV_PIX_FMT_BAYER_GBRG8: dbg_info("format AV_PIX_FMT_BAYER_GBRG8"); break;    
+	case AV_PIX_FMT_BAYER_GRBG8: dbg_info("format AV_PIX_FMT_BAYER_GRBG8"); break;    
+	case AV_PIX_FMT_BAYER_BGGR16LE: dbg_info("format AV_PIX_FMT_BAYER_BGGR16LE"); break; 
+	case AV_PIX_FMT_BAYER_BGGR16BE: dbg_info("format AV_PIX_FMT_BAYER_BGGR16BE"); break; 
+	case AV_PIX_FMT_BAYER_RGGB16LE: dbg_info("format AV_PIX_FMT_BAYER_RGGB16LE"); break; 
+	case AV_PIX_FMT_BAYER_RGGB16BE: dbg_info("format AV_PIX_FMT_BAYER_RGGB16BE"); break; 
+	case AV_PIX_FMT_BAYER_GBRG16LE: dbg_info("format AV_PIX_FMT_BAYER_GBRG16LE"); break; 
+	case AV_PIX_FMT_BAYER_GBRG16BE: dbg_info("format AV_PIX_FMT_BAYER_GBRG16BE"); break; 
+	case AV_PIX_FMT_BAYER_GRBG16LE: dbg_info("format AV_PIX_FMT_BAYER_GRBG16LE"); break; 
+	case AV_PIX_FMT_BAYER_GRBG16BE: dbg_info("format AV_PIX_FMT_BAYER_GRBG16BE"); break; 
+#if !FF_API_XVMC
+	case AV_PIX_FMT_XVMC: dbg_info("format AV_PIX_FMT_XVMC"); break;
+#endif /* !FF_API_XVMC */
+	case AV_PIX_FMT_YUV440P10LE: dbg_info("format AV_PIX_FMT_YUV440P10LE"); break; 
+	case AV_PIX_FMT_YUV440P10BE: dbg_info("format AV_PIX_FMT_YUV440P10BE"); break; 
+	case AV_PIX_FMT_YUV440P12LE: dbg_info("format AV_PIX_FMT_YUV440P12LE"); break; 
+	case AV_PIX_FMT_YUV440P12BE: dbg_info("format AV_PIX_FMT_YUV440P12BE"); break; 
+	case AV_PIX_FMT_AYUV64LE: dbg_info("format AV_PIX_FMT_AYUV64LE"); break;    
+	case AV_PIX_FMT_AYUV64BE: dbg_info("format AV_PIX_FMT_AYUV64BE"); break;    
+	case AV_PIX_FMT_VIDEOTOOLBOX: dbg_info("format AV_PIX_FMT_VIDEOTOOLBOX"); break; 
+	case AV_PIX_FMT_P010LE: dbg_info("format AV_PIX_FMT_P010LE"); break; 
+	case AV_PIX_FMT_P010BE: dbg_info("format AV_PIX_FMT_P010BE"); break; 
+	case AV_PIX_FMT_GBRAP12BE: dbg_info("format AV_PIX_FMT_GBRAP12BE"); break;  
+	case AV_PIX_FMT_GBRAP12LE: dbg_info("format AV_PIX_FMT_GBRAP12LE"); break;  
+	case AV_PIX_FMT_GBRAP10BE: dbg_info("format AV_PIX_FMT_GBRAP10BE"); break;  
+	case AV_PIX_FMT_GBRAP10LE: dbg_info("format AV_PIX_FMT_GBRAP10LE"); break;  
+	case AV_PIX_FMT_MEDIACODEC: dbg_info("format AV_PIX_FMT_MEDIACODEC"); break; 
+	default: case AV_PIX_FMT_NB: dbg_info("format AV_PIX_FMT_NB"); break;
+
+	}
+}
+#else 
+	#define dbg_format(F)
+#endif
 
 __private int decode_packet(media_s* media){
 	if( media->pacstate < 0 ){
@@ -295,12 +525,12 @@ __private int decode_packet(media_s* media){
 		media->lastPTS = media->pts;
 		media->pts = media->avframe->pts;		
 		dbg_info("format:%d", media->avframe->format);	
-		
+		dbg_error("FORMAT");
+		dbg_format(media->avframe->format);
 		if( media->frameScaled ){
-			//TODO use frame_resize_to
-			frame_yuv_to_rgb(media->frame, media->avframe);	
-			g2d_resize_to(media->frameScaled, media->frame);
-			//frame_resize_to(media->frameScaled, media->avframe);
+			//frame_yuv_to_rgb(media->frame, media->avframe);	
+			//g2d_resize_to(media->frameScaled, media->frame);
+			frame_resize_to(media->frameScaled, media->avframe);
 		}
 		else{
 			iassert((unsigned)media->avframe->width == media->frame->w);
@@ -342,7 +572,7 @@ g2dImage_s* media_frame_get(media_s* media){
 long media_delay_get(media_s* media){
 	if( media->pts != AV_NOPTS_VALUE && media->lastPTS != AV_NOPTS_VALUE ){
 		long delay = av_rescale_q( media->pts - media->lastPTS, media->timebase, AV_TIME_BASE_Q);
-		dbg_error("DELAY: %luus", delay);
+		dbg_info("DELAY: %luus", delay);
         if (delay > 0 && delay < 1000000) return delay;
 	}
 	return 0;

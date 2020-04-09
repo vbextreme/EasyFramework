@@ -276,7 +276,9 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	}
 
 	//media = media_load("/home/vbextreme/Immagini/test/small_bunny_1080p_60fps.mp4");
-	media = media_load("/home/vbextreme/Video/films/AliceNelPaeseDelleMeraviglie.mp4");
+	//media = media_load("/home/vbextreme/Video/films/AliceNelPaeseDelleMeraviglie.mp4");
+	media = media_load("/home/vbextreme/Video/films/Visti/Cars.mp4");
+
 	if( !media ) err_fail("media load");
 
 	deadpoll_s* dp = deadpoll_new();
