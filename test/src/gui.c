@@ -3,6 +3,7 @@
 #include <ef/image.h>
 #include <ef/imageFiles.h>
 #include <ef/imageGif.h>
+#include <ef/media.h>
 #include <ef/xorg.h>
 #include <ef/os.h>
 #include <ef/utf8.h>
@@ -16,6 +17,7 @@ typedef int (*xev_f)(xorgEvent_s* ev);
 
 g2dImage_s* bkimg;
 gif_s* gif;
+media_s* media;
 
 typedef struct xwin{
 	xorg_s* x;
@@ -105,10 +107,10 @@ __private void main_redraw(g2dImage_s* img){
 
 __private void child_redraw(g2dImage_s* img){
 	
-	__g2d_free g2dImage_s* resize = g2d_resize(bkimg, img->w, img->h);
-	g2dCoord_s s = { .x = 0, .y =0, .w =img->w, .h = img->h };
-	g2dCoord_s d = { .x = 0, .y =0, .w =img->w, .h = img->h };
-	g2d_bitblt(img, &d, resize, &s);	
+//	__g2d_free g2dImage_s* resize = g2d_resize(bkimg, img->w, img->h);
+//	g2dCoord_s s = { .x = 0, .y =0, .w =img->w, .h = img->h };
+//	g2dCoord_s d = { .x = 0, .y =0, .w =img->w, .h = img->h };
+//	g2d_bitblt(img, &d, resize, &s);	
 //	g2dColor_t bkcol = g2d_color_gen(X_COLOR_MODE, 255, 0, 200, 125); 
 //	g2d_clear(img, bkcol, &d);
 //	g2d_bitblt_alpha(img, &d, bkimg, &s);
@@ -116,6 +118,7 @@ __private void child_redraw(g2dImage_s* img){
 }
 
 __private int child_draw(xorgEvent_s* ev){
+/*
 	dbg_warning("REDRAW GIF");
 	xwin_s* win = ev->userdata;
 	vector_foreach(gif->frames,i){
@@ -129,6 +132,26 @@ __private int child_draw(xorgEvent_s* ev){
 		delay_ms(gif->frames[i].delay);
 		//delay_ms(1500);
 	}
+*/
+	dbg_warning("REDRAW MEDIA");
+	xwin_s* win = ev->userdata;
+	media_resize_set(media, win->surf->img);	
+
+	int ret = 0;
+	while( ret >= 0 ){
+		const size_t ts = time_us();
+		ret=media_decode(media);
+		if( ret > 0 ){
+			xorg_win_surface_redraw(ev->x, ev->win, win->surf);
+			const size_t te = time_us();
+			media_sleep(media);
+			const size_t ted = time_us();
+			const size_t T = te-ts;
+			const size_t D = ted-ts;
+			printf("time:: max:%lu fps:%f del:%lu fps:%f\n", T, 1.0/(T/1000000.0), D, 1.0/(D/1000000.0) );
+		}
+	}
+
 	return 0;
 }
 
@@ -152,11 +175,11 @@ xwin_s* main_win(xorg_s* x){
 	win->child = NULL;
 
 	win->child = mem_new(xwin_s);
-	win->child->px = 30;
-	win->child->py = 20;
+	win->child->px = 10;
+	win->child->py = 10;
 	win->child->x = x;
-	//win->child->draw = child_draw;
-	win->child->draw = main_draw;
+	win->child->draw = child_draw;
+	//win->child->draw = main_draw;
 	win->child->key = child_key;
 	win->child->move = NULL;
 	win->child->mouse = NULL;
@@ -164,14 +187,16 @@ xwin_s* main_win(xorg_s* x){
 
 	pos.x = win->child->px;
 	pos.y = win->child->py;
-	pos.w = 320;
-	pos.h = 180;
+	pos.w = 640;
+	pos.h = 480;
 	bkcol = g2d_color_gen(X_COLOR_MODE, 255, 0, 0, 0); 
+	
 	win->child->id = xorg_win_new(&win->child->surf, win->x, win->id, &pos, 0, bkcol);
 	win->child->redraw = child_redraw;
 
 	win->redraw(win->surf->img);
 	win->child->redraw(win->child->surf->img);
+
 	
 	xorg_win_surface_redraw(x, win->id, win->surf);
 	xorg_win_surface_redraw(x, win->child->id, win->child->surf);
@@ -249,6 +274,10 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	if( !bkimg ){
 		err_fail("loading image");
 	}
+
+	//media = media_load("/home/vbextreme/Immagini/test/small_bunny_1080p_60fps.mp4");
+	media = media_load("/home/vbextreme/Video/films/AliceNelPaeseDelleMeraviglie.mp4");
+	if( !media ) err_fail("media load");
 
 	deadpoll_s* dp = deadpoll_new();
 

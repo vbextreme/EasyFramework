@@ -152,6 +152,9 @@ unsigned g2d_compare_similar(g2dImage_s* a, g2dCoord_s* ca, g2dImage_s* b, g2dCo
 /** count bit in block*/
 unsigned g2d_bitcount(g2dImage_s* img, g2dCoord_s* coord);
 
+/** resize bicubic from src to dst */
+void g2d_resize_to(g2dImage_s* dst, g2dImage_s* src);
+
 /** return new image resize, bicubic*/
 g2dImage_s* g2d_resize(g2dImage_s* src, unsigned w, unsigned h);
 
