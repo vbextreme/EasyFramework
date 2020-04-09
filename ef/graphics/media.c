@@ -141,12 +141,12 @@ void media_resize_set(media_s* media, g2dImage_s* img){
 	dbg_error("VALID:: %u*%u", RNDTO2(img->w), RNDTO2(img->h));
 }
 
-__always_inline __private float cubic_hermite(float A, float B, float C, float D, float t){
-	float a = -A / 2.0f + (3.0f*B) / 2.0f - (3.0f*C) / 2.0f + D / 2.0f;
-	float b = A - (5.0f*B) / 2.0f + 2.0f*C - D / 2.0f;
-	float c = -A / 2.0f + C / 2.0f;
-	float d = B;
-	return a*t*t*t + b*t*t + c*t + d;
+
+__const inline __private float cubic_hermite(const float A, const float B, const float C, const float D, const float t){
+	const float a = -A / 2.0f + (3.0f*B) / 2.0f - (3.0f*C) / 2.0f + D / 2.0f;
+	const float b = A - (5.0f*B) / 2.0f + 2.0f*C - D / 2.0f;
+	const float c = -A / 2.0f + C / 2.0f;
+	return a*t*t*t + b*t*t + c*t + B;
 }
 
 __private g2dColor_t sample_bicubic(g2dImage_s* dst, AVFrame* frame, float u, float v){
@@ -218,13 +218,13 @@ __private g2dColor_t sample_bicubic(g2dImage_s* dst, AVFrame* frame, float u, fl
 	}
 
 	float value = cubic_hermite(col[0][0], col[1][0], col[2][0], col[3][0], yfract);
-	const double Y = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
+	const unsigned char Y = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
 
 	value = cubic_hermite(col[0][1], col[1][1], col[2][1], col[3][1], yfract);
-	const double U = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
+	const unsigned char U = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
 	
 	value = cubic_hermite(col[0][2], col[1][2], col[2][2], col[3][2], yfract);
-	const double V = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
+	const unsigned char V = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
 	
 	int r = Y + 1.402 * (V-128);
 	int g = Y - 0.344 * (U-128) - 0.714*(V-128);
@@ -245,30 +245,34 @@ __private g2dColor_t sample_bicubic(g2dImage_s* dst, AVFrame* frame, float u, fl
 
 __private void frame_resize_to(g2dImage_s* dst, AVFrame* frame){
 	dbg_info("resize %u*%u -> %u*%u", frame->width, frame->height, dst->w, dst->h);
-	for( unsigned y = 0; y < dst->h; ++y ){
-		float v = (float)y / (float)(dst->h - 1);
+	const unsigned w = dst->w;
+	const unsigned h = dst->h;
+	__parallef
+	for( unsigned y = 0; y < h; ++y ){
+		const float v = (const float)y / (const float)(h - 1);
 		unsigned const row = g2d_row(dst, y);
 		g2dColor_t* dcol = g2d_color(dst, row, 0);
-        __parallef 
-		for( unsigned x = 0; x < dst->w; ++x ){
-            float u = (float)x / (float)(dst->w - 1);
+		for( unsigned x = 0; x < w; ++x ){
+            const float u = (const float)x / (const float)(w - 1);
             dcol[x] = sample_bicubic(dst, frame, u, v);
         }
     }
 }
 
 __private void frame_yuv_to_rgb(g2dImage_s* dst, AVFrame* frame){
-	for( size_t y = 0; y < dst->h; ++y){
+	const unsigned w = dst->w;
+	const unsigned h = dst->h;
+	__parallef
+	for( size_t y = 0; y < h; ++y){
 		const unsigned row = g2d_row(dst, y);
 		g2dColor_t* pix = g2d_color(dst, row, 0);
 		const unsigned rowYFrame = frame->linesize[0] * y;
 		const unsigned rowUFrame = frame->linesize[1] * (y>>1);
-		const unsigned rowVFrame = frame->linesize[2] * (y>>1);
-		__parallef
-		for( size_t x = 0; x < dst->w; ++x ){
-			const double Y = frame->data[0][rowYFrame + x];
-			const double U = frame->data[1][rowUFrame + (x>>1)];
-			const double V = frame->data[2][rowVFrame + (x>>1)];
+		const unsigned rowVFrame = frame->linesize[2] * (y>>1);	
+		for( size_t x = 0; x < w; ++x ){
+			const unsigned char Y = frame->data[0][rowYFrame + x];
+			const unsigned char U = frame->data[1][rowUFrame + (x>>1)];
+			const unsigned char V = frame->data[2][rowVFrame + (x>>1)];
 			int r = Y + 1.402 * (V-128);
 			int g = Y - 0.344 * (U-128) - 0.714*(V-128);
 		   	int b = Y + 1.772 * (U-128);

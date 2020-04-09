@@ -842,12 +842,11 @@ unsigned g2d_bitcount(g2dImage_s* img, g2dCoord_s* coord){
 	}
 }
 
-__always_inline __private float cubic_hermite(float A, float B, float C, float D, float t){
-	float a = -A / 2.0f + (3.0f*B) / 2.0f - (3.0f*C) / 2.0f + D / 2.0f;
-	float b = A - (5.0f*B) / 2.0f + 2.0f*C - D / 2.0f;
-	float c = -A / 2.0f + C / 2.0f;
-	float d = B;
-	return a*t*t*t + b*t*t + c*t + d;
+__const inline __private float cubic_hermite(const float A, const float B, const float C, const float D, const float t){
+	const float a = -A / 2.0f + (3.0f*B) / 2.0f - (3.0f*C) / 2.0f + D / 2.0f;
+	const float b = A - (5.0f*B) / 2.0f + 2.0f*C - D / 2.0f;
+	const float c = -A / 2.0f + C / 2.0f;
+	return a*t*t*t + b*t*t + c*t + B;
 }
 
 __private g2dColor_t sample_bicubic(g2dImage_s* img, float u, float v){
@@ -914,12 +913,15 @@ __private g2dColor_t sample_bicubic(g2dImage_s* img, float u, float v){
  
 void g2d_resize_to(g2dImage_s* dst, g2dImage_s* src){
 	dbg_info("resize %u*%u -> %u*%u", src->w, src->h, dst->w, dst->h);
-	for( unsigned y = 0; y < dst->h; ++y ){
-		float v = (float)y / (float)(dst->h - 1);
+	const unsigned w = dst->w;
+	const unsigned h = dst->h;
+	__parallef
+	for( unsigned y = 0; y < h; ++y ){
+		const float v = (const float)y / (const float)(h - 1);
 		unsigned const row = g2d_row(dst, y);
 		g2dColor_t* dcol = g2d_color(dst, row, 0);
-        __parallef for( unsigned x = 0; x < dst->w; ++x ){
-            float u = (float)x / (float)(dst->w - 1);
+		for( unsigned x = 0; x < w; ++x ){
+            const float u = (const float)x / (const float)(w - 1);
             dcol[x] = sample_bicubic(src, u, v);
         }
     }
