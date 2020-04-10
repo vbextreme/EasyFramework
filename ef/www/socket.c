@@ -337,7 +337,7 @@ socket_s* socket_connect(socket_s* s, const char* addr, int port, tlsSession_s* 
 	return s;
 }
 
-__private thread_local char inet6str[SOCKET_IPV6_LENGHT];
+__private __thread char inet6str[SOCKET_IPV6_LENGHT];
 __private const char* inet6_ntoa(struct in6_addr* addr){
 	inet_ntop(AF_INET6, addr, inet6str, SOCKET_IPV6_LENGHT - 1);
 	inet6str[SOCKET_IPV6_LENGHT-1] = 0;

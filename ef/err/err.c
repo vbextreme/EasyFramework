@@ -3,7 +3,7 @@
 #include <ef/mth.h>
 #include <stdarg.h>
 
-thread_local eerr_s gerr;
+__thread eerr_s gerr;
 
 void err_begin(void){
 	gerr.size = ERR_REALLOC;

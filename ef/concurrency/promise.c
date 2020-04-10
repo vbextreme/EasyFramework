@@ -23,11 +23,11 @@
 //promise.id 1 = main
 //
 
-__private thread_local promise_s* running = NULL;
-__private thread_local long rcount = 0;
-__private thread_local volatile promise_s* prot;
-__private thread_local deadpoll_s* promisedp = NULL;
-__private thread_local phq_s* timequeue = NULL;
+__private __thread promise_s* running = NULL;
+__private __thread long rcount = 0;
+__private __thread volatile promise_s* prot;
+__private __thread deadpoll_s* promisedp = NULL;
+__private __thread phq_s* timequeue = NULL;
 
 __private void promise_push(promise_s* co){
 	++rcount;
