@@ -18,6 +18,7 @@
 __private rbhash_s* allgui;
 __private xorg_s* X;
 __private phq_s* timergui;
+__private deadpoll_s* dpgui;
 
 __private unsigned nohash_window(const char* name, __unused size_t len){
 	return *(uint32_t*)name;
@@ -32,7 +33,11 @@ void gui_begin(){
 	timergui = phq_new(GUI_TIMERS_SIZE, GUI_TIMERS_SIZE, phq_cmp_asc);
 	if( !timergui ) err_fail("creating timer gui");
 	X = xorg_client_new(NULL, 0);
+	dpgui = deadpoll_new();
+	if( !dpgui ) err_fail("deadpoll");
+	gui_deadpoll_register(dpgui);
 	
+
 }
 
 void gui_end(){
@@ -41,22 +46,31 @@ void gui_end(){
 	phq_free(timergui);
 	xorg_client_free(X);
 	gui_resources_free();
+	gui_deadpoll_unregister(dpgui);
+	deadpoll_free(dpgui);
 }
 
 __private void allgui_add(gui_s* gui){
-	if( rbhash_add(allgui, (char*)&gui->id, GUI_KEY_SIZE, gui) ){
+	dbg_info("register gui: %u", gui->id);
+	char tmp[32];
+	sprintf(tmp, "%u", gui->id);
+	if( rbhash_add(allgui, tmp, GUI_KEY_SIZE, gui) ){
 		err_fail("add gui %d::%s::%s on allgui", (uint32_t)gui->id, gui->name, gui->class);
 	}
 }
 
 __private void allgui_remove(gui_s* gui){
-	if( rbhash_remove(allgui, (char*)&gui->id, GUI_KEY_SIZE) ){
+	char tmp[32];
+	sprintf(tmp, "%u", gui->id);
+	if( rbhash_remove(allgui, tmp, GUI_KEY_SIZE) ){
 		err_fail("add gui %d::%s::%s on allgui", (uint32_t)gui->id, gui->name, gui->class);
 	}
 }
 
 __private gui_s* allgui_find(xcb_window_t id){
-	return rbhash_find(allgui, (char*)&id, GUI_KEY_SIZE);
+	char tmp[32];
+	sprintf(tmp, "%u", id);
+	return rbhash_find(allgui, tmp, GUI_KEY_SIZE);
 }
 
 void gui_register_root_event(void){
@@ -92,7 +106,7 @@ gui_s* gui_new(
 	gui->key = NULL;
 	gui->mouse = NULL;
 	gui->focus = NULL;
-	gui->map = NULL;
+	gui->map = gui_event_map;
 	gui->move = gui_event_move;
 	gui->atom = NULL;
 	gui->client = NULL;
@@ -149,20 +163,24 @@ gui_s* gui_child_remove(gui_s* parent, gui_s* child){
 }
 
 void gui_name(gui_s* gui, const char* name){
+	if( !name ) return;
 	if( gui->name ) free(gui->name);
 	gui->name = str_dup(name, 0);
 	xorg_win_title(X, gui->id, gui->name);
 }
 
 void gui_class(gui_s* gui, const char* class){
+	if( !class ) return;
 	if( gui->class ) free(gui->class);
 	gui->class = str_dup(class, 0);
 	xorg_win_class(X, gui->id, gui->name);
 }
 
 void gui_show(gui_s* gui, int show){
-	if( show && gui->draw ) gui->draw(gui, NULL);
 	xorg_win_show(X, gui->id, show);
+	//if( show && gui->draw ){
+	//	gui->draw(gui, NULL);
+	//}
 }
 
 void gui_move(gui_s* gui, int x, int y){
@@ -177,10 +195,15 @@ void gui_focus(gui_s* gui){
 	xorg_win_focus(X, gui->id);
 }
 
+void gui_draw(gui_s* gui){
+	if( gui->draw ) gui->draw(gui,NULL);
+}
+
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 	if( gui->background.mode == GUI_BK_NO_OP ) return 0;
 
 	if( gui->background.mode & GUI_BK_COLOR ){
+		dbg_info("redraw bk");
 		g2dCoord_s origin;
 		origin.x = 0;
 		origin.y = 0;
@@ -190,6 +213,7 @@ int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 	}
 
 	if( gui->background.mode & GUI_BK_IMAGE ){
+		dbg_info("redraw img");
 		if( gui->surface->img->w != gui->background.img->w || gui->surface->img->h != gui->background.img->h ){
 			g2d_resize_to(gui->surface->img, gui->background.img);
 		}
@@ -205,6 +229,11 @@ int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 	return 0;
 }
 
+int gui_event_map(gui_s* gui, __unused xorgEvent_s* event){
+	xorg_win_surface_redraw(X, gui->id, gui->surface);
+	return 0;
+}
+
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage){
 	xorg_win_surface_redraw(X, gui->id, gui->surface);
 	return 0;
@@ -212,7 +241,9 @@ int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage){
 
 int gui_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert( event->type == XORG_EVENT_MOVE );
+	dbg_info("move event");
 	if( gui->surface->img->w != event->move.coord.w || gui->surface->img->h != event->move.coord.h ){
+		dbg_info("resize surface");
 		xorg_surface_resize(gui->surface, event->move.coord.w, event->move.coord.h);
 		if( gui->redraw ) gui->redraw(gui, NULL);
 		if( gui->draw ) gui->draw(gui, NULL);
@@ -263,6 +294,7 @@ int gui_event_call(xorgEvent_s* ev){
 		case XORG_EVENT_ATOM:           if( gui->atom )    return gui->atom(gui,ev);    break;
 		case XORG_EVENT_CLIENT:         if( gui->client )  return gui->client(gui,ev);  break;
 	}
+	dbg_warning("not event called");
 	return 0;
 }
 
@@ -302,30 +334,33 @@ int gui_deadpoll_event(deadpoll_s* dp){
 
 	phqElement_s* el = phq_peek(timergui);
 	if( el ){
+		dbg_info("timer peek");
 		guiTimer_s* timer = el->data;
 		timems = timer->raisedon - time_ms();
 		if( timems <= 0 ){
+			dbg_info("timer overflow");
 			gui_timer_timeout(timer);
 			return 1;
 		}
 	}
+	dbg_info("check event, timeout %ld", timems);
 	int ret = deadpoll_event(dp, &timems);
 	if( ret == DEADPOLL_TIMEOUT && el ){
+		dbg_info("timeout");
 		gui_timer_timeout(el->data);
 		return 1;
 	}
-	if( ret == DEADPOLL_EVENT ) return 1;
+	if( ret == DEADPOLL_EVENT ){
+		dbg_info("event end");
+		return 1;
+	}
+	dbg_error("deadpoll");
 	return -1;
 }
 
 void gui_loop(void){
-	deadpoll_s* dp = deadpoll_new();
-	if( !dp ) err_fail("deadpoll");
-
-	gui_deadpoll_register(dp);
-	while( gui_deadpoll_event(dp) > 0 );
-	gui_deadpoll_unregister(dp);
-	deadpoll_free(dp);
+	xorg_client_flush(X);
+	while( gui_deadpoll_event(dpgui) > 0 );
 }
 
 guiTimer_s* gui_timer_new(gui_s* gui, size_t ms, void* userdata){

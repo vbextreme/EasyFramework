@@ -94,7 +94,9 @@ void gui_show(gui_s* gui, int show);
 void gui_move(gui_s* gui, int x, int y);
 void gui_resize(gui_s* gui, int w, int h);
 void gui_focus(gui_s* gui);
+void gui_draw(gui_s* gui);
 
+int gui_event_map(gui_s* gui, __unused xorgEvent_s* event);
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);
 int gui_event_move(gui_s* gui, xorgEvent_s* event);
