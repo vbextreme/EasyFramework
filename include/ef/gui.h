@@ -69,6 +69,7 @@ typedef struct gui{
 	g2dCoord_s position;
 	guiBackground_s background;
 	xcb_window_t id;
+	int type;
 }gui_s;
 
 #define gui_color(A,R,G,B) g2d_color_gen(X_COLOR_MODE, A, R, G, B)

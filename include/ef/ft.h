@@ -142,10 +142,10 @@ int ft_fonts_is_monospace(ftFonts_s* fonts);
 unsigned ft_line_height(ftFonts_s* fonts);
 
 /** return line lenght in pixels*/
-unsigned ft_line_lenght(ftFonts_s* fonts, utf8_t* str);
+unsigned ft_line_lenght(ftFonts_s* fonts, const utf8_t* str);
 
 /** return height in autowrap text*/
-unsigned ft_autowrap_height(ftFonts_s* fonts, utf8_t* str, unsigned width);
+unsigned ft_autowrap_height(ftFonts_s* fonts, const utf8_t* str, unsigned width);
 
 /** draw utf in to dst on position pos with color fore and background back at origin X, cls clear background, pos is incremented*/
 void g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dColor_t fore, g2dColor_t back, unsigned originX, int cls);

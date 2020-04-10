@@ -606,13 +606,13 @@ unsigned ft_line_height(ftFonts_s* fonts){
 	return rch->img->h;
 }
 
-unsigned ft_line_lenght(ftFonts_s* fonts, utf8_t* str){
+unsigned ft_line_lenght(ftFonts_s* fonts, const utf8_t* str){
 	if( !str || !*str ){
 		dbg_warning("no str");
 		return 0;
 	}
 	unsigned lenght = 0;
-	utf8Iterator_s it = utf8_iterator(str, 0);
+	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
 	utf_t u;	
 	while( (u = utf8_iterator_next(&it)) ){
 		if( u >= UTF_PRIVATE0_START ){
@@ -624,7 +624,7 @@ unsigned ft_line_lenght(ftFonts_s* fonts, utf8_t* str){
 	return lenght;
 }	
 
-unsigned ft_autowrap_height(ftFonts_s* fonts, utf8_t* str, unsigned width){
+unsigned ft_autowrap_height(ftFonts_s* fonts, const utf8_t* str, unsigned width){
 	if( !str ){
 		dbg_warning("no str");
 		return 0;
@@ -634,7 +634,7 @@ unsigned ft_autowrap_height(ftFonts_s* fonts, utf8_t* str, unsigned width){
 	unsigned height = monoh;
 	unsigned lenght = 0;
 
-	utf8Iterator_s it = utf8_iterator(str, 0);
+	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
 	utf_t utf;
 	while( (utf = utf8_iterator_next(&it)) ){
 		if( utf >= UTF_PRIVATE0_START ){

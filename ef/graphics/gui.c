@@ -128,6 +128,7 @@ gui_s* gui_new(
 	gui->background.img = NULL;
 	gui->background.mode = GUI_BK_COLOR;
 	gui->surface = NULL;
+	gui->type = GUI_TYPE_WINDOW;
 
 	gui->id = xorg_win_new(&gui->surface, X, xcbParent, &gui->position, border, gui->background.color);
 	gui_name(gui, name);
