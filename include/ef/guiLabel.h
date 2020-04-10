@@ -1,7 +1,7 @@
 #ifndef __EF_GUI_LABEL_H__
 #define __EF_GUI_LABEL_H__
 
-#include <gui.h>
+#include <ef/gui.h>
 
 typedef struct guiLabel{
 	utf8_t* text;

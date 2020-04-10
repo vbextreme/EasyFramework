@@ -4,7 +4,6 @@
 #include <ef/ft.h>
 
 guiLabel_s* label_new(ftFonts_s* font, int autowrap, g2dColor_t foreground){
-	iassert(text);
 	guiLabel_s* lbl = mem_new(guiLabel_s);
 	lbl->text = NULL;
 	lbl->autowrap = autowrap;
@@ -46,14 +45,14 @@ void gui_label_text_set(gui_s* gui, const utf8_t* text){
 }
 
 void gui_label_position_set(gui_s* gui, unsigned x, unsigned y){
-	iassert(lbl->type == GUI_TYPE_LABEL);
+	iassert(gui->type == GUI_TYPE_LABEL);
 	guiLabel_s* lbl = gui->control;
 	lbl->position.x = x;
 	lbl->position.y = y;
 }
 
 int gui_label_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
-	iassert(lbl->type == GUI_TYPE_LABEL);
+	iassert(gui->type == GUI_TYPE_LABEL);
 	guiLabel_s* lbl = gui->control;
 
 	gui_event_redraw(gui, NULL);
