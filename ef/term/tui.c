@@ -41,6 +41,9 @@ __private void tui_att_init(void){
 	for( size_t i = 0; i < 16; ++i ){
 		/*scanbuild get error because term_escapemk macro not working on clang*/
 		int c = i < 8 ? i : i - 8 + 60;
+#ifdef __clang__
+	printf(":) %d", c);
+#endif
 		term_escapemk(tmp, "color16_fg", c);
 		tuiAtt[i] = term_utf_custom(0, tmp);
 		term_escapemk(tmp, "color16_bk", c);

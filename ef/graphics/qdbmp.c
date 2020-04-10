@@ -399,7 +399,7 @@ void BMP_GetPixelRGB( BMP* bmp, UINT x, UINT y, UCHAR* r, UCHAR* g, UCHAR* b )
 	UINT	bytes_per_row;
 	UCHAR	bytes_per_pixel;
 
-	if ( bmp == NULL || x < 0 || x >= bmp->Header.Width || y < 0 || y >= bmp->Header.Height )
+	if ( bmp == NULL || x >= bmp->Header.Width || y >= bmp->Header.Height )
 	{
 		BMP_LAST_ERROR_CODE = BMP_INVALID_ARGUMENT;
 	}
@@ -439,7 +439,7 @@ void BMP_SetPixelRGB( BMP* bmp, UINT x, UINT y, UCHAR r, UCHAR g, UCHAR b )
 	UINT	bytes_per_row;
 	UCHAR	bytes_per_pixel;
 
-	if ( bmp == NULL || x < 0 || x >= bmp->Header.Width || y < 0 || y >= bmp->Header.Height )
+	if ( bmp == NULL || x >= bmp->Header.Width || y >= bmp->Header.Height )
 	{
 		BMP_LAST_ERROR_CODE = BMP_INVALID_ARGUMENT;
 	}
@@ -477,7 +477,7 @@ void BMP_GetPixelIndex( BMP* bmp, UINT x, UINT y, UCHAR* val )
 	UCHAR*	pixel;
 	UINT	bytes_per_row;
 
-	if ( bmp == NULL || x < 0 || x >= bmp->Header.Width || y < 0 || y >= bmp->Header.Height )
+	if ( bmp == NULL || x >= bmp->Header.Width || y >= bmp->Header.Height )
 	{
 		BMP_LAST_ERROR_CODE = BMP_INVALID_ARGUMENT;
 	}
@@ -511,7 +511,7 @@ void BMP_SetPixelIndex( BMP* bmp, UINT x, UINT y, UCHAR val )
 	UCHAR*	pixel;
 	UINT	bytes_per_row;
 
-	if ( bmp == NULL || x < 0 || x >= bmp->Header.Width || y < 0 || y >= bmp->Header.Height )
+	if ( bmp == NULL || x >= bmp->Header.Width || y >= bmp->Header.Height )
 	{
 		BMP_LAST_ERROR_CODE = BMP_INVALID_ARGUMENT;
 	}

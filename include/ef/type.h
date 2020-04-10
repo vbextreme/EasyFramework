@@ -138,7 +138,8 @@ typedef enum { FALSE, TRUE } bool_t;
 #define UNSAFE_BEGIN(FLAGS) DO_PRAGMA(GCC diagnostic push); DO_PRAGMA(GCC diagnostic ignored FLAGS)
 #define UNSAFE_END DO_PRAGMA(GCC diagnostic pop)
 
-#ifdef OMP_ENABLE
+/*disable scan build error*/
+#if defined OMP_ENABLE && !defined __clang__
 /** omp parallel for*/
 	#define __parallef DO_PRAGMA(omp parallel for)
 /** omp parallel for collaps Z */

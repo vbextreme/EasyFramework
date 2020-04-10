@@ -13,7 +13,6 @@
 #define FONT_GLYPH_MAX 512
 #define FONT_GLYPH_KEY sizeof(utf_t)
 
-
 __private FT_Library ftlib;
 
 #undef FTERRORS_H_
@@ -24,22 +23,22 @@ __private FT_Library ftlib;
 __private const char* ftStrError[] = 
 #include FT_ERRORS_H
 
-
 __private ftUtfCustom_s* utfCustom;
-
 
 __private unsigned nohash_utf(const char* name, __unused size_t len){
 	return *(unsigned*)name;
 }
 
-inline __private const char* ft_utf_key(size_t* len, utf_t id){
+#define cast_key(K,L) (((char*)(&K))+(L))
+
+inline __const __private size_t ft_utf_key(utf_t id){
 	char* tmp = (char*)&id;
-	if( tmp[0] ) { *len = 4; return &tmp[0];}
-	if( tmp[1] ) { *len = 3; return &tmp[1];}
-	if( tmp[2] ) { *len = 2; return &tmp[2];}
-	if( tmp[3] ) { *len = 1; return &tmp[3];}
-	err_fail("fail to convert key to id");
-	return NULL;
+	if( tmp[0] ) { return 4;}
+	if( tmp[1] ) { return 3;}
+	if( tmp[2] ) { return 2;}
+	if( tmp[3] ) { return 1;}
+	err_fail("fail to convert utf to id");
+	return 0;
 }
 
 err_t ft_begin(void){
@@ -246,9 +245,8 @@ err_t ft_font_size_dpi(ftFont_s* font, long w, long h, long dpiw, long dpih){
 }
 
 ftRender_s* ft_glyph_get(ftFonts_s* fonts, utf_t utf){
-	size_t len;
-	const char* key = ft_utf_key(&len, utf);
-	return rbhash_find(fonts->charmap, key, len);
+	size_t len = ft_utf_key(utf);
+	return rbhash_find(fonts->charmap, cast_key(utf,len), len);
 }
 
 __private void ft_glyph_render_hori_mono_byte(ftRender_s* glyph, const unsigned w, const unsigned h, unsigned char* buf, g2dMode_e mode){
@@ -411,9 +409,8 @@ __private ftRender_s* ft_font_glyph_load(ftFonts_s* fonts, ftFont_s* font, utf_t
 	glyph->descender = font->descender;
 	glyph->utf = utf;
 
-	size_t len;
-	const char* key = ft_utf_key(&len, utf);	
-	if( rbhash_add(fonts->charmap, key, len, glyph) ){
+	size_t len = ft_utf_key(utf);	
+	if( rbhash_add(fonts->charmap, cast_key(utf,len), len, glyph) ){
 		err_push("fail to add new glyph");
 		free(glyph);
 		return NULL;

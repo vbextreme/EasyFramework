@@ -50,37 +50,36 @@ void gui_end(){
 	deadpoll_free(dpgui);
 }
 
-inline __private const char* gui_id_key(size_t* len, xcb_window_t id){
+#define cast_key(K,L) (((char*)(&K))+(L))
+
+inline __const __private size_t gui_id_key(xcb_window_t id){
 	char* tmp = (char*)&id;
-	if( tmp[0] ) { *len = 4; return &tmp[0];}
-	if( tmp[1] ) { *len = 3; return &tmp[1];}
-	if( tmp[2] ) { *len = 2; return &tmp[2];}
-	if( tmp[3] ) { *len = 1; return &tmp[3];}
+	if( tmp[0] ) { return 4;}
+	if( tmp[1] ) { return 3;}
+	if( tmp[2] ) { return 2;}
+	if( tmp[3] ) { return 1;}
 	err_fail("fail to convert key to id");
-	return NULL;
+	return 0;
 }
 
 __private void allgui_add(gui_s* gui){
 	dbg_info("register gui: %u", gui->id);
-	size_t len;
-	const char* key = gui_id_key(&len, gui->id);
-	if( rbhash_add(allgui, key, len, gui) ){
+	size_t len = gui_id_key(gui->id);
+	if( rbhash_add(allgui, cast_key(gui->id, len) , len, gui) ){
 		err_fail("add gui %d::%s::%s on allgui", (uint32_t)gui->id, gui->name, gui->class);
 	}
 }
 
 __private void allgui_remove(gui_s* gui){
-	size_t len;
-	const char* key = gui_id_key(&len, gui->id);
-	if( rbhash_remove(allgui, key, len) ){
+	size_t len = gui_id_key(gui->id);
+	if( rbhash_remove(allgui, cast_key(gui->id,len), len) ){
 		err_fail("add gui %d::%s::%s on allgui", (uint32_t)gui->id, gui->name, gui->class);
 	}
 }
 
 __private gui_s* allgui_find(xcb_window_t id){
-	size_t len;
-	const char* key = gui_id_key(&len, id);
-	return rbhash_find(allgui, key, len);
+	size_t len = gui_id_key(id);
+	return rbhash_find(allgui, cast_key(id, len), len);
 }
 
 void gui_register_root_event(void){

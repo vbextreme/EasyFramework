@@ -97,7 +97,7 @@ g2dImage_s* g2d_load_jpeg(char const* path){
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
 	fclose(infile);
-
+	scan_build_unknown_cleanup(buf);
 	return (g2dImage_s*)img;
 }
 

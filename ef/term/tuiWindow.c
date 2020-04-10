@@ -46,7 +46,7 @@ int tui_window_msgbox(tui_s* root, int id, utf8_t* name, int border, int r, int 
 	int ret = -1;
 	unsigned const br = pos.r + siz.height - 1;
 	unsigned bc = siz.width + pos.c;
-	tui_s* btn;
+	tui_s* btn = NULL;
 	for( size_t i = 0; i < buttonCount; ++i){
 		unsigned bw = utf_width(buttonName[i]);
 		bc -= (bw + 1);
@@ -55,7 +55,7 @@ int tui_window_msgbox(tui_s* root, int id, utf8_t* name, int border, int r, int 
 		tui_button_set(btn, buttonName[i]);
 		tui_button_onpress_set(btn, msgbox_press, &ret);
 	}	
-
+	iassert(btn);
 	tui_root_wait(msgbox, btn);
 	
 	return ret;
