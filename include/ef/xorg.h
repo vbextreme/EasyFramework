@@ -136,6 +136,25 @@ typedef struct xorgWindow{
 
 typedef enum {XORG_MOUSE_RELEASE, XORG_MOUSE_PRESS, XORG_MOUSE_MOVE, XORG_MOUSE_ENTER, XORG_MOUSE_LEAVE, XORG_MOUSE_CLICK, XORG_MOUSE_DBLCLICK} xorgMouse_e;
 typedef enum {XORG_KEY_RELEASE, XORG_KEY_PRESS} xorgKey_e;
+typedef enum {
+	XORG_EVENT_CREATE = XCB_CREATE_NOTIFY,
+	XORG_EVENT_DESTROY = XCB_DESTROY_NOTIFY,
+	XORG_EVENT_DRAW = XCB_EXPOSE,
+	XORG_EVENT_KEY_PRESS = XCB_KEY_PRESS,
+	XORG_EVENT_KEY_RELEASE = XCB_KEY_RELEASE,
+	XORG_EVENT_BUTTON_PRESS = XCB_BUTTON_PRESS,
+	XORG_EVENT_BUTTON_RELEASE = XCB_BUTTON_RELEASE,
+	XORG_EVENT_MOTION =	XCB_MOTION_NOTIFY,
+	XORG_EVENT_ENTER = XCB_ENTER_NOTIFY,
+	XORG_EVENT_LEAVE = XCB_LEAVE_NOTIFY,
+	XORG_EVENT_FOCUS_IN = XCB_FOCUS_IN,
+	XORG_EVENT_FOCUS_OUT = XCB_FOCUS_OUT,
+	XORG_EVENT_MAP = XCB_MAP_NOTIFY,
+	XORG_EVENT_UNMAP = XCB_UNMAP_NOTIFY,
+	XORG_EVENT_MOVE = XCB_CONFIGURE_NOTIFY,
+	XORG_EVENT_ATOM = XCB_PROPERTY_NOTIFY,
+	XORG_EVENT_CLIENT = XCB_CLIENT_MESSAGE
+}xorgEvent_e;
 
 typedef struct xorgMouse{
 	xorgMouse_e event;
@@ -212,34 +231,6 @@ typedef struct xorgEvent{
 		xorgClient_s client;
 	};
 }xorgEvent_s;	
-
-/*
-typedef void(*xorgGeneric_f)(xorg_s*, void* user);
-typedef void(*xorgCoord_f)(xorg_s*, void* user, g2dCoord_s*);
-typedef void(*xorgValue_f)(xorg_s* x, void* user, int value);
-typedef void(*xorgMessage_f)(xorg_s* x, void* user, int format, int atom, uint8_t* data);
-typedef void(*xorgMouse_f)(xorgMouse_s*);
-typedef void(*xorgKeyboard_f)(xorgKeyboard_s*);
-typedef void(*xorgMove_f)(xorgMove_s*);
-
-typedef struct xorgCallbackEvent{
-	xorgGeneric_f creat;
-	xorgGeneric_f terminate;
-	xorgCoord_f redraw;
-	xorgGeneric_f paint;
-	xorgGeneric_f destroy;
-	xorgGeneric_f loop;
-	xorgMouse_f mouse;
-	xorgKeyboard_f keyboard;
-	xorgValue_f focus;
-	xorgValue_f visibility;
-	xorgValue_f show;
-	xorgMove_f move;
-	xorgValue_f atom;
-	xorgMessage_f message;
-	void* user;
-}xorgCallbackEvent_s;
-*/
 
 #define xorg_root(XORG) ((XORG)->screen->root)
 #define xorg_root_x(XORG) ((XORG)->monitorCurrent->size.x)

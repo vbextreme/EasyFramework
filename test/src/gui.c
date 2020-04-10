@@ -42,6 +42,7 @@ __private int child_key(xorgEvent_s* ev){
 }
 
 __private int main_key(xorgEvent_s* ev){
+	dbg_info("KEY PRESS");
 	xwin_s* win = ev->userdata;
 
 	if( *ev->keyboard.utf8 == '\x1B' ){
@@ -72,6 +73,7 @@ __private int main_key(xorgEvent_s* ev){
 }
 
 __private int main_mouse_move(xorgEvent_s* ev){
+	dbg_info("MOUSE MOVE");
 	xwin_s* win = ev->userdata;
 
 	win->child->px = ev->mouse.relative.x;
@@ -83,6 +85,7 @@ __private int main_mouse_move(xorgEvent_s* ev){
 
 
 __private int main_move(xorgEvent_s* ev){
+	dbg_error("MOOOOOOOOVEEEEE");
 	xwin_s* win = ev->userdata;
 	if( ev->move.coord.w != win->surf->img->w || ev->move.coord.h != win->surf->img->h){
 		dbg_info("redraw because: %d != %d && %d != %d",  ev->move.coord.w, win->surf->img->w, ev->move.coord.h, win->surf->img->h);
@@ -106,11 +109,10 @@ __private void main_redraw(g2dImage_s* img){
 }
 
 __private void child_redraw(g2dImage_s* img){
-	
-//	__g2d_free g2dImage_s* resize = g2d_resize(bkimg, img->w, img->h);
-//	g2dCoord_s s = { .x = 0, .y =0, .w =img->w, .h = img->h };
-//	g2dCoord_s d = { .x = 0, .y =0, .w =img->w, .h = img->h };
-//	g2d_bitblt(img, &d, resize, &s);	
+	__g2d_free g2dImage_s* resize = g2d_resize(bkimg, img->w, img->h);
+	g2dCoord_s s = { .x = 0, .y =0, .w =img->w, .h = img->h };
+	g2dCoord_s d = { .x = 0, .y =0, .w =img->w, .h = img->h };
+	g2d_bitblt(img, &d, resize, &s);	
 //	g2dColor_t bkcol = g2d_color_gen(X_COLOR_MODE, 255, 0, 200, 125); 
 //	g2d_clear(img, bkcol, &d);
 //	g2d_bitblt_alpha(img, &d, bkimg, &s);
@@ -178,8 +180,8 @@ xwin_s* main_win(xorg_s* x){
 	win->child->px = 10;
 	win->child->py = 10;
 	win->child->x = x;
-	win->child->draw = child_draw;
-	//win->child->draw = main_draw;
+	//win->child->draw = child_draw;
+	win->child->draw = main_draw;
 	win->child->key = child_key;
 	win->child->move = NULL;
 	win->child->mouse = NULL;
@@ -187,8 +189,8 @@ xwin_s* main_win(xorg_s* x){
 
 	pos.x = win->child->px;
 	pos.y = win->child->py;
-	pos.w = 640;
-	pos.h = 480;
+	pos.w = 40;
+	pos.h = 80;
 	bkcol = g2d_color_gen(X_COLOR_MODE, 255, 0, 0, 0); 
 	
 	win->child->id = xorg_win_new(&win->child->surf, win->x, win->id, &pos, 0, bkcol);
@@ -243,7 +245,12 @@ __private err_t x_events(__unused deadpoll_s* dp, __unused int ev, void* arg){
 			break;
 
 			case XCB_CONFIGURE_NOTIFY:
+				dbg_error("AN EVENT CONF");
 				if( sel->move ) sel->move(event);
+			break;
+
+			case XORG_EVENT_ATOM:
+				dbg_error("ATOM");
 			break;
 
 		}
@@ -277,9 +284,9 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 
 	//media = media_load("/home/vbextreme/Immagini/test/small_bunny_1080p_60fps.mp4");
 	//media = media_load("/home/vbextreme/Video/films/AliceNelPaeseDelleMeraviglie.mp4");
-	media = media_load("/home/vbextreme/Video/films/Visti/Cars.mp4");
+	//media = media_load("/home/vbextreme/Video/films/Visti/Cars.mp4");
 
-	if( !media ) err_fail("media load");
+	//if( !media ) err_fail("media load");
 
 	deadpoll_s* dp = deadpoll_new();
 

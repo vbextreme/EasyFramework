@@ -29,6 +29,8 @@ typedef struct media{
 	int pacstate;
 	g2dImage_s* frame;
 	g2dImage_s* frameScaled;
+
+	struct SwsContext *swsctx;
 }media_s;
 
 void media_free(media_s* media){
@@ -134,13 +136,9 @@ media_s* media_load(const char* path){
 	return media;
 }
 
-#define RNDTO2(X) ((X) & 0xFFFFFFFE)
-
 void media_resize_set(media_s* media, g2dImage_s* img){
 	media->frameScaled = img;
-	dbg_error("VALID:: %u*%u", RNDTO2(img->w), RNDTO2(img->h));
 }
-
 
 __const inline __private float cubic_hermite(const float A, const float B, const float C, const float D, const float t){
 	const float a = -A / 2.0f + (3.0f*B) / 2.0f - (3.0f*C) / 2.0f + D / 2.0f;

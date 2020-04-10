@@ -97,6 +97,8 @@ src += [ 'ef/graphics/imageBmp.c' ]
 src += [ 'ef/graphics/media.c' ]
 src += [ 'ef/graphics/ft.c' ]
 src += [ 'ef/graphics/xorg.c' ]
+src += [ 'ef/graphics/gui.c' ]
+src += [ 'ef/graphics/guiResources.c' ]
 
 ##################
 # compiler flags #

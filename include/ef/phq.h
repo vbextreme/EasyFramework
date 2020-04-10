@@ -87,7 +87,7 @@ err_t phq_insert(phq_s *q, phqElement_s* el);
  */
 void phq_change_priority(phq_s *q, size_t newpri, phqElement_s* el);
 
-/** remove element from queue
+/** remove element from queue, element is not free
  * @param q
  * @param el element to remove
  */

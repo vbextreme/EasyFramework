@@ -399,7 +399,7 @@ __private ftRender_s* ft_font_glyph_load(ftFonts_s* fonts, ftFont_s* font, utf_t
 	glyph->descender = font->descender;
 	glyph->utf = utf;
 	
-	if( rbhash_add_hash(fonts->charmap, utf, (char*)&utf, FONT_GLYPH_KEY, glyph) ){
+	if( rbhash_add(fonts->charmap, (char*)&utf, FONT_GLYPH_KEY, glyph) ){
 		err_push("fail to add new glyph");
 		free(glyph);
 		return NULL;

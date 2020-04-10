@@ -126,7 +126,7 @@ int deadpoll_event(deadpoll_s* dp, long* timems){
 	memset(epollEvent, 0, sizeof(struct epoll_event) * DEADPOLL_POLLING_EVENTS);
 	long timer = time_ms();
 	
-	switch( (eventCount=epoll_wait(dp->pollfd, epollEvent, DEADPOLL_POLLING_EVENTS, *timems)) ){
+	switch( (eventCount=epoll_wait(dp->pollfd, epollEvent, DEADPOLL_POLLING_EVENTS, timems ? *timems : -1)) ){
 		case -1:
 			dbg_error("deadpoll");
 			dbg_errno();
