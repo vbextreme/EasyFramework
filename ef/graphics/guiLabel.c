@@ -2,6 +2,7 @@
 #include <ef/memory.h>
 #include <ef/str.h>
 #include <ef/ft.h>
+#include <ef/err.h>
 
 guiLabel_s* label_new(ftFonts_s* font, int autowrap, g2dColor_t foreground){
 	guiLabel_s* lbl = mem_new(guiLabel_s);
@@ -12,10 +13,29 @@ guiLabel_s* label_new(ftFonts_s* font, int autowrap, g2dColor_t foreground){
 	return lbl;
 }
 
-void gui_label_attach(gui_s* gui, guiLabel_s* lbl){
+void label_free(guiLabel_s* lbl){
+	if( lbl->text ) free(lbl->text);
+	free(lbl);
+}
+
+int gui_label_event_free(gui_s* gui, __unused xorgEvent_s* ev){
+	iassert(gui->type == GUI_TYPE_LABEL);
+	label_free(gui->control);
+	return 0;
+}
+
+gui_s* gui_label_attach(gui_s* gui, guiLabel_s* lbl){
+	if( !gui ) goto ERR;
+	if( !lbl ) goto ERR;
 	gui->control = lbl;
 	gui->type = GUI_TYPE_LABEL;
 	gui->redraw = gui_label_event_redraw;
+	gui->free = gui_label_event_free;
+	return gui;
+ERR:
+	if( lbl ) label_free(lbl);
+	if( gui ) gui_free(gui);
+	return NULL;
 }
 
 void gui_label_text_set(gui_s* gui, const utf8_t* text){
@@ -42,6 +62,10 @@ void gui_label_text_set(gui_s* gui, const utf8_t* text){
 
 	lbl->position.h = gui->position.h;
 	lbl->position.w = gui->position.w;
+
+	dbg_info("label %u*%u", lbl->position.w, lbl->position.h);
+
+	gui->redraw(gui, NULL);
 }
 
 void gui_label_position_set(gui_s* gui, unsigned x, unsigned y){

@@ -11,7 +11,7 @@
 
 #define FONT_GLYPH_MIN 10
 #define FONT_GLYPH_MAX 512
-#define FONT_GLYPH_KEY sizeof(utf_t)
+#define FONT_GLYPH_KEY 32
 
 __private FT_Library ftlib;
 
@@ -27,18 +27,6 @@ __private ftUtfCustom_s* utfCustom;
 
 __private unsigned nohash_utf(const char* name, __unused size_t len){
 	return *(unsigned*)name;
-}
-
-#define cast_key(K,L) (((char*)(&K))+(L))
-
-inline __const __private size_t ft_utf_key(utf_t id){
-	char* tmp = (char*)&id;
-	if( tmp[0] ) { return 4;}
-	if( tmp[1] ) { return 3;}
-	if( tmp[2] ) { return 2;}
-	if( tmp[3] ) { return 1;}
-	err_fail("fail to convert utf to id");
-	return 0;
 }
 
 err_t ft_begin(void){
@@ -245,8 +233,9 @@ err_t ft_font_size_dpi(ftFont_s* font, long w, long h, long dpiw, long dpih){
 }
 
 ftRender_s* ft_glyph_get(ftFonts_s* fonts, utf_t utf){
-	size_t len = ft_utf_key(utf);
-	return rbhash_find(fonts->charmap, cast_key(utf,len), len);
+	char key[32];
+	int len = sprintf(key,"%u",(uint32_t)utf);
+	return rbhash_find_hash(fonts->charmap, utf, key, len);
 }
 
 __private void ft_glyph_render_hori_mono_byte(ftRender_s* glyph, const unsigned w, const unsigned h, unsigned char* buf, g2dMode_e mode){
@@ -409,8 +398,9 @@ __private ftRender_s* ft_font_glyph_load(ftFonts_s* fonts, ftFont_s* font, utf_t
 	glyph->descender = font->descender;
 	glyph->utf = utf;
 
-	size_t len = ft_utf_key(utf);	
-	if( rbhash_add(fonts->charmap, cast_key(utf,len), len, glyph) ){
+	char key[32];
+	int len = sprintf(key,"%u",(uint32_t)utf);
+	if( rbhash_add_hash(fonts->charmap, utf, key, len, glyph) ){
 		err_push("fail to add new glyph");
 		free(glyph);
 		return NULL;
@@ -618,6 +608,9 @@ unsigned ft_line_lenght(ftFonts_s* fonts, const utf8_t* str){
 		ftRender_s* rch = ft_fonts_glyph_load(fonts, u, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
 		if( rch ) lenght += rch->horiAdvance;
 	}
+	//ftRender_s* rch = ft_fonts_glyph_load(fonts, ' ', FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
+	//if( rch->img->w > rch->horiAdvance ) lenght += rch->img->w - rch->horiAdvance;
+	dbg_info("line lenght:%u", lenght);
 	return lenght;
 }	
 
@@ -653,45 +646,42 @@ unsigned ft_autowrap_height(ftFonts_s* fonts, const utf8_t* str, unsigned width)
 	return height;
 }	
 
-void g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dColor_t fore, g2dColor_t back, unsigned originX, int cls){
+__private void g2d_ch_clear(g2dImage_s* dst, g2dCoord_s* pos, ftRender_s* glyph, g2dColor_t color){
+	g2dCoord_s co = {.x = pos->x, .y = pos->y, .w = glyph->img->w, .h = glyph->img->h};
+	g2d_clear(dst, color, &co);
+}
+
+int g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dColor_t fore, g2dColor_t back, unsigned originX, int cls){
 
 	if( ch == '\n' ){
-		pos->y += ft_line_height(fonts);
 		pos->x = originX;
-		return;
+		pos->y += ft_line_height(fonts);
+		return 1;
 	}
 	
 	ftRender_s* rch = ft_fonts_glyph_load(fonts, ch, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
-	if( !rch ) return;
-	pos->w = rch->img->w;
-	if( pos->x + pos->w > dst->w ) return;
-	if( pos->y + rch->img->h > dst->h ) return;
-	if( cls ) g2d_clear(dst, back, pos);
-	unsigned const oh = pos->h;
-	pos->h = rch->img->h;
-	g2d_char(dst, pos, rch->img, fore);
-	pos->h = oh;
-	pos->x += rch->horiAdvance;
-}
+	if( !rch ){
+		dbg_warning("invalid render glyph");
+		return -1;
+	}
 
-void g2d_putch_autowrap(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dColor_t fore, g2dColor_t back, unsigned originX, int cls){
-	if( ch == '\n' ){
-		pos->y += ft_line_height(fonts);
+	if( pos->x + rch->horiAdvance > pos->w ){
+		dbg_error("END OF LINE");
 		pos->x = originX;
-		return;
+		pos->y += ft_line_height(fonts);
+		return 2;
 	}
-	
-	ftRender_s* rch = ft_fonts_glyph_load(fonts, ch, FT_RENDER_ANTIALIASED);
-	pos->w = rch->img->w;
-	pos->h = rch->img->h;
-	if( pos->x + pos->w > dst->w ){
-	   	pos->y += ft_line_height(fonts);
-		pos->x = originX;	
+	if( pos->y + rch->img->h > pos->h ){
+		dbg_error("END OF HEIGHT");
+		return -1;
 	}
-	if( pos->y + pos->h > dst->h ) return;
-	if( cls ) g2d_clear(dst, back, pos);
+
+	dbg_info("putch %u %u wh:%u*%u ch:%u*%u hory:%u", pos->x, pos->y, pos->w, pos->h, rch->img->w, rch->img->h, rch->horiAdvance);
+
+	if( cls ) g2d_ch_clear(dst, pos, rch, back);
 	g2d_char(dst, pos, rch->img, fore);
 	pos->x += rch->horiAdvance;
+	return 0;
 }
 
 void g2d_string(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, g2dColor_t col, unsigned originX){
@@ -703,7 +693,10 @@ void g2d_string(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const
 			fuc->fn(utf, &fonts, &pos->x, &pos->y, &col, fuc->userdata);
 			continue;
 		}
-		g2d_putch(dst, pos, fonts, utf, col, 0,  originX, 0);
+		if( g2d_putch(dst, pos, fonts, utf, col, 0,  originX, 0) ){
+			dbg_info("exit");
+			return ;
+		}
 	}
 }
 
@@ -714,12 +707,22 @@ void g2d_string_autowrap(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf
 		if( utf >= UTF_PRIVATE0_START ){
 			ftUtfCustom_s* fuc = ft_utf_custom_get(utf);
 			fuc->fn(utf, &fonts, &pos->x, &pos->y, &col, fuc->userdata);
+		//g2d_putch_autowrap(dst, pos, fonts, utf, col, 0,  originX, 0);
 			continue;
 		}
-		g2d_putch_autowrap(dst, pos, fonts, utf, col, 0,  originX, 0);
+		int ret = g2d_putch(dst, pos, fonts, utf, col, 0,  originX, 0);
+		if( ret < 0 ){
+			dbg_info("exit");	
+			break;
+		}
+		if( ret > 1 ){
+			if( g2d_putch(dst, pos, fonts, utf, col, 0,  originX, 0) ){
+				dbg_info("exit 2");
+			}
+		}
 	}
 }
-
+//TODO
 void g2d_string_replace(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, utf8_t const* old, g2dColor_t f, g2dColor_t b, unsigned originX){
 	if( !str || !old ) return;
 	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
@@ -737,21 +740,35 @@ void g2d_string_replace(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8
 			pos->x += rch->horiAdvance;
 		}
 		else{
-			g2d_putch(dst, pos, fonts, utf, f, b, originX, 1);
+			if( g2d_putch(dst, pos, fonts, utf, f, b, originX, 1) ){
+				dbg_info("exit");
+				return;
+			}
 		}
 		if( !of ) break;
 	}
 
-	while( (utf = utf8_iterator_next(&it)) ){
-		g2d_putch(dst, pos, fonts, utf, f, b, originX, 1);
+	if( utf ){
+		dbg_info("write unknow old chars");
+		while( (utf = utf8_iterator_next(&it))  ){
+			if( utf >= UTF_PRIVATE0_START ){
+				ftUtfCustom_s* fuc = ft_utf_custom_get(utf);
+				fuc->fn(utf, &fonts, &pos->x, &pos->y, &f, fuc->userdata);
+				continue;
+			}
+			if( g2d_putch(dst, pos, fonts, utf, f, b, originX, 1) ){
+				dbg_info("exit l");
+				return;
+			}
+		}
 	}
-
-	while( (of = utf8_iterator_next(&ot)) ){
-		ftRender_s* rch = ft_fonts_glyph_load(fonts, utf, FT_RENDER_ANTIALIASED);
-		pos->w = rch->horiAdvance;
-		pos->h = rch->img->h;
-		g2d_clear(dst, b, pos);
-		pos->x += rch->horiAdvance;
+	else if( of ){
+		dbg_info("clear to end");
+		size_t lenght = ft_line_lenght(fonts, ot.str);
+		if( lenght + pos->x > pos->w ) lenght = pos->w - pos->x;
+		g2dCoord_s co = { .x = pos->x, .y = pos->y, .w = lenght, .h = ft_line_height(fonts) };
+		g2d_clear(dst, b, &co);
+		pos->x += lenght;
 	}
 }
 

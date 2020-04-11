@@ -12,8 +12,11 @@ typedef struct guiLabel{
 	g2dCoord_s position;
 }guiLabel_s;
 
+
+void label_free(guiLabel_s* lbl);
+int gui_label_event_free(gui_s* gui, __unused xorgEvent_s* ev);
 guiLabel_s* label_new(ftFonts_s* font, int autowrap, g2dColor_t foreground);
-void gui_label_attach(gui_s* gui, guiLabel_s* lbl);
+gui_s* gui_label_attach(gui_s* gui, guiLabel_s* lbl);
 void gui_label_text_set(gui_s* gui, const utf8_t* text);
 void gui_label_position_set(gui_s* gui, unsigned x, unsigned y);
 int gui_label_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);

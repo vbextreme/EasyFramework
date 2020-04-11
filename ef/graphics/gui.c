@@ -9,26 +9,22 @@
 #include <ef/phq.h>
 #include <ef/delay.h>
 
-#define GUI_CHILD_INITIAL (8)
-#define GUI_KEY_SIZE (sizeof(uint32_t))
-#define GUI_HASH_SIZE 32
-#define GUI_HASH_MIN 10
-#define GUI_TIMERS_SIZE 16
+#define GUI_CHILD_INITIAL 8
+#define GUI_KEY_SIZE      32
+#define GUI_HASH_SIZE     32
+#define GUI_HASH_MIN      10
+#define GUI_TIMERS_SIZE   16
 
 __private rbhash_s* allgui;
 __private xorg_s* X;
 __private phq_s* timergui;
 __private deadpoll_s* dpgui;
 
-__private unsigned nohash_window(const char* name, __unused size_t len){
-	return *(uint32_t*)name;
-}
-
 void gui_begin(){
 	os_begin();
 	ft_begin();
 	gui_resources_init();
-	allgui = rbhash_new(GUI_HASH_SIZE, GUI_HASH_MIN, GUI_KEY_SIZE, nohash_window, NULL);
+	allgui = rbhash_new(GUI_HASH_SIZE, GUI_HASH_MIN, GUI_KEY_SIZE, NULL, NULL);
 	if( !allgui ) err_fail("on init allgui");
 	timergui = phq_new(GUI_TIMERS_SIZE, GUI_TIMERS_SIZE, phq_cmp_asc);
 	if( !timergui ) err_fail("creating timer gui");
@@ -36,8 +32,6 @@ void gui_begin(){
 	dpgui = deadpoll_new();
 	if( !dpgui ) err_fail("deadpoll");
 	gui_deadpoll_register(dpgui);
-	
-
 }
 
 void gui_end(){
@@ -46,40 +40,30 @@ void gui_end(){
 	phq_free(timergui);
 	xorg_client_free(X);
 	gui_resources_free();
-	gui_deadpoll_unregister(dpgui);
 	deadpoll_free(dpgui);
-}
-
-#define cast_key(K,L) (((char*)(&K))+(L))
-
-inline __const __private size_t gui_id_key(xcb_window_t id){
-	char* tmp = (char*)&id;
-	if( tmp[0] ) { return 4;}
-	if( tmp[1] ) { return 3;}
-	if( tmp[2] ) { return 2;}
-	if( tmp[3] ) { return 1;}
-	err_fail("fail to convert key to id");
-	return 0;
 }
 
 __private void allgui_add(gui_s* gui){
 	dbg_info("register gui: %u", gui->id);
-	size_t len = gui_id_key(gui->id);
-	if( rbhash_add(allgui, cast_key(gui->id, len) , len, gui) ){
+	char key[32];
+	int len = sprintf(key,"%u",(uint32_t)gui->id);
+	if( rbhash_add_hash(allgui, gui->id, key, len, gui) ){
 		err_fail("add gui %d::%s::%s on allgui", (uint32_t)gui->id, gui->name, gui->class);
 	}
 }
 
 __private void allgui_remove(gui_s* gui){
-	size_t len = gui_id_key(gui->id);
-	if( rbhash_remove(allgui, cast_key(gui->id,len), len) ){
+	char key[32];
+	int len = sprintf(key,"%u",(uint32_t)gui->id);
+	if( rbhash_remove_hash(allgui, gui->id, key, len) ){
 		err_fail("add gui %d::%s::%s on allgui", (uint32_t)gui->id, gui->name, gui->class);
 	}
 }
 
-__private gui_s* allgui_find(xcb_window_t id){
-	size_t len = gui_id_key(id);
-	return rbhash_find(allgui, cast_key(id, len), len);
+__private gui_s* allgui_find(xcb_window_t id){	
+	char key[32];
+	int len = sprintf(key,"%u",(uint32_t)id);
+	return rbhash_find_hash(allgui, id, key, len);
 }
 
 void gui_register_root_event(void){
@@ -91,7 +75,7 @@ gui_s* gui_new(
 		const char* name, const char* class, 
 		int border, int x, int y, int width, int height, 
 		g2dColor_t color, 
-		void* control, void* userdata)
+		void* userdata)
 {
 	gui_s* gui = mem_new(gui_s);
 	if( !gui ) err_fail("malloc");
@@ -105,7 +89,7 @@ gui_s* gui_new(
 		gui_child_add(parent, gui);
 		xcbParent = parent->id;
 	}
-	gui->control = control;
+	gui->control = NULL;
 	gui->userdata = userdata;
 	gui->create = NULL;
 	gui->destroy = NULL;
@@ -115,7 +99,7 @@ gui_s* gui_new(
 	gui->key = NULL;
 	gui->mouse = NULL;
 	gui->focus = NULL;
-	gui->map = gui_event_map;
+	gui->map = NULL;
 	gui->move = gui_event_move;
 	gui->atom = NULL;
 	gui->client = NULL;
@@ -188,9 +172,6 @@ void gui_class(gui_s* gui, const char* class){
 
 void gui_show(gui_s* gui, int show){
 	xorg_win_show(X, gui->id, show);
-	//if( show && gui->draw ){
-	//	gui->draw(gui, NULL);
-	//}
 }
 
 void gui_move(gui_s* gui, int x, int y){
@@ -206,7 +187,8 @@ void gui_focus(gui_s* gui){
 }
 
 void gui_draw(gui_s* gui){
-	if( gui->draw ) gui->draw(gui,NULL);
+	if( gui->draw ) gui->draw(gui, NULL);
+	//xorg_send_expose(X, gui->id, 0, 0, gui->position.w, gui->position.h);
 }
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
@@ -239,11 +221,6 @@ int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 	return 0;
 }
 
-int gui_event_map(gui_s* gui, __unused xorgEvent_s* event){
-	xorg_win_surface_redraw(X, gui->id, gui->surface);
-	return 0;
-}
-
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage){
 	xorg_win_surface_redraw(X, gui->id, gui->surface);
 	return 0;
@@ -253,7 +230,7 @@ int gui_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert( event->type == XORG_EVENT_MOVE );
 	dbg_info("move event");
 	if( gui->surface->img->w != event->move.coord.w || gui->surface->img->h != event->move.coord.h ){
-		dbg_info("resize surface");
+		dbg_info("resize surface, redraw && draw");
 		xorg_surface_resize(gui->surface, event->move.coord.w, event->move.coord.h);
 		if( gui->redraw ) gui->redraw(gui, NULL);
 		if( gui->draw ) gui->draw(gui, NULL);
@@ -370,7 +347,7 @@ int gui_deadpoll_event(deadpoll_s* dp){
 
 void gui_loop(void){
 	xorg_client_flush(X);
-	while( gui_deadpoll_event(dpgui) > 0 );
+	while( gui_deadpoll_event(dpgui) > 0 ) xorg_client_flush(X);
 }
 
 guiTimer_s* gui_timer_new(gui_s* gui, size_t ms, void* userdata){

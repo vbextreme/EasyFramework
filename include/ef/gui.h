@@ -82,7 +82,7 @@ gui_s* gui_new(
 		const char* name, const char* class, 
 		int border, int x, int y, int width, int height, 
 		g2dColor_t color, 
-		void* control, void* userdata);
+		void* userdata);
 
 void gui_free(gui_s* gui);
 
@@ -97,7 +97,6 @@ void gui_resize(gui_s* gui, int w, int h);
 void gui_focus(gui_s* gui);
 void gui_draw(gui_s* gui);
 
-int gui_event_map(gui_s* gui, __unused xorgEvent_s* event);
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);
 int gui_event_move(gui_s* gui, xorgEvent_s* event);

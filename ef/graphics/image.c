@@ -980,8 +980,8 @@ g2dImage_s* g2d_rotate(g2dImage_s* src, unsigned cx, unsigned cy, float grad){
 }
 
 void g2d_char(g2dImage_s* dst, g2dCoord_s* coord, g2dImage_s* ch, g2dColor_t col){
-	unsigned const h = (coord->y + coord->h) > dst->h ? dst->h - coord->y : coord->h;
-	unsigned const w = (coord->x + coord->w) > dst->w ? dst->w - coord->x : coord->w;
+	unsigned const h = (coord->y + ch->h) > dst->h ? dst->h - coord->y : ch->h;
+	unsigned const w = (coord->x + ch->w) > dst->w ? dst->w - coord->x : ch->w;
 	unsigned char Ared = g2d_color_red(ch, col);
 	unsigned char Agreen = g2d_color_green(ch, col);
 	unsigned char Ablue = g2d_color_blue(ch, col);
