@@ -96,7 +96,7 @@ gui_s* gui_new(
 	gui->free = NULL;
 	gui->redraw = gui_event_redraw;
 	gui->draw = gui_event_draw;
-	gui->key = NULL;
+	gui->key = gui_event_key;
 	gui->mouse = NULL;
 	gui->focus = NULL;
 	gui->map = NULL;
@@ -112,6 +112,10 @@ gui_s* gui_new(
 	gui->background.mode = GUI_BK_COLOR;
 	gui->surface = NULL;
 	gui->type = GUI_TYPE_WINDOW;
+	gui->focusable = 1;
+	gui->childFocus = -1;
+	gui->bordersize = border;
+	gui->bordersizefocused = border + GUI_FOCUS_BORDER_SIZE;
 
 	gui->id = xorg_win_new(&gui->surface, X, xcbParent, &gui->position, border, gui->background.color);
 	gui_name(gui, name);
@@ -182,42 +186,64 @@ void gui_resize(gui_s* gui, int w, int h){
 	xorg_win_resize(X, gui->id, w, h);
 }
 
+void gui_border(gui_s* gui, int border){
+	gui->bordersize = border;
+	xorg_win_border(X, gui->id, border);
+}
+
 void gui_focus(gui_s* gui){
+	if( gui->parent && gui->focusable > 0 ){
+		if( gui->parent->childFocus >= 0) xorg_send_focus_out(X, gui->parent->childs[gui->parent->childFocus]->id);
+		vector_foreach(gui->parent->childs, i){
+			if( gui->parent->childs[i] == gui ){
+				gui->parent->childFocus = i;
+				break;
+			}
+		}
+	}
 	xorg_win_focus(X, gui->id);
+	xorg_send_focus_in(X, gui->id); 
+}
+
+void gui_focus_next(gui_s* gui){
+	if( !gui->parent ) return;
+	int focusid = gui->parent->childFocus;
+	int childs = vector_count(gui->parent->childs);
+	if( focusid < 0 ) return;
+	xorg_send_focus_out(X, gui->parent->childs[gui->parent->childFocus]->id);
+	do{
+		++focusid;
+		if( focusid >= childs ) focusid = 0;
+
+	}while( gui->parent->childs[focusid]->focusable < 1 );
+	xorg_win_focus(X, gui->parent->childs[focusid]->id);
+	xorg_send_focus_in(X, gui->parent->childs[focusid]->id); 
+}
+
+void gui_focus_prev(gui_s* gui){
+	if( !gui->parent ) return;
+	int focusid = gui->parent->childFocus;
+	int childs = vector_count(gui->parent->childs);
+	if( focusid < 0 ) return;
+	xorg_send_focus_out(X, gui->parent->childs[gui->parent->childFocus]->id);
+	do{
+		if( focusid == 0 ) focusid = childs-1;
+		else --focusid;
+	}while( gui->parent->childs[focusid]->focusable < 1 );
+	xorg_win_focus(X, gui->parent->childs[focusid]->id);
+	xorg_send_focus_in(X, gui->parent->childs[focusid]->id); 
 }
 
 void gui_draw(gui_s* gui){
 	if( gui->draw ) gui->draw(gui, NULL);
-	//xorg_send_expose(X, gui->id, 0, 0, gui->position.w, gui->position.h);
+}
+
+void gui_redraw(gui_s* gui){
+	if( gui->redraw ) gui->redraw(gui, NULL);
 }
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
-	if( gui->background.mode == GUI_BK_NO_OP ) return 0;
-
-	if( gui->background.mode & GUI_BK_COLOR ){
-		dbg_info("redraw bk");
-		g2dCoord_s origin;
-		origin.x = 0;
-		origin.y = 0;
-		origin.w = gui->surface->img->w;
-		origin.h = gui->surface->img->h;
-		g2d_clear(gui->surface->img, gui->background.color, &origin);
-	}
-
-	if( gui->background.mode & GUI_BK_IMAGE ){
-		dbg_info("redraw img");
-		if( gui->surface->img->w != gui->background.img->w || gui->surface->img->h != gui->background.img->h ){
-			g2d_resize_to(gui->surface->img, gui->background.img);
-		}
-		else{
-			g2dCoord_s src = { .x = 0, .y = 0, .w = gui->background.img->w, .h = gui->background.img->h};
-			g2dCoord_s dst = { .x = 0, .y = 0, .w = gui->surface->img->w, .h = gui->surface->img->h};
-			if( gui->background.mode & GUI_BK_ALPHA ){
-				g2d_bitblt_alpha(gui->surface->img, &dst, gui->background.img, &src);
-			}
-		}
-	}
-
+	gui_background_redraw(gui, &gui->background);
 	return 0;
 }
 
@@ -236,6 +262,17 @@ int gui_event_move(gui_s* gui, xorgEvent_s* event){
 		if( gui->draw ) gui->draw(gui, NULL);
 	}
 	gui->position = event->move.coord;
+	return 0;
+}
+
+int gui_event_key(gui_s* gui, xorgEvent_s* event){
+	if( (event->keyboard.keysym == XKB_KEY_Tab || event->keyboard.keysym == XKB_KEY_Right) && gui->parent ){
+		gui_focus_next(gui);		
+	}
+	else if( event->keyboard.keysym == XKB_KEY_Left && gui->parent ){
+		gui_focus_prev(gui);
+	}
+
 	return 0;
 }
 
@@ -261,6 +298,8 @@ int gui_event_call(xorgEvent_s* ev){
 	if( !ev ) return 0;
 	gui_s* gui = ev->userdata;
 	iassert(gui);
+
+	dbg_info("event for id %u", gui->id);
 
 	switch( ev->type ){
 		case XORG_EVENT_CREATE:         if( gui->create )  return gui->create(gui,ev);  break;
@@ -377,13 +416,30 @@ void gui_timer_free(guiTimer_s* timer){
 	free(timer);
 }
 
+void gui_background_redraw(gui_s* gui, guiBackground_s* bkg){
+	if( bkg->mode == GUI_BK_NO_OP ) return;
 
+	if( bkg->mode & GUI_BK_COLOR ){
+		dbg_info("redraw bk");
+		g2dCoord_s origin;
+		origin.x = 0;
+		origin.y = 0;
+		origin.w = gui->surface->img->w;
+		origin.h = gui->surface->img->h;
+		g2d_clear(gui->surface->img, bkg->color, &origin);
+	}
 
-
-
-
-
-
-
-
-
+	if( bkg->mode & GUI_BK_IMAGE ){
+		dbg_info("redraw img");
+		if( gui->surface->img->w != bkg->img->w || gui->surface->img->h != bkg->img->h ){
+			g2d_resize_to(gui->surface->img, bkg->img);
+		}
+		else{
+			g2dCoord_s src = { .x = 0, .y = 0, .w = bkg->img->w, .h = bkg->img->h};
+			g2dCoord_s dst = { .x = 0, .y = 0, .w = gui->surface->img->w, .h = gui->surface->img->h};
+			if( bkg->mode & GUI_BK_ALPHA ){
+				g2d_bitblt_alpha(gui->surface->img, &dst, bkg->img, &src);
+			}
+		}
+	}
+}

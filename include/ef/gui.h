@@ -23,6 +23,8 @@
 #define GUI_TIMER_NEXT   0
 #define GUI_TIMER_CUSTOM 1
 
+#define GUI_FOCUS_BORDER_SIZE 3
+
 typedef struct gui gui_s;
 
 typedef int(*guiEvent_f)(gui_s* gui, xorgEvent_s* event);
@@ -53,7 +55,18 @@ typedef struct gui{
 	struct gui** childs;
 	void* control;
 	void* userdata;
+
+	int type;
+	xcb_window_t id;
+	int focusable;
+	int childFocus;
+	int bordersize;
+	int bordersizefocused;
+
 	xorgSurface_s* surface;
+	g2dCoord_s position;
+	guiBackground_s background;
+
 	guiEvent_f create;
 	guiEvent_f destroy;
 	guiEvent_f free;
@@ -66,10 +79,7 @@ typedef struct gui{
 	guiEvent_f move;
 	guiEvent_f atom;
 	guiEvent_f client;
-	g2dCoord_s position;
-	guiBackground_s background;
-	xcb_window_t id;
-	int type;
+
 }gui_s;
 
 #define gui_color(A,R,G,B) g2d_color_gen(X_COLOR_MODE, A, R, G, B)
@@ -94,12 +104,16 @@ void gui_class(gui_s* gui, const char* class);
 void gui_show(gui_s* gui, int show);
 void gui_move(gui_s* gui, int x, int y);
 void gui_resize(gui_s* gui, int w, int h);
+void gui_border(gui_s* gui, int border);
 void gui_focus(gui_s* gui);
+void gui_focus_next(gui_s* gui);
+void gui_focus_prev(gui_s* gui);
 void gui_draw(gui_s* gui);
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);
 int gui_event_move(gui_s* gui, xorgEvent_s* event);
+int gui_event_key(gui_s* gui, xorgEvent_s* event);
 
 xorgEvent_s* gui_event_get(int async);
 void gui_event_release(xorgEvent_s* ev);
@@ -115,6 +129,6 @@ guiTimer_s* gui_timer_new(gui_s* gui, size_t ms, void* userdata);
 int gui_timer_change(guiTimer_s* timer, size_t ms);
 void gui_timer_free(guiTimer_s* timer);
 
-
+void gui_background_redraw(gui_s* gui, guiBackground_s* bkg);
 
 #endif

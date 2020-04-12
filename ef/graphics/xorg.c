@@ -1198,6 +1198,11 @@ void xorg_win_coord(xorg_s* x, xcb_window_t id, g2dCoord_s* pos){
 	xcb_configure_window(x->connection, id, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT, values);
 }
 
+void xorg_win_border(xorg_s* x, xcb_window_t id, unsigned border){
+	uint32_t values[] = { border };
+	xcb_configure_window(x->connection, id, XCB_CONFIG_WINDOW_BORDER_WIDTH, values);
+}
+
 void xorg_win_size(g2dCoord_s* out, unsigned* outBorder, xorg_s* x, xcb_window_t idxcb){
 	xcb_get_geometry_cookie_t geom = xcb_get_geometry(x->connection, idxcb);
 	xorg_xcb_geometry(x, geom, &out->x, &out->y, &out->w, &out->h, outBorder);
@@ -1334,7 +1339,7 @@ void xorg_win_destroy(xorg_s* x, xcb_window_t id){
 }
 
 void xorg_win_focus(xorg_s* x, xcb_window_t id){
-	xcb_set_input_focus(x->connection, XCB_INPUT_FOCUS_NONE, id, time(NULL));
+	xcb_set_input_focus(x->connection, XCB_INPUT_FOCUS_NONE, id, XCB_CURRENT_TIME);
 }
 
 xorgEvent_s* xorg_event_new(xorg_s* x, int async){
@@ -1399,7 +1404,9 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			ev->keyboard.button = xk->state;
 			ev->keyboard.time = xk->time;
 			ev->keyboard.keycode = xk->detail;
+			ev->keyboard.keysym = 0;
 			ev->keyboard.utf8[0] = 0;
+			ev->keyboard.utf = 0;
 
 			struct xkb_state* state;
 			if( (state = xkb_x11_state_new_from_device(x->key.keymap, x->connection, x->key.device)) ){
@@ -1407,10 +1414,12 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 				int size = xkb_state_key_get_utf8(state, ev->keyboard.keycode, NULL, 0) + 1;
 				if( size > 1 && size < XKB_UTF_MAX ){
 					xkb_state_key_get_utf8(state, ev->keyboard.keycode, (char*)ev->keyboard.utf8, size);
+					utf_next(&ev->keyboard.utf, ev->keyboard.utf8);
 				}
 				xkb_state_unref(state);
 			}
-			dbg_info("key press:: button: %u keycode: %lu keysym: %lu utf: %s", ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf8);
+			dbg_info("key press:: button: %u keycode: %lu keysym: %lu utf: (%u|%X)%s", 
+					ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf, ev->keyboard.utf, ev->keyboard.utf8);
 		}
 		break;
 		
@@ -1426,7 +1435,9 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			ev->keyboard.button = xk->state;
 			ev->keyboard.time = xk->time;
 			ev->keyboard.keycode = xk->detail;
+			ev->keyboard.keysym = 0;
 			ev->keyboard.utf8[0] = 0;
+			ev->keyboard.utf = 0;
 
 			struct xkb_state* state;
 			if( (state = xkb_x11_state_new_from_device(x->key.keymap, x->connection, x->key.device)) ){
@@ -1434,10 +1445,12 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 				int size = xkb_state_key_get_utf8(state, ev->keyboard.keycode, NULL, 0) + 1;
 				if( size > 1 && size < XKB_UTF_MAX ){
 					xkb_state_key_get_utf8(state, ev->keyboard.keycode, (char*)ev->keyboard.utf8, size);
+					utf_next(&ev->keyboard.utf, ev->keyboard.utf8);
 				}
 				xkb_state_unref(state);
 			}
-			dbg_info("key release:: button: %u keycode: %lu keysym: %lu utf: %s", ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf8);
+			dbg_info("key press:: button: %u keycode: %lu keysym: %lu utf: (%u|%X)%s", 
+					ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf, ev->keyboard.utf, ev->keyboard.utf8);
 		}
 		break;
 		

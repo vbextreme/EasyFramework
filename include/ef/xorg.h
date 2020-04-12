@@ -172,7 +172,8 @@ typedef struct xorgKeyboard{
 	unsigned button;
 	unsigned long keycode;
 	unsigned long keysym;
-	uint8_t utf8[XKB_UTF_MAX];
+	utf8_t utf8[XKB_UTF_MAX];
+	utf_t utf;
 	long time;
 }xorgKeyboard_s;
 
@@ -416,6 +417,9 @@ void xorg_win_show(xorg_s* x, xcb_window_t id, int show);
 
 /** move window*/
 void xorg_win_move(xorg_s* x, xcb_window_t id, unsigned X, unsigned y);
+
+/** change border size*/
+void xorg_win_border(xorg_s* x, xcb_window_t id, unsigned border);
 
 /** resize window*/
 void xorg_win_resize(xorg_s* x, xcb_window_t id, unsigned w, unsigned h);
