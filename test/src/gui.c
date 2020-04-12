@@ -44,24 +44,40 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	font_load(tfont, "masterFall", "FiraSans", 18);
 	font_load(tfont, "fallback", "Symbola", 18);
 
-	gui_s* main = gui_new(NULL, "test", NULL, 1, 50, 50, 400, 400, gui_color(255, 125,125,125), NULL);
+	gui_s* main = gui_new(
+		NULL, "test", NULL, 
+		1, 50, 50, 400, 400, 
+		gui_background_new(gui_color(255, 125,125,125), NULL, NULL, GUI_BK_COLOR),
+		NULL
+	);
 	main->destroy = main_exit;
 
 	gui_s* labl = 	gui_label_attach(
-		gui_new(main, "labl", "label", 1, 10, 10, 130, 80, gui_color(255, 50, 50, 220), NULL),
+		gui_new(
+			main, "labl", "label",
+			1, 10, 10, 130, 80,
+			gui_background_new(gui_color(255, 50, 50, 220), NULL, NULL, GUI_BK_COLOR),
+			NULL
+		),
 		gui_label_new(tfont, 0, gui_color(255,40,40,40))
 	);
 	gui_label_text_set(labl, labl->control, U8("hello"));
-	gui_label_redraw(labl, &labl->background, labl->control);
+	gui_label_redraw(labl, labl->background[0], labl->control);
 
 	gui_s* btn = gui_button_attach(
-		gui_new(main, "but", "button", 1, 10, 100, 80, 50, gui_color(255, 80, 110, 80), NULL),
+		gui_new(
+			main, "but", "button",
+			1, 10, 100, 80, 50, 
+			gui_background_new( gui_color(255, 80, 110, 80), NULL, NULL, GUI_BK_COLOR), 
+			NULL
+		),
 		gui_button_new(
 			gui_label_new(tfont, 0, gui_color(255,40,40,40)),
 			button_click
-		)
+		),
+		gui_background_new( gui_color(255, 80, 80, 80), NULL, NULL, GUI_BK_COLOR), 
+		gui_background_new( gui_color(255, 80, 120, 80), NULL, NULL, GUI_BK_COLOR)
 	);
-	btn->background.color = gui_color(255, 110,	80, 110);
 	gui_label_text_set(btn, gui_button_label(btn->control), U8("click me")); 
 	gui_button_redraw(btn, btn->control, 0);
 

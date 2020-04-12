@@ -101,7 +101,7 @@ src += [ 'ef/graphics/gui.c' ]
 src += [ 'ef/graphics/guiResources.c' ]
 src += [ 'ef/graphics/guiLabel.c' ]
 src += [ 'ef/graphics/guiButton.c' ]
-
+src += [ 'ef/graphics/guiDiv.c' ]
 
 ##################
 # compiler flags #

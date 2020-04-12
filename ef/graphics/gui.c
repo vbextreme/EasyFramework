@@ -9,11 +9,12 @@
 #include <ef/phq.h>
 #include <ef/delay.h>
 
-#define GUI_CHILD_INITIAL 8
-#define GUI_KEY_SIZE      32
-#define GUI_HASH_SIZE     32
-#define GUI_HASH_MIN      10
-#define GUI_TIMERS_SIZE   16
+#define GUI_CHILD_INITIAL   8
+#define GUI_KEY_SIZE        32
+#define GUI_HASH_SIZE       32
+#define GUI_HASH_MIN        10
+#define GUI_TIMERS_SIZE     16
+#define GUI_BACKGROUND_SIZE 3
 
 __private rbhash_s* allgui;
 __private xorg_s* X;
@@ -74,7 +75,7 @@ gui_s* gui_new(
 		gui_s* parent, 
 		const char* name, const char* class, 
 		int border, int x, int y, int width, int height, 
-		g2dColor_t color, 
+		guiBackground_s* bk,
 		void* userdata)
 {
 	gui_s* gui = mem_new(gui_s);
@@ -107,9 +108,8 @@ gui_s* gui_new(
 	gui->position.y = y;
 	gui->position.w = width;
 	gui->position.h = height;
-	gui->background.color = color;
-	gui->background.img = NULL;
-	gui->background.mode = GUI_BK_COLOR;
+	gui->background = vector_new(guiBackground_s*, GUI_BACKGROUND_SIZE, GUI_BACKGROUND_SIZE);
+	vector_push_back(gui->background, bk);
 	gui->surface = NULL;
 	gui->type = GUI_TYPE_WINDOW;
 	gui->focusable = 1;
@@ -117,7 +117,7 @@ gui_s* gui_new(
 	gui->bordersize = border;
 	gui->bordersizefocused = border + GUI_FOCUS_BORDER_SIZE;
 
-	gui->id = xorg_win_new(&gui->surface, X, xcbParent, &gui->position, border, gui->background.color);
+	gui->id = xorg_win_new(&gui->surface, X, xcbParent, &gui->position, border, gui->background[0]->color);
 	gui_name(gui, name);
 	gui_class(gui, class);
 	gui->redraw(gui, NULL);
@@ -179,6 +179,8 @@ void gui_show(gui_s* gui, int show){
 }
 
 void gui_move(gui_s* gui, int x, int y){
+	gui->position.x = x;
+	gui->position.y = y;
 	xorg_win_move(X, gui->id, x, y);
 }
 
@@ -243,7 +245,7 @@ void gui_redraw(gui_s* gui){
 }
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
-	gui_background_redraw(gui, &gui->background);
+	gui_background_redraw(gui, gui->background[0]);
 	return 0;
 }
 
@@ -416,6 +418,31 @@ void gui_timer_free(guiTimer_s* timer){
 	free(timer);
 }
 
+guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_s* pos, int mode){
+	guiBackground_s* bk = mem_new(guiBackground_s);
+	if( !bk ) err_fail("eom");
+	bk->color = color;
+	bk->img = img;
+	bk->mode = mode;
+	if( pos ){
+		bk->pdest = *pos;
+	}
+	else if ( img ){
+		bk->pdest.x = 0;
+		bk->pdest.y = 0;
+		bk->pdest.w = img->w;
+		bk->pdest.h = img->h;
+	}
+	else{
+		bk->pdest.x = 0;
+		bk->pdest.y = 0;
+		bk->pdest.w = 0;
+		bk->pdest.h = 0;
+	}
+	
+	return bk;
+}
+
 void gui_background_redraw(gui_s* gui, guiBackground_s* bkg){
 	if( bkg->mode == GUI_BK_NO_OP ) return;
 
@@ -431,15 +458,51 @@ void gui_background_redraw(gui_s* gui, guiBackground_s* bkg){
 
 	if( bkg->mode & GUI_BK_IMAGE ){
 		dbg_info("redraw img");
-		if( gui->surface->img->w != bkg->img->w || gui->surface->img->h != bkg->img->h ){
-			g2d_resize_to(gui->surface->img, bkg->img);
+		g2dImage_s* rs = NULL;
+		g2dCoord_s src = { .x = 0, .y = 0, .w = bkg->img->w, .h = bkg->img->h};
+
+		if( bkg->img->w !=  bkg->pdest.w || bkg->img->h != bkg->pdest.h ){
+			dbg_info("resize src img because != pdest");
+			rs = g2d_resize(bkg->img, bkg->pdest.w, bkg->pdest.h);
+			src.w = bkg->pdest.w;
+			src.h = bkg->pdest.h;
+		}
+		
+		if( bkg->mode & GUI_BK_ALPHA ){
+			g2d_bitblt_alpha(gui->surface->img, &bkg->pdest, rs ? rs : bkg->img, &src);
 		}
 		else{
-			g2dCoord_s src = { .x = 0, .y = 0, .w = bkg->img->w, .h = bkg->img->h};
-			g2dCoord_s dst = { .x = 0, .y = 0, .w = gui->surface->img->w, .h = gui->surface->img->h};
-			if( bkg->mode & GUI_BK_ALPHA ){
-				g2d_bitblt_alpha(gui->surface->img, &dst, bkg->img, &src);
-			}
+			g2d_bitblt(gui->surface->img, &bkg->pdest, rs ? rs : bkg->img, &src);
 		}
 	}
 }
+
+guiBackground_s* gui_background_get(gui_s* gui, size_t id){
+	if( id > vector_count(gui->background) ) return NULL;
+	return gui->background[id];
+}
+
+void gui_background_add(gui_s* gui, guiBackground_s* bk){
+	vector_push_back(gui->background, bk);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

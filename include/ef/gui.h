@@ -7,12 +7,15 @@
 #include <ef/deadpoll.h>
 #include <ef/phq.h>
 
+//TODO background background, image dest coord, resize
+
 #define GUI_TYPE_WINDOW 0
 #define GUI_TYPE_LABEL  1
 #define GUI_TYPE_BUTTON 2
-#define GUI_TYPE_LIST   3
-#define GUI_TYPE_CHECK  4
-#define GUI_TYPE_TEXT   5
+#define GUI_TYPE_TEXT   4
+#define GUI_TYPE_DIV    5
+#define GUI_TYPE_USER   999
+
 
 #define GUI_BK_NO_OP    0x00
 #define GUI_BK_COLOR    0x01
@@ -24,6 +27,7 @@
 #define GUI_TIMER_CUSTOM 1
 
 #define GUI_FOCUS_BORDER_SIZE 3
+//TODO label add image set, background:: color, image.pos image.resize
 
 typedef struct gui gui_s;
 
@@ -45,6 +49,7 @@ typedef struct guiTimer_s{
 typedef struct guiBackground{
 	g2dColor_t color;
 	g2dImage_s* img;
+	g2dCoord_s pdest;
 	unsigned mode;
 }guiBackground_s;
 	
@@ -65,7 +70,7 @@ typedef struct gui{
 
 	xorgSurface_s* surface;
 	g2dCoord_s position;
-	guiBackground_s background;
+	guiBackground_s** background;
 
 	guiEvent_f create;
 	guiEvent_f destroy;
@@ -91,7 +96,7 @@ gui_s* gui_new(
 		gui_s* parent, 
 		const char* name, const char* class, 
 		int border, int x, int y, int width, int height, 
-		g2dColor_t color, 
+		guiBackground_s* bk,
 		void* userdata);
 
 void gui_free(gui_s* gui);
@@ -129,6 +134,9 @@ guiTimer_s* gui_timer_new(gui_s* gui, size_t ms, void* userdata);
 int gui_timer_change(guiTimer_s* timer, size_t ms);
 void gui_timer_free(guiTimer_s* timer);
 
+guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_s* pos, int mode);
 void gui_background_redraw(gui_s* gui, guiBackground_s* bkg);
+guiBackground_s* gui_background_get(gui_s* gui, size_t id);
+void gui_background_add(gui_s* gui, guiBackground_s* bk);
 
 #endif

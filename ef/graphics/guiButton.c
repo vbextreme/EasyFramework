@@ -8,13 +8,10 @@ guiButton_s* gui_button_new(guiLabel_s* lbl, guiEvent_f onclick){
 	if( !btn ) return NULL;
 	btn->label = lbl;
 	btn->onclick = onclick;
-	btn->bkpress.color = 0 ;
-	btn->bkpress.img = NULL;
-	btn->bkpress.mode = GUI_BK_COLOR;
 	return btn;
 }
 
-gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn){
+gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn, guiBackground_s* press, guiBackground_s* hover){
 	if( !gui ) goto ERR;
 	if( !btn ) goto ERR;
 	gui->control = btn;
@@ -24,6 +21,8 @@ gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn){
 	gui->key = gui_button_event_key;
 	gui->focus = gui_event_focus;
 	gui->free = gui_button_event_free;
+	gui_background_add(gui, press);
+	gui_background_add(gui, hover);
 	return gui;
 ERR:
 	if( btn ) gui_button_free(btn);
@@ -41,12 +40,8 @@ guiLabel_s* gui_button_label(guiButton_s* button){
 }
 
 void gui_button_redraw(gui_s* gui, guiButton_s* btn, int press){
-	if( press ){
-		gui_label_redraw(gui, &btn->bkpress, btn->label);
-	}
-	else{
-		gui_label_redraw(gui, &gui->background, btn->label);
-	}
+	if( press > 2 || press < 0 ) press = 0; 
+	gui_label_redraw(gui, gui->background[press], btn->label);
 }
 
 int gui_button_event_free(gui_s* gui, __unused xorgEvent_s* ev){
@@ -96,6 +91,14 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event){
 		gui_draw(gui);
 		guiButton_s* btn = gui->control;
 		if( btn->onclick ) btn->onclick(gui, event);
+	}
+	else if( event->mouse.event == XORG_MOUSE_ENTER ){
+		gui_button_redraw(gui, gui->control, 2);
+		gui_draw(gui);
+	}
+	else if( event->mouse.event == XORG_MOUSE_LEAVE ){
+		gui_button_redraw(gui, gui->control, 0);
+		gui_draw(gui);
 	}
 	return 0;
 }
