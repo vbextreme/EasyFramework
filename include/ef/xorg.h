@@ -379,7 +379,6 @@ void xorg_send_current_desktop(xorg_s* x, uint32_t desktop);
 /** send set desktop*/
 void xorg_send_set_desktop(xorg_s* x, xcb_window_t win, uint32_t desktop);
 
-
 /** free window */
 void xorg_window_release(xorgWindow_s* win);
 
@@ -451,6 +450,9 @@ unsigned xorg_win_opacity_get(xorg_s* x, xcb_window_t win);
 
 /** set round border*/
 void xorg_win_round_border(xorg_s* x, xcb_window_t win, const unsigned w, const unsigned h, const int r);
+
+/** remove round border*/
+void xorg_win_round_remove(xorg_s* x, xcb_window_t win);
 
 /** set window opacity */
 void xorg_win_opacity_set(xorg_s* x, xcb_window_t win, unsigned int opacity);

@@ -1306,6 +1306,12 @@ void xorg_win_round_border(xorg_s* x, xcb_window_t win, const unsigned w, const 
     xcb_free_pixmap(x->connection, pix);
 }
 
+/* fork from resloved i3 rounded */ 
+void xorg_win_round_remove(xorg_s* x, xcb_window_t win){
+	xcb_shape_mask(x->connection, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_BOUNDING, win, 0, 0, XCB_NONE);
+	xcb_shape_mask(x->connection, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_CLIP, win, 0, 0, XCB_NONE);
+}
+
 void xorg_wm_reserve_dock_space_on_top(xorg_s* x, xcb_window_t id, unsigned X, unsigned w, unsigned h){
 	xorgWindowStrutPartial_s partial = {0};
 	partial.top = xorg_root_y(x) + h;

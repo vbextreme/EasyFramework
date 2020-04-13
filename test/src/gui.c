@@ -38,6 +38,19 @@ int button_click(gui_s* gui, xorgEvent_s* ev){
 	return 0;
 }
 
+int button2_click(gui_s* gui, xorgEvent_s* ev){
+	//static double op = 1.0;
+	if( gui->type != GUI_TYPE_BUTTON ) err_fail("clang");
+	if( ev->type == XORG_EVENT_CREATE ) err_fail("clang");
+
+	dbg_error("BUTTON2 %u CLICK ON: %s", (uint32_t)gui->id, ev->type == XORG_EVENT_KEY_PRESS || ev->type == XORG_EVENT_KEY_RELEASE ? "key" : "mouse");
+	gui_round_unset(gui->userdata);
+	//gui_opacity(gui->userdata, op);
+	//if(op) op-=0.1;
+	return 0;
+}
+
+
 /*@fn*/
 void test_gui(__unused const char* argA, __unused const char* argB){
 	err_enable();
@@ -73,7 +86,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			main, "but", "button",
 			1, 10, 100, 80, 50, 
 			gui_background_new( gui_color(255, 80, 110, 80), NULL, NULL, GUI_BK_COLOR), 
-			main
+			labl
 		),
 		gui_button_new(
 			gui_label_new(tfont, 0, gui_color(255,40,40,40)),
@@ -85,9 +98,27 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_label_text_set(btn, gui_button_label(btn->control), U8("click me")); 
 	gui_button_redraw(btn, btn->control, 0);
 
+	gui_s* btn2 = gui_button_attach(
+		gui_new(
+			main, "but2", "button",
+			1, 100, 100, 80, 50, 
+			gui_background_new( gui_color(255, 80, 110, 80), NULL, NULL, GUI_BK_COLOR), 
+			labl
+		),
+		gui_button_new(
+			gui_label_new(tfont, 0, gui_color(255,40,40,40)),
+			button2_click
+		),
+		gui_background_new( gui_color(255, 80, 80, 80), NULL, NULL, GUI_BK_COLOR), 
+		gui_background_new( gui_color(255, 80, 120, 80), NULL, NULL, GUI_BK_COLOR)
+	);
+	gui_label_text_set(btn2, gui_button_label(btn2->control), U8("click 2")); 
+	gui_button_redraw(btn2, btn->control, 0);
+
 	gui_show(main, 1);
 	gui_show(labl, 1);
 	gui_show(btn, 1);
+	gui_show(btn2, 1);
 	gui_focus(btn);
 	
 	gui_loop();

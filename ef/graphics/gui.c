@@ -266,9 +266,20 @@ void gui_opacity(gui_s* gui, double op){
 	xorg_win_opacity_set(X, gui->id, lop);;
 }
 
+void gui_round_unset(gui_s* gui){
+	if( !gui->parent ){
+		xcb_window_t win = xorg_parent(X,gui->id);
+		if( win ) xorg_win_round_remove(X, win);
+	}
+	xorg_win_round_remove(X, gui->id);
+}
+
 void gui_round_set(gui_s* gui, int radius){
-	xcb_window_t win = gui->parent ? gui->id : xorg_parent(X,gui->id);
-	xorg_win_round_border(X, win, gui->position.w, gui->position.h, radius);
+	if( !gui->parent ){
+		xcb_window_t win = xorg_parent(X,gui->id);
+		if( win ) xorg_win_round_border(X, win, gui->position.w, gui->position.h, radius);
+	}
+	xorg_win_round_border(X, gui->id, gui->position.w, gui->position.h, radius);
 }
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
