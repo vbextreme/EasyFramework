@@ -9,7 +9,6 @@
 
 //TODO 
 // text control
-// gui round corner
 // dock up,right,bottom,left
 
 #define GUI_TYPE_WINDOW 0
@@ -126,7 +125,8 @@ int gui_focus_prev_id(gui_s* parent);
 void gui_focus_prev(gui_s* gui);
 void gui_draw(gui_s* gui);
 void gui_redraw(gui_s* gui);
-void gui_opacity(gui_s* gui, double op); //only main window
+void gui_opacity(gui_s* gui, double op);
+void gui_round_set(gui_s* gui, int radius);
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);

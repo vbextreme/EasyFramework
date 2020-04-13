@@ -4,6 +4,7 @@
 
 #include <xkbcommon/xkbcommon-x11.h>
 #include <xcb/randr.h>
+#include <xcb/shape.h>
 
 #ifdef XCB_ERROR_ENABLE
 	#define XCB_ERR_DEC xcb_generic_error_t* err
@@ -51,6 +52,16 @@ xorg_s* xorg_client_new(const char* display, int defaultScreen){
 		err_fail("xcb util errors");
 	}
 #endif
+
+	xcb_generic_error_t *error = NULL;
+    xcb_shape_query_version_cookie_t cookie = xcb_shape_query_version(x->connection);
+    xcb_shape_query_version_reply_t* reply = xcb_shape_query_version_reply(x->connection, cookie, &error);
+    if(!reply || error){
+#ifdef XCB_ERROR_ENABLE
+		err_push("xcb-shape:%s", xorg_error_string(x, error, NULL));
+#endif	
+		err_fail("xcb-shape");
+	}
 
 	xorg_atom_load(x);
 
@@ -802,8 +813,6 @@ void xorg_send_set_desktop(xorg_s* x, xcb_window_t win, uint32_t desktop){
 	xorg_send_client32(x, 0, win, x->atom[XORG_ATOM_NET_WM_DESKTOP], data, sizeof(data));
 }
 
-
-
 void xorg_window_release(xorgWindow_s* win){
 	free(win->name);
 	free(win->title);
@@ -946,6 +955,32 @@ xorgWindow_s* xorg_window_application(xorg_s* x,  size_t nworkspace, xcb_window_
 	}
 	free(win);
 	return stack;
+}
+
+xcb_window_t xorg_parent(xorg_s* x, xcb_window_t win){
+	XCB_ERR_DEC;
+	xcb_query_tree_cookie_t cookie = xcb_query_tree(x->connection, win);
+	
+	xcb_query_tree_reply_t* tree = xcb_query_tree_reply(x->connection, cookie, XCB_ERR_VAR);
+
+	if( !tree
+#ifdef XCB_ERROR_ENABLE	
+			|| err
+#endif	
+			){
+		dbg_error("query tree (%d)", 
+#ifdef XCB_ERROR_ENABLE
+				err->error_code
+#else
+				-1
+#endif
+				);
+		free(tree);
+		XCB_ERR_FREE;
+		return 0;
+	}
+
+	return tree->parent;
 }
 
 unsigned xorg_workspace_count(xorg_s* x){
@@ -1232,6 +1267,43 @@ unsigned xorg_win_opacity_get(xorg_s* x, xcb_window_t win){
 
 void xorg_win_opacity_set(xorg_s* x, xcb_window_t win, unsigned int opacity){
 	xcb_change_property(x->connection, XCB_PROP_MODE_REPLACE, win, x->atom[XORG_ATOM_NET_WM_WINDOW_OPACITY], XCB_ATOM_CARDINAL, 32, sizeof(opacity), &opacity );
+}
+
+/* fork from resloved i3 rounded */ 
+void xorg_win_round_border(xorg_s* x, xcb_window_t win, const unsigned w, const unsigned h, const int r){
+    xcb_pixmap_t pix = xcb_generate_id(x->connection);
+    xcb_create_pixmap(x->connection, 1, pix, win, w, h);
+
+    xcb_gcontext_t black = xcb_generate_id(x->connection);
+    xcb_gcontext_t white = xcb_generate_id(x->connection);
+
+    xcb_create_gc(x->connection, black, pix, XCB_GC_FOREGROUND, (uint32_t[]){0, 0});
+    xcb_create_gc(x->connection, white, pix, XCB_GC_FOREGROUND, (uint32_t[]){1, 0});
+
+    const int d = r * 2;
+
+    xcb_rectangle_t bounding = {0, 0, w, h};
+
+    xcb_arc_t arcs[] = {
+		{ 0, 1, d, d, 0, 360 << 6 },
+		{ 0, h-d-1, d, d, 0, 360 << 6 },
+		{ w-d-1, 1, d, d, 0, 360 << 6 },
+		{ w-d-1, h-d-1, d, d, 0, 360 << 6 },
+    };
+
+    xcb_rectangle_t rects[] = {
+		{ r+1, 1, (w-d)-1, h-2 },
+		{ 1, r+1, w-2, (h-d)-1 },
+    };
+
+    xcb_poly_fill_rectangle(x->connection, pix, black, 1, &bounding);
+    xcb_poly_fill_rectangle(x->connection, pix, white, 2, rects);
+    xcb_poly_fill_arc(x->connection, pix, white, 4, arcs);
+
+    xcb_shape_mask(x->connection, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_BOUNDING, win, 0, 0, pix);
+    xcb_shape_mask(x->connection, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_CLIP, win, 0, 0, pix);
+
+    xcb_free_pixmap(x->connection, pix);
 }
 
 void xorg_wm_reserve_dock_space_on_top(xorg_s* x, xcb_window_t id, unsigned X, unsigned w, unsigned h){

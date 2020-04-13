@@ -214,6 +214,7 @@ libDeps += [ dependency('xcb-composite', required: true) ]
 libDeps += [ dependency('xcb-util', required: true) ]
 libDeps += [ dependency('xcb-image', required: true) ]
 libDeps += [ dependency('xcb-randr', required: true) ]
+libDeps += [ dependency('xcb-shape', required: true) ]
 libDeps += [ dependency('xkbcommon', required: true) ]
 libDeps += [ dependency('xkbcommon-x11', required: true) ]
 

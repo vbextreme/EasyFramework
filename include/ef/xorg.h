@@ -389,6 +389,9 @@ xorgWindow_s* xorg_query_tree(size_t* count, xorg_s* x, xcb_window_t root);
 /** tree of window app*/
 xorgWindow_s* xorg_window_application(xorg_s* x,  size_t nworkspace, xcb_window_t id, xorgWindow_s* stack, size_t* appCount);
 
+/** get window parent*/
+xcb_window_t xorg_parent(xorg_s* x, xcb_window_t win);
+
 /** return countr of workspace*/
 unsigned xorg_workspace_count(xorg_s* x);
 
@@ -445,6 +448,9 @@ void xorg_win_dock(xorg_s* x, xcb_window_t id);
 
 /** get opacity*/
 unsigned xorg_win_opacity_get(xorg_s* x, xcb_window_t win);
+
+/** set round border*/
+void xorg_win_round_border(xorg_s* x, xcb_window_t win, const unsigned w, const unsigned h, const int r);
 
 /** set window opacity */
 void xorg_win_opacity_set(xorg_s* x, xcb_window_t win, unsigned int opacity);
