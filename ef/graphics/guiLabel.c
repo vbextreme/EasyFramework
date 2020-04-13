@@ -84,7 +84,6 @@ int gui_label_event_free(gui_s* gui, __unused xorgEvent_s* ev){
 	return 0;
 }
 
-
 int gui_label_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 	iassert(gui->type == GUI_TYPE_LABEL);
 	gui_label_redraw(gui, gui->background[0], gui->control);

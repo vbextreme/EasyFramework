@@ -7,8 +7,6 @@
 #include <ef/deadpoll.h>
 #include <ef/phq.h>
 
-//TODO background background, image dest coord, resize
-
 #define GUI_TYPE_WINDOW 0
 #define GUI_TYPE_LABEL  1
 #define GUI_TYPE_BUTTON 2
@@ -19,7 +17,8 @@
 
 #define GUI_BK_NO_OP    0x00
 #define GUI_BK_COLOR    0x01
-#define GUI_BK_IMAGE    0x02
+#define GUI_BK_CPOS     0x02
+#define GUI_BK_IMAGE    0x04
 #define GUI_BK_ALPHA    0x08
 
 #define GUI_TIMER_FREE  -1
@@ -27,7 +26,6 @@
 #define GUI_TIMER_CUSTOM 1
 
 #define GUI_FOCUS_BORDER_SIZE 3
-//TODO label add image set, background:: color, image.pos image.resize
 
 typedef struct gui gui_s;
 
@@ -36,6 +34,11 @@ typedef int(*guiEvent_f)(gui_s* gui, xorgEvent_s* event);
 typedef struct guiTimer_s guiTimer_s;
 
 typedef int(*guiTimer_f)(guiTimer_s* timer);
+
+typedef struct guiPosition{
+	int x,y;
+	unsigned w,h;
+}guiPosition_s;
 
 typedef struct guiTimer_s{
 	size_t ms;
@@ -69,7 +72,7 @@ typedef struct gui{
 	int bordersizefocused;
 
 	xorgSurface_s* surface;
-	g2dCoord_s position;
+	guiPosition_s position;
 	guiBackground_s** background;
 
 	guiEvent_f create;
@@ -110,15 +113,17 @@ void gui_show(gui_s* gui, int show);
 void gui_move(gui_s* gui, int x, int y);
 void gui_resize(gui_s* gui, int w, int h);
 void gui_border(gui_s* gui, int border);
+void gui_focus_from_parent(gui_s* gui, int id);
 void gui_focus(gui_s* gui);
+int gui_focus_next_id(gui_s* parent);
 void gui_focus_next(gui_s* gui);
+int gui_focus_prev_id(gui_s* parent);
 void gui_focus_prev(gui_s* gui);
 void gui_draw(gui_s* gui);
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);
 int gui_event_move(gui_s* gui, xorgEvent_s* event);
-int gui_event_key(gui_s* gui, xorgEvent_s* event);
 
 xorgEvent_s* gui_event_get(int async);
 void gui_event_release(xorgEvent_s* ev);

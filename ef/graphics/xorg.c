@@ -1270,28 +1270,28 @@ void xorg_register_events(xorg_s* x, xcb_window_t window, unsigned int eventmask
 #endif
 }
 
-xcb_window_t xorg_win_new(xorgSurface_s** surface, xorg_s* x, xcb_window_t parent, g2dCoord_s* pos, unsigned border, g2dColor_t background){
+xcb_window_t xorg_win_new(xorgSurface_s** surface, xorg_s* X, xcb_window_t parent, int x, int y, unsigned w, unsigned h, unsigned border, g2dColor_t background){
 	unsigned event = X_WIN_EVENT;
-	dbg_info("create window %d %d %d*%d", pos->x, pos->y, pos->w, pos->h);
-	xcb_window_t win = xcb_generate_id(x->connection);
-	xcb_create_window(x->connection, XCB_COPY_FROM_PARENT, win, parent,
-			xorg_root_x(x) + pos->x, xorg_root_y(x) + pos->y, pos->w, pos->h, border,
+	dbg_info("create window %d %d %u*%u", x, y, w, h);
+	xcb_window_t win = xcb_generate_id(X->connection);
+	xcb_create_window(X->connection, XCB_COPY_FROM_PARENT, win, parent,
+			xorg_root_x(X) + x, xorg_root_y(X) + y, w, h, border,
 			//XCB_WINDOW_CLASS_INPUT_OUTPUT,
 			XCB_WINDOW_CLASS_COPY_FROM_PARENT,
-		   	xorg_root_visual(x), XCB_CW_EVENT_MASK, &event);
+		   	xorg_root_visual(X), XCB_CW_EVENT_MASK, &event);
 	
 	if( surface ){
 		*surface = mem_zero(xorgSurface_s);
 		if( !*surface ) err_fail("malloc");
-		(*surface)->img = g2d_new(pos->w, pos->h, X_COLOR_MODE);
-		g2dCoord_s area = { .x = 0, .y = 0, .w = pos->w, .h = pos->h };
+		(*surface)->img = g2d_new(w, h, X_COLOR_MODE);
+		g2dCoord_s area = { .x = 0, .y = 0, .w = w, .h = h };
 		g2d_clear((*surface)->img, background, &area);
 		(*surface)->ximage = xcb_image_create(
-				pos->w, pos->h,
+				w, h,
 				XCB_IMAGE_FORMAT_Z_PIXMAP, 32, 24, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
 				(*surface)->img->pixel, (*surface)->img->p * (*surface)->img->h, (*surface)->img->pixel);
-		(*surface)->gc = xcb_generate_id(x->connection);
-		xcb_create_gc(x->connection, (*surface)->gc, win, 0, 0);
+		(*surface)->gc = xcb_generate_id(X->connection);
+		xcb_create_gc(X->connection, (*surface)->gc, win, 0, 0);
 	}
 	return win;
 }
@@ -1586,12 +1586,12 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			
 			ev->win = conf->window;
 			ev->move.border = conf->border_width;
-			ev->move.coord.x = conf->x; 
-			ev->move.coord.y = conf->y;
-			ev->move.coord.w = conf->width;
-			ev->move.coord.h = conf->height;
+			ev->move.x = conf->x; 
+			ev->move.y = conf->y;
+			ev->move.w = conf->width;
+			ev->move.h = conf->height;
 			
-			dbg_info("move .x %u .y %u .w %u .h %u .b %u", ev->move.coord.x, ev->move.coord.y, ev->move.coord.w, ev->move.coord.h, ev->move.border);
+			dbg_info("move .x %u .y %u .w %u .h %u .b %u", ev->move.x, ev->move.y, ev->move.w, ev->move.h, ev->move.border);
 		}
 		break;
 

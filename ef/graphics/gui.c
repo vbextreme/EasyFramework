@@ -97,7 +97,7 @@ gui_s* gui_new(
 	gui->free = NULL;
 	gui->redraw = gui_event_redraw;
 	gui->draw = gui_event_draw;
-	gui->key = gui_event_key;
+	gui->key = NULL;
 	gui->mouse = NULL;
 	gui->focus = NULL;
 	gui->map = NULL;
@@ -116,8 +116,7 @@ gui_s* gui_new(
 	gui->childFocus = -1;
 	gui->bordersize = border;
 	gui->bordersizefocused = border + GUI_FOCUS_BORDER_SIZE;
-
-	gui->id = xorg_win_new(&gui->surface, X, xcbParent, &gui->position, border, gui->background[0]->color);
+	gui->id = xorg_win_new(&gui->surface, X, xcbParent, x, y, width, height, border, gui->background[0]->color);
 	gui_name(gui, name);
 	gui_class(gui, class);
 	gui->redraw(gui, NULL);
@@ -178,12 +177,12 @@ void gui_show(gui_s* gui, int show){
 	xorg_win_show(X, gui->id, show);
 }
 
+/* event move is raised*/
 void gui_move(gui_s* gui, int x, int y){
-	gui->position.x = x;
-	gui->position.y = y;
 	xorg_win_move(X, gui->id, x, y);
 }
 
+/* event move is raised*/
 void gui_resize(gui_s* gui, int w, int h){
 	xorg_win_resize(X, gui->id, w, h);
 }
@@ -193,47 +192,65 @@ void gui_border(gui_s* gui, int border){
 	xorg_win_border(X, gui->id, border);
 }
 
-void gui_focus(gui_s* gui){
-	if( gui->parent && gui->focusable > 0 ){
-		if( gui->parent->childFocus >= 0) xorg_send_focus_out(X, gui->parent->childs[gui->parent->childFocus]->id);
-		vector_foreach(gui->parent->childs, i){
-			if( gui->parent->childs[i] == gui ){
-				gui->parent->childFocus = i;
-				break;
-			}
-		}
-	}
-	xorg_win_focus(X, gui->id);
-	xorg_send_focus_in(X, gui->id); 
+void gui_focus_from_parent(gui_s* gui, int id){
+	if( id < 0 ) return;
+	if( (size_t)id >= vector_count(gui->childs) ) return;
+	if( !gui ) return;
+	if( gui->focusable < 1 ) return;
+	
+	if( gui->childFocus >= 0) 
+		xorg_send_focus_out(X, gui->childs[gui->childFocus]->id);
+		
+	gui->childFocus = id;
+
+	xorg_win_focus(X, gui->childs[id]->id);
+	xorg_send_focus_in(X, gui->childs[id]->id);
 }
 
-void gui_focus_next(gui_s* gui){
+void gui_focus(gui_s* gui){
 	if( !gui->parent ) return;
-	int focusid = gui->parent->childFocus;
-	int childs = vector_count(gui->parent->childs);
-	if( focusid < 0 ) return;
-	xorg_send_focus_out(X, gui->parent->childs[gui->parent->childFocus]->id);
+   	
+	vector_foreach(gui->parent->childs, i){
+		if( gui->parent->childs[i] == gui ){
+			gui_focus_from_parent(gui->parent, i);
+			break;
+		}
+	}
+}
+
+int gui_focus_next_id(gui_s* parent){
+	if( !parent ) return -1;
+	int focusid = parent->childFocus;
+	int childs = vector_count(parent->childs);
+	if( focusid < 0 ) return -1;
 	do{
 		++focusid;
 		if( focusid >= childs ) focusid = 0;
 
-	}while( gui->parent->childs[focusid]->focusable < 1 );
-	xorg_win_focus(X, gui->parent->childs[focusid]->id);
-	xorg_send_focus_in(X, gui->parent->childs[focusid]->id); 
+	}while( parent->childs[focusid]->focusable < 1 );
+	return focusid;
 }
 
-void gui_focus_prev(gui_s* gui){
-	if( !gui->parent ) return;
-	int focusid = gui->parent->childFocus;
-	int childs = vector_count(gui->parent->childs);
-	if( focusid < 0 ) return;
-	xorg_send_focus_out(X, gui->parent->childs[gui->parent->childFocus]->id);
+void gui_focus_next(gui_s* gui){
+	iassert(gui);
+	gui_focus_from_parent(gui->parent, gui_focus_next_id(gui->parent));
+}
+
+int gui_focus_prev_id(gui_s* parent){
+	if( !parent ) return -1;
+	int focusid = parent->childFocus;
+	int childs = vector_count(parent->childs);
+	if( focusid < 0 ) return -1;
 	do{
 		if( focusid == 0 ) focusid = childs-1;
 		else --focusid;
-	}while( gui->parent->childs[focusid]->focusable < 1 );
-	xorg_win_focus(X, gui->parent->childs[focusid]->id);
-	xorg_send_focus_in(X, gui->parent->childs[focusid]->id); 
+	}while( parent->childs[focusid]->focusable < 1 );
+	return focusid;
+}
+
+void gui_focus_prev(gui_s* gui){
+	iassert(gui);
+	gui_focus_from_parent(gui->parent, gui_focus_prev_id(gui->parent));
 }
 
 void gui_draw(gui_s* gui){
@@ -257,23 +274,16 @@ int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage){
 int gui_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert( event->type == XORG_EVENT_MOVE );
 	dbg_info("move event");
-	if( gui->surface->img->w != event->move.coord.w || gui->surface->img->h != event->move.coord.h ){
+	if( gui->surface->img->w != event->move.w || gui->surface->img->h != event->move.h ){
 		dbg_info("resize surface, redraw && draw");
-		xorg_surface_resize(gui->surface, event->move.coord.w, event->move.coord.h);
+		xorg_surface_resize(gui->surface, event->move.w, event->move.h);
 		if( gui->redraw ) gui->redraw(gui, NULL);
 		if( gui->draw ) gui->draw(gui, NULL);
 	}
-	gui->position = event->move.coord;
-	return 0;
-}
-
-int gui_event_key(gui_s* gui, xorgEvent_s* event){
-	if( (event->keyboard.keysym == XKB_KEY_Tab || event->keyboard.keysym == XKB_KEY_Right) && gui->parent ){
-		gui_focus_next(gui);		
-	}
-	else if( event->keyboard.keysym == XKB_KEY_Left && gui->parent ){
-		gui_focus_prev(gui);
-	}
+	gui->position.x = event->move.x;
+	gui->position.y = event->move.y;
+	gui->position.w = event->move.w;
+	gui->position.h = event->move.h;
 
 	return 0;
 }
@@ -447,12 +457,18 @@ void gui_background_redraw(gui_s* gui, guiBackground_s* bkg){
 	if( bkg->mode == GUI_BK_NO_OP ) return;
 
 	if( bkg->mode & GUI_BK_COLOR ){
-		dbg_info("redraw bk");
 		g2dCoord_s origin;
-		origin.x = 0;
-		origin.y = 0;
-		origin.w = gui->surface->img->w;
-		origin.h = gui->surface->img->h;
+		if( bkg->mode & GUI_BK_CPOS ){
+			dbg_info("redraw bk positional mode");
+			origin = bkg->pdest;
+		}
+		else{
+			dbg_info("redraw bk");
+			origin.x = 0;
+			origin.y = 0;
+			origin.w = gui->surface->img->w;
+			origin.h = gui->surface->img->h;
+		}
 		g2d_clear(gui->surface->img, bkg->color, &origin);
 	}
 

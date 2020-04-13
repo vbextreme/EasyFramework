@@ -178,7 +178,10 @@ typedef struct xorgKeyboard{
 }xorgKeyboard_s;
 
 typedef struct xorgMove{
-	g2dCoord_s coord;
+	int x;
+	int y;
+	unsigned w;
+	unsigned h;
 	unsigned border;
 }xorgMove_s;
 
@@ -446,7 +449,7 @@ void xorg_wm_reserve_dock_space_on_bottom(xorg_s* x, xcb_window_t id, unsigned X
 void xorg_register_events(xorg_s* x, xcb_window_t window, unsigned int eventmask);
 
 /** create new window, if surface return new surface, remember to free*/
-xcb_window_t xorg_win_new(xorgSurface_s** surface, xorg_s* x, xcb_window_t parent, g2dCoord_s* pos, unsigned border, g2dColor_t background);
+xcb_window_t xorg_win_new(xorgSurface_s** surface, xorg_s* X, xcb_window_t parent, int x, int y, unsigned w, unsigned h, unsigned border, g2dColor_t background);
 
 /** resize surface*/
 void xorg_surface_resize(xorgSurface_s* surface, unsigned w, unsigned h);

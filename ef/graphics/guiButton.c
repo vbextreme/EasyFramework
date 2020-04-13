@@ -14,16 +14,21 @@ guiButton_s* gui_button_new(guiLabel_s* lbl, guiEvent_f onclick){
 gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn, guiBackground_s* press, guiBackground_s* hover){
 	if( !gui ) goto ERR;
 	if( !btn ) goto ERR;
+
+	btn->parentKey = gui->key;
+
 	gui->control = btn;
 	gui->type = GUI_TYPE_BUTTON;
 	gui->redraw = gui_button_event_redraw;
 	gui->mouse = gui_button_event_mouse;
 	gui->key = gui_button_event_key;
-	gui->focus = gui_event_focus;
+	gui->focus = gui_button_event_focus;
 	gui->free = gui_button_event_free;
 	gui_background_add(gui, press);
 	gui_background_add(gui, hover);
+
 	return gui;
+
 ERR:
 	if( btn ) gui_button_free(btn);
 	if( gui ) gui_free(gui);
@@ -72,7 +77,9 @@ int gui_button_event_key(gui_s* gui, xorgEvent_s* event){
 		return 0;
 	}
 
-	gui_event_key(gui, event);
+	guiButton_s* btn = gui->control;
+	if( btn->parentKey && gui->parent ) btn->parentKey(gui->parent, event);
+
 	return 0;
 }
 
@@ -103,7 +110,7 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event){
 	return 0;
 }
 
-int gui_event_focus(gui_s* gui, xorgEvent_s* event){
+int gui_button_event_focus(gui_s* gui, xorgEvent_s* event){
 	if( event->focus.outin ){
 		gui_border(gui, gui->bordersizefocused);
 	}

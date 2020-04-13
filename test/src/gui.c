@@ -69,7 +69,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			main, "but", "button",
 			1, 10, 100, 80, 50, 
 			gui_background_new( gui_color(255, 80, 110, 80), NULL, NULL, GUI_BK_COLOR), 
-			NULL
+			labl
 		),
 		gui_button_new(
 			gui_label_new(tfont, 0, gui_color(255,40,40,40)),
