@@ -7,6 +7,11 @@
 #include <ef/deadpoll.h>
 #include <ef/phq.h>
 
+//TODO 
+// text control
+// gui round corner
+// dock up,right,bottom,left
+
 #define GUI_TYPE_WINDOW 0
 #define GUI_TYPE_LABEL  1
 #define GUI_TYPE_BUTTON 2
@@ -120,6 +125,8 @@ void gui_focus_next(gui_s* gui);
 int gui_focus_prev_id(gui_s* parent);
 void gui_focus_prev(gui_s* gui);
 void gui_draw(gui_s* gui);
+void gui_redraw(gui_s* gui);
+void gui_opacity(gui_s* gui, double op); //only main window
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);
@@ -143,5 +150,6 @@ guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_
 void gui_background_redraw(gui_s* gui, guiBackground_s* bkg);
 guiBackground_s* gui_background_get(gui_s* gui, size_t id);
 void gui_background_add(gui_s* gui, guiBackground_s* bk);
+
 
 #endif

@@ -52,6 +52,7 @@ typedef enum {
 	XORG_ATOM_NET_WM_STRUT_PARTIAL,
 	XORG_ATOM_NET_WM_PID,
 	XORG_ATOM_NET_WM_WINDOW_TYPE_DOCK,
+	XORG_ATOM_NET_WM_WINDOW_OPACITY,
 	XORG_ATOM_XROOTPMAP_ID,
 	XORG_ATOM_UTF8_STRING,
 	XORG_ATOM_COUNT,
@@ -292,6 +293,8 @@ xcb_atom_t xorg_atom_new_id(xorg_s* x, const char* name);
 /** load default atom*/
 void xorg_atom_load(xorg_s* x);
 
+void xorg_visual(xorg_s* x);
+
 /** xcp wrap*/
 int xorg_xcb_attribute(xorg_s* x, xcb_get_window_attributes_cookie_t cookie);
 
@@ -376,6 +379,7 @@ void xorg_send_current_desktop(xorg_s* x, uint32_t desktop);
 /** send set desktop*/
 void xorg_send_set_desktop(xorg_s* x, xcb_window_t win, uint32_t desktop);
 
+
 /** free window */
 void xorg_window_release(xorgWindow_s* win);
 
@@ -438,6 +442,12 @@ void xorg_win_surface_redraw(xorg_s* x, xcb_window_t id,  xorgSurface_s* surface
 
 /** set window as dock*/
 void xorg_win_dock(xorg_s* x, xcb_window_t id);
+
+/** get opacity*/
+unsigned xorg_win_opacity_get(xorg_s* x, xcb_window_t win);
+
+/** set window opacity */
+void xorg_win_opacity_set(xorg_s* x, xcb_window_t win, unsigned int opacity);
 
 /** reserve dock space*/
 void xorg_wm_reserve_dock_space_on_top(xorg_s* x, xcb_window_t id, unsigned X, unsigned w, unsigned h);

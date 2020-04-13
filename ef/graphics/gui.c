@@ -261,6 +261,11 @@ void gui_redraw(gui_s* gui){
 	if( gui->redraw ) gui->redraw(gui, NULL);
 }
 
+void gui_opacity(gui_s* gui, double op){
+	unsigned lop = (unsigned)0xFFFFFFFF * op;
+	xorg_win_opacity_set(X, gui->id, lop);;
+}
+
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 	gui_background_redraw(gui, gui->background[0]);
 	return 0;
@@ -501,7 +506,6 @@ guiBackground_s* gui_background_get(gui_s* gui, size_t id){
 void gui_background_add(gui_s* gui, guiBackground_s* bk){
 	vector_push_back(gui->background, bk);
 }
-
 
 
 

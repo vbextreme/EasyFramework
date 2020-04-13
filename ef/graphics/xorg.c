@@ -301,6 +301,7 @@ void xorg_atom_load(xorg_s* x){
 		[XORG_ATOM_NET_WM_STRUT_PARTIAL] = "_NET_WM_STRUT_PARTIAL",
 		[XORG_ATOM_NET_WM_PID] = "_NET_WM_PID",
 		[XORG_ATOM_NET_WM_WINDOW_TYPE_DOCK] = "_NET_WM_WINDOW_TYPE_DOCK",
+		[XORG_ATOM_NET_WM_WINDOW_OPACITY] = "_NET_WM_WINDOW_OPACITY",
 		[XORG_ATOM_XROOTPMAP_ID] = "_XROOTPMAP_ID",
 		[XORG_ATOM_UTF8_STRING] = "UTF8_STRING"
 	};
@@ -801,6 +802,8 @@ void xorg_send_set_desktop(xorg_s* x, xcb_window_t win, uint32_t desktop){
 	xorg_send_client32(x, 0, win, x->atom[XORG_ATOM_NET_WM_DESKTOP], data, sizeof(data));
 }
 
+
+
 void xorg_window_release(xorgWindow_s* win){
 	free(win->name);
 	free(win->title);
@@ -808,7 +811,6 @@ void xorg_window_release(xorgWindow_s* win){
 	free(win->state);
 	free(win->type);
 }
-
 
 //WM_STATE
 //WM_NORMAL_HINTS
@@ -1223,6 +1225,15 @@ void xorg_win_dock(xorg_s* x, xcb_window_t id){
 	);
 }
 
+unsigned xorg_win_opacity_get(xorg_s* x, xcb_window_t win){
+	xcb_get_property_cookie_t cookie = xcb_get_property(x->connection, 0, win, x->atom[XORG_ATOM_NET_WM_WINDOW_OPACITY], XCB_ATOM_CARDINAL, 0, 1);
+	return xorg_xcb_property_cardinal(x, cookie);
+}
+
+void xorg_win_opacity_set(xorg_s* x, xcb_window_t win, unsigned int opacity){
+	xcb_change_property(x->connection, XCB_PROP_MODE_REPLACE, win, x->atom[XORG_ATOM_NET_WM_WINDOW_OPACITY], XCB_ATOM_CARDINAL, 32, sizeof(opacity), &opacity );
+}
+
 void xorg_wm_reserve_dock_space_on_top(xorg_s* x, xcb_window_t id, unsigned X, unsigned w, unsigned h){
 	xorgWindowStrutPartial_s partial = {0};
 	partial.top = xorg_root_y(x) + h;
@@ -1274,9 +1285,9 @@ xcb_window_t xorg_win_new(xorgSurface_s** surface, xorg_s* X, xcb_window_t paren
 	unsigned event = X_WIN_EVENT;
 	dbg_info("create window %d %d %u*%u", x, y, w, h);
 	xcb_window_t win = xcb_generate_id(X->connection);
+
 	xcb_create_window(X->connection, XCB_COPY_FROM_PARENT, win, parent,
 			xorg_root_x(X) + x, xorg_root_y(X) + y, w, h, border,
-			//XCB_WINDOW_CLASS_INPUT_OUTPUT,
 			XCB_WINDOW_CLASS_COPY_FROM_PARENT,
 		   	xorg_root_visual(X), XCB_CW_EVENT_MASK, &event);
 	
