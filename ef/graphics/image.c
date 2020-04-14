@@ -454,7 +454,7 @@ __private void g2d_bitblt_alpha_vectorize(g2dImage_s* dst, g2dCoord_s* cod, g2dI
 				vs = (*Avector >> src->sb) & 0xFF;
 				vd = (*Bvector >> dst->sb) & 0xFF;
 				uint4_v vcb = g2d_alpha_part(vsa, vs, vd);
-				*Bvector = (vcr << dst->sr) | (vcg << dst->sg) | (vcb << dst->sb);
+				*Bvector = (255<<dst->sa) | (vcr << dst->sr) | (vcg << dst->sg) | (vcb << dst->sb);
 
 				Bvector++;
 				Avector++;

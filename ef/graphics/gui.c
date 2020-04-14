@@ -587,7 +587,6 @@ void gui_background_main_round_fn(gui_s* gui){
 }
 
 void gui_background_round_fn(gui_s* gui){
-	dbg_error("ROUND FNMNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
 	iassert(gui->parent);
 	unsigned radius = gui->genericSize;
 
@@ -608,7 +607,6 @@ void gui_background_round_fn(gui_s* gui){
 	mc.y = gui->position.y;
 	mc.w = mask->w;
 	mc.h = mask->h;
-	dbg_info("copy %u %u %u*%u -> %u %u %u*%u", mc.x, mc.y, mc.w, mc.h, rc.x, rc.y, rc.w, rc.h);
 	g2d_bitblt(gui->surface->img, &rc, gui->parent->surface->img, &mc);
 
 	col = gui_color(255, 0, 0, 0);
@@ -646,10 +644,9 @@ void gui_background_round_fn(gui_s* gui){
 	rc.y=0;
 	rc.w=mask->w;
 	rc.h=mask->h;
-	//g2d_bitblt(gui->surface->img, &rc, pare, &rc);
 
-	//g2d_bitblt_channel(pare, &rc, mask, &rc, mask->ma);
-	//g2d_bitblt_alpha(gui->surface->img, &rc, pare, &rc);
+	g2d_bitblt_channel(orig, &rc, mask, &rc, mask->ma);
+	g2d_bitblt_alpha(gui->surface->img, &rc, orig, &rc);
 
 	g2d_free(mask);
 	g2d_free(orig);
