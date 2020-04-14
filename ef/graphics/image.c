@@ -1100,6 +1100,29 @@ void g2d_char(g2dImage_s* dst, g2dCoord_s* coord, g2dImage_s* ch, g2dColor_t col
 	}
 }
 
+void g2d_char_indirect(g2dImage_s* dst, g2dCoord_s* coord, g2dImage_s* ch, g2dColor_t col){
+	unsigned const h = (coord->y + ch->h) > dst->h ? dst->h - coord->y : ch->h;
+	unsigned const w = (coord->x + ch->w) > dst->w ? dst->w - coord->x : ch->w;
+	unsigned char Ared = g2d_color_red(ch, col);
+	unsigned char Agreen = g2d_color_green(ch, col);
+	unsigned char Ablue = g2d_color_blue(ch, col);
+
+	for( unsigned y = 0; y < h; ++y ){
+		unsigned const row = g2d_row(dst, coord->y + y);
+		unsigned const chrow = g2d_row(ch, y);
+		g2dColor_t* scalarB = g2d_color(dst, row, coord->x);
+		g2dColor_t* scalarA = g2d_color(ch, chrow, 0);
+		for( unsigned x = 0; x < w; ++x){	
+			if( !g2d_color_red(ch, *scalarA) ){
+				unsigned char Aalpha = g2d_color_alpha(ch, *scalarA);
+				*scalarB = g2d_color_make(dst, Aalpha, Ared, Agreen, Ablue);
+			}
+			++scalarB;
+			++scalarA;
+		}	
+	}
+}
+
 /*********************************************************************************/
 /*************************************** PRIMITIVE *******************************/
 /*********************************************************************************/

@@ -144,20 +144,23 @@ unsigned ft_line_height(ftFonts_s* fonts);
 /** return line lenght in pixels*/
 unsigned ft_line_lenght(ftFonts_s* fonts, const utf8_t* str);
 
+/** return multiline lenght in pixel */
+unsigned ft_multiline_lenght(ftFonts_s* fonts, const utf8_t* str);
+
+/** return multiline height in pixel */
+unsigned ft_multiline_height(ftFonts_s* fonts, const utf8_t* str);
+
 /** return height in autowrap text*/
 unsigned ft_autowrap_height(ftFonts_s* fonts, const utf8_t* str, unsigned width);
 
 /** draw utf in to dst on position pos with color fore and background back at origin X, cls clear background, pos is incremented*/
-int g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dColor_t fore, g2dColor_t back, unsigned originX, int cls);
+int g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dColor_t fore, g2dColor_t back, unsigned originX, int cls, int indirect);
 
-/** same putch but with autowrap on pos*/
-void g2d_putch_autowrap(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dColor_t fore, g2dColor_t back, unsigned originX, int cls);
-
-/** write a string, with putch*/
-void g2d_string(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, g2dColor_t col, unsigned originX);
+/** write a string, with putch, return NULL if end or pointer after new line*/
+const utf8_t* g2d_string(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, g2dColor_t col, unsigned originX, int indirect);
 
 /** write a string, with putch autwrap*/
-void g2d_string_autowrap(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, g2dColor_t col, unsigned originX);
+void g2d_string_autowrap(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, g2dColor_t col, unsigned originX, int indirect);
 
 /** write a string but not rewrite previus char*/
 void g2d_string_replace(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, utf8_t const* old, g2dColor_t f, g2dColor_t b, unsigned originX);

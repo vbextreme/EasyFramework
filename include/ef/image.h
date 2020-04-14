@@ -167,6 +167,9 @@ g2dImage_s* g2d_rotate(g2dImage_s* src, unsigned cx, unsigned cy, float grad);
 /** convert grayscaled image ch to color and copy to dst*/
 void g2d_char(g2dImage_s* dst, g2dCoord_s* coord, g2dImage_s* ch, g2dColor_t col);
 
+/** same g2d_char but not apply alpha*/
+void g2d_char_indirect(g2dImage_s* dst, g2dCoord_s* coord, g2dImage_s* ch, g2dColor_t col);
+
 /*primitive*/
 
 /** rotate a point*/

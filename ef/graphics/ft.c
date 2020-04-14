@@ -608,11 +608,61 @@ unsigned ft_line_lenght(ftFonts_s* fonts, const utf8_t* str){
 		ftRender_s* rch = ft_fonts_glyph_load(fonts, u, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
 		if( rch ) lenght += rch->horiAdvance;
 	}
-	//ftRender_s* rch = ft_fonts_glyph_load(fonts, ' ', FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
-	//if( rch->img->w > rch->horiAdvance ) lenght += rch->img->w - rch->horiAdvance;
 	dbg_info("line lenght:%u", lenght);
 	return lenght;
 }	
+
+unsigned ft_multiline_lenght(ftFonts_s* fonts, const utf8_t* str){
+	if( !str || !*str ){
+		dbg_warning("no str");
+		return 0;
+	}
+	unsigned max = 0;
+	unsigned lenght = 0;
+	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
+	utf_t u;	
+	while( (u = utf8_iterator_next(&it)) ){
+		if( u >= UTF_PRIVATE0_START ){
+			continue;
+		}
+		if( u == '\n' ){
+			if( lenght > max ) max = lenght;
+			continue;
+		}
+		ftRender_s* rch = ft_fonts_glyph_load(fonts, u, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
+		if( rch ) lenght += rch->horiAdvance;
+	}
+	if( lenght > max ) max = lenght;
+	dbg_info("multiline lenght:%u", max);
+	return max;
+}
+
+unsigned ft_multiline_height(ftFonts_s* fonts, const utf8_t* str){
+	if( !str ){
+		dbg_warning("no str");
+		return 0;
+	}
+
+	unsigned monoh = ft_line_height(fonts);
+	unsigned height = monoh;
+	unsigned lenght = 0;
+
+	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
+	utf_t utf;
+	while( (utf = utf8_iterator_next(&it)) ){
+		if( utf >= UTF_PRIVATE0_START ){
+			continue;
+		}
+		if( utf == '\n' ){
+			height += monoh;
+			lenght = 0;
+			continue;
+		}
+		ftRender_s* rch = ft_fonts_glyph_load(fonts, *str, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
+		if( rch ) lenght += rch->horiAdvance;
+	}
+	return height;
+}
 
 unsigned ft_autowrap_height(ftFonts_s* fonts, const utf8_t* str, unsigned width){
 	if( !str ){
@@ -651,7 +701,7 @@ __private void g2d_ch_clear(g2dImage_s* dst, g2dCoord_s* pos, ftRender_s* glyph,
 	g2d_clear(dst, color, &co);
 }
 
-int g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dColor_t fore, g2dColor_t back, unsigned originX, int cls){
+int g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dColor_t fore, g2dColor_t back, unsigned originX, int cls, int indirect){
 
 	if( ch == '\n' ){
 		pos->x = originX;
@@ -679,12 +729,17 @@ int g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dC
 	dbg_info("putch %u %u wh:%u*%u ch:%u*%u hory:%u", pos->x, pos->y, pos->w, pos->h, rch->img->w, rch->img->h, rch->horiAdvance);
 
 	if( cls ) g2d_ch_clear(dst, pos, rch, back);
-	g2d_char(dst, pos, rch->img, fore);
+	if( indirect ){
+		g2d_char_indirect(dst, pos, rch->img, fore);
+	}
+	else{
+		g2d_char(dst, pos, rch->img, fore);
+	}
 	pos->x += rch->horiAdvance;
 	return 0;
 }
 
-void g2d_string(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, g2dColor_t col, unsigned originX){
+const utf8_t* g2d_string(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, g2dColor_t col, unsigned originX, int indirect){
 	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
 	utf_t utf;
 	while( (utf = utf8_iterator_next(&it)) ){
@@ -693,14 +748,13 @@ void g2d_string(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const
 			fuc->fn(utf, &fonts, &pos->x, &pos->y, &col, fuc->userdata);
 			continue;
 		}
-		if( g2d_putch(dst, pos, fonts, utf, col, 0,  originX, 0) ){
-			dbg_info("exit");
-			return ;
-		}
+		int stret = g2d_putch(dst, pos, fonts, utf, col, 0,  originX, 0, indirect);
+		if( stret ) return stret == 1 ? it.str+1 : NULL;
 	}
+	return NULL;
 }
 
-void g2d_string_autowrap(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, g2dColor_t col, unsigned originX){
+void g2d_string_autowrap(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8_t const* str, g2dColor_t col, unsigned originX, int indirect){
 	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
 	utf_t utf;
 	while( (utf = utf8_iterator_next(&it)) ){
@@ -710,13 +764,13 @@ void g2d_string_autowrap(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf
 		//g2d_putch_autowrap(dst, pos, fonts, utf, col, 0,  originX, 0);
 			continue;
 		}
-		int ret = g2d_putch(dst, pos, fonts, utf, col, 0,  originX, 0);
+		int ret = g2d_putch(dst, pos, fonts, utf, col, 0,  originX, 0, indirect);
 		if( ret < 0 ){
 			dbg_info("exit");	
 			break;
 		}
 		if( ret > 1 ){
-			if( g2d_putch(dst, pos, fonts, utf, col, 0,  originX, 0) ){
+			if( g2d_putch(dst, pos, fonts, utf, col, 0,  originX, 0, indirect) ){
 				dbg_info("exit 2");
 			}
 		}
@@ -740,7 +794,7 @@ void g2d_string_replace(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8
 			pos->x += rch->horiAdvance;
 		}
 		else{
-			if( g2d_putch(dst, pos, fonts, utf, f, b, originX, 1) ){
+			if( g2d_putch(dst, pos, fonts, utf, f, b, originX, 1,1) ){
 				dbg_info("exit");
 				return;
 			}
@@ -756,7 +810,7 @@ void g2d_string_replace(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8
 				fuc->fn(utf, &fonts, &pos->x, &pos->y, &f, fuc->userdata);
 				continue;
 			}
-			if( g2d_putch(dst, pos, fonts, utf, f, b, originX, 1) ){
+			if( g2d_putch(dst, pos, fonts, utf, f, b, originX, 1,1) ){
 				dbg_info("exit l");
 				return;
 			}

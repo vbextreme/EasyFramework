@@ -85,20 +85,21 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 		20,NULL
 	);
 	main->destroy = main_exit;
-	main->redraw(main, NULL);
-/*
+//	main->redraw(main, NULL);
+
 	gui_s* labl = 	gui_label_attach(
 		gui_new(
 			main, "labl", "label",
 			1, 10, 10, 130, 80,
-			gui_background_new(gui_color(255, 50, 50, 210), NULL, NULL, GUI_BK_COLOR),
-			NULL
+			gui_color(255,0,0,0),
+			gui_background_new(gui_color(255, 50, 50, 210), NULL, NULL, NULL, GUI_BK_COLOR),
+			0, NULL
 		),
-		gui_label_new(tfont, 0, gui_color(255,40,40,40))
+		gui_label_new(tfont, 0, gui_color(255,40,40,40), GUI_LABEL_CENTER_X | GUI_LABEL_CENTER_Y)
 	);
 	gui_label_text_set(labl, labl->control, U8("hello"));
-	gui_label_redraw(labl, labl->background[0], labl->control);
-*/
+//	gui_label_redraw(labl, labl->background[0], labl->control);
+
 	gui_s* btn = gui_button_attach(
 		gui_new(
 			main, "but", "button",
@@ -108,14 +109,14 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			10, NULL
 		),
 		gui_button_new(
-			gui_label_new(tfont, 0, gui_color(255,40,40,40)),
+			gui_label_new(tfont, 0, gui_color(255,40,40,40), GUI_LABEL_CENTER_X | GUI_LABEL_CENTER_Y),
 			button_click
 		),
 		gui_background_new( gui_color(255, 80, 80, 80), NULL, NULL, gui_background_round_fn, GUI_BK_COLOR | GUI_BK_FN), 
 		gui_background_new( gui_color(255, 80, 120, 80), NULL, NULL, gui_background_round_fn, GUI_BK_COLOR | GUI_BK_FN)
 	);
 	gui_label_text_set(btn, gui_button_label(btn->control), U8("click me")); 
-	gui_button_redraw(btn, btn->control, 0);
+//	gui_button_redraw(btn, btn->control, 0);
 /*
 	gui_s* btn2 = gui_button_attach(
 		gui_new(
@@ -134,6 +135,8 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_label_text_set(btn2, gui_button_label(btn2->control), U8("click 2")); 
 	gui_button_redraw(btn2, btn->control, 0);
 */
+
+	gui_redraw(main);
 	gui_show(main, 1);
 
 
