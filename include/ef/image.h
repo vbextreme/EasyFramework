@@ -185,13 +185,22 @@ void g2d_bline(g2dImage_s* img, g2dPoint_s* st, g2dPoint_s* en, g2dColor_t col);
 void g2d_bline_antialiased(g2dImage_s* img, g2dPoint_s* st, g2dPoint_s* en, g2dColor_t col);
 
 /** draw line and select previous function*/
-void g2d_line(g2dImage_s* img, g2dPoint_s* st, g2dPoint_s* en, g2dColor_t col, int antialaised);
+void g2d_line(g2dImage_s* img, g2dPoint_s* st, g2dPoint_s* en, g2dColor_t col, int antialiased);
+
+/** qubeizer line*/
+void g2d_qubezier_antialiased(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dColor_t color);
+
+/** cubeizer normal line*/
+void g2d_cubezier_normal(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dPoint_s* p3, g2dColor_t col);
+
+/** cubeizer antialiased line*/
+void g2d_cubezier_antialiased(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dPoint_s* p3, g2dColor_t color);
 
 /** cubeizer line*/
-void g2d_cubezier(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dPoint_s* p3, g2dColor_t col);
+void g2d_cubezier(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dPoint_s* p3, g2dColor_t col, int antialiased);
 
 /** draw triangle*/
-void g2d_triangle(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dColor_t col, int antialaised);
+void g2d_triangle(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dColor_t col, int antialiased);
 
 /** draw triangle with fill color*/
 void g2d_triangle_fill(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dColor_t col);
@@ -202,14 +211,26 @@ void g2d_rect(g2dImage_s* img, g2dCoord_s* rc, g2dColor_t col);
 /** draw rect with fill color*/
 void g2d_rect_fill(g2dImage_s* img, g2dCoord_s* rc, g2dColor_t col);
 
-/** draw circle*/
-void g2d_circle(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t col);
+/** draw circle normal*/
+void g2d_circle_normal(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t col);
+
+/** draw circle antialiased*/
+void g2d_circle_antialiased(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t col);
+
+/** draw circle antialiased */
+void g2d_circle(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t col, int antialiased);
 
 /** draw circle with fill color*/
 void g2d_circle_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t col);
 
+/** draw ellipse no antialaised*/
+void g2d_ellipse_normal(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col);
+
+/** draw ellipse antialaised */
+void g2d_ellipse_antialiased(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col);
+
 /** draw ellipse */
-void g2d_ellipse(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col);
+void g2d_ellipse(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col, int antialiased);
 
 /** replace color in region with new color*/ 
 void g2d_repfill(g2dImage_s* img, g2dPoint_s* st, g2dColor_t rep, g2dColor_t col);

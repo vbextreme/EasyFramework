@@ -1026,23 +1026,23 @@ void g2d_point_rotate(unsigned* y, unsigned* x, unsigned cy, unsigned cx, double
 #define _distance(A,B) (A>B?A-B:B-A)
 
 #define _point(IMG, X, Y, C) do{\
-		unsigned const __row__ = g2d_row(IMG, Y);\
+		unsigned const __row__ = g2d_row(IMG, (Y));\
 		g2dColor_t* __col__ = g2d_color(IMG, __row__, X);\
-		*__col__ = C;\
+		*__col__ = (C);\
 	}while(0)
 
 #define _point_alpha(IMG, X, Y, C) do{\
-		unsigned const __row__ = g2d_row(IMG, Y);\
-		g2dColor_t* __col__ = g2d_color(IMG, __row__, X);\
-		unsigned char __red__ = g2d_alpha_part(g2d_color_alpha(IMG,C), g2d_color_red(IMG,C), g2d_color_red(IMG,*__col__));\
-		unsigned char __green__ = g2d_alpha_part(g2d_color_alpha(IMG,C), g2d_color_green(IMG,C), g2d_color_green(IMG,*__col__));\
-		unsigned char __blue__ = g2d_alpha_part(g2d_color_alpha(IMG,C), g2d_color_blue(IMG,C), g2d_color_blue(IMG,*__col__));\
+		unsigned const __row__ = g2d_row(IMG, (Y));\
+		g2dColor_t* __col__ = g2d_color(IMG, __row__, (X));\
+		unsigned char __red__ = g2d_alpha_part(g2d_color_alpha(IMG,(C)), g2d_color_red(IMG,(C)), g2d_color_red(IMG,*__col__));\
+		unsigned char __green__ = g2d_alpha_part(g2d_color_alpha(IMG,(C)), g2d_color_green(IMG,(C)), g2d_color_green(IMG,*__col__));\
+		unsigned char __blue__ = g2d_alpha_part(g2d_color_alpha(IMG,(C)), g2d_color_blue(IMG,(C)), g2d_color_blue(IMG,*__col__));\
 		*__col__ = g2d_color_make(IMG, g2d_color_alpha(IMG,*__col__), __red__, __green__, __blue__);\
 	}while(0)
 
 #define _point_inside(IMG, X, Y, C) do{\
-		if( (X) < (IMG)->w && Y < (IMG)->h ){\
-			_point(IMG, X, Y, C);\
+		if( (X) < (IMG)->w && (Y) < (IMG)->h ){\
+			_point(IMG, (X), (Y), (C));\
 		}\
 	}while(0)
 
@@ -1192,14 +1192,14 @@ void g2d_bline_antialiased(g2dImage_s* img, g2dPoint_s* st, g2dPoint_s* en, g2dC
 	}
 }
 
-void g2d_line(g2dImage_s* img, g2dPoint_s* st, g2dPoint_s* en, g2dColor_t col, int antialaised){
+void g2d_line(g2dImage_s* img, g2dPoint_s* st, g2dPoint_s* en, g2dColor_t col, int antialiased){
 	if( st->x == en->x ){
 		g2d_vline(img, st, en->y, col);
 	}
 	else if( st->y == en->y ){
 		g2d_hline(img, st, en->x, col);
 	}
-	else if( antialaised ){
+	else if( antialiased ){
 		g2d_bline_antialiased(img, st, en, col);
 	}
 	else{
@@ -1207,7 +1207,69 @@ void g2d_line(g2dImage_s* img, g2dPoint_s* st, g2dPoint_s* en, g2dColor_t col, i
 	}
 }
 
-void g2d_cubezier(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dPoint_s* p3, g2dColor_t col){
+void g2d_qubezier_antialiased(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dColor_t color){
+	int x0 = p0->x;
+	int y0 = p0->y;
+	int x1 = p1->x;
+	int y1 = p1->y;
+	int x2 = p2->x;
+	int y2 = p2->y;
+	int sx = x2-x1, sy = y2-y1;
+	long xx = x0-x1, yy = y0-y1, xy;
+	double dx, dy, err, ed, cur = xx*sy-yy*sx;
+	iassert(xx*sx <= 0 && yy*sy <= 0);
+	if( sx*(long)sx+sy*(long)sy > xx*xx+yy*yy ){
+		x2 = x0; x0 = sx+x1; y2 = y0; y0 = sy+y1; cur = -cur;
+	}
+	if( (int)cur != 0 ){
+		xx += sx; xx *= sx = x0 < x2 ? 1 : -1;
+		yy += sy; yy *= sy = y0 < y2 ? 1 : -1;
+		xy = 2*xx*yy; xx *= xx; yy *= yy;
+		if( cur*sx*sy < 0 ){
+			xx = -xx; yy = -yy; xy = -xy; cur = -cur;
+		}
+		dx = 4.0*sy*(x1-x0)*cur+xx-xy;
+		dy = 4.0*sx*(y0-y1)*cur+yy-xy;
+		xx += xx; yy += yy; err = dx+dy+xy;
+		do{
+			cur = MTH_MIN(dx+xy,-xy-dy);
+			ed = MTH_MAX(dx+xy,-xy-dy);
+			ed = 255/(ed+2*ed*cur*cur/(4*ed*ed+cur*cur));
+			int alpha = 255 - ed*fabs(err-dx-dy-xy);
+			if( alpha > 255 ) alpha = 255;
+			if( alpha < 0 ) alpha = 0;
+			color = g2d_color_alpha_set(img, color, alpha);
+			_point_alpha(img, x0, y0, color);
+			if( x0 == x2 && y0 == y2 ) return;
+			x1 = x0; cur = dx-err; y1 = 2*err+dy < 0;
+			if( 2*err+dx > 0 ){
+				if( err-dy < ed ){
+					int alpha = 255 - ed*fabs(err-dy);
+					if( alpha > 255 ) alpha = 255;
+					if( alpha < 0 ) alpha = 0;
+					color = g2d_color_alpha_set(img, color, alpha);
+					_point_alpha(img, x0, y0+sy, color);
+				}
+				x0 += sx; dx -= xy; err += dy += yy;
+			}
+			if( y1 ){
+				if( cur < ed ){
+					int alpha = 255 - ed*fabs(cur);
+					if( alpha > 255 ) alpha = 255;
+					if( alpha < 0 ) alpha = 0;
+					color = g2d_color_alpha_set(img, color, alpha);
+					_point_alpha(img, x1+sx, y0, color);
+				}
+				y0 += sy; dy -= xy; err += dx += xx;
+			}
+		}while( dy < dx );
+	}
+	g2dPoint_s PS = { .x = x0, .y = y0};
+	g2dPoint_s PE = { .x = x2, .y = y2};
+	g2d_line(img, &PS, &PE, color, 1);
+}
+
+void g2d_cubezier_normal(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dPoint_s* p3, g2dColor_t col){
  	float dt;
  	int	ii=0;
     int np;
@@ -1267,6 +1329,184 @@ void g2d_cubezier(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p
             _point( img, rx, ry, col);
         }
  	}
+}
+
+__private void g2d_cubezier_segment_antialiased(g2dImage_s* img, int x0, int y0, float x1, float y1, float x2, float y2, int x3, int y3, g2dColor_t color){
+	int f, fx, fy, leg = 1;
+	int sx = x0 < x3 ? 1 : -1, sy = y0 < y3 ? 1 : -1;
+	float xc = -fabs(x0+x1-x2-x3), xa = xc-4*sx*(x1-x2), xb = sx*(x0-x1-x2+x3);
+	float yc = -fabs(y0+y1-y2-y3), ya = yc-4*sy*(y1-y2), yb = sy*(y0-y1-y2+y3);
+	double ab, ac, bc, ba, xx, xy, yy, dx, dy, ex, px, py, ed, ip, EP = 0.01;
+
+	iassert((x1-x0)*(x2-x3) < EP && ((x3-x0)*(x1-x2) < EP || xb*xb < xa*xc+EP));
+	iassert((y1-y0)*(y2-y3) < EP && ((y3-y0)*(y1-y2) < EP || yb*yb < ya*yc+EP));
+	if( (int)xa == 0 && (int)ya == 0 ){
+		sx = floor((3*x1-x0+1)/2); sy = floor((3*y1-y0+1)/2);
+		g2dPoint_s P0 = {.x = x0, .y = y0};
+		g2dPoint_s P1 = {.x = sx, .y = sy};
+		g2dPoint_s P2 = {.x = x3, .y = y3};
+		g2d_qubezier_antialiased(img, &P0, &P1, &P2, color);
+		return;
+	}
+	x1 = (x1-x0)*(x1-x0)+(y1-y0)*(y1-y0)+1;
+	x2 = (x2-x3)*(x2-x3)+(y2-y3)*(y2-y3)+1;
+	do{
+		ab = xa*yb-xb*ya; ac = xa*yc-xc*ya; bc = xb*yc-xc*yb;
+		ip = 4*ab*bc-ac*ac;
+		ex = ab*(ab+ac-3*bc)+ac*ac;
+		f = ex > 0 ? 1 : sqrt(1+1024/x1);
+		ab *= f; ac *= f; bc *= f; ex *= f*f;
+		xy = 9*(ab+ac+bc)/8; ba = 8*(xa-ya);
+		dx = 27*(8*ab*(yb*yb-ya*yc)+ex*(ya+2*yb+yc))/64-ya*ya*(xy-ya);
+		dy = 27*(8*ab*(xb*xb-xa*xc)-ex*(xa+2*xb+xc))/64-xa*xa*(xy+xa);
+		xx = 3*(3*ab*(3*yb*yb-ya*ya-2*ya*yc)-ya*(3*ac*(ya+yb)+ya*ba))/4;
+		yy = 3*(3*ab*(3*xb*xb-xa*xa-2*xa*xc)-xa*(3*ac*(xa+xb)+xa*ba))/4;
+		xy = xa*ya*(6*ab+6*ac-3*bc+ba); ac = ya*ya; ba = xa*xa;
+		xy = 3*(xy+9*f*(ba*yb*yc-xb*xc*ac)-18*xb*yb*ab)/8;
+		if( ex < 0 ){
+			dx = -dx; dy = -dy; xx = -xx; yy = -yy; xy = -xy; ac = -ac; ba = -ba;
+		}
+		ab = 6*ya*ac; ac = -6*xa*ac; bc = 6*ya*ba; ba = -6*xa*ba;
+		dx += xy; ex = dx+dy; dy += xy;
+		for( fx = fy = f; x0 != x3 && y0 != y3; ){
+			y1 = MTH_MIN(xy-dx,dy-xy);
+			ed = MTH_MAX(xy-dx,dy-xy);
+			ed = f*(ed+2*ed*y1*y1/(4*ed*ed+y1*y1)); 
+			y1 = 255*fabs(ex-(f-fx+1)*dx-(f-fy+1)*dy+f*xy)/ed;
+			if( y1 < 256 ){
+				int alpha = 255 - y1;
+				if( alpha > 255 ) alpha = 255;
+				if( alpha < 0 ) alpha = 0;
+				color = g2d_color_alpha_set(img, color, alpha);
+				_point_alpha(img, x0, y0, color);
+			}
+			px = fabs(ex-(f-fx+1)*dx+(fy-1)*dy);
+			py = fabs(ex+(fx-1)*dx-(f-fy+1)*dy);
+			y2 = y0;
+			do{
+				if( ip >= -EP )
+					if( dx+xx > xy || dy+yy < xy ) goto exit;
+				y1 = 2*ex+dx;
+				if( 2*ex+dy > 0 ){
+					fx--; ex += dx += xx; dy += xy += ac; yy += bc; xx += ab;
+				}
+				if( y1 <= 0 ){
+					fy--; ex += dy += yy; dx += xy += bc; xx += ac; yy += ba;
+				}
+			}while( fx > 0 && fy > 0 );
+			if( 2*fy <= f ){
+				if( py < ed ){
+					int alpha = 255 - 255*py/ed;
+					if( alpha > 255 ) alpha = 255;
+					if( alpha < 0 ) alpha = 0;
+					color = g2d_color_alpha_set(img, color, alpha);
+					_point_alpha(img, x0 + sx, y0, color);
+				}
+				y0 += sy; fy += f;
+			}
+			if( 2*fx <= f ){
+				if( px < ed ){
+					int alpha = 255 - 255*px/ed;
+					if( alpha > 255 ) alpha = 255;
+					if( alpha < 0 ) alpha = 0;
+					color = g2d_color_alpha_set(img, color, alpha);
+					_point_alpha(img, x0, y2 + sy, color);
+				}
+				x0 += sx; fx += f;
+			}
+		}
+		break;
+	exit:
+		if (2*ex < dy && 2*fy <= f+2) {
+			if( py < ed ){
+				int alpha = 255 - 255*py/ed;
+				if( alpha > 255 ) alpha = 255;
+				if( alpha < 0 ) alpha = 0;
+				color = g2d_color_alpha_set(img, color, alpha);
+				_point_alpha(img, x0 + sx, y0, color);
+			}
+			y0 += sy;
+		}
+		if( 2*ex > dx && 2*fx <= f+2 ){
+			if( px < ed ){
+				int alpha = 255 - 255*px/ed;
+				if( alpha > 255 ) alpha = 255;
+				if( alpha < 0 ) alpha = 0;
+				color = g2d_color_alpha_set(img, color, alpha);
+				_point_alpha(img, x0, y2 + sy, color);
+			}
+			x0 += sx;
+		}
+		xx = x0; x0 = x3; x3 = xx; sx = -sx; xb = -xb;
+		yy = y0; y0 = y3; y3 = yy; sy = -sy; yb = -yb; x1 = x2;
+	}while( leg-- );
+	
+	g2dPoint_s PS = { .x = x0, .y = y0};
+	g2dPoint_s PE = { .x = x3, .y = y3};
+	g2d_line(img, &PS, &PE, color, 1);
+}
+
+void g2d_cubezier_antialiased(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dPoint_s* p3, g2dColor_t col){
+	int x0 = p0->x;
+	int y0 = p0->y;
+	int x1 = p1->x;
+	int y1 = p1->y;
+	int x2 = p2->x;
+	int y2 = p2->y;
+	int x3 = p3->x;
+	int y3 = p3->y;
+	int n = 0, i = 0;
+	long xc = x0+x1-x2-x3, xa = xc-4*(x1-x2);
+	long xb = x0-x1-x2+x3, xd = xb+4*(x1+x2);
+	long yc = y0+y1-y2-y3, ya = yc-4*(y1-y2);
+	long yb = y0-y1-y2+y3, yd = yb+4*(y1+y2);
+	float fx0 = x0, fx1, fx2, fx3, fy0 = y0, fy1, fy2, fy3;
+	double t1 = xb*xb-xa*xc, t2, t[5];
+	if( xa == 0 ){
+		if( abs((int)xc) < 2*abs((int)xb) ) t[n++] = xc/(2.0*xb);
+	}
+	else if( t1 > 0.0 ){
+		t2 = sqrt(t1);
+		t1 = (xb-t2)/xa; 
+		if (fabs(t1) < 1.0) t[n++] = t1;
+		t1 = (xb+t2)/xa; 
+		if (fabs(t1) < 1.0) t[n++] = t1;
+	}
+	t1 = yb*yb-ya*yc;
+	if( ya == 0 ){
+		if( abs((int)yc) < 2*abs((int)yb) ) t[n++] = yc/(2.0*yb);
+	}
+	else if( t1 > 0.0 ){
+		t2 = sqrt(t1);
+		t1	= (yb-t2)/ya;
+		if( fabs(t1) < 1.0 ) t[n++] = t1;
+		t1 = (yb+t2)/ya;
+		if( fabs(t1) < 1.0 ) t[n++] = t1;
+	}
+	for (i = 1; i < n; i++)
+		if ((t1 = t[i-1]) > t[i]) { t[i-1] = t[i]; t[i] = t1; i = 0; }
+	t1 = -1.0; t[n] = 1.0;
+	for (i = 0; i <= n; i++){
+		t2 = t[i];
+		fx1 = (t1*(t1*xb-2*xc)-t2*(t1*(t1*xa-2*xb)+xc)+xd)/8-fx0;
+		fy1 = (t1*(t1*yb-2*yc)-t2*(t1*(t1*ya-2*yb)+yc)+yd)/8-fy0;
+		fx2 = (t2*(t2*xb-2*xc)-t1*(t2*(t2*xa-2*xb)+xc)+xd)/8-fx0;
+		fy2 = (t2*(t2*yb-2*yc)-t1*(t2*(t2*ya-2*yb)+yc)+yd)/8-fy0;
+		fx0 -= fx3 = (t2*(t2*(3*xb-t2*xa)-3*xc)+xd)/8;
+		fy0 -= fy3 = (t2*(t2*(3*yb-t2*ya)-3*yc)+yd)/8;
+		x3 = floor(fx3+0.5); y3 = floor(fy3+0.5);
+		if( (int)fx0 != 0 ) { fx1 *= fx0 = (x0-x3)/fx0; fx2 *= fx0; }
+		if( (int)fy0 != 0 ) { fy1 *= fy0 = (y0-y3)/fy0; fy2 *= fy0; }
+		if( x0 != x3 || y0 != y3){
+			g2d_cubezier_segment_antialiased(img, x0, y0, x0 + fx1, y0 + fy1, x0 + fx2, y0 + fy2, x3, y3, col);
+		}
+		x0 = x3; y0 = y3; fx0 = fx3; fy0 = fy3; t1 = t2;
+	}
+}
+
+void g2d_cubezier(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dPoint_s* p3, g2dColor_t col, int antialiased){
+	if( antialiased ) g2d_cubezier_antialiased(img, p0, p1, p2, p3, col);
+	else g2d_cubezier_normal(img, p0, p1, p2, p3, col);
 }
 
 void g2d_triangle_fill(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dColor_t col){
@@ -1418,10 +1658,10 @@ void g2d_triangle_fill(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint
 }
 
 
-void g2d_triangle(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dColor_t col, int antialaised){
-    g2d_line(img, p0, p1, col, antialaised);
-    g2d_line(img, p0, p2, col, antialaised);
-	g2d_line(img, p1, p2, col, antialaised); 
+void g2d_triangle(g2dImage_s* img, g2dPoint_s* p0, g2dPoint_s* p1, g2dPoint_s* p2, g2dColor_t col, int antialiased){
+    g2d_line(img, p0, p1, col, antialiased);
+    g2d_line(img, p0, p2, col, antialiased);
+	g2d_line(img, p1, p2, col, antialiased); 
 }
 
 void g2d_rect(g2dImage_s* img, g2dCoord_s* rc, g2dColor_t col){
@@ -1440,7 +1680,7 @@ void g2d_rect_fill(g2dImage_s* img, g2dCoord_s* rc, g2dColor_t col){
     g2d_clear(img, col, rc);
 }
 
-void g2d_circle(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t col){
+void g2d_circle_normal(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t col){
 	iassert(r);
     int x,y,xc,yc,re;
 
@@ -1468,6 +1708,52 @@ void g2d_circle(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t col){
             xc += 2;
         }
     }
+}
+
+/*Bresenham*/
+void g2d_circle_antialiased(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t col){
+	int x = r, y = 0;
+	int i, x2, e2, err = 2-2*r;
+	r = 1-err;
+	for(;;){
+		i = 255*abs(err+2*(x+y)-2)/r;
+		if( i < 0 ) i = 0;
+		if( i > 255 ) i = 255;
+		col = g2d_color_alpha_set(img, col,  255-i);
+		_point_alpha(img, cx->x + x, cx->y - y, col);
+		_point_alpha(img, cx->x + y, cx->y + x, col);
+		_point_alpha(img, cx->x - x, cx->y + y, col);
+		_point_alpha(img, cx->x - y, cx->y - x, col);
+		if (x == 0) break;
+		e2 = err; x2 = x;
+		if (err > y){
+			i = 255*(err+2*x-1)/r;
+			if (i < 255) {
+				col = g2d_color_alpha_set(img, col, 255- i);
+				_point_alpha(img, cx->x + x    , cx->y - y + 1, col);
+				_point_alpha(img, cx->x + y - 1, cx->y + x    , col);
+				_point_alpha(img, cx->x - x    , cx->y + y - 1, col);
+				_point_alpha(img, cx->x - y + 1, cx->y - x    , col);
+			}
+			err -= --x*2-1;
+		}
+		if (e2 <= x2--) { /* y step */
+			i = 255*(1-2*y-e2)/r; /* inward pixel */
+			if (i < 255) {
+				col = g2d_color_alpha_set(img, col,  255-i);
+				_point_alpha(img, cx->x + x2, cx->y - y , col);
+				_point_alpha(img, cx->x + y , cx->y + x2, col);
+				_point_alpha(img, cx->x - x2, cx->y + y , col);
+				_point_alpha(img, cx->x - y , cx->y - x2, col);
+			}
+			err -= --y*2-1;
+		}
+	}
+}
+
+void g2d_circle(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t col, int antialiased){
+	if( antialiased ) g2d_circle_antialiased(img, cx, r, col);
+	else g2d_circle_normal(img, cx, r, col);
 }
 
 void g2d_circle_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t col){
@@ -1505,7 +1791,7 @@ void g2d_circle_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t col
     }
 }
 
-void g2d_ellipse(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col){
+void g2d_ellipse_normal(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col){
     iassert( rx && ry );
     int x, y;
     int Xchange, Ychange;
@@ -1570,6 +1856,59 @@ void g2d_ellipse(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dC
             Ychange      += TwoASquare;
         }
     }
+}
+
+void g2d_ellipse_antialiased(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col){
+    iassert( rx && ry );
+
+	double rx2 = rx * rx;
+	double ry2 = ry * ry;
+	const unsigned maxTransparency = 255;
+
+	double quarter = round(rx2 / sqrt(rx2 + ry2));
+	for( double x = 0; x <= quarter; ++x){
+		double y = ry * sqrt(1.0-x*x/rx2);
+		double error = (double)y - floor(y);
+		unsigned transparency = round(error * maxTransparency);
+		unsigned transparency2 = maxTransparency - transparency;
+		if( transparency > 255 ) transparency = 255;
+		if( transparency2 > 255 ) transparency2 = 255;
+
+		col = g2d_color_alpha_set(img, col,  transparency);
+		_point_alpha(img, cx->x + (unsigned)x, cx->y + (unsigned)floor(y), col);
+		_point_alpha(img, cx->x - (unsigned)x, cx->y + (unsigned)floor(y), col);
+		_point_alpha(img, cx->x + (unsigned)x, cx->y - (unsigned)floor(y), col);
+		_point_alpha(img, cx->x - (unsigned)x, cx->y - (unsigned)floor(y), col);
+		col = g2d_color_alpha_set(img, col,  transparency2);
+		_point_alpha(img, cx->x + (unsigned)x, cx->y + (unsigned)floor(y)-1, col);
+		_point_alpha(img, cx->x - (unsigned)x, cx->y + (unsigned)floor(y)-1, col);
+		_point_alpha(img, cx->x + (unsigned)x, cx->y - (unsigned)floor(y)+1, col);
+		_point_alpha(img, cx->x - (unsigned)x, cx->y - (unsigned)floor(y)+1, col);
+	}
+
+	quarter = round(ry2 / sqrt(rx2 + ry2));
+	for(double y = 0; y <= quarter; ++y){
+		double x = rx * sqrt(1.0-y*y/ry2);
+		double error = x - floor(x);
+		unsigned transparency = round(error * maxTransparency);
+		unsigned transparency2 = maxTransparency - transparency;
+
+		col = g2d_color_alpha_set(img, col,  transparency);
+		_point_alpha(img, cx->x + (unsigned)floor(x), cx->y + (unsigned)y, col);
+		_point_alpha(img, cx->x - (unsigned)floor(x), cx->y + (unsigned)y, col);
+		_point_alpha(img, cx->x + (unsigned)floor(x), cx->y - (unsigned)y, col);
+		_point_alpha(img, cx->x - (unsigned)floor(x), cx->y - (unsigned)y, col);
+		col = g2d_color_alpha_set(img, col,  transparency2);
+		_point_alpha(img, cx->x + (unsigned)floor(x)-1, cx->y + (unsigned)y, col);
+		_point_alpha(img, cx->x - (unsigned)floor(x)+1, cx->y + (unsigned)y, col);
+		_point_alpha(img, cx->x + (unsigned)floor(x)-1, cx->y - (unsigned)y, col);
+		_point_alpha(img, cx->x - (unsigned)floor(x)+1, cx->y - (unsigned)y, col);
+	}
+}
+
+void g2d_ellipse(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col, int antialiased){
+	if( antialiased ) g2d_ellipse_antialiased(img, cx, rx, ry, col);
+	else g2d_ellipse_normal(img, cx, rx, ry, col);
 }
 
 void g2d_ellipse_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col){
