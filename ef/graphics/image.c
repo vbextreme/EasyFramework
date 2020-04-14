@@ -199,6 +199,20 @@ __target_vectorization
 __private void g2d_copy_vectorize(g2dImage_s* dst, g2dImage_s* src){
 	unsigned const h = src->h;
 	unsigned const w = src->w;
+	
+	for( unsigned y = 0; y < h; ++y ){
+		unsigned const srow = g2d_row(src, y);
+		unsigned const drow = g2d_row(dst, y);
+		vectorize_pair_loop(uint4_v, unsigned, &src->pixel[srow], 0, w, &dst->pixel[drow], 0, w,
+			{
+				*Bscalar++ = *Ascalar++;
+			},
+			{
+				*Bvector++ = *Avector++;
+			}
+		);
+	}
+/*
 	unsigned ali = (w * h) / 4;
 	unsigned post = (w * h) % 4;
 	unsigned i = w*h - post;
@@ -210,6 +224,7 @@ __private void g2d_copy_vectorize(g2dImage_s* dst, g2dImage_s* src){
 		vd[i] = vs[i];
 		++i;
 	}
+*/
 }
 
 g2dImage_s* g2d_copy(g2dImage_s* src){
@@ -351,6 +366,8 @@ __private void g2d_bitblt_xor_vectorize(g2dImage_s* dst, g2dCoord_s* cod, g2dIma
 void g2d_bitblt_xor(g2dImage_s* dst, g2dCoord_s* cod, g2dImage_s* src, g2dCoord_s* cos){
 	if( __cpu_supports_vectorization() ){
 		dbg_info("vectorized");
+//	g2d_bitblt_xor_default(dst, cod, src, cos);
+
 		g2d_bitblt_xor_vectorize(dst, cod, src, cos);
 	}
 	else{
@@ -369,8 +386,6 @@ __private void g2d_bitblt_alpha_default(g2dImage_s* dst, g2dCoord_s* cod, g2dIma
 	unsigned const w = cod->w;
 	unsigned const dx = cod->x;
 	unsigned const sx = cos->x;
-
-
 
 	for( unsigned y = 0; y < h; ++y ){
 		unsigned const srow = g2d_row(src, cos->y + y);
@@ -454,11 +469,79 @@ void g2d_bitblt_alpha(g2dImage_s* dst, g2dCoord_s* cod, g2dImage_s* src, g2dCoor
 }
 
 __target_default
+__private void g2d_bitblt_channel_default(g2dImage_s* dst, g2dCoord_s* cod, g2dImage_s* src, g2dCoord_s* cos, unsigned int mask){
+	if( g2d_bitblt_validate(dst, cod, cos) ){
+		return;
+	}
+
+	unsigned const h = cod->h;
+	unsigned const w = cod->w;
+	unsigned const dx = cod->x;
+	unsigned const sx = cos->x;
+
+
+    __parallef
+	for( unsigned y = 0; y < h; ++y ){
+		unsigned const srow = g2d_row(src, cos->y + y);
+		unsigned const drow = g2d_row(dst, cod->y + y);
+		g2dColor_t* cd = g2d_color(dst, drow, dx);
+		g2dColor_t* sd = g2d_color(src, srow, sx);
+		for( unsigned x = 0; x < w; ++x){
+			*cd = (*cd & (~mask)) | (*sd & mask);
+			++sd;
+			++cd;
+		}
+	}
+}
+
+__target_vectorization
+__private void g2d_bitblt_channel_vectorize(g2dImage_s* dst, g2dCoord_s* cod, g2dImage_s* src, g2dCoord_s* cos, unsigned int mask){
+	if( g2d_bitblt_validate(dst, cod, cos) ){
+		return;
+	}
+ 
+	uint4_v vmask = vector4_set_all(mask);
+
+	unsigned const h = cod->h;
+  
+	__parallef
+	for( unsigned y = 0; y < h; ++y ){
+		unsigned const srow = g2d_row(src, cos->y + y);
+		unsigned const drow = g2d_row(dst, cod->y + y);
+		vectorize_pair_loop(uint4_v, unsigned, &src->pixel[srow], cos->x, cos->w, &dst->pixel[drow], cod->x, cod->w,
+			{
+				*Bscalar = (*Bscalar & (~mask)) | (*Ascalar & mask);
+				++Bscalar;
+				++Ascalar;
+			},
+			{
+				*Bvector = (*Bvector & (~vmask)) | (*Avector & vmask);
+				++Bvector;
+				++Avector;
+			}
+		);
+	}
+}
+
+void g2d_bitblt_channel(g2dImage_s* dst, g2dCoord_s* cod, g2dImage_s* src, g2dCoord_s* cos, unsigned int mask){
+	if( __cpu_supports_vectorization() ){
+		dbg_info("vectorized");
+		g2d_bitblt_channel_vectorize(dst, cod, src, cos, mask);
+	}
+	else{
+		dbg_warning("not vectorized");
+		g2d_bitblt_channel_default(dst, cod, src, cos, mask);
+	}
+}
+
+__target_default
 __private void g2d_clear_default(g2dImage_s* img, g2dColor_t color, g2dCoord_s* coord){
 	unsigned const h = coord->h + coord->y;
 	unsigned const w = coord->w;
+	iassert( h <= img->h );
+	iassert( coord->x + coord->w <= img->w );
 
-	//__parallef 	
+	__parallef 	
 	for( unsigned y = coord->y; y < h; ++y){
 		unsigned const row = g2d_row(img, y);
 		g2dColor_t* cd = g2d_color(img, row, coord->x);
@@ -474,7 +557,8 @@ __private void g2d_clear_vectorize(g2dImage_s* img, g2dColor_t color, g2dCoord_s
 	unsigned const w = coord->w + coord->x;
 	uint4_v vcol = vector4_set_all(color);
 
-	__parallef 	for( unsigned y = coord->y; y < h; ++y){
+	__parallef
+	for( unsigned y = coord->y; y < h; ++y){
 		unsigned const row = g2d_row(img, y);
 		vectorize_loop(uint4_v, unsigned, &img->pixel[row], coord->x, w,
 			{
@@ -507,7 +591,7 @@ __private void g2d_channel_set_dafault(g2dImage_s* img, g2dColor_t color, g2dCoo
 		unsigned const row = g2d_row(img, y);
 		g2dColor_t* scalar = g2d_color(img, row, coord->x);
 		for( unsigned x = 0; x < w; ++x ){
-			*scalar = (*scalar & (~mask)) | color;
+			*scalar = (*scalar & (~mask)) | (color & mask);
 			scalar++;
 		}
 	}
@@ -524,11 +608,11 @@ __private void g2d_channel_set_vectorize(g2dImage_s* img, g2dColor_t color, g2dC
 		unsigned const row = g2d_row(img, y);
 		vectorize_loop(uint4_v, unsigned, &img->pixel[row], coord->x, w,
 			{
-				*scalar = (*scalar & (~mask)) | color;
+				*scalar = (*scalar & (~mask)) | (color & mask);
 				scalar++;
 			},
 			{			
-				*vector = (*vector & (~vmask)) | vcol;
+				*vector = (*vector & (~vmask)) | (vcol & vmask);
 				vector++;
 			}
 		);
@@ -1037,7 +1121,7 @@ void g2d_point_rotate(unsigned* y, unsigned* x, unsigned cy, unsigned cx, double
 		unsigned char __red__ = g2d_alpha_part(g2d_color_alpha(IMG,(C)), g2d_color_red(IMG,(C)), g2d_color_red(IMG,*__col__));\
 		unsigned char __green__ = g2d_alpha_part(g2d_color_alpha(IMG,(C)), g2d_color_green(IMG,(C)), g2d_color_green(IMG,*__col__));\
 		unsigned char __blue__ = g2d_alpha_part(g2d_color_alpha(IMG,(C)), g2d_color_blue(IMG,(C)), g2d_color_blue(IMG,*__col__));\
-		*__col__ = g2d_color_make(IMG, g2d_color_alpha(IMG,C), __red__, __green__, __blue__);\
+		*__col__ = g2d_color_make(IMG, g2d_color_alpha(IMG,*__col__), __red__, __green__, __blue__);\
 	}while(0)
 
 #define _point_inside(IMG, X, Y, C) do{\

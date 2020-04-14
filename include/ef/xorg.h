@@ -448,6 +448,9 @@ void xorg_win_surface_redraw(xorg_s* x, xcb_window_t id,  xorgSurface_s* surface
 /** set window as dock*/
 void xorg_win_dock(xorg_s* x, xcb_window_t id);
 
+/** clear partial decoration*/
+void xorg_win_round_decoration_clear(xorg_s* x, xcb_window_t win, const unsigned w, const unsigned h, unsigned size);
+
 /** set round border*/
 void xorg_win_round_border(xorg_s* x, xcb_window_t win, const unsigned w, const unsigned h, const int r);
 

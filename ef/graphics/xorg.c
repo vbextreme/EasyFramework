@@ -1310,6 +1310,31 @@ void xorg_win_opacity_set(xorg_s* x, xcb_window_t win, unsigned int opacity){
 	xcb_change_property(x->connection, XCB_PROP_MODE_REPLACE, win, x->atom[XORG_ATOM_NET_WM_WINDOW_OPACITY], XCB_ATOM_CARDINAL, 32, sizeof(opacity), &opacity );
 }
 
+void xorg_win_round_decoration_clear(xorg_s* x, xcb_window_t win, const unsigned w, const unsigned h, unsigned size){
+    xcb_pixmap_t pix = xcb_generate_id(x->connection);
+    xcb_create_pixmap(x->connection, 1, pix, win, w, h);
+
+    xcb_gcontext_t black = xcb_generate_id(x->connection);
+    xcb_gcontext_t white = xcb_generate_id(x->connection);
+
+    xcb_create_gc(x->connection, black, pix, XCB_GC_FOREGROUND, (uint32_t[]){0, 0});
+    xcb_create_gc(x->connection, white, pix, XCB_GC_FOREGROUND, (uint32_t[]){1, 0});
+
+    xcb_rectangle_t bounding = {0, 0, w, h};
+
+    xcb_rectangle_t rects[] = {
+		{ size, size, w-size*2, h-size*2 },
+    };
+
+    xcb_poly_fill_rectangle(x->connection, pix, black, 1, &bounding);
+    xcb_poly_fill_rectangle(x->connection, pix, white, 1, rects);
+
+    xcb_shape_mask(x->connection, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_BOUNDING, win, 0, 0, pix);
+    xcb_shape_mask(x->connection, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_CLIP, win, 0, 0, pix);
+
+    xcb_free_pixmap(x->connection, pix);
+}
+
 /* fork from resloved i3 rounded */ 
 void xorg_win_round_border(xorg_s* x, xcb_window_t win, const unsigned w, const unsigned h, const int r){
     xcb_pixmap_t pix = xcb_generate_id(x->connection);

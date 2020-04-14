@@ -19,11 +19,12 @@
 #define GUI_TYPE_USER   999
 
 
-#define GUI_BK_NO_OP    0x00
-#define GUI_BK_COLOR    0x01
-#define GUI_BK_CPOS     0x02
-#define GUI_BK_IMAGE    0x04
-#define GUI_BK_ALPHA    0x08
+#define GUI_BK_NO_OP 0x00
+#define GUI_BK_COLOR 0x01
+#define GUI_BK_CPOS  0x02
+#define GUI_BK_IMAGE 0x04
+#define GUI_BK_ALPHA 0x08
+#define GUI_BK_ROUND 0x10
 
 #define GUI_TIMER_FREE  -1
 #define GUI_TIMER_NEXT   0

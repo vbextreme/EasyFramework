@@ -119,7 +119,7 @@ gui_s* gui_new(
 	gui->id = xorg_win_new(&gui->surface, X, xcbParent, x, y, width, height, border, colorBorder, gui->background[0]->color);
 	gui_name(gui, name);
 	gui_class(gui, class);
-	gui->redraw(gui, NULL);
+	//gui->redraw(gui, NULL);
 	allgui_add(gui);
 
 	return gui;
@@ -283,15 +283,49 @@ void gui_round_set(gui_s* gui, int radius){
 }
 
 void gui_round_antialiasing_set(gui_s* gui, int radius){
-	g2dColor_t col = gui_color(0, 50,50,150);
+	g2dImage_s* mask = g2d_copy(gui->surface->img);
+
+	g2dColor_t col = gui_color(0, 0, 0, 0);
+	
 	g2dPoint_s cx;
+	g2dCoord_s rc;
 
 	cx.x = radius;
 	cx.y = radius;
-	//g2d_circle_antialiased(gui->surface->img, &cx, radius, col);
-	g2d_circle_fill(gui->surface->img, &cx, radius, col);
-	col = gui_color(255, 50,50,150);
-	g2d_circle_fill(gui->surface->img, &cx, radius-1, col);
+	g2d_circle(mask, &cx, radius, col, 1);
+	g2d_circle_fill(mask, &cx, radius, col);
+
+	cx.x = (mask->w) - radius;
+	g2d_circle(mask, &cx, radius, col, 1);
+	g2d_circle_fill(mask, &cx, radius, col);
+
+	cx.y = (mask->h) - radius;
+	g2d_circle(mask, &cx, radius, col, 1);
+	g2d_circle_fill(mask, &cx, radius, col);
+
+	cx.x = radius;
+	g2d_circle(mask, &cx, radius, col, 1);
+	g2d_circle_fill(mask, &cx, radius, col);
+
+	rc.x = radius + 2;
+	rc.y = 0;
+	rc.w = mask->w - radius*2;
+	rc.h = mask->h;
+	g2d_clear(mask, col, &rc);
+
+	rc.x = 0;
+	rc.y = radius+2;
+	rc.w = mask->w;
+	rc.h = mask->h - radius*2;
+	g2d_clear(mask, col, &rc);
+
+	rc.x=0;
+	rc.y=0;
+	rc.w=mask->w;
+	rc.h=mask->h;
+	g2d_bitblt_xor(gui->surface->img,&rc,mask, &rc);
+
+	g2d_free(mask);
 
 	gui_draw(gui);
 }
@@ -524,6 +558,16 @@ void gui_background_redraw(gui_s* gui, guiBackground_s* bkg){
 		}
 		else{
 			g2d_bitblt(gui->surface->img, &bkg->pdest, rs ? rs : bkg->img, &src);
+		}
+	}
+	
+	if( bkg->mode & GUI_BK_ROUND ){
+		if( gui->parent ){
+			gui_round_set(gui, gui->bordersize);
+		}
+		else{
+			//xorg_win_round_decoration_clear(X, xorg_parent(X,gui->id), gui->position.w, gui->position.h, 1);
+			gui_round_antialiasing_set(gui, gui->bordersize);
 		}
 	}
 }

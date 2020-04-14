@@ -22,7 +22,6 @@ gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn, guiBackground_s* press, g
 	gui->redraw = gui_button_event_redraw;
 	gui->mouse = gui_button_event_mouse;
 	gui->key = gui_button_event_key;
-	gui->focus = gui_button_event_focus;
 	gui->free = gui_button_event_free;
 	gui_background_add(gui, press);
 	gui_background_add(gui, hover);
@@ -109,16 +108,5 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event){
 	}
 	return 0;
 }
-
-int gui_button_event_focus(gui_s* gui, xorgEvent_s* event){
-	if( event->focus.outin ){
-		gui_border(gui, gui->bordersizefocused);
-	}
-	else{
-		gui_border(gui, gui->bordersize);
-	}
-	return 0;
-}
-
 
 

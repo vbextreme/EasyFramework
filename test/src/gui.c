@@ -48,7 +48,7 @@ int button_click(gui_s* gui, xorgEvent_s* ev){
 
 	//gui_draw(gui->parent);
 
-	gui_round_antialiasing_set(gui->parent, 10);
+	gui_round_antialiasing_set(gui->parent, 20);
 	//gui_opacity(gui->userdata, op);
 	//if(op) op-=0.1;
 	return 0;
@@ -81,10 +81,12 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 		NULL, "test", NULL, 
 		0, 50, 50, 400, 400, 
 		gui_color(255,0,0,0),
-		gui_background_new(gui_color(255, 125, 125, 125), NULL, NULL, GUI_BK_COLOR),
+		gui_background_new(gui_color(255, 125, 125, 125), NULL, NULL, GUI_BK_COLOR | GUI_BK_ROUND),
 		NULL
 	);
+	main->bordersize = 20;
 	main->destroy = main_exit;
+	main->redraw(main, NULL);
 /*
 	gui_s* labl = 	gui_label_attach(
 		gui_new(
@@ -101,7 +103,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_s* btn = gui_button_attach(
 		gui_new(
 			main, "but", "button",
-			1, 5, 500, 20, 50,
+			1, 20, 20, 200, 200,
 			gui_color(255,0,0,0),	
 			gui_background_new( gui_color(255, 80, 110, 80), NULL, NULL, GUI_BK_COLOR), 
 			NULL

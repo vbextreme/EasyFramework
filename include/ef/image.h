@@ -93,6 +93,9 @@ void g2d_bitblt_xor(g2dImage_s* dst, g2dCoord_s* cod, g2dImage_s* src, g2dCoord_
 /** same bitblt but with alpha color*/
 void g2d_bitblt_alpha(g2dImage_s* dst, g2dCoord_s* cod, g2dImage_s* src, g2dCoord_s* cos);
 
+/** copy only a channel color */
+void g2d_bitblt_channel(g2dImage_s* dst, g2dCoord_s* cod, g2dImage_s* src, g2dCoord_s* cos, unsigned int mask);
+
 /** clear part of image and set to color*/
 void g2d_clear(g2dImage_s* img, g2dColor_t color, g2dCoord_s* coord);
 
