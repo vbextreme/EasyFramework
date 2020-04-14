@@ -282,6 +282,20 @@ void gui_round_set(gui_s* gui, int radius){
 	xorg_win_round_border(X, gui->id, gui->position.w, gui->position.h, radius);
 }
 
+void gui_round_antialiasing_set(gui_s* gui, int radius){
+	g2dColor_t col = gui_color(0, 50,50,150);
+	g2dPoint_s cx;
+
+	cx.x = radius;
+	cx.y = radius;
+	//g2d_circle_antialiased(gui->surface->img, &cx, radius, col);
+	g2d_circle_fill(gui->surface->img, &cx, radius, col);
+	col = gui_color(255, 50,50,150);
+	g2d_circle_fill(gui->surface->img, &cx, radius-1, col);
+
+	gui_draw(gui);
+}
+
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 	gui_background_redraw(gui, gui->background[0]);
 	return 0;

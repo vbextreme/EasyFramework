@@ -1037,7 +1037,7 @@ void g2d_point_rotate(unsigned* y, unsigned* x, unsigned cy, unsigned cx, double
 		unsigned char __red__ = g2d_alpha_part(g2d_color_alpha(IMG,(C)), g2d_color_red(IMG,(C)), g2d_color_red(IMG,*__col__));\
 		unsigned char __green__ = g2d_alpha_part(g2d_color_alpha(IMG,(C)), g2d_color_green(IMG,(C)), g2d_color_green(IMG,*__col__));\
 		unsigned char __blue__ = g2d_alpha_part(g2d_color_alpha(IMG,(C)), g2d_color_blue(IMG,(C)), g2d_color_blue(IMG,*__col__));\
-		*__col__ = g2d_color_make(IMG, g2d_color_alpha(IMG,*__col__), __red__, __green__, __blue__);\
+		*__col__ = g2d_color_make(IMG, g2d_color_alpha(IMG,C), __red__, __green__, __blue__);\
 	}while(0)
 
 #define _point_inside(IMG, X, Y, C) do{\

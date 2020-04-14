@@ -128,6 +128,7 @@ void gui_redraw(gui_s* gui);
 void gui_opacity(gui_s* gui, double op);
 void gui_round_unset(gui_s* gui);
 void gui_round_set(gui_s* gui, int radius);
+void gui_round_antialiasing_set(gui_s* gui, int radius);
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);

@@ -32,22 +32,23 @@ int button_click(gui_s* gui, xorgEvent_s* ev){
 	if( ev->type == XORG_EVENT_CREATE ) err_fail("clang");
 
 	dbg_error("BUTTON %u CLICK ON: %s", (uint32_t)gui->id, ev->type == XORG_EVENT_KEY_PRESS || ev->type == XORG_EVENT_KEY_RELEASE ? "key" : "mouse");
+	/*
 	g2dPoint_s p[] = {
 		{.x = 50, .y = 200},
 		{.x = 150, .y = 100},
 		{.x = 250, .y = 200},
 		{.x = 350, .y = 300}
 	};
-	
+	*/
 	//g2d_circle(gui->parent->surface->img, &p[0], 50, gui_color(255, 60, 60, 120));
 	//g2d_circle_antialiased(gui->parent->surface->img, &p[1], 50, gui_color(255, 60, 60, 120));
 
-	g2d_cubezier(gui->parent->surface->img, &p[0], &p[1], &p[2], &p[3], gui_color(255, 60, 60, 120), 1);
+	//g2d_cubezier(gui->parent->surface->img, &p[0], &p[1], &p[2], &p[3], gui_color(255, 60, 60, 120), 1);
 	//g2d_cubezier2(gui->parent->surface->img, p, 4, gui_color(255, 60, 60, 120), 0);
 
-	gui_draw(gui->parent);
+	//gui_draw(gui->parent);
 
-//	gui_round_set(gui->userdata, 10);
+	gui_round_antialiasing_set(gui->parent, 10);
 	//gui_opacity(gui->userdata, op);
 	//if(op) op-=0.1;
 	return 0;
