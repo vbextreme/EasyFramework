@@ -8,6 +8,10 @@
 #include <ef/phq.h>
 
 //TODO 
+// dialog mode:
+//	xorg_win_type(DIALOG)
+//	xorg_win_state(MODAL)
+//	xorg_win_action(MOVE | CLOSE)
 // text control
 // dock up,right,bottom,left
 

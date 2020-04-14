@@ -318,23 +318,54 @@ xcb_atom_t xorg_atom_new_id(xorg_s* x, const char* name){
 
 void xorg_atom_load(xorg_s* x){
 	char* atomName[] = {
-		[XORG_ATOM_NET_ACTIVE_WINDOW] = "_NET_ACTIVE_WINDOW",
-		[XORG_ATOM_NET_NUMBER_OF_DESKTOPS] = "_NET_NUMBER_OF_DESKTOPS",
-		[XORG_ATOM_NET_CURRENT_DESKTOP] = "_NET_CURRENT_DESKTOP",
-		[XORG_ATOM_NET_DESKTOP_NAMES] = "_NET_DESKTOP_NAMES",
-		[XORG_ATOM_NET_ACTIVE_DESKTOP] = "_NET_ACTIVE_DESKTOP",
-		[XORG_ATOM_NET_WM_DESKTOP] = "_NET_WM_DESKTOP",
-		[XORG_ATOM_NET_WM_WINDOW_TYPE] = "_NET_WM_WINDOW_TYPE",
-		[XORG_ATOM_NET_WM_STATE] = "_NET_WM_STATE",
-		[XORG_ATOM_NET_WM_VISIBLE_NAME] = "_NET_WM_VISIBLE_NAME",
-		[XORG_ATOM_NET_WM_NAME] = "_NET_WM_NAME",
-		[XORG_ATOM_NET_WM_STRUT] = "_NET_WM_STRUT",
-		[XORG_ATOM_NET_WM_STRUT_PARTIAL] = "_NET_WM_STRUT_PARTIAL",
-		[XORG_ATOM_NET_WM_PID] = "_NET_WM_PID",
-		[XORG_ATOM_NET_WM_WINDOW_TYPE_DOCK] = "_NET_WM_WINDOW_TYPE_DOCK",
-		[XORG_ATOM_NET_WM_WINDOW_OPACITY] = "_NET_WM_WINDOW_OPACITY",
-		[XORG_ATOM_XROOTPMAP_ID] = "_XROOTPMAP_ID",
-		[XORG_ATOM_UTF8_STRING] = "UTF8_STRING"
+		[XORG_ATOM_NET_ACTIVE_WINDOW]              = "_NET_ACTIVE_WINDOW",
+		[XORG_ATOM_NET_NUMBER_OF_DESKTOPS]         = "_NET_NUMBER_OF_DESKTOPS",
+		[XORG_ATOM_NET_CURRENT_DESKTOP]            = "_NET_CURRENT_DESKTOP",
+		[XORG_ATOM_NET_DESKTOP_NAMES]              = "_NET_DESKTOP_NAMES",
+		[XORG_ATOM_NET_ACTIVE_DESKTOP]             = "_NET_ACTIVE_DESKTOP",
+		[XORG_ATOM_NET_WM_DESKTOP]                 = "_NET_WM_DESKTOP",
+		[XORG_ATOM_NET_WM_WINDOW_TYPE]             = "_NET_WM_WINDOW_TYPE",
+		[XORG_ATOM_NET_WM_WINDOW_TYPE_DESKTOP]     = "_NET_WM_WINDOW_TYPE_DESKTOP",
+		[XORG_ATOM_NET_WM_WINDOW_TYPE_DOCK]        = "_NET_WM_WINDOW_TYPE_DOCK",
+		[XORG_ATOM_NET_WM_WINDOW_TYPE_TOOLBAR]     = "_NET_WM_WINDOW_TYPE_TOOLBAR",
+		[XORG_ATOM_NET_WM_WINDOW_TYPE_MENU]        = "_NET_WM_WINDOW_TYPE_MENU",
+		[XORG_ATOM_NET_WM_WINDOW_TYPE_UTILITY]     = "_NET_WM_WINDOW_TYPE_UTILITY",
+		[XORG_ATOM_NET_WM_WINDOW_TYPE_SPLASH]      = "_NET_WM_WINDOW_TYPE_SPLASH",
+		[XORG_ATOM_NET_WM_WINDOW_TYPE_DIALOG]      = "_NET_WM_WINDOW_TYPE_DIALOG",
+		[XORG_ATOM_NET_WM_WINDOW_TYPE_NORMAL]      = "_NET_WM_WINDOW_TYPE_NORMAL",
+		[XORG_ATOM_NET_WM_STATE]                   = "_NET_WM_STATE",
+		[XORG_ATOM_NET_WM_STATE_MODAL]             = "_NET_WM_STATE_MODAL",
+		[XORG_ATOM_NET_WM_STATE_STICKY]            = "_NET_WM_STATE_STICKY",
+		[XORG_ATOM_NET_WM_STATE_MAXIMIZED_VERT]    = "_NET_WM_STATE_MAXIMIZED_VERT",
+		[XORG_ATOM_NET_WM_STATE_MAXIMIZED_HORZ]    = "_NET_WM_STATE_MAXIMIZED_HORZ",
+		[XORG_ATOM_NET_WM_STATE_SHADED]            = "_NET_WM_STATE_SHADED",
+		[XORG_ATOM_NET_WM_STATE_SKIP_TASKBAR]      = "_NET_WM_STATE_SKIP_TASKBAR",
+		[XORG_ATOM_NET_WM_STATE_SKIP_PAGER]        = "_NET_WM_STATE_SKIP_PAGER",
+		[XORG_ATOM_NET_WM_STATE_HIDDEN]            = "_NET_WM_STATE_HIDDEN",
+		[XORG_ATOM_NET_WM_STATE_FULLSCREEN]        = "_NET_WM_STATE_FULLSCREEN",
+		[XORG_ATOM_NET_WM_STATE_ABOVE]             = "_NET_WM_STATE_ABOVE",
+		[XORG_ATOM_NET_WM_STATE_BELOW]             = "_NET_WM_STATE_BELOW",
+		[XORG_ATOM_NET_WM_STATE_DEMANDS_ATTENTION] = "_NET_WM_STATE_DEMANDS_ATTENTION",
+		[XORG_ATOM_NET_WM_VISIBLE_NAME]            = "_NET_WM_VISIBLE_NAME",
+		[XORG_ATOM_NET_WM_NAME]                    = "_NET_WM_NAME",
+		[XORG_ATOM_NET_WM_STRUT]                   = "_NET_WM_STRUT",
+		[XORG_ATOM_NET_WM_STRUT_PARTIAL]           = "_NET_WM_STRUT_PARTIAL",
+		[XORG_ATOM_NET_WM_PID]                     = "_NET_WM_PID",
+		[XORG_ATOM_NET_WM_WINDOW_OPACITY]          = "_NET_WM_WINDOW_OPACITY",
+		[XORG_ATOM_NET_WM_ALLOWED_ACTIONS]         = "_NET_WM_ALLOWED_ACTIONS",
+		[XORG_ATOM_NET_WM_ACTION_MOVE]             = "_NET_WM_ACTION_MOVE",
+		[XORG_ATOM_NET_WM_ACTION_RESIZE]           = "_NET_WM_ACTION_RESIZE",
+		[XORG_ATOM_NET_WM_ACTION_MINIMIZE]         = "_NET_WM_ACTION_MINIMIZE",
+		[XORG_ATOM_NET_WM_ACTION_SHADE]            = "_NET_WM_ACTION_SHADE",
+		[XORG_ATOM_NET_WM_ACTION_STICK]            = "_NET_WM_ACTION_STICK",
+		[XORG_ATOM_NET_WM_ACTION_MAXIMIZE_HORZ]    = "_NET_WM_ACTION_MAXIMIZE_HORZ",
+		[XORG_ATOM_NET_WM_ACTION_MAXIMIZE_VERT]    = "_NET_WM_ACTION_MAXIMIZE_VERT",
+		[XORG_ATOM_NET_WM_ACTION_FULLSCREEN]       = "_NET_WM_ACTION_FULLSCREEN",
+		[XORG_ATOM_NET_WM_ACTION_CHANGE_DESKTOP]   = "_NET_WM_ACTION_CHANGE_DESKTOP",
+		[XORG_ATOM_NET_WM_ACTION_CLOSE]            = "_NET_WM_ACTION_CLOSE",
+		[XORG_ATOM_WM_TRANSIENT_FOR]               = "WM_TRANSIENT_FOR",
+		[XORG_ATOM_XROOTPMAP_ID]                   = "_XROOTPMAP_ID",
+		[XORG_ATOM_UTF8_STRING]                    = "UTF8_STRING"
 	};
 
 	xcb_intern_atom_cookie_t cookie[XORG_ATOM_COUNT];
@@ -1292,13 +1323,59 @@ void xorg_win_surface_redraw(xorg_s* x, xcb_window_t id,  xorgSurface_s* surface
 	xorg_client_flush(x);
 }
 
-void xorg_win_dock(xorg_s* x, xcb_window_t id){
+void xorg_win_type_set(xorg_s* x, xcb_window_t id, xorgWindowType_e type){
 	xcb_change_property(
-			x->connection, 
+			x->connection,
 			XCB_PROP_MODE_REPLACE, id,
-			x->atom[XORG_ATOM_NET_WM_WINDOW_TYPE], 
-			XCB_ATOM_ATOM, 32, 1, (unsigned char*)&x->atom[XORG_ATOM_NET_WM_WINDOW_TYPE_DOCK]
+			x->atom[XORG_ATOM_NET_WM_WINDOW_TYPE],
+			XCB_ATOM_ATOM, 32, 1, (unsigned char*)&x->atom[XORG_ATOM_NET_WM_WINDOW_TYPE + type + 1]
 	);
+}
+
+void xorg_win_state_set(xorg_s* x, xcb_window_t id, xorgWindowState_e state){
+	xcb_change_property(
+			x->connection,
+			XCB_PROP_MODE_REPLACE, id,
+			x->atom[XORG_ATOM_NET_WM_STATE],
+			XCB_ATOM_ATOM, 32, 1, (unsigned char*)&x->atom[XORG_ATOM_NET_WM_STATE + state + 1]
+	);
+}
+
+void xorg_win_action_set(xorg_s* x, xcb_window_t id, xorgWindowAction_e action){
+	xcb_atom_t atm[10];
+	size_t count = 0;
+	
+	if( action & XORG_WINDOW_ACTION_MOVE )           atm[count++] = x->atom[XORG_ATOM_NET_WM_ALLOWED_ACTIONS+1];
+	if( action & XORG_WINDOW_ACTION_RESIZE )         atm[count++] = x->atom[XORG_ATOM_NET_WM_ALLOWED_ACTIONS+2];
+	if( action & XORG_WINDOW_ACTION_MINIMIZE )       atm[count++] = x->atom[XORG_ATOM_NET_WM_ALLOWED_ACTIONS+3];
+	if( action & XORG_WINDOW_ACTION_SHADE )          atm[count++] = x->atom[XORG_ATOM_NET_WM_ALLOWED_ACTIONS+4];
+	if( action & XORG_WINDOW_ACTION_STICK )          atm[count++] = x->atom[XORG_ATOM_NET_WM_ALLOWED_ACTIONS+5];
+	if( action & XORG_WINDOW_ACTION_MAXIMIZE_HORZ )  atm[count++] = x->atom[XORG_ATOM_NET_WM_ALLOWED_ACTIONS+6];
+	if( action & XORG_WINDOW_ACTION_MAXIMIZE_VERT )  atm[count++] = x->atom[XORG_ATOM_NET_WM_ALLOWED_ACTIONS+7];
+	if( action & XORG_WINDOW_ACTION_FULLSCREEN )     atm[count++] = x->atom[XORG_ATOM_NET_WM_ALLOWED_ACTIONS+8];
+	if( action & XORG_WINDOW_ACTION_CHANGE_DESKTOP ) atm[count++] = x->atom[XORG_ATOM_NET_WM_ALLOWED_ACTIONS+9];
+	if( action & XORG_WINDOW_ACTION_CLOSE )          atm[count++] = x->atom[XORG_ATOM_NET_WM_ALLOWED_ACTIONS+10];
+
+	xcb_change_property(
+			x->connection,
+			XCB_PROP_MODE_REPLACE, id,
+			x->atom[XORG_ATOM_NET_WM_ALLOWED_ACTIONS],
+			XCB_ATOM_ATOM, 32, count, (unsigned char*)atm
+	);
+}
+
+void xorg_win_set_top(xorg_s* x, xcb_window_t parent,  xcb_window_t id, int enable){
+	if( enable ){
+		xcb_change_property(
+			x->connection,
+			XCB_PROP_MODE_REPLACE, id,
+			x->atom[XORG_ATOM_WM_TRANSIENT_FOR],
+			XCB_ATOM_ATOM, 32, 1, (unsigned char*)&parent
+		);
+	}
+	else{
+		xcb_delete_property(x->connection, id, x->atom[XORG_ATOM_WM_TRANSIENT_FOR]);
+	}
 }
 
 unsigned xorg_win_opacity_get(xorg_s* x, xcb_window_t win){

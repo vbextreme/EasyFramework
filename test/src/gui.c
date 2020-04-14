@@ -106,7 +106,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			0, 20, 20, 200, 200,
 			gui_color(255,0,0,0),	
 			gui_background_new( gui_color(255, 80, 110, 80), NULL, NULL, gui_background_round_fn, GUI_BK_COLOR | GUI_BK_FN), 
-			10, NULL
+			7, NULL
 		),
 		gui_button_new(
 			gui_label_new(tfont, 0, gui_color(255,40,40,40), GUI_LABEL_CENTER_X | GUI_LABEL_CENTER_Y),
