@@ -75,7 +75,7 @@ gui_s* gui_new(
 		gui_s* parent, 
 		const char* name, const char* class, 
 		int border, int x, int y, int width, int height, 
-		guiBackground_s* bk,
+		g2dColor_t colorBorder, guiBackground_s* bk,
 		void* userdata)
 {
 	gui_s* gui = mem_new(gui_s);
@@ -116,7 +116,7 @@ gui_s* gui_new(
 	gui->childFocus = -1;
 	gui->bordersize = border;
 	gui->bordersizefocused = border + GUI_FOCUS_BORDER_SIZE;
-	gui->id = xorg_win_new(&gui->surface, X, xcbParent, x, y, width, height, border, gui->background[0]->color);
+	gui->id = xorg_win_new(&gui->surface, X, xcbParent, x, y, width, height, border, colorBorder, gui->background[0]->color);
 	gui_name(gui, name);
 	gui_class(gui, class);
 	gui->redraw(gui, NULL);
@@ -297,7 +297,7 @@ int gui_event_move(gui_s* gui, xorgEvent_s* event){
 	dbg_info("move event");
 	if( gui->surface->img->w != event->move.w || gui->surface->img->h != event->move.h ){
 		dbg_info("resize surface, redraw && draw");
-		xorg_surface_resize(gui->surface, event->move.w, event->move.h);
+		xorg_surface_resize(X, gui->surface, event->move.w, event->move.h);
 		if( gui->redraw ) gui->redraw(gui, NULL);
 		if( gui->draw ) gui->draw(gui, NULL);
 	}

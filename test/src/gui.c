@@ -79,6 +79,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_s* main = gui_new(
 		NULL, "test", NULL, 
 		0, 50, 50, 400, 400, 
+		gui_color(255,0,0,0),
 		gui_background_new(gui_color(255, 125, 125, 125), NULL, NULL, GUI_BK_COLOR),
 		NULL
 	);
@@ -99,7 +100,8 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_s* btn = gui_button_attach(
 		gui_new(
 			main, "but", "button",
-			1, 5, 500, 20, 50, 
+			1, 5, 500, 20, 50,
+			gui_color(255,0,0,0),	
 			gui_background_new( gui_color(255, 80, 110, 80), NULL, NULL, GUI_BK_COLOR), 
 			NULL
 		),

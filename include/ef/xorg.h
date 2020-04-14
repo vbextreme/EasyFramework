@@ -84,11 +84,14 @@ typedef struct xorg{
 	monitor_s* monitorCurrent;
 	monitor_s* monitorPrimary;
 	const char* display;
+	xcb_colormap_t colormap;
 	xkb_s key;
 #ifdef XCB_ERROR_ENABLE
 	xcb_errors_context_t* err;
 #endif
 	xorgAtom_e atom[XORG_ATOM_COUNT];
+	uint8_t depth;
+	xcb_visualid_t visual;
 	long clickms;
 	long dblclickms;
 	long _mousetime;
@@ -293,7 +296,7 @@ xcb_atom_t xorg_atom_new_id(xorg_s* x, const char* name);
 /** load default atom*/
 void xorg_atom_load(xorg_s* x);
 
-void xorg_visual(xorg_s* x);
+xcb_visualid_t xorg_find_depth(xorg_s* x, uint8_t depth);
 
 /** xcp wrap*/
 int xorg_xcb_attribute(xorg_s* x, xcb_get_window_attributes_cookie_t cookie);
@@ -445,17 +448,17 @@ void xorg_win_surface_redraw(xorg_s* x, xcb_window_t id,  xorgSurface_s* surface
 /** set window as dock*/
 void xorg_win_dock(xorg_s* x, xcb_window_t id);
 
-/** get opacity*/
-unsigned xorg_win_opacity_get(xorg_s* x, xcb_window_t win);
-
 /** set round border*/
 void xorg_win_round_border(xorg_s* x, xcb_window_t win, const unsigned w, const unsigned h, const int r);
 
 /** remove round border*/
 void xorg_win_round_remove(xorg_s* x, xcb_window_t win);
 
-/** set window opacity */
+/** request a compositor to set window opacity */
 void xorg_win_opacity_set(xorg_s* x, xcb_window_t win, unsigned int opacity);
+
+/** request a compositor to get opacity*/
+unsigned xorg_win_opacity_get(xorg_s* x, xcb_window_t win);
 
 /** reserve dock space*/
 void xorg_wm_reserve_dock_space_on_top(xorg_s* x, xcb_window_t id, unsigned X, unsigned w, unsigned h);
@@ -467,13 +470,19 @@ void xorg_wm_reserve_dock_space_on_bottom(xorg_s* x, xcb_window_t id, unsigned X
 void xorg_register_events(xorg_s* x, xcb_window_t window, unsigned int eventmask);
 
 /** create new window, if surface return new surface, remember to free*/
-xcb_window_t xorg_win_new(xorgSurface_s** surface, xorg_s* X, xcb_window_t parent, int x, int y, unsigned w, unsigned h, unsigned border, g2dColor_t background);
+xcb_window_t xorg_win_new(
+		xorgSurface_s** surface, xorg_s* X, xcb_window_t parent, 
+		int x, int y, unsigned w, unsigned h, int border, 
+		g2dColor_t colbor, g2dColor_t background
+);
+//xcb_window_t xorg_win_new(xorgSurface_s** surface, xorg_s* X, xcb_window_t parent, int x, int y, unsigned w, unsigned h, unsigned border, g2dColor_t background);
 
 /** resize surface*/
-void xorg_surface_resize(xorgSurface_s* surface, unsigned w, unsigned h);
+void xorg_surface_resize(xorg_s* X, xorgSurface_s* surface, unsigned w, unsigned h);
+//void xorg_surface_resize(xorgSurface_s* surface, unsigned w, unsigned h);
 
-/** resize a surface, blitting img*/
-void xorg_surface_resize_bitblt(xorgSurface_s* surface, unsigned w, unsigned h);
+/** deprecate resize a surface, blitting img*/
+//void xorg_surface_resize_bitblt(xorgSurface_s* surface, unsigned w, unsigned h);
 
 /** destroy/free sourface*/
 void xorg_surface_destroy(xorg_s* x, xorgSurface_s* surface);

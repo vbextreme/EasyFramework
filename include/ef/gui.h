@@ -103,7 +103,7 @@ gui_s* gui_new(
 		gui_s* parent, 
 		const char* name, const char* class, 
 		int border, int x, int y, int width, int height, 
-		guiBackground_s* bk,
+		g2dColor_t colorBorder, guiBackground_s* bk,
 		void* userdata);
 
 void gui_free(gui_s* gui);

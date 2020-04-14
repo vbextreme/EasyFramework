@@ -69,6 +69,25 @@ xorg_s* xorg_client_new(const char* display, int defaultScreen){
 	xorg_randr_monitor_refresh(x);
 	xorg_monitor_primary(x);
 	
+	x->visual = xorg_find_depth(x, 32);
+	if( (int)x->visual == -1 ){
+		x->visual = x->screen->root_visual;
+		x->depth = x->screen->root_depth;
+		dbg_info("use %d bit depth", x->depth);
+	}
+	else{
+		dbg_info("use 32bit depth");
+		x->depth = 32;
+	}
+	x->colormap = xcb_generate_id(x->connection);
+    xcb_create_colormap(
+            x->connection,
+            XCB_COLORMAP_ALLOC_NONE,
+            x->colormap,
+            xorg_root(x),
+            x->visual
+	);
+
 	x->clickms = XORG_MOUSE_CLICK_MS;
 	x->dblclickms = XORG_MOUSE_DBLCLICL_MS;
 	x->_mousetime = 0;
@@ -78,6 +97,7 @@ xorg_s* xorg_client_new(const char* display, int defaultScreen){
 }
 
 void xorg_client_free(xorg_s* x){
+	xcb_free_colormap(x->connection, x->colormap);
 	xkb_keymap_unref(x->key.keymap);
 	xkb_context_unref(x->key.ctx);
 #ifdef XCB_ERROR_ENABLE
@@ -343,6 +363,27 @@ void xorg_atom_load(xorg_s* x){
 			free(reply);
 		}
 	}
+}
+
+xcb_visualid_t xorg_find_depth(xorg_s* x, uint8_t depth){
+	dbg_info("root visual:%d", x->visual);
+	xcb_depth_iterator_t depthit = xcb_screen_allowed_depths_iterator(x->screen);
+	for(; depthit.rem; xcb_depth_next(&depthit) ){
+		if( depthit.data->depth != depth ) continue;
+		xcb_visualtype_iterator_t visualit = xcb_depth_visuals_iterator(depthit.data);
+		//dbg_warning("depth:%d", depthit.data->depth);
+		for(; visualit.rem; xcb_visualtype_next(&visualit) ){
+			if( visualit.data->_class == XCB_VISUAL_CLASS_TRUE_COLOR ){
+				dbg_info("visual: bits:%d id:%d colormap %d mask:0x%X 0x%X 0x%X pad:%d %d %d %d", 
+					visualit.data->bits_per_rgb_value, visualit.data->visual_id, visualit.data->colormap_entries,
+					visualit.data->red_mask, visualit.data->green_mask, visualit.data->blue_mask, 
+					visualit.data->pad0[0], visualit.data->pad0[1], visualit.data->pad0[2], visualit.data->pad0[3]
+				);
+				return visualit.data->visual_id;
+			}
+		}
+	}
+	return -1;
 }
 
 int xorg_xcb_attribute(xorg_s* x, xcb_get_window_attributes_cookie_t cookie){
@@ -1359,43 +1400,71 @@ void xorg_register_events(xorg_s* x, xcb_window_t window, unsigned int eventmask
 #endif
 }
 
-xcb_window_t xorg_win_new(xorgSurface_s** surface, xorg_s* X, xcb_window_t parent, int x, int y, unsigned w, unsigned h, unsigned border, g2dColor_t background){
-	unsigned event = X_WIN_EVENT;
+xcb_window_t xorg_win_new(
+		xorgSurface_s** surface, xorg_s* X, xcb_window_t parent, 
+		int x, int y, unsigned w, unsigned h, int border, 
+		g2dColor_t colbor, g2dColor_t background
+){
+	//unsigned event = X_WIN_EVENT;
 	dbg_info("create window %d %d %u*%u", x, y, w, h);
 	xcb_window_t win = xcb_generate_id(X->connection);
 
+	/*
 	xcb_create_window(X->connection, XCB_COPY_FROM_PARENT, win, parent,
 			xorg_root_x(X) + x, xorg_root_y(X) + y, w, h, border,
 			XCB_WINDOW_CLASS_COPY_FROM_PARENT,
 		   	xorg_root_visual(X), XCB_CW_EVENT_MASK, &event);
-	
+	*/
+
+	unsigned int val[] = {colbor,   X_WIN_EVENT,  X->colormap}; 
+	xcb_create_window(X->connection, X->depth, win, parent,
+		xorg_root_x(X) + x, xorg_root_y(X) + y, w, h, border,
+		XCB_WINDOW_CLASS_COPY_FROM_PARENT,
+		X->visual,  XCB_CW_COLORMAP | XCB_CW_BORDER_PIXEL | XCB_CW_EVENT_MASK, val
+	);
+
 	if( surface ){
 		*surface = mem_zero(xorgSurface_s);
 		if( !*surface ) err_fail("malloc");
 		(*surface)->img = g2d_new(w, h, X_COLOR_MODE);
+		if( !(*surface)->img ) err_fail("eom");
 		g2dCoord_s area = { .x = 0, .y = 0, .w = w, .h = h };
 		g2d_clear((*surface)->img, background, &area);
-		(*surface)->ximage = xcb_image_create(
+/*		(*surface)->ximage = xcb_image_create(
 				w, h,
 				XCB_IMAGE_FORMAT_Z_PIXMAP, 32, 24, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
-				(*surface)->img->pixel, (*surface)->img->p * (*surface)->img->h, (*surface)->img->pixel);
+				(*surface)->img->pixel, (*surface)->img->p * (*surface)->img->h, (*surface)->img->pixel);*/
+		(*surface)->ximage = xcb_image_create(
+			w, h,
+			XCB_IMAGE_FORMAT_Z_PIXMAP, 32, X->depth, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
+			(*surface)->img->pixel, (*surface)->img->p * (*surface)->img->h, (*surface)->img->pixel
+		);
 		(*surface)->gc = xcb_generate_id(X->connection);
 		xcb_create_gc(X->connection, (*surface)->gc, win, 0, 0);
 	}
 	return win;
 }
 
-void xorg_surface_resize(xorgSurface_s* surface, unsigned w, unsigned h){
+void xorg_surface_resize(xorg_s* X, xorgSurface_s* surface, unsigned w, unsigned h){
+	//return;
 	g2d_free(surface->img);
 	surface->img = g2d_new(w, h, X_COLOR_MODE);
+	if( !surface->img ) err_fail("eom");
 	free(surface->ximage);
+	surface->ximage = xcb_image_create(
+		w, h,
+		XCB_IMAGE_FORMAT_Z_PIXMAP, 32, X->depth, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
+		surface->img->pixel, surface->img->p * surface->img->h, surface->img->pixel
+	);
+/*
 	surface->ximage = xcb_image_create(
 		w, h,
 		XCB_IMAGE_FORMAT_Z_PIXMAP, 32, 24, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
 		surface->img->pixel, surface->img->p * surface->img->h, surface->img->pixel
-	);
+	);*/
 }
 
+/*
 void xorg_surface_resize_bitblt(xorgSurface_s* surface, unsigned w, unsigned h){
 	g2dImage_s* new = g2d_new(w, h, X_COLOR_MODE);
 	g2dCoord_s blt = {
@@ -1414,6 +1483,7 @@ void xorg_surface_resize_bitblt(xorgSurface_s* surface, unsigned w, unsigned h){
 		surface->img->pixel, surface->img->p * surface->img->h, surface->img->pixel
 	);
 }
+*/
 
 void xorg_surface_destroy(xorg_s* x, xorgSurface_s* surface){
 	dbg_info("destroy surface");
