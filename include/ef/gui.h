@@ -24,7 +24,7 @@
 #define GUI_BK_CPOS  0x02
 #define GUI_BK_IMAGE 0x04
 #define GUI_BK_ALPHA 0x08
-#define GUI_BK_ROUND 0x10
+#define GUI_BK_FN    0x10
 
 #define GUI_TIMER_FREE  -1
 #define GUI_TIMER_NEXT   0
@@ -33,6 +33,8 @@
 #define GUI_FOCUS_BORDER_SIZE 3
 
 typedef struct gui gui_s;
+
+typedef void(*guiBackgroundFN_f)(gui_s* gui);
 
 typedef int(*guiEvent_f)(gui_s* gui, xorgEvent_s* event);
 
@@ -58,6 +60,7 @@ typedef struct guiBackground{
 	g2dColor_t color;
 	g2dImage_s* img;
 	g2dCoord_s pdest;
+	guiBackgroundFN_f fn;
 	unsigned mode;
 }guiBackground_s;
 	
@@ -75,6 +78,7 @@ typedef struct gui{
 	int childFocus;
 	int bordersize;
 	int bordersizefocused;
+	int genericSize;
 
 	xorgSurface_s* surface;
 	guiPosition_s position;
@@ -105,7 +109,7 @@ gui_s* gui_new(
 		const char* name, const char* class, 
 		int border, int x, int y, int width, int height, 
 		g2dColor_t colorBorder, guiBackground_s* bk,
-		void* userdata);
+		int genericSize, void* userdata);
 
 void gui_free(gui_s* gui);
 
@@ -149,10 +153,11 @@ guiTimer_s* gui_timer_new(gui_s* gui, size_t ms, void* userdata);
 int gui_timer_change(guiTimer_s* timer, size_t ms);
 void gui_timer_free(guiTimer_s* timer);
 
-guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_s* pos, int mode);
+guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_s* pos, guiBackgroundFN_f fn, int mode);
 void gui_background_redraw(gui_s* gui, guiBackground_s* bkg);
 guiBackground_s* gui_background_get(gui_s* gui, size_t id);
 void gui_background_add(gui_s* gui, guiBackground_s* bk);
-
+void gui_background_main_round_fn(gui_s* gui);
+void gui_background_round_fn(gui_s* gui);
 
 #endif

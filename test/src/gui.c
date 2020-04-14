@@ -48,7 +48,7 @@ int button_click(gui_s* gui, xorgEvent_s* ev){
 
 	//gui_draw(gui->parent);
 
-	gui_round_antialiasing_set(gui->parent, 20);
+	//gui_round_antialiasing_set(gui->parent, 20);
 	//gui_opacity(gui->userdata, op);
 	//if(op) op-=0.1;
 	return 0;
@@ -60,7 +60,7 @@ int button2_click(gui_s* gui, xorgEvent_s* ev){
 	if( ev->type == XORG_EVENT_CREATE ) err_fail("clang");
 
 	dbg_error("BUTTON2 %u CLICK ON: %s", (uint32_t)gui->id, ev->type == XORG_EVENT_KEY_PRESS || ev->type == XORG_EVENT_KEY_RELEASE ? "key" : "mouse");
-	gui_round_unset(gui->userdata);
+	//gui_round_unset(gui->userdata);
 	//gui_opacity(gui->userdata, op);
 	//if(op) op-=0.1;
 	return 0;
@@ -81,10 +81,9 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 		NULL, "test", NULL, 
 		0, 50, 50, 400, 400, 
 		gui_color(255,0,0,0),
-		gui_background_new(gui_color(255, 125, 125, 125), NULL, NULL, GUI_BK_COLOR | GUI_BK_ROUND),
-		NULL
+		gui_background_new(gui_color(255, 125, 125, 125), NULL, NULL, gui_background_main_round_fn, GUI_BK_COLOR | GUI_BK_FN),
+		20,NULL
 	);
-	main->bordersize = 20;
 	main->destroy = main_exit;
 	main->redraw(main, NULL);
 /*
@@ -105,15 +104,15 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			main, "but", "button",
 			1, 20, 20, 200, 200,
 			gui_color(255,0,0,0),	
-			gui_background_new( gui_color(255, 80, 110, 80), NULL, NULL, GUI_BK_COLOR), 
-			NULL
+			gui_background_new( gui_color(255, 80, 110, 80), NULL, NULL, gui_background_round_fn, GUI_BK_COLOR | GUI_BK_FN), 
+			10, NULL
 		),
 		gui_button_new(
 			gui_label_new(tfont, 0, gui_color(255,40,40,40)),
 			button_click
 		),
-		gui_background_new( gui_color(255, 80, 80, 80), NULL, NULL, GUI_BK_COLOR), 
-		gui_background_new( gui_color(255, 80, 120, 80), NULL, NULL, GUI_BK_COLOR)
+		gui_background_new( gui_color(255, 80, 80, 80), NULL, NULL, gui_background_round_fn, GUI_BK_COLOR | GUI_BK_FN), 
+		gui_background_new( gui_color(255, 80, 120, 80), NULL, NULL, gui_background_round_fn, GUI_BK_COLOR | GUI_BK_FN)
 	);
 	gui_label_text_set(btn, gui_button_label(btn->control), U8("click me")); 
 	gui_button_redraw(btn, btn->control, 0);

@@ -52,6 +52,6 @@ void test_str(__unused const char* argA, __unused const char* argB){
 	printf("cast to u8:%s\n", out);
 
 
-
+	printf("%d\n", strcmp("ciaobella", "ciao"));
 
 }

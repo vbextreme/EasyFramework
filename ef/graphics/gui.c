@@ -76,7 +76,7 @@ gui_s* gui_new(
 		const char* name, const char* class, 
 		int border, int x, int y, int width, int height, 
 		g2dColor_t colorBorder, guiBackground_s* bk,
-		void* userdata)
+		int genericSize, void* userdata)
 {
 	gui_s* gui = mem_new(gui_s);
 	if( !gui ) err_fail("malloc");
@@ -119,7 +119,8 @@ gui_s* gui_new(
 	gui->id = xorg_win_new(&gui->surface, X, xcbParent, x, y, width, height, border, colorBorder, gui->background[0]->color);
 	gui_name(gui, name);
 	gui_class(gui, class);
-	//gui->redraw(gui, NULL);
+	gui->genericSize = genericSize;
+
 	allgui_add(gui);
 
 	return gui;
@@ -326,8 +327,6 @@ void gui_round_antialiasing_set(gui_s* gui, int radius){
 	g2d_bitblt_xor(gui->surface->img,&rc,mask, &rc);
 
 	g2d_free(mask);
-
-	gui_draw(gui);
 }
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
@@ -340,14 +339,21 @@ int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage){
 	return 0;
 }
 
+__private void redraw_all(gui_s* gui){
+	if( gui->redraw ) gui->redraw(gui, NULL);
+	if( gui->draw ) gui->draw(gui, NULL);
+	vector_foreach(gui->childs, i){
+		redraw_all(gui->childs[i]);
+	}
+}
+
 int gui_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert( event->type == XORG_EVENT_MOVE );
 	dbg_info("move event");
 	if( gui->surface->img->w != event->move.w || gui->surface->img->h != event->move.h ){
 		dbg_info("resize surface, redraw && draw");
 		xorg_surface_resize(X, gui->surface, event->move.w, event->move.h);
-		if( gui->redraw ) gui->redraw(gui, NULL);
-		if( gui->draw ) gui->draw(gui, NULL);
+		redraw_all(gui);
 	}
 	gui->position.x = event->move.x;
 	gui->position.y = event->move.y;
@@ -497,12 +503,13 @@ void gui_timer_free(guiTimer_s* timer){
 	free(timer);
 }
 
-guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_s* pos, int mode){
+guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_s* pos, guiBackgroundFN_f fn, int mode){
 	guiBackground_s* bk = mem_new(guiBackground_s);
 	if( !bk ) err_fail("eom");
 	bk->color = color;
 	bk->img = img;
 	bk->mode = mode;
+	bk->fn = fn;
 	if( pos ){
 		bk->pdest = *pos;
 	}
@@ -561,14 +568,8 @@ void gui_background_redraw(gui_s* gui, guiBackground_s* bkg){
 		}
 	}
 	
-	if( bkg->mode & GUI_BK_ROUND ){
-		if( gui->parent ){
-			gui_round_set(gui, gui->bordersize);
-		}
-		else{
-			//xorg_win_round_decoration_clear(X, xorg_parent(X,gui->id), gui->position.w, gui->position.h, 1);
-			gui_round_antialiasing_set(gui, gui->bordersize);
-		}
+	if( bkg->mode & GUI_BK_FN ){
+		if( bkg->fn ) bkg->fn(gui);
 	}
 }
 
@@ -581,10 +582,78 @@ void gui_background_add(gui_s* gui, guiBackground_s* bk){
 	vector_push_back(gui->background, bk);
 }
 
+void gui_background_main_round_fn(gui_s* gui){
+	gui_round_antialiasing_set(gui, gui->genericSize);
+}
 
+void gui_background_round_fn(gui_s* gui){
+	dbg_error("ROUND FNMNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
+	iassert(gui->parent);
+	unsigned radius = gui->genericSize;
 
+	g2dImage_s* orig = g2d_copy(gui->surface->img);
+	g2dImage_s* mask = g2d_new(gui->surface->img->w, gui->surface->img->h, -1);
+	
+	g2dPoint_s cx;
+	g2dCoord_s rc,mc;
+	g2dColor_t col = gui_color(0, 0, 0, 0);
 
+	rc.x = 0;
+	rc.y = 0;
+	rc.w = mask->w;
+	rc.h = mask->h;
+	g2d_clear(mask, col, &rc); 
 
+	mc.x = gui->position.x;
+	mc.y = gui->position.y;
+	mc.w = mask->w;
+	mc.h = mask->h;
+	dbg_info("copy %u %u %u*%u -> %u %u %u*%u", mc.x, mc.y, mc.w, mc.h, rc.x, rc.y, rc.w, rc.h);
+	g2d_bitblt(gui->surface->img, &rc, gui->parent->surface->img, &mc);
+
+	col = gui_color(255, 0, 0, 0);
+
+	cx.x = radius;
+	cx.y = radius;
+	g2d_circle(mask, &cx, radius, col, 1);
+	g2d_circle_fill(mask, &cx, radius, col);
+
+	cx.x = (mask->w) - radius;
+	g2d_circle(mask, &cx, radius, col, 1);
+	g2d_circle_fill(mask, &cx, radius, col);
+
+	cx.y = (mask->h) - radius;
+	g2d_circle(mask, &cx, radius, col, 1);
+	g2d_circle_fill(mask, &cx, radius, col);
+
+	cx.x = radius;
+	g2d_circle(mask, &cx, radius, col, 1);
+	g2d_circle_fill(mask, &cx, radius, col);
+
+	rc.x = radius + 2;
+	rc.y = 0;
+	rc.w = mask->w - radius*2;
+	rc.h = mask->h;
+	g2d_clear(mask, col, &rc);
+
+	rc.x = 0;
+	rc.y = radius+2;
+	rc.w = mask->w;
+	rc.h = mask->h - radius*2;
+	g2d_clear(mask, col, &rc);
+
+	rc.x=0;
+	rc.y=0;
+	rc.w=mask->w;
+	rc.h=mask->h;
+	//g2d_bitblt(gui->surface->img, &rc, pare, &rc);
+
+	//g2d_bitblt_channel(pare, &rc, mask, &rc, mask->ma);
+	//g2d_bitblt_alpha(gui->surface->img, &rc, pare, &rc);
+
+	g2d_free(mask);
+	g2d_free(orig);
+}
 
 
 

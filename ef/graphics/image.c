@@ -293,11 +293,13 @@ __private void g2d_bitblt_vectorize(g2dImage_s* dst, g2dCoord_s* cod, g2dImage_s
 	}
 
 	unsigned const h = cod->h;
+	unsigned const sw = cos->x + cos->w;
+	unsigned const dw = cod->x + cod->w;
 
 	for( unsigned y = 0; y < h; ++y ){
 		unsigned const srow = g2d_row(src, cos->y + y);
 		unsigned const drow = g2d_row(dst, cod->y + y);
-		vectorize_pair_loop(uint4_v, unsigned, &src->pixel[srow], cos->x, cos->w, &dst->pixel[drow], cod->x, cod->w,
+		vectorize_pair_loop(uint4_v, unsigned, &src->pixel[srow], cos->x, sw, &dst->pixel[drow], cod->x, dw,
 			{
 				*Bscalar++ = *Ascalar++;
 			},
@@ -348,11 +350,13 @@ __private void g2d_bitblt_xor_vectorize(g2dImage_s* dst, g2dCoord_s* cod, g2dIma
 	}
 
 	unsigned const h = cod->h;
+	unsigned const sw = cos->x + cos->w;
+	unsigned const dw = cod->x + cod->w;
 
 	for( unsigned y = 0; y < h; ++y ){
 		unsigned const srow = g2d_row(src, cos->y + y);
 		unsigned const drow = g2d_row(dst, cod->y + y);
-		vectorize_pair_loop(uint4_v, unsigned, &src->pixel[srow], cos->x, cos->w, &dst->pixel[drow], cod->x, cod->w,
+		vectorize_pair_loop(uint4_v, unsigned, &src->pixel[srow], cos->x, sw, &dst->pixel[drow], cod->x, dw,
 			{
 				*Bscalar++ ^= *Ascalar++;
 			},
@@ -417,11 +421,13 @@ __private void g2d_bitblt_alpha_vectorize(g2dImage_s* dst, g2dCoord_s* cod, g2dI
 	}
 
 	unsigned const h = cod->h;
+	unsigned const sw = cos->x + cos->w;
+	unsigned const dw = cod->x + cod->w;
 
 	for( unsigned y = 0; y < h; ++y ){
 		unsigned const srow = g2d_row(src, cos->y + y);
 		unsigned const drow = g2d_row(dst, cod->y + y);
-		vectorize_pair_loop(uint4_v, unsigned, &src->pixel[srow], cos->x, cos->w, &dst->pixel[drow], cod->x, cod->w,
+		vectorize_pair_loop(uint4_v, unsigned, &src->pixel[srow], cos->x, sw, &dst->pixel[drow], cod->x, dw,
 			{
 				unsigned char Aalpha = g2d_color_alpha(src,*Ascalar);
 				unsigned char Ared = g2d_color_red(src,*Ascalar);
@@ -503,12 +509,14 @@ __private void g2d_bitblt_channel_vectorize(g2dImage_s* dst, g2dCoord_s* cod, g2
 	uint4_v vmask = vector4_set_all(mask);
 
 	unsigned const h = cod->h;
-  
+  	unsigned const sw = cos->x + cos->w;
+	unsigned const dw = cod->x + cod->w;
+
 	__parallef
 	for( unsigned y = 0; y < h; ++y ){
 		unsigned const srow = g2d_row(src, cos->y + y);
 		unsigned const drow = g2d_row(dst, cod->y + y);
-		vectorize_pair_loop(uint4_v, unsigned, &src->pixel[srow], cos->x, cos->w, &dst->pixel[drow], cod->x, cod->w,
+		vectorize_pair_loop(uint4_v, unsigned, &src->pixel[srow], cos->x, sw, &dst->pixel[drow], cod->x, dw,
 			{
 				*Bscalar = (*Bscalar & (~mask)) | (*Ascalar & mask);
 				++Bscalar;
