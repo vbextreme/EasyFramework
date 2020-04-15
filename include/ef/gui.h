@@ -12,6 +12,7 @@
 //	xorg_win_type(DIALOG)
 //	xorg_win_state(MODAL)
 //	xorg_win_action(MOVE | CLOSE)
+//	xorg_win_set_top
 // text control
 // dock up,right,bottom,left
 

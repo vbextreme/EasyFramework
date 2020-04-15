@@ -144,11 +144,20 @@ unsigned ft_line_height(ftFonts_s* fonts);
 /** return line lenght in pixels*/
 unsigned ft_line_lenght(ftFonts_s* fonts, const utf8_t* str);
 
+/** return line lenght reverse in pixels*/
+unsigned ft_line_lenght_rev(ftFonts_s* fonts, const utf8_t* begin, const utf8_t* str);
+
 /** return multiline lenght in pixel */
 unsigned ft_multiline_lenght(ftFonts_s* fonts, const utf8_t* str);
 
 /** return multiline height in pixel */
 unsigned ft_multiline_height(ftFonts_s* fonts, const utf8_t* str);
+
+/** return multiline height in pixel to end position */
+unsigned ft_multiline_height_tostr(ftFonts_s* fonts, const utf8_t* str, const utf8_t* end);
+
+/** return multiline height in pixel to end position*/
+unsigned ft_autowrap_height_to(ftFonts_s* fonts, const utf8_t* str, const utf8_t* end, unsigned width);
 
 /** return height in autowrap text*/
 unsigned ft_autowrap_height(ftFonts_s* fonts, const utf8_t* str, unsigned width);

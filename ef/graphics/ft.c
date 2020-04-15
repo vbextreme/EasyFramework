@@ -605,12 +605,33 @@ unsigned ft_line_lenght(ftFonts_s* fonts, const utf8_t* str){
 		if( u >= UTF_PRIVATE0_START ){
 			continue;
 		}
+		if( u == '\n' ) break;
 		ftRender_s* rch = ft_fonts_glyph_load(fonts, u, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
 		if( rch ) lenght += rch->horiAdvance;
 	}
 	dbg_info("line lenght:%u", lenght);
 	return lenght;
 }	
+
+unsigned ft_line_lenght_rev(ftFonts_s* fonts, const utf8_t* begin, const utf8_t* str){
+	if( !str || !*str || !begin || !*begin){
+		dbg_warning("no str");
+		return 0;
+	}
+	unsigned lenght = 0;
+	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
+	utf_t u;
+	while( (u = utf8_iterator_prev(&it)) ){
+		if( u >= UTF_PRIVATE0_START ){
+			continue;
+		}
+		if( u == '\n' ) break;
+		ftRender_s* rch = ft_fonts_glyph_load(fonts, u, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
+		if( rch ) lenght += rch->horiAdvance;
+	}
+	dbg_info("line lenght:%u", lenght);
+	return lenght;
+}
 
 unsigned ft_multiline_lenght(ftFonts_s* fonts, const utf8_t* str){
 	if( !str || !*str ){
@@ -664,7 +685,7 @@ unsigned ft_multiline_height(ftFonts_s* fonts, const utf8_t* str){
 	return height;
 }
 
-unsigned ft_autowrap_height(ftFonts_s* fonts, const utf8_t* str, unsigned width){
+unsigned ft_multiline_height_tostr(ftFonts_s* fonts, const utf8_t* str, const utf8_t* end){
 	if( !str ){
 		dbg_warning("no str");
 		return 0;
@@ -676,7 +697,34 @@ unsigned ft_autowrap_height(ftFonts_s* fonts, const utf8_t* str, unsigned width)
 
 	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
 	utf_t utf;
-	while( (utf = utf8_iterator_next(&it)) ){
+	while( (utf = utf8_iterator_next(&it)) && it.str < end){
+		if( utf >= UTF_PRIVATE0_START ){
+			continue;
+		}
+		if( utf == '\n' ){
+			height += monoh;
+			lenght = 0;
+			continue;
+		}
+		ftRender_s* rch = ft_fonts_glyph_load(fonts, *str, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
+		if( rch ) lenght += rch->horiAdvance;
+	}
+	return height;
+}
+
+unsigned ft_autowrap_height_to(ftFonts_s* fonts, const utf8_t* str, const utf8_t* end, unsigned width){
+	if( !str ){
+		dbg_warning("no str");
+		return 0;
+	}
+
+	unsigned monoh = ft_line_height(fonts);
+	unsigned height = monoh;
+	unsigned lenght = 0;
+
+	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
+	utf_t utf;
+	while( (utf = utf8_iterator_next(&it)) && it.str < end ){
 		if( utf >= UTF_PRIVATE0_START ){
 			continue;
 		}
@@ -694,7 +742,7 @@ unsigned ft_autowrap_height(ftFonts_s* fonts, const utf8_t* str, unsigned width)
 	}
 
 	return height;
-}	
+}
 
 __private void g2d_ch_clear(g2dImage_s* dst, g2dCoord_s* pos, ftRender_s* glyph, g2dColor_t color){
 	g2dCoord_s co = {.x = pos->x, .y = pos->y, .w = glyph->img->w, .h = glyph->img->h};
