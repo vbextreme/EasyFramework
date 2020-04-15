@@ -3,7 +3,7 @@
 #include <ef/str.h>
 #include <ef/err.h>
 
-guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCursor, size_t msCursor, unsigned tabspace, unsigned flags){
+guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCursor, unsigned tabspace, unsigned flags){
 	guiText_s* txt = mem_new(guiText_s);
 	if( !txt ) return NULL;
 
@@ -15,7 +15,8 @@ guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCu
 	txt->cursor.h = ft_line_height(font);
 	ftRender_s* glyph = ft_fonts_glyph_load(font, ' ', FT_RENDER_VALID | FT_RENDER_ANTIALIASED);
 	iassert(glyph);
-	txt->cursor.w = glyph->width;
+	txt->cursor.w = glyph->img->w;
+	dbg_info("genric glyph size: %u*%u", txt->cursor.w, txt->cursor.h);
 
 	txt->len = 0;
 	txt->size = 0;
@@ -25,7 +26,6 @@ guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCu
 	txt->fonts = font;
 	txt->foreground = foreground;
 	txt->colCursor = colCursor;
-	txt->msCursor = msCursor;
 	txt->flags = flags;
 	txt->tabspace = tabspace;
 	return txt;
@@ -35,7 +35,7 @@ gui_s* gui_text_attach(gui_s* gui, guiText_s* txt){
 	if( !gui ) goto ERR;
 	if( !txt ) goto ERR;
 	gui->control = txt;
-	gui->type = GUI_TYPE_LABEL;
+	gui->type = GUI_TYPE_TEXT;
 	gui->redraw = gui_text_event_redraw;
 	gui->key = gui_text_event_key;
 	gui->free = gui_text_event_free;
@@ -281,13 +281,22 @@ void gui_text_render_cursor(gui_s* gui, guiText_s* txt){
 	if( !(txt->flags & GUI_TEXT_REND_CURON) ) return;
 
 	g2dCoord_s cursor = txt->cursor;
-	cursor.w = GUI_TEXT_CURSOR_LIGHT;
-	cursor.x -= cursor.w + 1;
+	cursor.w = GUI_TEXT_CURSOR_LIGHT_VALUE;
+	cursor.x = cursor.x > cursor.w+1 ? cursor.x - cursor.w + 1 : 0;
+	iassert((int)cursor.y - (int)txt->scroll.y >= 0);
 	cursor.y -= txt->scroll.y;
+	iassert((int)cursor.x - (int)txt->scroll.x >= 0);
 	cursor.x -= txt->scroll.x;
+
+	dbg_info("relative x %u y %u w %u", cursor.x, cursor.y, cursor.w);
 
 	g2dPoint_s lineST = { .x = cursor.x, .y = cursor.y };
 	g2dPoint_s lineEN = { .x = cursor.x, .y = cursor.y + cursor.h };
+	iassert( lineST.x < gui->surface->img->w);
+	iassert( lineST.y < gui->surface->img->h);
+	iassert( lineEN.x < gui->surface->img->w);
+	iassert( lineEN.y < gui->surface->img->h);
+
 	for( unsigned i = 0; i < cursor.w; ++i){
 		g2d_line(gui->surface->img, &lineST, &lineEN, txt->colCursor, 1);
 		++lineST.x;
@@ -303,7 +312,8 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 	const g2dColor_t colClear = gui_color(0,0,0,0);
 	g2dCoord_s newCursor = txt->cursor;
 	g2dCoord_s cursor = txt->cursor;
-	int storedCursor = 0;
+	cursor.x = 0;
+	cursor.y = 0;
 
 	g2dCoord_s part;
 	g2dCoord_s co = { 
@@ -318,35 +328,38 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 	};
 
 	if( !txt->render || txt->render->w < co.w || txt->render->h < co.h ){
-		g2d_free(txt->render);
-		txt->render = g2d_new(co.w + txt->cursor.w, co.h + txt->cursor.h, -1);
-		g2d_clear(txt->render, colClear, &co);
+		co.w += txt->cursor.w;
+		co.h += txt->cursor.h;
+		dbg_info("resize render %u*%u", co.w, co.h);
+		if( txt->render ) g2d_free(txt->render);
+		txt->render = g2d_new(co.w, co.h, -1);
 		partial = 0;
+	}
+	if( !partial ){
+		dbg_info("clear render %u*%u", co.w, co.h);
+		g2d_clear(txt->render, colClear, &co);
 	}
 
 	utf8Iterator_s it = utf8_iterator(txt->text, 0);
 
 	utf_t u;
 	while( (u=utf8_iterator_next(&it)) ){
-		if( !storedCursor && (cursor.x >= txt->cursor.x || cursor.y >= txt->cursor.y) ){
-			storedCursor = 1;
-			newCursor.x = cursor.x;
-			newCursor.y = cursor.y;
-			if( partial ){
-				part.x = cursor.x;
-				part.y = cursor.y;
-				part.h = txt->cursor.h;
-				part.w = co.w - part.x;
-				g2d_clear(txt->render, colClear, &part);
-				part.y += txt->cursor.h;
-				if( part.y < co.h ){
-					part.x = 0;
-					part.w = co.w;
-					part.h = co.h - part.y;
-					g2d_clear(txt->render, colClear, &part);		
-				}
-				partial = 0;
+		if( partial && (cursor.x >= txt->cursor.x || cursor.y >= txt->cursor.y) ){
+			part.x = cursor.x;
+			part.y = cursor.y;
+			part.h = txt->cursor.h;
+			part.w = co.w - part.x;
+			dbg_info("partial clear eol render %u %u %u*%u", part.x, part.y, part.w, part.h);
+			g2d_clear(txt->render, colClear, &part);
+			part.y += txt->cursor.h;
+			if( part.y < co.h ){
+				part.x = 0;
+				part.w = co.w;
+				part.h = co.h - part.y;
+				dbg_info("partial clear render %u %u %u*%u", part.x, part.y, part.w, part.h);
+				g2d_clear(txt->render, colClear, &part);		
 			}
+			partial = 0;
 		}
 
 		if( u >= UTF_PRIVATE0_START ){
@@ -394,21 +407,30 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 		}
 
 		if( !partial ){
+			dbg_info("putch render %u %u %u*%u", cursor.x, cursor.y, rch->horiAdvance, cursor.h);
 			g2d_char_indirect(txt->render, &cursor, rch->img, txt->foreground);
 		}
 
 		cursor.x += rch->horiAdvance;
+		if( it.str == txt->it.str ){
+			newCursor.x = cursor.x;
+			newCursor.y = cursor.y;
+		}
 	}
 	
+	dbg_error("FIND SCROLLING %u+%u", txt->scroll.x, txt->scroll.y);
 	//find scrolling
 	if( txt->scroll.x && newCursor.x < txt->scroll.x ){
+		dbg_info("scroll.x && cursor.x(%u) < scroll.x(%u):: scroll.x(%u)", newCursor.x, txt->scroll.x, newCursor.x);
 		txt->scroll.x = newCursor.x;
 	}
 	else if( newCursor.x - txt->scroll.x > w ){
 		if( scrollXEnable ){
+			dbg_info("scrollEnable && cursor.x(%u) - scroll.x(%u) > w(%u):: scroll.x(%u)", newCursor.x, txt->scroll.x, w, w-newCursor.x);
 			txt->scroll.x = w - newCursor.x;
 		}
 		else{
+			dbg_info("!scrollEnable && cursor.x(%u) - scroll.x(%u) > w(%u):: scroll.x(%u) newCursor.x(%u)", newCursor.x, txt->scroll.x, w, 0, newCursor.x);
 			txt->scroll.x = 0;
 			newCursor.x = w;
 		}
@@ -426,13 +448,16 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 			newCursor.y = h - cursor.h;
 		}
 	}
-
 	txt->cursor = newCursor;
+	dbg_info("calcolate scrolling %u+%u", txt->scroll.x, txt->scroll.y);
+
 }
 
 void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int partial){
+	dbg_info("clear background");
 	gui_background_redraw(gui, bkg);
 	
+	dbg_info("render text");
 	gui_text_render_text(gui, txt, partial);
 
 	g2dCoord_s pdest = { 
@@ -449,9 +474,12 @@ void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int parti
 	};
 	iassert( psrc.x+psrc.w <= txt->render->w );
 	iassert( psrc.y+psrc.h <= txt->render->h );
+	dbg_info("apply text");
 	g2d_bitblt_alpha(gui->surface->img, &pdest, txt->render, &psrc);
 
+	dbg_info("render cursor");
 	gui_text_render_cursor(gui, txt);
+	dbg_info("render ok");
 }
 
 int gui_text_event_key(gui_s* gui, xorgEvent_s* event){

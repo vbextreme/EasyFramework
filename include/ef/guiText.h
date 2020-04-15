@@ -34,12 +34,11 @@ typedef struct guiText{
 	ftFonts_s* fonts;
 	g2dColor_t foreground;
 	g2dColor_t colCursor;
-	size_t msCursor;
 	unsigned flags;
 	unsigned tabspace;
 }guiText_s;
 
-guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCursor, size_t msCursor, unsigned tabspace, unsigned flags);
+guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCursor, unsigned tabspace, unsigned flags);
 gui_s* gui_text_attach(gui_s* gui, guiText_s* txt);
 void gui_text_free(guiText_s* txt);
 
