@@ -3,6 +3,11 @@
 #include <ef/str.h>
 #include <ef/err.h>
 
+/* TODO
+ * ft not correct load some char, j _
+ * test scroll X
+ */
+
 guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCursor, unsigned tabspace, unsigned flags){
 	guiText_s* txt = mem_new(guiText_s);
 	if( !txt ) return NULL;
@@ -28,6 +33,7 @@ guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCu
 	txt->colCursor = colCursor;
 	txt->flags = flags;
 	txt->tabspace = tabspace;
+	txt->spacesize = glyph->horiAdvance;
 	return txt;
 }
 
@@ -110,6 +116,12 @@ size_t gui_text_line_left_width(guiText_s* txt){
 }
 
 void gui_text_put(__unused gui_s* gui, guiText_s* txt, utf_t utf){
+
+	if( !(txt->flags & GUI_TEXT_SCROLL_X) && !(txt->flags & GUI_TEXT_SCROLL_Y) ){
+		if( utf == '\n' ) return;
+		if( txt->cursor.x + txt->cursor.w > gui->surface->img->w ) return;
+	}
+
 	if( txt->it.str - txt->it.begin + 4 >= (long)txt->size - 1 ){
 		txt->size += txt->resize;
 		if( mem_resize(txt->text, utf8_t, txt->size) ){
@@ -129,28 +141,6 @@ void gui_text_put(__unused gui_s* gui, guiText_s* txt, utf_t utf){
 	}
 
 	txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSPOS;
-
-	/*
-	if( txt->flags & GUI_TEXT_SCROLL_X ){
-		if( utf == '\n' ){
-			txt->scroll.x = 0;
-			txt->cursorOffsetX = gui_text_line_left_width(txt);
-			++txt->cursorOffsetY;
-		}
-		else{
-			++txt->scroll.x
-			//if( (txt->cursor.x - txt->scroll.x) + txt->glyphWidth >= gui->surface->img->w ){
-			//	txt->scroll.x += txt->glyphWidth;
-			//}
-			//
-			//
-		}
-	}
-	
-	if( txt->flags & GUI_TEXT_SCROLL_Y && (txt->cursor.y - txt->scroll.y) + txt->glyphWidth > gui->surface->img->h ){
-		txt->scroll.y += txt->glyphHeight;
-	}
-	*/
 }
 
 void gui_text_puts(gui_s* gui, guiText_s* txt, utf8_t* str){
@@ -281,17 +271,21 @@ void gui_text_render_cursor(gui_s* gui, guiText_s* txt){
 	if( !(txt->flags & GUI_TEXT_REND_CURON) ) return;
 
 	g2dCoord_s cursor = txt->cursor;
+
 	cursor.w = GUI_TEXT_CURSOR_LIGHT_VALUE;
+	
 	cursor.x = cursor.x > cursor.w+1 ? cursor.x - cursor.w + 1 : 0;
+	
 	iassert((int)cursor.y - (int)txt->scroll.y >= 0);
 	cursor.y -= txt->scroll.y;
+	
 	iassert((int)cursor.x - (int)txt->scroll.x >= 0);
 	cursor.x -= txt->scroll.x;
 
 	dbg_info("relative x %u y %u w %u", cursor.x, cursor.y, cursor.w);
 
 	g2dPoint_s lineST = { .x = cursor.x, .y = cursor.y };
-	g2dPoint_s lineEN = { .x = cursor.x, .y = cursor.y + cursor.h };
+	g2dPoint_s lineEN = { .x = cursor.x, .y = cursor.y + cursor.h - 1};
 	iassert( lineST.x < gui->surface->img->w);
 	iassert( lineST.y < gui->surface->img->h);
 	iassert( lineEN.x < gui->surface->img->w);
@@ -310,10 +304,8 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 	const unsigned w = gui->surface->img->w;
 	const unsigned h = gui->surface->img->h;
 	const g2dColor_t colClear = gui_color(0,0,0,0);
-	g2dCoord_s newCursor = txt->cursor;
-	g2dCoord_s cursor = txt->cursor;
-	cursor.x = 0;
-	cursor.y = 0;
+	g2dCoord_s newCursor = { 0, 0, txt->cursor.w, txt->cursor.h};
+	g2dCoord_s cursor = newCursor;
 
 	g2dCoord_s part;
 	g2dCoord_s co = { 
@@ -326,6 +318,9 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 			:
 				h
 	};
+	if( co.h < h ) co.h = h;
+	if( co.w < w ) co.w = w;
+	co.h += cursor.h;
 
 	if( !txt->render || txt->render->w < co.w || txt->render->h < co.h ){
 		co.w += txt->cursor.w;
@@ -368,26 +363,52 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 		if( u == '\n' ){
 			cursor.x = 0;
 			if( scrollYEnable ){
+				dbg_info("next line %u+%u:%u", cursor.y, txt->cursor.h, cursor.y+txt->cursor.h);
 				cursor.y += txt->cursor.h;
+				if( it.str == txt->it.str ){
+					newCursor.x = cursor.x;
+					newCursor.y = cursor.y;
+				}
 				continue;
 			}
-			if( cursor.y + txt->cursor.h > h ){
+			if( cursor.y + txt->scroll.y > h ){
+				if( it.str == txt->it.str ){
+					newCursor.x = cursor.x;
+					newCursor.y = cursor.y;
+				}
+
 				break;
 			}
 		}
 		if( u == '\t' ){
-			if( !scrollXEnable && cursor.x + txt->cursor.w * txt->tabspace > w ){
+			if( !scrollXEnable && cursor.x + txt->spacesize * txt->tabspace > w ){
 				if( scrollYEnable ){
 					cursor.y += txt->cursor.h;
+					if( it.str == txt->it.str ){
+						newCursor.x = cursor.x;
+						newCursor.y = cursor.y;
+					}
 					continue;
 				}
 				if( cursor.y + txt->cursor.h > h ){
+					if( it.str == txt->it.str ){
+						newCursor.x = cursor.x;
+						newCursor.y = cursor.y;
+					}
 					break;
 				}
 				cursor.x = 0;
+				if( it.str == txt->it.str ){
+					newCursor.x = cursor.x;
+					newCursor.y = cursor.y;
+				}
 				continue;
 			}
-			cursor.x += txt->cursor.w * txt->tabspace;
+			cursor.x += txt->spacesize * txt->tabspace;
+			if( it.str == txt->it.str ){
+				newCursor.x = cursor.x;
+				newCursor.y = cursor.y;
+			}
 			continue;
 		}
 		
@@ -418,7 +439,6 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 		}
 	}
 	
-	dbg_error("FIND SCROLLING %u+%u", txt->scroll.x, txt->scroll.y);
 	//find scrolling
 	if( txt->scroll.x && newCursor.x < txt->scroll.x ){
 		dbg_info("scroll.x && cursor.x(%u) < scroll.x(%u):: scroll.x(%u)", newCursor.x, txt->scroll.x, newCursor.x);
@@ -436,14 +456,17 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 		}
 	}
 	if( txt->scroll.y && newCursor.y < txt->scroll.y ){
+		dbg_warning("to test");
 		txt->scroll.y = newCursor.y;
 	}
-	else if( newCursor.y - txt->scroll.y > h ){
+	else if( (newCursor.y + newCursor.h) - txt->scroll.y >= h ){
 		if( scrollYEnable ){
-			txt->scroll.y = h - newCursor.y;
-			txt->scroll.y += cursor.h;
+			dbg_info("scroll && cursor.y(%u) scroll.y(%u) h(%u) cursor.h(%u)", newCursor.y, txt->scroll.y, h, newCursor.h);
+			dbg_info("%u",((newCursor.y + newCursor.h) - txt->scroll.y) - h );	
+			txt->scroll.y = (newCursor.y + newCursor.h) - h;
 		}
 		else{
+			dbg_warning("not need?");
 			txt->scroll.y = 0;
 			newCursor.y = h - cursor.h;
 		}
@@ -536,7 +559,7 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 		break;
 
 		default:
-			gui_text_put(gui, gui->control, event->keyboard.utf);
+			if( event->keyboard.utf) gui_text_put(gui, gui->control, event->keyboard.utf);
 		break;
 	}
 

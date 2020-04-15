@@ -109,14 +109,14 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_s* txt = gui_text_attach(
 		gui_new(
 			main, "txt", "text",
-			0, 10, btn->position.y + btn->position.h + 10, 200, 200,
+			0, 10, btn->position.y + btn->position.h + 10, 200, 100,
 			gui_color(255,0,0,0),	
 			gui_background_new( gui_color(255, 200, 200, 200), NULL, NULL, NULL, GUI_BK_COLOR), 
 			0, NULL
 		),
 		gui_text_new(
 			tfont, gui_color(255,40,40,40), gui_color(255,20,20,20), 4, 
-			GUI_TEXT_INSERT | GUI_TEXT_CUR_VISIBLE | GUI_TEXT_REND_CURON | GUI_TEXT_CURSOR_LIGHT
+			GUI_TEXT_SCROLL_Y | GUI_TEXT_INSERT | GUI_TEXT_CUR_VISIBLE | GUI_TEXT_REND_CURON | GUI_TEXT_CURSOR_LIGHT
 		)
 	);
 
@@ -125,8 +125,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_redraw(main);
 	gui_show(main, 1);
 
-
-//	gui_show(labl, 1);
+	gui_show(labl, 1);
 	gui_show(btn, 1);
 	gui_show(txt, 1);
 	gui_focus(txt);

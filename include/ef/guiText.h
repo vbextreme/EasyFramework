@@ -36,6 +36,7 @@ typedef struct guiText{
 	g2dColor_t colCursor;
 	unsigned flags;
 	unsigned tabspace;
+	unsigned spacesize;
 }guiText_s;
 
 guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCursor, unsigned tabspace, unsigned flags);
