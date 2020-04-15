@@ -712,6 +712,38 @@ unsigned ft_multiline_height_tostr(ftFonts_s* fonts, const utf8_t* str, const ut
 	return height;
 }
 
+unsigned ft_autowrap_height(ftFonts_s* fonts, const utf8_t* str, unsigned width){
+	if( !str ){
+		dbg_warning("no str");
+		return 0;
+	}
+
+	unsigned monoh = ft_line_height(fonts);
+	unsigned height = monoh;
+	unsigned lenght = 0;
+
+	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
+	utf_t utf;
+	while( (utf = utf8_iterator_next(&it)) ){
+		if( utf >= UTF_PRIVATE0_START ){
+			continue;
+		}
+		if( utf == '\n' ){
+			height += monoh;
+			lenght = 0;
+			continue;
+		}
+		if( lenght >= width ){
+			height += monoh;
+			lenght = 0;
+		}	
+		ftRender_s* rch = ft_fonts_glyph_load(fonts, *str, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
+		if( rch ) lenght += rch->horiAdvance;
+	}
+
+	return height;
+}	
+
 unsigned ft_autowrap_height_to(ftFonts_s* fonts, const utf8_t* str, const utf8_t* end, unsigned width){
 	if( !str ){
 		dbg_warning("no str");
