@@ -3,12 +3,6 @@
 #include <ef/str.h>
 #include <ef/err.h>
 
-/* TODO
- * ft not correct load some char, j _
- * test scroll X
- */
-
-
 guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCursor, unsigned tabspace, unsigned blinktime, unsigned flags){
 	guiText_s* txt = mem_new(guiText_s);
 	if( !txt ) return NULL;
@@ -609,11 +603,10 @@ int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev){
 	if( ev->focus.outin ){
 		iassert(txt->blink == NULL);
 		txt->flags |= GUI_TEXT_REND_CURON;
-		txt->blink = gui_timer_new(gui, txt->blinktime, gui_text_timer_blink, gui);
+		if( txt->blinktime ) txt->blink = gui_timer_new(gui, txt->blinktime, gui_text_timer_blink, gui);
 	}
 	else{
-		iassert(txt->blink);
-		gui_timer_free(txt->blink);
+		if( txt->blink ) gui_timer_free(txt->blink);
 		txt->flags &= ~GUI_TEXT_REND_CURON;
 		txt->blink = NULL;
 	}

@@ -21,6 +21,7 @@ gui_s* gui_div_attach(gui_s* gui, guiDiv_s* div){
 	gui->type = GUI_TYPE_DIV;
 	gui->key = gui_div_event_key;
 	gui->free = gui_div_event_free;
+	if( gui->parent ) gui->focus = NULL;
 	return gui;
 ERR:
 	if( div ) gui_div_free(div);

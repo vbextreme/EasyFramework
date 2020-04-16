@@ -364,6 +364,7 @@ void xorg_atom_load(xorg_s* x){
 		[XORG_ATOM_NET_WM_ACTION_CHANGE_DESKTOP]   = "_NET_WM_ACTION_CHANGE_DESKTOP",
 		[XORG_ATOM_NET_WM_ACTION_CLOSE]            = "_NET_WM_ACTION_CLOSE",
 		[XORG_ATOM_WM_TRANSIENT_FOR]               = "WM_TRANSIENT_FOR",
+		[XORG_ATOM_WM_STATE]                       = "WM_STATE",
 		[XORG_ATOM_XROOTPMAP_ID]                   = "_XROOTPMAP_ID",
 		[XORG_ATOM_UTF8_STRING]                    = "UTF8_STRING"
 	};
@@ -1333,12 +1334,23 @@ void xorg_win_type_set(xorg_s* x, xcb_window_t id, xorgWindowType_e type){
 }
 
 void xorg_win_state_set(xorg_s* x, xcb_window_t id, xorgWindowState_e state){
-	xcb_change_property(
-			x->connection,
-			XCB_PROP_MODE_REPLACE, id,
-			x->atom[XORG_ATOM_NET_WM_STATE],
-			XCB_ATOM_ATOM, 32, 1, (unsigned char*)&x->atom[XORG_ATOM_NET_WM_STATE + state + 1]
-	);
+	if( state < XORG_WINDOW_STATE_INVISIBLE ){
+		xcb_change_property(
+				x->connection,
+				XCB_PROP_MODE_REPLACE, id,
+				x->atom[XORG_ATOM_NET_WM_STATE],
+				XCB_ATOM_ATOM, 32, 1, (unsigned char*)&x->atom[XORG_ATOM_NET_WM_STATE + state + 1]
+		);
+	}
+	else{
+		int val = state - XORG_WINDOW_STATE_INVISIBLE;
+		xcb_change_property(
+				x->connection,
+				XCB_PROP_MODE_REPLACE, id,
+				x->atom[XORG_ATOM_WM_STATE],
+				XCB_ATOM_CARDINAL, 32, 4, &val
+		);
+	}
 }
 
 void xorg_win_action_set(xorg_s* x, xcb_window_t id, xorgWindowAction_e action){
@@ -1773,8 +1785,8 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			ev->mouse.button = button->detail;
 			ev->mouse.key = button->state;
 			ev->mouse.time = button->time;
-			dbg_info("mouse move:: button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
-					ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
+			//dbg_info("mouse move:: button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+			//		ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
 		}
 		break;
 
@@ -1789,7 +1801,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			ev->mouse.button = button->detail;
 			ev->mouse.key = button->state;
 			ev->mouse.time = button->time;
-			dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+			dbg_info("enter %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
 					ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
 		}
 		break;
@@ -1805,7 +1817,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			ev->mouse.button = button->detail;
 			ev->mouse.key = button->state;
 			ev->mouse.time = button->time;
-			dbg_info("button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+			dbg_info("leave %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
 					ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
 		}
 		break;
@@ -1861,7 +1873,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 
 			ev->win = prop->window;
 			ev->property.atom = prop->atom;
-			dbg_info("property atom %u name %s", prop->atom, xorg_atom_name(x, prop->atom));
+			dbg_info("property atom %u name %s state %d", prop->atom, xorg_atom_name(x, prop->atom), prop->state);
 		}
 		break;
 
@@ -1872,7 +1884,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			ev->client.type = msg->type;
 			ev->client.format = msg->format;
 			memcpy(ev->client.data, msg->data.data8, 20);
-			dbg_info("message %u %s", msg->type, xorg_atom_name(x, msg->type));
+			dbg_info("message (%u)%s: %d", msg->type, xorg_atom_name(x, msg->type), msg->data.data32[0]);
 		}
 		break;
 

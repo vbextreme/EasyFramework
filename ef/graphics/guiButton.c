@@ -16,13 +16,13 @@ gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn, guiBackground_s* press, g
 	if( !btn ) goto ERR;
 
 	btn->parentKey = gui->key;
-
 	gui->control = btn;
 	gui->type = GUI_TYPE_BUTTON;
 	gui->redraw = gui_button_event_redraw;
 	gui->mouse = gui_button_event_mouse;
 	gui->key = gui_button_event_key;
 	gui->free = gui_button_event_free;
+	gui->focus = NULL;
 	gui_background_add(gui, press);
 	gui_background_add(gui, hover);
 

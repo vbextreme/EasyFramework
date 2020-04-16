@@ -99,7 +99,7 @@ gui_s* gui_new(
 	gui->draw = gui_event_draw;
 	gui->key = NULL;
 	gui->mouse = NULL;
-	gui->focus = NULL;
+	gui->focus = gui_event_focus;
 	gui->map = NULL;
 	gui->move = gui_event_move;
 	gui->atom = NULL;
@@ -160,6 +160,12 @@ gui_s* gui_child_remove(gui_s* parent, gui_s* child){
 	return NULL;
 }
 
+gui_s* gui_main_parent(gui_s* gui){
+	iassert(gui);
+	while( gui->parent ) gui = gui->parent;
+	return gui;
+}
+
 void gui_name(gui_s* gui, const char* name){
 	if( !name ) return;
 	if( gui->name ) free(gui->name);
@@ -176,6 +182,7 @@ void gui_class(gui_s* gui, const char* class){
 
 void gui_show(gui_s* gui, int show){
 	xorg_win_show(X, gui->id, show);
+	xorg_win_state_set(X, gui->id, XORG_WINDOW_STATE_INVISIBLE + show);
 }
 
 /* event move is raised*/
@@ -199,24 +206,24 @@ void gui_focus_from_parent(gui_s* gui, int id){
 	if( !gui ) return;
 	if( gui->focusable < 1 ) return;
 	
-	if( gui->childFocus >= 0) 
-		xorg_send_focus_out(X, gui->childs[gui->childFocus]->id);
-		
 	gui->childFocus = id;
-
 	xorg_win_focus(X, gui->childs[id]->id);
-	xorg_send_focus_in(X, gui->childs[id]->id);
+}
+
+__private int gui_focus_search(gui_s* gui, gui_s* find){
+	vector_foreach(gui->childs, i){
+		if( gui->childs[i] == find ){
+			gui_focus_from_parent(gui, i);
+			return 1;
+		}
+		if( vector_count(gui->childs[i]->childs) && gui_focus_search(gui->childs[i], find) ) return 1;
+	}
+	return 0;
 }
 
 void gui_focus(gui_s* gui){
-	if( !gui->parent ) return;
-   	
-	vector_foreach(gui->parent->childs, i){
-		if( gui->parent->childs[i] == gui ){
-			gui_focus_from_parent(gui->parent, i);
-			break;
-		}
-	}
+	iassert(gui);
+	gui_focus_search(gui_main_parent(gui), gui);
 }
 
 int gui_focus_next_id(gui_s* parent){
@@ -336,6 +343,23 @@ int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage){
 	xorg_win_surface_redraw(X, gui->id, gui->surface);
+	return 0;
+}
+
+__private int gui_search_childfocus(gui_s* gui){
+	if( gui->childFocus >=0 ){
+		gui_focus_from_parent(gui, gui->childFocus);
+		return 1;
+	}
+
+	vector_foreach(gui->childs, i){
+		if( gui_search_childfocus(gui->childs[i]) ) return 1;
+	}
+	return 0;
+}
+
+int gui_event_focus(gui_s* gui, xorgEvent_s* event){
+	if( event->focus.outin) gui_search_childfocus(gui_main_parent(gui));
 	return 0;
 }
 

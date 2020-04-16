@@ -7,14 +7,26 @@
 #include <ef/deadpoll.h>
 #include <ef/phq.h>
 
-//TODO 
-// dialog mode:
-//	xorg_win_type(DIALOG)
-//	xorg_win_state(MODAL)
-//	xorg_win_action(MOVE | CLOSE)
-//	xorg_win_set_top
-// text control
-// dock up,right,bottom,left
+/*TODO 
+ * ft not correct load some char, j _
+ * focus with mouse
+ * focus with keyboard
+ * mouse find text
+ * select text
+ * cursor move
+ * msgbox
+ * xiaolin wu circle
+ * border simulating reparent?
+ * apply software alpha correct?
+ * remove decoration "_MOTIF_WM_HINTS"
+ * dialog mode:
+ *	xorg_win_type(DIALOG)
+ *	xorg_win_state(MODAL)
+ *	xorg_win_action(MOVE | CLOSE)
+ *	xorg_win_set_top
+ *	text control
+ *	dock up,right,bottom,left
+ */
 
 #define GUI_TYPE_WINDOW 0
 #define GUI_TYPE_LABEL  1
@@ -121,6 +133,7 @@ void gui_free(gui_s* gui);
 void gui_child_add(gui_s* parent, gui_s* child);
 gui_s* gui_child_remove(gui_s* parent, gui_s* child);
 
+gui_s* gui_main_parent(gui_s* gui);
 void gui_name(gui_s* gui, const char* name);
 void gui_class(gui_s* gui, const char* class);
 void gui_show(gui_s* gui, int show);
@@ -142,6 +155,7 @@ void gui_round_antialiasing_set(gui_s* gui, int radius);
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);
+int gui_event_focus(gui_s* gui, xorgEvent_s* event);
 int gui_event_move(gui_s* gui, xorgEvent_s* event);
 
 xorgEvent_s* gui_event_get(int async);
