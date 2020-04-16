@@ -8,7 +8,6 @@
 #include <ef/phq.h>
 
 /*TODO 
- * ft not correct load some char, j _
  * focus with mouse
  * focus with keyboard
  * mouse find text

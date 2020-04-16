@@ -279,22 +279,37 @@ __private void ft_glyph_render_graphics(ftRender_s* glyph, const unsigned w, con
 	unsigned const gw = glyph->width;
 	unsigned const gh = (glyph->height > h) ? h : glyph->height;
 	unsigned y = ((h - (-glyph->descender)) - glyph->horiBearingY) < 0 ? 0 : ((h - (-glyph->descender)) - glyph->horiBearingY);
+	unsigned const hBX = glyph->horiBearingX < 0 ? 0 : glyph->horiBearingX;
+/*	
+	dbg_error("glyph info:: y %u width %d height %d gw %d gh %d w %u h %u desc %ld hBY %d hBX %d", y, glyph->width, glyph->height, gw, gh, w, h, glyph->descender, glyph->horiBearingY, glyph->horiBearingX);
+	
+	
 
-	for( unsigned gy = 0; gy < gh && gy < h; ++y, ++gy ){
+	for( unsigned dy = 0; dy < gh; ++dy){
+		for( unsigned dx = 0; dx < gw; ++dx ){
+			fputc(buf[dy*gw+dx] ? '#' : ' ' ,stderr);
+		}
+		fputc('\n',stderr);
+	}
+
+	dbg_error("----------------------------------------------------------------------------");
+*/
+	for( unsigned gy = 0; gy < gh && y < h; ++y, ++gy ){
 		unsigned const row = g2d_row(glyph->img, y);
 		unsigned const gr = gy * gw;
 		for( 
-				unsigned gx = 0, ix = glyph->horiBearingX; 
+				unsigned gx = 0, ix = hBX; 
 				gx < gw && ix < w;
 			   	++gx, ++ix
 		){
 			unsigned char gc = buf[ gr + gx ];
 			unsigned char bw = gc ? 0 : 255;
 			g2dColor_t* pixel = g2d_color(glyph->img, row, ix);
-			*pixel = g2d_color_make(glyph->img, gc, bw, bw, bw); 
+			*pixel = g2d_color_make(glyph->img, gc, bw, bw, bw);
+//			fputc(gc?'#':' ',stderr);
 		}
+//		fputc('\n',stderr);
 	}
-	
 }
 
 /*
@@ -794,13 +809,20 @@ int g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dC
 		dbg_warning("invalid render glyph");
 		return -1;
 	}
-
+	if( rch->horiBearingX < 0 ){
+		unsigned const phBX = -rch->horiBearingX;
+		if( pos->x < phBX ) 
+			pos->x = 0;
+		else
+			pos->x -= phBX;
+	}
 	if( pos->x + rch->horiAdvance > pos->w ){
 		dbg_error("END OF LINE");
 		pos->x = originX;
 		pos->y += ft_line_height(fonts);
 		return 2;
 	}
+
 	if( pos->y + rch->img->h > pos->h ){
 		dbg_error("END OF HEIGHT");
 		return -1;

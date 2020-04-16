@@ -62,7 +62,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_begin();
 
 	ftFonts_s* tfont = ft_fonts_new();
-	//font_load(tfont, "master", "Dejavu", 18);
+	font_load(tfont, "master", "Dejavu", 18);
 	font_load(tfont, "masterFall", "FiraSans", 18);
 	font_load(tfont, "fallback", "Symbola", 18);
 

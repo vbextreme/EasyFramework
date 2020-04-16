@@ -440,6 +440,13 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 			dbg_warning("invalid render glyph");
 			continue;
 		}
+		if( rch->horiBearingX < 0 ){
+			unsigned const phBX = -rch->horiBearingX;
+			if( cursor.x < phBX ) 
+				cursor.x = 0;
+			else
+				cursor.x -= phBX;
+		}
 
 		if( !scrollXEnable && (cursor.x + rch->horiAdvance >= w) ){
 			if( scrollYEnable ){
