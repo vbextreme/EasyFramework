@@ -108,12 +108,40 @@ size_t gui_text_line_right_len(guiText_s* txt){
 	return width;
 }
 
-size_t gui_text_line_left_width(guiText_s* txt){
+size_t gui_text_line_left_len(guiText_s* txt){
 	utf8Iterator_s it = txt->it;
 	size_t width = 0;
 	utf_t utf;
 	while( (utf=utf8_iterator_prev(&it)) && utf != '\n' ) ++width;
 	return width;
+}
+
+utf8_t* gui_text_back_line_ptr(guiText_s* txt){
+	utf8Iterator_s it = txt->it;
+	utf_t u;
+	while( (u=utf8_iterator_prev(&it)) ){
+		if( u == '\n' ){
+			while( (u=utf8_iterator_prev(&it)) ){
+				if( u == '\n' ){
+					utf8_iterator_next(&it);	
+					break;
+				}
+			}
+			return it.str;
+		}
+	}
+	return NULL;
+}
+
+utf8_t* gui_text_next_line_ptr(guiText_s* txt){
+	utf8Iterator_s it = txt->it;
+	utf_t u;
+	while( (u=utf8_iterator_next(&it)) ){
+		if( u == '\n' ){
+			return it.str;
+		}
+	}
+	return NULL;
 }
 
 void gui_text_put(__unused gui_s* gui, guiText_s* txt, utf_t utf){
@@ -164,34 +192,19 @@ void gui_text_backspace(guiText_s* txt){
 	}
 }
 
-/*
-__private void dbg_cursor(termReadLine_s* rl){
-	fprintf(stderr, "%s\n", rl->it.begin);
-	utf8Iterator_s c = utf8_iterator(rl->it.begin, 0);
-	
-	while( c.str != rl->it.str ){
-		utf8_iterator_next(&c);
-		fprintf(stderr, " ");
-	}
-	fprintf(stderr,"^\n");
-}
-*/
-
 void gui_text_cursor_next(guiText_s* txt){
 	utf_t u;
 	while( (u=utf8_iterator_next(&txt->it)) >= UTF_PRIVATE0_START );
-	//dbg_cursor(rl);
 }
 
 void gui_text_cursor_prev(guiText_s* txt){
 	utf_t utf;
 	while( (utf=utf8_iterator_prev(&txt->it)) >= UTF_PRIVATE0_START );
-	//dbg_cursor(rl);
 }
-/*
-void gui_text_cursor_end(gui_s* gui, guiText_s* txt){
+
+void gui_text_cursor_end(guiText_s* txt){
 	while( *txt->it.str && *txt->it.str != '\n' ){
-		gui_text_cursor_next(gui, txt);
+		gui_text_cursor_next(txt);
 	}
 }
 
@@ -203,70 +216,89 @@ void gui_text_cursor_home(guiText_s* txt){
 }
 
 void gui_text_cursor_scroll_left(guiText_s* txt){
-	if( txt->flags & GUI_TEXT_SCROLL_X && txt->scroll.x > txt->glyphWidth ) txt->scroll.x -= txt->glyphWidth;
+	if( txt->flags & GUI_TEXT_SCROLL_X && txt->scroll.x > 0 ){
+	   	txt->scroll.x = txt->scroll.x > txt->spacesize ?  txt->scroll.x - txt->spacesize : 0;
+	}
 }
 
-void gui_text_cursor_scroll_right(guiText_s* txt){
-	//TODO how check max scroll rght?
-	if( txt->flags & GUI_TEXT_SCROLL_X ) txt->scroll.x += txt->glyphWidth
+void gui_text_cursor_scroll_right(gui_s* gui, guiText_s* txt){
+	if( txt->flags & GUI_TEXT_SCROLL_X && txt->scroll.x + gui->surface->img->w + txt->spacesize < txt->render->w ){
+		txt->scroll.x += txt->spacesize;
+	}
 }
 
+err_t gui_text_cursor_up(guiText_s* txt){
+	const size_t col = gui_text_line_left_len(txt);
+	utf8_t* bl = gui_text_back_line_ptr(txt);
+	if( !bl ) return -1;
+	txt->it.str = bl;
+	size_t linelen = gui_text_line_right_len(txt);
+	if( linelen > col ) linelen = col;
+	while( *txt->it.str && *txt->it.str != '\n' && linelen-->0 ){
+		gui_text_cursor_next(txt);
+	}
+	return 0;
+}
 
+err_t gui_text_cursor_down(guiText_s* txt){
+	const size_t col = gui_text_line_left_len(txt);
+	utf8_t* nl = gui_text_next_line_ptr(txt);
+	if( !nl ) return -1;
+	txt->it.str = nl;
+	size_t linelen = gui_text_line_right_len(txt);
+	if( linelen > col ) linelen = col;
+	while( *txt->it.str && *txt->it.str != '\n' && linelen-->0 ){
+		gui_text_cursor_next(txt);
+	}
+	return 0;
+}
 
-void gui_text_cursor_up(gui_s* gui, guiText_s* txt){
-	const size_t col = gui_text_line_left_width(txt);
-   	const size_t wid = gui->surface->img->w;
-	utf_t utf;
-	while( wid > 0 && (utf=utf8_iterator_prev(&txt->it)) ){
-		if( utf >= UTF_PRIVATE0_START ) continue;
-		if( utf == '\n' ){
-			size_t curcol = gui_text_line_left_width(txt);
-			if( curcol > col ){
-				curcol -= col;
-				while( curcol-->0 && (utf=utf8_iterator_prev(&txt->it) && utf != '\n') );
-				break;
+void gui_text_cursor_pagdn(gui_s* gui, guiText_s* txt){
+	const size_t col = gui_text_line_left_len(txt);
+	const unsigned fullLine = gui->surface->img->h / txt->cursor.h;
+	const unsigned dwnLine = fullLine - (txt->cursor.x-txt->scroll.x) / txt->cursor.h;
+	unsigned i = fullLine+dwnLine;
+	utf8_t* nl;
+   	while( i-->0 && (nl=gui_text_next_line_ptr(txt)) ){
+		txt->it.str = nl;
+	}
+	if( nl ){
+		gui_text_redraw(gui, gui->background[0], txt, 0);
+		i = dwnLine;
+		while( i-->0 && (nl=gui_text_back_line_ptr(txt)) ){
+			txt->it.str = nl;
 		}
 	}
-	const size_t rweight = ft_line_lenght_rev(txt->fonts, txt->text, txt->it.str);
-
-	if( rl->cursor.scrollrow > 0 && (int)rl->cursor.row - rl->position.row <= 0 ){
-		--rl->cursor.scrollrow;
-	}	
+	size_t linelen = gui_text_line_right_len(txt);
+	if( linelen > col ) linelen = col;
+	while( *txt->it.str && *txt->it.str != '\n' && linelen-->0 ){
+		gui_text_cursor_next(txt);
+	}
 }
 
-void term_readline_cursor_down(termReadLine_s* rl){
-	int col = (int)term_readline_line_left_width(rl) - (int)rl->cursor.scrollcol;
-	int wid = rl->position.width;
-	utf_t utf;
-	while( wid > 0 && (utf=utf8_iterator_next(&rl->it)) ){
-		if( utf >= TERM_READLINE_PRIVATE_UTF ) continue;
-		if( utf == '\n' ){
-			int cl = (int)term_readline_line_left_width(rl) - (int)rl->cursor.scrollcol;
-			wid = col - cl;
+void gui_text_cursor_pagup(gui_s* gui, guiText_s* txt){
+	const size_t col = gui_text_line_left_len(txt);
+	const unsigned fullLine = gui->surface->img->h / txt->cursor.h;
+	const unsigned upLine = (txt->cursor.x-txt->scroll.x) / txt->cursor.h;
+	unsigned i = fullLine+upLine;
+	utf8_t* nl;
+   	while( i-->0 && (nl=gui_text_back_line_ptr(txt)) ){
+		txt->it.str = nl;
+	}
+	if( nl ){
+		gui_text_redraw(gui, gui->background[0], txt, 0);
+		i = upLine;
+		while( i-->0 && (nl=gui_text_next_line_ptr(txt)) ){
+			txt->it.str = nl;
 		}
-		else{
-			--wid;
-		}
 	}
-	if( (int)rl->cursor.row - rl->position.row + 1 >= (int)rl->position.height ){
-		++rl->cursor.scrollrow;
-	}
-}
-
-void term_readline_cursor_pagdn(termReadLine_s* rl){
-	unsigned hei = rl->position.height;
-	while( hei-->0 ){
-		term_readline_cursor_down(rl);
+	size_t linelen = gui_text_line_right_len(txt);
+	if( linelen > col ) linelen = col;
+	while( *txt->it.str && *txt->it.str != '\n' && linelen-->0 ){
+		gui_text_cursor_next(txt);
 	}
 }
 
-void term_readline_cursor_pagup(termReadLine_s* rl){
-	unsigned hei = rl->position.height;
-	while( hei-->0 ){
-		term_readline_cursor_up(rl);
-	}
-}
-*/
 void gui_text_render_cursor(gui_s* gui, guiText_s* txt){
 	if( !(txt->flags & GUI_TEXT_CUR_VISIBLE) ) return;
 	if( !(txt->flags & GUI_TEXT_REND_CURON) ) return;
@@ -530,25 +562,32 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 		break;
 
 		case XKB_KEY_Up:
+			gui_text_cursor_up(gui->control);
 		break;
 
 		case XKB_KEY_Down:
+			gui_text_cursor_down(gui->control);
 		break;
 
 		case XKB_KEY_Page_Up:
+			gui_text_cursor_pagup(gui, gui->control);
 		break;
 
 		case XKB_KEY_Page_Down:
+			gui_text_cursor_pagdn(gui, gui->control);
 		break;
 
 		case XKB_KEY_Home:
 		case XKB_KEY_Begin:
+			gui_text_cursor_home(gui->control);
 		break;
 
 		case XKB_KEY_End:
+			gui_text_cursor_end(gui->control);
 		break;
 
 		case XKB_KEY_Insert:
+			gui_text_ir_toggle(gui->control);
 		break;
 
 		case XKB_KEY_Return:

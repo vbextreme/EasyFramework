@@ -13,7 +13,6 @@
  * focus with keyboard
  * mouse find text
  * select text
- * cursor move
  * msgbox
  * xiaolin wu circle
  * border simulating reparent?
