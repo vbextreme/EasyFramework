@@ -154,7 +154,7 @@ void gui_deadpoll_register(deadpoll_s* dp);
 int gui_deadpoll_event(deadpoll_s* dp);
 void gui_loop(void);
 
-guiTimer_s* gui_timer_new(gui_s* gui, size_t ms, void* userdata);
+guiTimer_s* gui_timer_new(gui_s* gui, size_t ms, guiTimer_f fn, void* userdata);
 int gui_timer_change(guiTimer_s* timer, size_t ms);
 void gui_timer_free(guiTimer_s* timer);
 

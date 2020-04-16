@@ -70,7 +70,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 		NULL, "test", NULL, 
 		0, 50, 50, 400, 400, 
 		gui_color(255,0,0,0),
-		gui_background_new(gui_color(255, 125, 125, 125), NULL, NULL, gui_background_main_round_fn, GUI_BK_COLOR | GUI_BK_FN),
+		gui_background_new(gui_color(255, 125, 125, 125), NULL, NULL, NULL, GUI_BK_COLOR),
 		20,NULL
 	);
 	main->destroy = main_exit;
@@ -101,8 +101,8 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			gui_label_new(tfont, 0, gui_color(255,40,40,40), GUI_LABEL_CENTER_X | GUI_LABEL_CENTER_Y),
 			button_click
 		),
-		gui_background_new( gui_color(255, 80, 80, 80), NULL, NULL, gui_background_round_fn, GUI_BK_COLOR | GUI_BK_FN), 
-		gui_background_new( gui_color(255, 80, 120, 80), NULL, NULL, gui_background_round_fn, GUI_BK_COLOR | GUI_BK_FN)
+		gui_background_new( gui_color(255, 80, 80, 80), NULL, NULL, NULL, GUI_BK_COLOR), 
+		gui_background_new( gui_color(255, 80, 120, 80), NULL, NULL, NULL, GUI_BK_COLOR)
 	);
 	gui_label_text_set(btn, gui_button_label(btn->control), U8("click me")); 
 
@@ -115,8 +115,8 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			0, NULL
 		),
 		gui_text_new(
-			tfont, gui_color(255,40,40,40), gui_color(255,20,20,20), 4, 
-			GUI_TEXT_SCROLL_Y | GUI_TEXT_INSERT | GUI_TEXT_CUR_VISIBLE | GUI_TEXT_REND_CURON | GUI_TEXT_CURSOR_LIGHT
+			tfont, gui_color(255,40,40,40), gui_color(255,20,20,20), 4, 500,
+			GUI_TEXT_SCROLL_X | GUI_TEXT_SCROLL_Y | GUI_TEXT_INSERT | GUI_TEXT_CUR_VISIBLE | GUI_TEXT_CURSOR_LIGHT
 		)
 	);
 

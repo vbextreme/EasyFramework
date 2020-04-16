@@ -13,10 +13,13 @@
 #define GUI_TEXT_SCROLL_Y     0x000400
 #define GUI_TEXT_CUR_VISIBLE  0x000800
 
-#define GUI_TEXT_CURSOR_LIGHT 0x010000
+#define GUI_TEXT_FLAGS_END    16
 
+#define GUI_TEXT_CURSOR_THIN      (0<<GUI_TEXT_FLAGS_END)
+#define GUI_TEXT_CURSOR_LIGHT     (1<<GUI_TEXT_FLAGS_END)
+#define GUI_TEXT_CURSOR_PLENTIFUL (2<<GUI_TEXT_FLAGS_END)
+#define GUI_TEXT_CURSOR_FAT       (3<<GUI_TEXT_FLAGS_END)
 
-#define GUI_TEXT_CURSOR_LIGHT_VALUE 2
 
 typedef struct guiText{
 	g2dImage_s* render;
@@ -24,7 +27,9 @@ typedef struct guiText{
 	g2dCoord_s cursor;
 	int cursorOffsetX;
 	int cursorOffsetY;
-	
+	guiTimer_s* blink;
+	unsigned blinktime;
+
 	utf8_t* text;
 	size_t len;
 	size_t size;
@@ -39,7 +44,7 @@ typedef struct guiText{
 	unsigned spacesize;
 }guiText_s;
 
-guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCursor, unsigned tabspace, unsigned flags);
+guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCursor, unsigned tabspace, unsigned blinktime, unsigned flags);
 gui_s* gui_text_attach(gui_s* gui, guiText_s* txt);
 void gui_text_free(guiText_s* txt);
 
@@ -65,6 +70,8 @@ void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int parti
 int gui_text_event_key(gui_s* gui, xorgEvent_s* event);
 int gui_text_event_redraw(gui_s* gui, __unused xorgEvent_s* ev);
 int gui_text_event_free(gui_s* gui, __unused xorgEvent_s* ev);
+int gui_text_timer_blink(guiTimer_s* timer);
+int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev);
 
 
 #endif

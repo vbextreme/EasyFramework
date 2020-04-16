@@ -431,7 +431,9 @@ void gui_deadpoll_register(deadpoll_s* dp){
 }
 
 __private void gui_timer_timeout(guiTimer_s* timer){
+	iassert( timer->fn );
 	switch( timer->fn(timer) ){
+		case GUI_TIMER_CUSTOM: break;
 		case GUI_TIMER_FREE: 
 			gui_timer_free(timer);
 		break;
@@ -476,11 +478,12 @@ void gui_loop(void){
 	while( gui_deadpoll_event(dpgui) > 0 ) xorg_client_flush(X);
 }
 
-guiTimer_s* gui_timer_new(gui_s* gui, size_t ms, void* userdata){
+guiTimer_s* gui_timer_new(gui_s* gui, size_t ms, guiTimer_f fn, void* userdata){
 	guiTimer_s* timer = mem_new(guiTimer_s);
 	timer->raisedon = time_ms() + ms;
 	timer->ms = ms;
 	timer->gui = gui;
+	timer->fn = fn;
 	timer->userdata = userdata;
 	timer->el = phq_element_new(timer->raisedon, timer, NULL);
 	if( !timer->el ) err_fail("eom");
