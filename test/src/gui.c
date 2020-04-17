@@ -78,6 +78,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 		7,NULL
 	);
 	main->destroy = main_exit;
+	gui_remove_decoration(main);
 //	main->redraw(main, NULL);
 
 	gui_s* labl = 	gui_label_attach(

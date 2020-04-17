@@ -1333,6 +1333,29 @@ void xorg_win_type_set(xorg_s* x, xcb_window_t id, xorgWindowType_e type){
 	);
 }
 
+void xorg_win_decoration_remove(xorg_s* x, xcb_window_t id){
+	struct MotifHints{
+		uint32_t flags;
+		uint32_t functions;
+		uint32_t decorations;
+		int32_t input_mode;
+		unsigned status;
+	}mh;
+
+	mh.flags = 2;
+	mh.functions = 0;
+	mh.decorations = 0;
+	mh.input_mode = 0;
+	mh.status = 0;
+
+	xcb_change_property(
+			x->connection,
+			XCB_PROP_MODE_REPLACE, id,
+			x->atom[XORG_ATOM_WM_STATE],
+			XCB_ATOM_CARDINAL, 32, 5, &mh
+	);
+}
+
 void xorg_win_state_set(xorg_s* x, xcb_window_t id, xorgWindowState_e state){
 	if( state < XORG_WINDOW_STATE_INVISIBLE ){
 		xcb_change_property(
@@ -1348,7 +1371,7 @@ void xorg_win_state_set(xorg_s* x, xcb_window_t id, xorgWindowState_e state){
 				x->connection,
 				XCB_PROP_MODE_REPLACE, id,
 				x->atom[XORG_ATOM_WM_STATE],
-				XCB_ATOM_CARDINAL, 32, 4, &val
+				XCB_ATOM_CARDINAL, 32, 1, &val
 		);
 	}
 }

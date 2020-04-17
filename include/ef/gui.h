@@ -9,14 +9,9 @@
 
 /*TODO 
  * focus with mouse
- * focus with keyboard
  * mouse find text
  * select text use utf custom
  * msgbox
- * xiaolin wu circle
- * border simulating reparent?
- * apply software alpha correct?
- * remove decoration "_MOTIF_WM_HINTS"
  * dialog mode:
  *	xorg_win_type(DIALOG)
  *	xorg_win_state(MODAL)
@@ -150,11 +145,14 @@ void gui_opacity(gui_s* gui, double op);
 void gui_round_unset(gui_s* gui);
 void gui_round_set(gui_s* gui, int radius);
 void gui_round_antialiasing_set(gui_s* gui, int radius);
+void gui_remove_decoration(gui_s* gui);
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);
 int gui_event_focus(gui_s* gui, xorgEvent_s* event);
 int gui_event_move(gui_s* gui, xorgEvent_s* event);
+int gui_event_key(gui_s* gui, xorgEvent_s* event);
+
 
 xorgEvent_s* gui_event_get(int async);
 void gui_event_release(xorgEvent_s* ev);

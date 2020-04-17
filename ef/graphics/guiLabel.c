@@ -27,7 +27,6 @@ gui_s* gui_label_attach(gui_s* gui, guiLabel_s* lbl){
 	gui->redraw = gui_label_event_redraw;
 	gui->free = gui_label_event_free;
 	gui->focusable = 0;
-	gui->focus = NULL;
 	return gui;
 ERR:
 	if( lbl ) gui_label_free(lbl);

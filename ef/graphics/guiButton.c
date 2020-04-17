@@ -22,7 +22,6 @@ gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn, guiBackground_s* press, g
 	gui->mouse = gui_button_event_mouse;
 	gui->key = gui_button_event_key;
 	gui->free = gui_button_event_free;
-	gui->focus = NULL;
 	gui_background_add(gui, press);
 	gui_background_add(gui, hover);
 
@@ -77,7 +76,7 @@ int gui_button_event_key(gui_s* gui, xorgEvent_s* event){
 	}
 
 	guiButton_s* btn = gui->control;
-	if( btn->parentKey && gui->parent ) btn->parentKey(gui->parent, event);
+	if( btn->parentKey && gui->parent ) btn->parentKey(gui, event);
 
 	return 0;
 }

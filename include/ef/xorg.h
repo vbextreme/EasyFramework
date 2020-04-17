@@ -523,6 +523,9 @@ void xorg_win_surface_redraw(xorg_s* x, xcb_window_t id,  xorgSurface_s* surface
 /** set window type */
 void xorg_win_type_set(xorg_s* x, xcb_window_t id, xorgWindowType_e type);
 
+/** remove window decoration */
+void xorg_win_decoration_remove(xorg_s* x, xcb_window_t id);
+
 /** set window state*/
 void xorg_win_state_set(xorg_s* x, xcb_window_t id, xorgWindowState_e state);
 

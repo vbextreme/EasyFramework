@@ -97,9 +97,9 @@ gui_s* gui_new(
 	gui->free = NULL;
 	gui->redraw = gui_event_redraw;
 	gui->draw = gui_event_draw;
-	gui->key = NULL;
+	gui->key = gui->parent ? gui_event_key :  NULL;
 	gui->mouse = NULL;
-	gui->focus = gui_event_focus;
+	gui->focus = gui->parent ? NULL : gui_event_focus;
 	gui->map = NULL;
 	gui->move = gui_event_move;
 	gui->atom = NULL;
@@ -207,6 +207,7 @@ void gui_focus_from_parent(gui_s* gui, int id){
 	if( gui->focusable < 1 ) return;
 	
 	gui->childFocus = id;
+	dbg_info("set focus: %s", gui->childs[id]->name);
 	xorg_win_focus(X, gui->childs[id]->id);
 }
 
@@ -227,15 +228,22 @@ void gui_focus(gui_s* gui){
 }
 
 int gui_focus_next_id(gui_s* parent){
-	if( !parent ) return -1;
+	if( !parent ){
+		dbg_warning("no parent");
+		return -1;
+	}
 	int focusid = parent->childFocus;
 	int childs = vector_count(parent->childs);
-	if( focusid < 0 ) return -1;
+	if( focusid < 0 ){
+		dbg_warning("no id");
+		return -1;
+	}
 	do{
 		++focusid;
 		if( focusid >= childs ) focusid = 0;
 
 	}while( parent->childs[focusid]->focusable < 1 );
+	dbg_info("focus id: %d", focusid);
 	return focusid;
 }
 
@@ -336,6 +344,11 @@ void gui_round_antialiasing_set(gui_s* gui, int radius){
 	g2d_free(mask);
 }
 
+void gui_remove_decoration(gui_s* gui){
+	if( gui->parent ) return;
+	xorg_win_decoration_remove(X, gui->id);
+}
+
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 	gui_background_redraw(gui, gui->background[0]);
 	return 0;
@@ -387,6 +400,26 @@ int gui_event_move(gui_s* gui, xorgEvent_s* event){
 	return 0;
 }
 
+int gui_event_key(gui_s* gui, xorgEvent_s* event){
+	if( event->keyboard.event != XORG_KEY_RELEASE ) return 0;
+
+	switch( event->keyboard.keysym ){
+		case XKB_KEY_Left:
+			gui_focus_next(gui);
+		break;
+
+		case XKB_KEY_Right:
+			gui_focus_next(gui);
+		break;
+
+		case XKB_KEY_Tab:
+			gui_focus_next(gui);
+		break;
+	}
+
+	return 0;
+}
+
 xorgEvent_s* gui_event_get(int async){
 	xorgEvent_s* event = xorg_event_new(X, async);
 	if( event ){
@@ -410,7 +443,7 @@ int gui_event_call(xorgEvent_s* ev){
 	gui_s* gui = ev->userdata;
 	iassert(gui);
 
-	dbg_info("event for id %u", gui->id);
+	dbg_info("event for id %u name:%s", gui->id, gui->name);
 
 	switch( ev->type ){
 		case XORG_EVENT_CREATE:         if( gui->create )  return gui->create(gui,ev);  break;
