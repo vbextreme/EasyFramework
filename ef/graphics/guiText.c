@@ -680,7 +680,6 @@ int gui_text_timer_blink(guiTimer_s* timer){
 int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev){
 	iassert(gui->type == GUI_TYPE_TEXT);
 	guiText_s* txt = gui->control;
-
 	if( ev->focus.outin ){
 		iassert(txt->blink == NULL);
 		txt->flags |= GUI_TEXT_REND_CURON;
