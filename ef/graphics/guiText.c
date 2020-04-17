@@ -570,7 +570,7 @@ void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int parti
 int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_TEXT);
 
-	if( event->keyboard.event != XORG_KEY_PRESS ){
+	if( event->keyboard.event == XORG_KEY_RELEASE ){
 		if( event->keyboard.keysym == XKB_KEY_Escape )
 			gui_focus_next(gui);
 		return 0;

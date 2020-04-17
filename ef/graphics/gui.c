@@ -90,26 +90,30 @@ gui_s* gui_new(
 		gui_child_add(parent, gui);
 		xcbParent = parent->id;
 	}
-	gui->control = NULL;
+
 	gui->userdata = userdata;
+	
+	gui->control = NULL;
 	gui->create = NULL;
 	gui->destroy = NULL;
 	gui->free = NULL;
+	gui->map = NULL;
+	gui->atom = NULL;
+	gui->client = NULL;
 	gui->redraw = gui_event_redraw;
 	gui->draw = gui_event_draw;
 	gui->key = gui->parent ? gui_event_key :  NULL;
-	gui->mouse = NULL;
 	gui->focus = gui->parent ? NULL : gui_event_focus;
-	gui->map = NULL;
+	gui->mouse = gui->parent ? gui_event_mouse : NULL;
 	gui->move = gui_event_move;
-	gui->atom = NULL;
-	gui->client = NULL;
+
 	gui->position.x = x;
 	gui->position.y = y;
 	gui->position.w = width;
 	gui->position.h = height;
 	gui->background = vector_new(guiBackground_s*, GUI_BACKGROUND_SIZE, GUI_BACKGROUND_SIZE);
 	vector_push_back(gui->background, bk);
+	
 	gui->surface = NULL;
 	gui->type = GUI_TYPE_WINDOW;
 	gui->focusable = 1;
@@ -214,17 +218,25 @@ void gui_focus_from_parent(gui_s* gui, int id){
 __private int gui_focus_search(gui_s* gui, gui_s* find){
 	vector_foreach(gui->childs, i){
 		if( gui->childs[i] == find ){
-			gui_focus_from_parent(gui, i);
-			return 1;
+			return i;
 		}
-		if( vector_count(gui->childs[i]->childs) && gui_focus_search(gui->childs[i], find) ) return 1;
+		int ret;
+		if( vector_count(gui->childs[i]->childs) && (ret=gui_focus_search(gui->childs[i], find)) ) return ret;
 	}
+	return -1;
+}
+
+int gui_focuse_have(gui_s* gui){
+	iassert(gui->parent);
+	int id = gui_focus_search(gui_main_parent(gui), gui);
+	if( id == gui->parent->childFocus ) return 1;
 	return 0;
 }
 
 void gui_focus(gui_s* gui){
 	iassert(gui);
-	gui_focus_search(gui_main_parent(gui), gui);
+	int id = gui_focus_search(gui_main_parent(gui), gui);
+	if( id > -1 ) gui_focus_from_parent(gui, id);
 }
 
 int gui_focus_next_id(gui_s* parent){
@@ -382,6 +394,21 @@ __private void redraw_all(gui_s* gui){
 	vector_foreach(gui->childs, i){
 		redraw_all(gui->childs[i]);
 	}
+}
+
+int gui_event_mouse(gui_s* gui, xorgEvent_s* event){
+	if( 
+		(
+			event->mouse.event == XORG_MOUSE_RELEASE || 
+			event->mouse.event == XORG_MOUSE_CLICK || 
+			event->mouse.event == XORG_MOUSE_DBLCLICK
+		) 
+		&& event->mouse.button == 1 
+	){
+		if( !gui_focuse_have(gui) ) gui_focus(gui);
+	}
+
+	return 0;
 }
 
 int gui_event_move(gui_s* gui, xorgEvent_s* event){

@@ -16,6 +16,7 @@ gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn, guiBackground_s* press, g
 	if( !btn ) goto ERR;
 
 	btn->parentKey = gui->key;
+	btn->parentMouse = gui->mouse;
 	gui->control = btn;
 	gui->type = GUI_TYPE_BUTTON;
 	gui->redraw = gui_button_event_redraw;
@@ -92,6 +93,7 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event){
 	else if( (event->mouse.event == XORG_MOUSE_RELEASE || event->mouse.event == XORG_MOUSE_CLICK || event->mouse.event == XORG_MOUSE_DBLCLICK) 
 			&& event->mouse.button == 1 )
 	{
+		if( !gui_focuse_have(gui) ) gui_focus(gui);
 		gui_button_redraw(gui, gui->control, 0);
 		gui_draw(gui);
 		guiButton_s* btn = gui->control;

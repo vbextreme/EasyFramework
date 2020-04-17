@@ -11,6 +11,7 @@ typedef struct guiButton{
 	guiLabel_s* label;
 	guiEvent_f onclick;
 	guiEvent_f parentKey;
+	guiEvent_f parentMouse;
 }guiButton_s;
 
 guiButton_s* gui_button_new(guiLabel_s* lbl, guiEvent_f onclick);

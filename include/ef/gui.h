@@ -134,6 +134,7 @@ void gui_move(gui_s* gui, int x, int y);
 void gui_resize(gui_s* gui, int w, int h);
 void gui_border(gui_s* gui, int border);
 void gui_focus_from_parent(gui_s* gui, int id);
+int gui_focuse_have(gui_s* gui);
 void gui_focus(gui_s* gui);
 int gui_focus_next_id(gui_s* parent);
 void gui_focus_next(gui_s* gui);
@@ -150,6 +151,7 @@ void gui_remove_decoration(gui_s* gui);
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);
 int gui_event_focus(gui_s* gui, xorgEvent_s* event);
+int gui_event_mouse(gui_s* gui, xorgEvent_s* event);
 int gui_event_move(gui_s* gui, xorgEvent_s* event);
 int gui_event_key(gui_s* gui, xorgEvent_s* event);
 
