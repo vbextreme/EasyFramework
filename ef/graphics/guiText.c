@@ -169,7 +169,7 @@ void gui_text_put(__unused gui_s* gui, guiText_s* txt, utf_t utf){
 		utf8_iterator_replace(&txt->it, utf);
 	}
 
-	txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSPOS;
+	txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 }
 
 void gui_text_puts(gui_s* gui, guiText_s* txt, utf8_t* str){
@@ -182,30 +182,33 @@ void gui_text_puts(gui_s* gui, guiText_s* txt, utf8_t* str){
 
 void gui_text_del(guiText_s* txt){
 	utf8_iterator_delete(&txt->it);
-	txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSPOS;
+	txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 }
 
 void gui_text_backspace(guiText_s* txt){
 	if( utf8_iterator_prev(&txt->it) ){
-		txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSPOS;
 		utf8_iterator_delete(&txt->it);
+		txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 	}
 }
 
 void gui_text_cursor_next(guiText_s* txt){
 	utf_t u;
 	while( (u=utf8_iterator_next(&txt->it)) >= UTF_PRIVATE0_START );
+	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 }
 
 void gui_text_cursor_prev(guiText_s* txt){
 	utf_t utf;
 	while( (utf=utf8_iterator_prev(&txt->it)) >= UTF_PRIVATE0_START );
+	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 }
 
 void gui_text_cursor_end(guiText_s* txt){
 	while( *txt->it.str && *txt->it.str != '\n' ){
 		gui_text_cursor_next(txt);
 	}
+	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 }
 
 void gui_text_cursor_home(guiText_s* txt){
@@ -213,18 +216,21 @@ void gui_text_cursor_home(guiText_s* txt){
 	while( (utf=utf8_iterator_prev(&txt->it)) && utf != '\n' );
 	if( utf ) utf8_iterator_next(&txt->it);
 	txt->scroll.x = 0;
+	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 }
 
 void gui_text_cursor_scroll_left(guiText_s* txt){
 	if( txt->flags & GUI_TEXT_SCROLL_X && txt->scroll.x > 0 ){
 	   	txt->scroll.x = txt->scroll.x > txt->spacesize ?  txt->scroll.x - txt->spacesize : 0;
 	}
+	txt->flags |= GUI_TEXT_REND_SCROLL;
 }
 
 void gui_text_cursor_scroll_right(gui_s* gui, guiText_s* txt){
 	if( txt->flags & GUI_TEXT_SCROLL_X && txt->scroll.x + gui->surface->img->w + txt->spacesize < txt->render->w ){
 		txt->scroll.x += txt->spacesize;
 	}
+	txt->flags |= GUI_TEXT_REND_SCROLL;
 }
 
 err_t gui_text_cursor_up(guiText_s* txt){
@@ -237,6 +243,7 @@ err_t gui_text_cursor_up(guiText_s* txt){
 	while( *txt->it.str && *txt->it.str != '\n' && linelen-->0 ){
 		gui_text_cursor_next(txt);
 	}
+	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 	return 0;
 }
 
@@ -250,6 +257,7 @@ err_t gui_text_cursor_down(guiText_s* txt){
 	while( *txt->it.str && *txt->it.str != '\n' && linelen-->0 ){
 		gui_text_cursor_next(txt);
 	}
+	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 	return 0;
 }
 
@@ -263,6 +271,7 @@ void gui_text_cursor_pagdn(gui_s* gui, guiText_s* txt){
 		txt->it.str = nl;
 	}
 	if( nl ){
+		txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 		gui_text_redraw(gui, gui->background[0], txt, 0);
 		i = dwnLine;
 		while( i-->0 && (nl=gui_text_back_line_ptr(txt)) ){
@@ -274,6 +283,7 @@ void gui_text_cursor_pagdn(gui_s* gui, guiText_s* txt){
 	while( *txt->it.str && *txt->it.str != '\n' && linelen-->0 ){
 		gui_text_cursor_next(txt);
 	}
+	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 }
 
 void gui_text_cursor_pagup(gui_s* gui, guiText_s* txt){
@@ -286,6 +296,7 @@ void gui_text_cursor_pagup(gui_s* gui, guiText_s* txt){
 		txt->it.str = nl;
 	}
 	if( nl ){
+		txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 		gui_text_redraw(gui, gui->background[0], txt, 0);
 		i = upLine;
 		while( i-->0 && (nl=gui_text_next_line_ptr(txt)) ){
@@ -297,11 +308,13 @@ void gui_text_cursor_pagup(gui_s* gui, guiText_s* txt){
 	while( *txt->it.str && *txt->it.str != '\n' && linelen-->0 ){
 		gui_text_cursor_next(txt);
 	}
+	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 }
 
 void gui_text_render_cursor(gui_s* gui, guiText_s* txt){
+	if( !(txt->flags & GUI_TEXT_REND_CURSOR) ) return;
 	if( !(txt->flags & GUI_TEXT_CUR_VISIBLE) ) return;
-	if( !(txt->flags & GUI_TEXT_REND_CURON) ) return;
+	if( !(txt->flags & GUI_TEXT_REND_CURON)  ) return;
 
 	g2dCoord_s cursor = txt->cursor;
 	
@@ -328,9 +341,13 @@ void gui_text_render_cursor(gui_s* gui, guiText_s* txt){
 		++lineST.x;
 		++lineEN.x;
 	}
+
+	txt->flags &= ~GUI_TEXT_REND_CURSOR;
 }
 
 void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
+	if( !(txt->flags & GUI_TEXT_REND_TEXT) ) return;
+
 	const int scrollXEnable = txt->flags & GUI_TEXT_SCROLL_X;
 	const int scrollYEnable = txt->flags & GUI_TEXT_SCROLL_Y;
 	const unsigned w = gui->surface->img->w;
@@ -470,56 +487,63 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 		}
 	}
 	
-	//find scrolling
-	if( newCursor.x <= newCursor.w ){
-		newCursor.x = 0;
+	txt->cursor = newCursor;
+
+	txt->flags &= ~GUI_TEXT_REND_TEXT;
+}
+
+void gui_text_render_scroll(gui_s* gui, guiText_s* txt){
+	if( (txt->flags & GUI_TEXT_REND_SCROLL) ) return;
+
+	const int scrollXEnable = txt->flags & GUI_TEXT_SCROLL_X;
+	const int scrollYEnable = txt->flags & GUI_TEXT_SCROLL_Y;
+	const unsigned w = gui->surface->img->w;
+	const unsigned h = gui->surface->img->h;
+
+	if( txt->cursor.x <= txt->cursor.w ){
+		txt->cursor.x = 0;
 		txt->scroll.x = 0;
 	}
-	else if( txt->scroll.x && newCursor.x - (newCursor.w+1) <= txt->scroll.x ){
-		dbg_info("scroll.x && cursor.x(%u) < scroll.x(%u):: scroll.x(%u)", newCursor.x, txt->scroll.x, (newCursor.x - newCursor.w)+1);
-		txt->scroll.x = (newCursor.x - newCursor.w+1);
+	else if( txt->scroll.x && txt->cursor.x - (txt->cursor.w+1) <= txt->scroll.x ){
+		dbg_info("scroll.x && cursor.x(%u) < scroll.x(%u):: scroll.x(%u)", txt->cursor.x, txt->scroll.x, (txt->cursor.x - txt->cursor.w)+1);
+		txt->scroll.x = (txt->cursor.x - txt->cursor.w+1);
 	}
-	else if( (newCursor.x + newCursor.w) - txt->scroll.x >= w ){
+	else if( (txt->cursor.x + txt->cursor.w) - txt->scroll.x >= w ){
 		if( scrollXEnable ){
-			dbg_info("scrollEnable && cursor.x(%u) - scroll.x(%u) > w(%u):: scroll.x(%u)", newCursor.x, txt->scroll.x, w, w-newCursor.x);
-			txt->scroll.x = (newCursor.x+newCursor.w) - w;
+			dbg_info("scrollEnable && cursor.x(%u) - scroll.x(%u) > w(%u):: scroll.x(%u)", txt->cursor.x, txt->scroll.x, w, w-txt->cursor.x);
+			txt->scroll.x = (txt->cursor.x+txt->cursor.w) - w;
 		}
 		else{
-			dbg_info("!scrollEnable && cursor.x(%u) - scroll.x(%u) > w(%u):: scroll.x(%u) newCursor.x(%u)", newCursor.x, txt->scroll.x, w, 0, newCursor.x);
+			dbg_info("!scrollEnable && cursor.x(%u) - scroll.x(%u) > w(%u):: scroll.x(%u) newCursor.x(%u)", txt->cursor.x, txt->scroll.x, w, 0, txt->cursor.x);
 			txt->scroll.x = 0;
-			newCursor.x = w;
+			txt->cursor.x = w;
 		}
 	}
 
-	if( txt->scroll.y && newCursor.y < txt->scroll.y ){
+	if( txt->scroll.y && txt->cursor.y < txt->scroll.y ){
 		dbg_warning("to test");
-		txt->scroll.y = newCursor.y;
+		txt->scroll.y = txt->cursor.y;
 	}
-	else if( (newCursor.y + newCursor.h) - txt->scroll.y >= h ){
+	else if( (txt->cursor.y + txt->cursor.h) - txt->scroll.y >= h ){
 		if( scrollYEnable ){
-			dbg_info("scroll && cursor.y(%u) scroll.y(%u) h(%u) cursor.h(%u)", newCursor.y, txt->scroll.y, h, newCursor.h);
-			dbg_info("%u",((newCursor.y + newCursor.h) - txt->scroll.y) - h );	
-			txt->scroll.y = (newCursor.y + newCursor.h) - h;
+			dbg_info("scroll && cursor.y(%u) scroll.y(%u) h(%u) cursor.h(%u)", txt->cursor.y, txt->scroll.y, h, txt->cursor.h);
+			dbg_info("%u",((txt->cursor.y + txt->cursor.h) - txt->scroll.y) - h );	
+			txt->scroll.y = (txt->cursor.y + txt->cursor.h) - h;
 		}
 		else{
 			dbg_warning("not need?");
 			txt->scroll.y = 0;
-			newCursor.y = h - cursor.h;
+			txt->cursor.y = h - txt->cursor.h;
 		}
 	}
-	txt->cursor = newCursor;
 	dbg_info("calcolate scrolling %u+%u", txt->scroll.x, txt->scroll.y);
 
+	txt->flags &= ~GUI_TEXT_REND_SCROLL;
 }
 
 void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int partial){
-	dbg_info("clear background");
 	gui_background_redraw(gui, bkg);
-	
-	if( partial < 2 ){
-		dbg_info("render text");
-		gui_text_render_text(gui, txt, partial);
-	}
+	gui_text_render_text(gui, txt, partial);
 
 	if( txt->render ){
 		g2dCoord_s pdest = { 
@@ -536,13 +560,11 @@ void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int parti
 		};
 		iassert( psrc.x+psrc.w <= txt->render->w );
 		iassert( psrc.y+psrc.h <= txt->render->h );
-		dbg_info("apply text");
 		g2d_bitblt_alpha(gui->surface->img, &pdest, txt->render, &psrc);
 	}
 
-	dbg_info("render cursor");
+	gui_text_render_scroll(gui, txt);
 	gui_text_render_cursor(gui, txt);
-	dbg_info("render ok");
 }
 
 int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
@@ -606,12 +628,19 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 		break;
 
 		default:
-			if( event->keyboard.utf) gui_text_put(gui, gui->control, event->keyboard.utf);
+			if( event->keyboard.utf){
+				gui_text_put(gui, gui->control, event->keyboard.utf);
+			}
+			else{
+				partial = -1;
+			}
 		break;
 	}
 
-	gui_text_redraw(gui, gui->background[0], gui->control, partial);
-	gui_draw(gui);
+	if( !partial ){
+		gui_text_redraw(gui, gui->background[0], gui->control, partial);
+		gui_draw(gui);
+	}
 	return 0;
 }
 
@@ -630,7 +659,8 @@ int gui_text_event_free(gui_s* gui, __unused xorgEvent_s* ev){
 int gui_text_timer_blink(guiTimer_s* timer){
 	gui_s* gui = timer->userdata;
 	guiText_s* txt = gui->control;
-	gui_text_redraw(gui, gui->background[0], gui->control, 2);
+	txt->flags |= GUI_TEXT_REND_CURSOR;
+	gui_text_redraw(gui, gui->background[0], gui->control, 0);
 	gui_draw(gui);
 
 	if( txt->flags & GUI_TEXT_REND_CURON ){
@@ -649,15 +679,24 @@ int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev){
 	if( ev->focus.outin ){
 		iassert(txt->blink == NULL);
 		txt->flags |= GUI_TEXT_REND_CURON;
-		if( txt->blinktime ) txt->blink = gui_timer_new(gui, txt->blinktime, gui_text_timer_blink, gui);
+		if( txt->blinktime && !txt->blink ) txt->blink = gui_timer_new(gui, txt->blinktime, gui_text_timer_blink, gui);
 	}
 	else{
 		if( txt->blink ) gui_timer_free(txt->blink);
-		txt->flags &= ~GUI_TEXT_REND_CURON;
 		txt->blink = NULL;
+		txt->flags &= ~GUI_TEXT_REND_CURON;
 	}
-	gui_text_redraw(gui, gui->background[0], gui->control, 2);
+	txt->flags |= GUI_TEXT_REND_CURSOR;
+	gui_text_redraw(gui, gui->background[0], gui->control, 0);
 	gui_draw(gui);
+
+	if( ev->focus.outin ){
+		txt->flags &= ~GUI_TEXT_REND_CURON;
+	}
+	else{
+		txt->flags |= GUI_TEXT_REND_CURON;
+	}
+
 	return 0;
 }
 

@@ -151,8 +151,14 @@ void phq_change_priority(phq_s *q, size_t newpri, phqElement_s* el){
 }
 
 void phq_remove(phq_s *q, phqElement_s* el){
-    size_t posn = el->index;
-    q->elements[posn] = q->elements[--q->size];
+	if( q->count == 1 ){
+		iassert(el->index == 1);
+		q->elements[1] = 0;
+		--q->count;
+		return;
+	}	
+	size_t posn = el->index;
+	q->elements[posn] = q->elements[--q->count];
     if( q->cmp(el->priority, q->elements[posn]->priority) )
         bubble_up(q, posn);
     else

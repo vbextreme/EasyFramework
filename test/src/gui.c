@@ -115,12 +115,10 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			0, NULL
 		),
 		gui_text_new(
-			tfont, gui_color(255,40,40,40), gui_color(255,20,20,20), 4, 0,
+			tfont, gui_color(255,40,40,40), gui_color(255,20,20,20), 4, 600,
 			GUI_TEXT_SCROLL_X | GUI_TEXT_SCROLL_Y | GUI_TEXT_INSERT | GUI_TEXT_CUR_VISIBLE | GUI_TEXT_CURSOR_LIGHT
 		)
 	);
-
-
 
 	gui_redraw(main);
 	gui_show(main, 1);

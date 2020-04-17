@@ -11,7 +11,7 @@
  * focus with mouse
  * focus with keyboard
  * mouse find text
- * select text
+ * select text use utf custom
  * msgbox
  * xiaolin wu circle
  * border simulating reparent?
