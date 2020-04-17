@@ -1161,6 +1161,11 @@ void g2d_point_rotate(unsigned* y, unsigned* x, unsigned cy, unsigned cx, double
 		}\
 	}while(0)
 
+#define _point_alpha_inside(IMG, X, Y, C) do{\
+		if( (X) < (IMG)->w && (Y) < (IMG)->h ){\
+			_point_alpha(IMG, (X), (Y), (C));\
+		}\
+	}while(0)
 
 void g2d_points(g2dImage_s* img, g2dPoint_s* points, g2dColor_t* colors, size_t count){
 	for( size_t i = 0; i < count; ++i){
@@ -1804,7 +1809,7 @@ void g2d_circle_normal(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t c
     xc = 1 - 2 * r;
     yc = 1;
     re = 0;
-    
+   
     while( x >=y ){
 		_point_inside(img, cx->x + x, cx->y + y, col);
         _point_inside(img, cx->x - x, cx->y + y, col);
@@ -1821,9 +1826,10 @@ void g2d_circle_normal(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t c
             --x;
             re += xc;
             xc += 2;
-        }
-    }
+        }	
+    }	
 }
+
 
 /*Bresenham*/
 void g2d_circle_antialiased(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t col){
@@ -1835,31 +1841,31 @@ void g2d_circle_antialiased(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t c
 		if( i < 0 ) i = 0;
 		if( i > 255 ) i = 255;
 		col = g2d_color_alpha_set(img, col,  255-i);
-		_point_alpha(img, cx->x + x, cx->y - y, col);
-		_point_alpha(img, cx->x + y, cx->y + x, col);
-		_point_alpha(img, cx->x - x, cx->y + y, col);
-		_point_alpha(img, cx->x - y, cx->y - x, col);
+		_point_alpha_inside(img, cx->x + x, cx->y - y, col);
+		_point_alpha_inside(img, cx->x + y, cx->y + x, col);
+		_point_alpha_inside(img, cx->x - x, cx->y + y, col);
+		_point_alpha_inside(img, cx->x - y, cx->y - x, col);
 		if (x == 0) break;
 		e2 = err; x2 = x;
 		if (err > y){
 			i = 255*(err+2*x-1)/r;
 			if (i < 255) {
 				col = g2d_color_alpha_set(img, col, 255- i);
-				_point_alpha(img, cx->x + x    , cx->y - y + 1, col);
-				_point_alpha(img, cx->x + y - 1, cx->y + x    , col);
-				_point_alpha(img, cx->x - x    , cx->y + y - 1, col);
-				_point_alpha(img, cx->x - y + 1, cx->y - x    , col);
+				_point_alpha_inside(img, cx->x + x    , cx->y - y + 1, col);
+				_point_alpha_inside(img, cx->x + y - 1, cx->y + x    , col);
+				_point_alpha_inside(img, cx->x - x    , cx->y + y - 1, col);
+				_point_alpha_inside(img, cx->x - y + 1, cx->y - x    , col);
 			}
 			err -= --x*2-1;
 		}
-		if (e2 <= x2--) { /* y step */
-			i = 255*(1-2*y-e2)/r; /* inward pixel */
+		if (e2 <= x2--) { 
+			i = 255*(1-2*y-e2)/r;
 			if (i < 255) {
 				col = g2d_color_alpha_set(img, col,  255-i);
-				_point_alpha(img, cx->x + x2, cx->y - y , col);
-				_point_alpha(img, cx->x + y , cx->y + x2, col);
-				_point_alpha(img, cx->x - x2, cx->y + y , col);
-				_point_alpha(img, cx->x - y , cx->y - x2, col);
+				_point_alpha_inside(img, cx->x + x2, cx->y - y , col);
+				_point_alpha_inside(img, cx->x + y , cx->y + x2, col);
+				_point_alpha_inside(img, cx->x - x2, cx->y + y , col);
+				_point_alpha_inside(img, cx->x - y , cx->y - x2, col);
 			}
 			err -= --y*2-1;
 		}
