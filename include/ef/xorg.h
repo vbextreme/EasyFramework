@@ -244,11 +244,32 @@ typedef struct xorgMouse{
 	long time;
 }xorgMouse_s;
 
+#define XORG_KEY_MOD_SHIFT_L   0x0001
+#define XORG_KEY_MOD_SHIFT_R   0x0002
+#define XORG_KEY_MOD_SHIFT     (3<<0)
+#define XORG_KEY_MOD_CONTROL_L 0x0004
+#define XORG_KEY_MOD_CONTROL_R 0x0008
+#define XORG_KEY_MOD_CONTROL   (3<<2)
+#define XORG_KEY_MOD_META_L    0x0010
+#define XORG_KEY_MOD_META_R	   0x0020
+#define XORG_KEY_MOD_META      (3<<4)
+#define XORG_KEY_MOD_ALT_L     0x0040
+#define XORG_KEY_MOD_ALT_R     0x0080
+#define XORG_KEY_MOD_ALT       (3<<6)
+#define XORG_KEY_MOD_SUPER_L   0x0100
+#define XORG_KEY_MOD_SUPER_R   0x0200
+#define XORG_KEY_MOD_SUPER     (3<<8)
+#define XORG_KEY_MOD_HYPER_L   0x0400
+#define XORG_KEY_MOD_HYPER_R   0x0800
+#define XORG_KEY_MOD_HYPER     (3<<10)
+#define XORG_KEY_MOD_CAPSLOCK  0x1000
+
 typedef struct xorgKeyboard{
 	xorgKey_e event;
 	g2dPoint_s absolute;
 	g2dPoint_s relative;
 	unsigned button;
+	unsigned modifier;
 	unsigned long keycode;
 	unsigned long keysym;
 	utf8_t utf8[XKB_UTF_MAX];

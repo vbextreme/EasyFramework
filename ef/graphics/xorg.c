@@ -16,6 +16,8 @@
 	#define XCB_ERR_FREE do{}while(0)
 #endif
 
+__private unsigned mnemonicModifier;
+
 xorg_s* xorg_client_new(const char* display, int defaultScreen){
 	xorg_s* x = mem_zero_many(xorg_s,1);
 	if( !x ) err_fail("malloc");
@@ -1638,6 +1640,31 @@ void xorg_win_focus(xorg_s* x, xcb_window_t id){
 	xcb_set_input_focus(x->connection, XCB_INPUT_FOCUS_NONE, id, XCB_CURRENT_TIME);
 }
 
+inline __private void modifier_set(unsigned mod, int set){
+	if( set ) 
+		mnemonicModifier |= mod;
+	else
+		mnemonicModifier &= ~mod;
+}
+
+inline __private void keyboard_modifiers(unsigned long keysym, int set){
+	switch( keysym ){
+		case XKB_KEY_Shift_L:   modifier_set(XORG_KEY_MOD_SHIFT_L,set); break;
+		case XKB_KEY_Shift_R:   modifier_set(XORG_KEY_MOD_SHIFT_R,set); break;
+		case XKB_KEY_Control_L: modifier_set(XORG_KEY_MOD_CONTROL_L,set); break;
+		case XKB_KEY_Control_R: modifier_set(XORG_KEY_MOD_CONTROL_R,set); break;
+		case XKB_KEY_Meta_L:    modifier_set(XORG_KEY_MOD_META_L,set); break;
+		case XKB_KEY_Meta_R:    modifier_set(XORG_KEY_MOD_META_R,set); break;
+		case XKB_KEY_Alt_L:     modifier_set(XORG_KEY_MOD_ALT_L,set); break;
+		case XKB_KEY_Alt_R:     modifier_set(XORG_KEY_MOD_ALT_R,set); break;
+		case XKB_KEY_Super_L:   modifier_set(XORG_KEY_MOD_SUPER_L,set); break;
+		case XKB_KEY_Super_R:   modifier_set(XORG_KEY_MOD_SUPER_R,set); break;
+		case XKB_KEY_Hyper_L:   modifier_set(XORG_KEY_MOD_HYPER_L,set); break;
+		case XKB_KEY_Hyper_R:   modifier_set(XORG_KEY_MOD_HYPER_R,set); break;
+		case XKB_KEY_Caps_Lock: modifier_set(XORG_KEY_MOD_CAPSLOCK,set); break;
+	}
+}
+
 xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 	xcb_generic_event_t* event;
 	
@@ -1703,6 +1730,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			ev->keyboard.keysym = 0;
 			ev->keyboard.utf8[0] = 0;
 			ev->keyboard.utf = 0;
+			ev->keyboard.modifier = 0;
 
 			struct xkb_state* state;
 			if( (state = xkb_x11_state_new_from_device(x->key.keymap, x->connection, x->key.device)) ){
@@ -1714,6 +1742,9 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 				}
 				xkb_state_unref(state);
 			}
+			keyboard_modifiers(ev->keyboard.keysym, 1);
+			ev->keyboard.modifier = mnemonicModifier;
+
 			dbg_info("key press:: button: %u keycode: %lu keysym: %lu utf: (%u|%X)%s", 
 					ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf, ev->keyboard.utf, ev->keyboard.utf8);
 		}
@@ -1745,7 +1776,10 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 				}
 				xkb_state_unref(state);
 			}
-			dbg_info("key press:: button: %u keycode: %lu keysym: %lu utf: (%u|%X)%s", 
+			keyboard_modifiers(ev->keyboard.keysym, 0);
+			ev->keyboard.modifier = mnemonicModifier;
+
+			dbg_info("key release:: button: %u keycode: %lu keysym: %lu utf: (%u|%X)%s", 
 					ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf, ev->keyboard.utf, ev->keyboard.utf8);
 		}
 		break;

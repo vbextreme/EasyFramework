@@ -8,7 +8,6 @@
 #include <ef/phq.h>
 
 /*TODO 
- * focus with mouse
  * mouse find text
  * select text use utf custom
  * msgbox

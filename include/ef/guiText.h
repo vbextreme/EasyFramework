@@ -35,7 +35,9 @@ typedef struct guiText{
 	size_t size;
 	size_t resize;
 	utf8Iterator_s it;
-	
+	utf8_t* selStart;
+	utf8_t* selEnd;
+		
 	ftFonts_s* fonts;
 	g2dColor_t foreground;
 	g2dColor_t colCursor;

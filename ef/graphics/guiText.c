@@ -345,6 +345,16 @@ void gui_text_render_cursor(gui_s* gui, guiText_s* txt){
 	txt->flags &= ~GUI_TEXT_REND_CURSOR;
 }
 
+void gui_text_sel_start(guiText_s* txt){
+	g2dColor_t mask = gui_color(0,255,255,255);
+	txt->foreground ^= mask;
+}
+
+void gui_text_sel_end(guiText_s* txt){
+	g2dColor_t mask = gui_color(0,255,255,255);
+	txt->foreground ^= mask;
+}
+
 void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 	if( !(txt->flags & GUI_TEXT_REND_TEXT) ) return;
 
@@ -390,6 +400,13 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 
 	utf_t u;
 	while( (u=utf8_iterator_next(&it)) ){
+		if( txt->selStart == it.str ){
+			gui_text_sel_start(txt);
+		}
+		else if( txt->selEnd == it.str ){
+			gui_text_sel_end(txt);
+		}
+
 		if( partial && (cursor.x >= txt->cursor.x || cursor.y >= txt->cursor.y) ){
 			part.x = cursor.x;
 			part.y = cursor.y;
