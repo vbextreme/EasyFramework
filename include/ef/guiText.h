@@ -12,8 +12,9 @@
 #define GUI_TEXT_SCROLL_X     0x000200
 #define GUI_TEXT_SCROLL_Y     0x000400
 #define GUI_TEXT_CUR_VISIBLE  0x000800
+#define GUI_TEXT_SEL          0x001000
 
-#define GUI_TEXT_FLAGS_END    16
+#define GUI_TEXT_FLAGS_END    24
 
 #define GUI_TEXT_CURSOR_THIN      (0<<GUI_TEXT_FLAGS_END)
 #define GUI_TEXT_CURSOR_LIGHT     (1<<GUI_TEXT_FLAGS_END)
@@ -40,13 +41,14 @@ typedef struct guiText{
 		
 	ftFonts_s* fonts;
 	g2dColor_t foreground;
+	g2dColor_t select;
 	g2dColor_t colCursor;
 	unsigned flags;
 	unsigned tabspace;
 	unsigned spacesize;
 }guiText_s;
 
-guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCursor, unsigned tabspace, unsigned blinktime, unsigned flags);
+guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t select, g2dColor_t colCursor, unsigned tabspace, unsigned blinktime, unsigned flags);
 gui_s* gui_text_attach(gui_s* gui, guiText_s* txt);
 void gui_text_free(guiText_s* txt);
 
@@ -54,6 +56,10 @@ void gui_text_flags_set(guiText_s* txt, unsigned flags);
 void gui_text_ir_toggle(guiText_s* txt);
 const utf8_t* gui_text_str_raw(guiText_s* txt);
 utf8_t* gui_text_str(guiText_s* txt);
+void gui_text_sel(guiText_s* txt);
+void gui_text_unsel(guiText_s* txt);
+void gui_text_sel_del(guiText_s* txt);
+utf8_t* gui_text_sel_get(guiText_s* txt);
 size_t gui_text_line_right_len(guiText_s* txt);
 size_t gui_text_line_left_len(guiText_s* txt);
 utf8_t* gui_text_back_line_ptr(guiText_s* txt);

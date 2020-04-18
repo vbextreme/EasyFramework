@@ -3,7 +3,7 @@
 #include <ef/str.h>
 #include <ef/err.h>
 
-guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCursor, unsigned tabspace, unsigned blinktime, unsigned flags){
+guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t select, g2dColor_t colCursor, unsigned tabspace, unsigned blinktime, unsigned flags){
 	guiText_s* txt = mem_new(guiText_s);
 	if( !txt ) return NULL;
 
@@ -16,6 +16,7 @@ guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCu
 	txt->cursor.w = 1 + (flags >> GUI_TEXT_FLAGS_END);
 	txt->blink = NULL;
 	txt->blinktime = blinktime;
+	txt->selStart = txt->selEnd = NULL;
 
 	dbg_info("genric glyph size: %u*%u", txt->cursor.w, txt->cursor.h);
 
@@ -26,6 +27,7 @@ guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t colCu
 
 	txt->fonts = font;
 	txt->foreground = foreground;
+	txt->select = select;
 	txt->colCursor = colCursor;
 	txt->flags = flags;
 	txt->tabspace = tabspace;
@@ -98,6 +100,75 @@ utf8_t* gui_text_str(guiText_s* txt){
 	}
 	utf8_iterator_replace(&itdst, 0);
 	return str;
+}
+
+void gui_text_sel(guiText_s* txt){
+	if( txt->selStart ){
+		txt->selEnd = txt->it.str+1;
+		dbg_error("sel next(%d):%p", *txt->it.str,txt->selEnd);
+	}
+	else{
+		txt->selStart = txt->it.str + 1;
+		txt->selEnd = txt->selStart;
+		dbg_error("sel begin at:%p", txt->selStart);
+	}
+	txt->flags |= GUI_TEXT_SEL | GUI_TEXT_REND_TEXT;
+}
+
+void gui_text_unsel(guiText_s* txt){
+	txt->flags &= ~GUI_TEXT_SEL;
+	txt->selStart = NULL;
+	txt->selEnd = NULL;
+	txt->flags |= GUI_TEXT_REND_TEXT;
+}
+
+void gui_text_sel_del(guiText_s* txt){
+	utf8Iterator_s it;
+	utf8_t* end;
+	size_t n;
+
+	if( txt->selStart < txt->selEnd ){
+		it = utf8_iterator(txt->selStart > txt->text ? txt->selStart - 1 : txt->text, 0);
+		end = txt->selEnd;
+	}
+	else if( txt->selStart > txt->selEnd ){
+		it = utf8_iterator(txt->selEnd > txt->text ? txt->selEnd - 1 : txt->text, 0);
+		end = txt->selStart;
+	}
+	else{
+		return;
+	}
+	n = end-it.str;
+	if( n ) --n;
+	txt->it.str = it.str;
+	utf8_iterator_delete_to(&it, n);
+
+	txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
+}
+
+utf8_t* gui_text_sel_get(guiText_s* txt){
+	utf8Iterator_s it;
+	utf8_t* end;
+
+	if( txt->selStart < txt->selEnd ){
+		it = utf8_iterator(txt->selStart > txt->text ? txt->selStart - 1 : txt->text, 0);
+		end = txt->selEnd;
+	}
+	else if( txt->selStart > txt->selEnd ){
+		it = utf8_iterator(txt->selEnd > txt->text ? txt->selEnd - 1 : txt->text, 0);
+		end = txt->selStart;
+	}
+	else{
+		return NULL;
+	}
+
+	size_t size = end - it.str + 1;
+	utf8_t* get = mem_many(utf8_t, size+1);
+	*get = 0;
+	utf8Iterator_s ds = utf8_iterator(get,0);
+	utf_t u;
+	while( (u=utf8_iterator_next(&it)) && it.str < end ) utf8_iterator_replace(&ds, u);
+	return get;
 }
 
 size_t gui_text_line_right_len(guiText_s* txt){
@@ -345,28 +416,17 @@ void gui_text_render_cursor(gui_s* gui, guiText_s* txt){
 	txt->flags &= ~GUI_TEXT_REND_CURSOR;
 }
 
-void gui_text_sel_start(guiText_s* txt){
-	g2dColor_t mask = gui_color(0,255,255,255);
-	txt->foreground ^= mask;
-}
-
-void gui_text_sel_end(guiText_s* txt){
-	g2dColor_t mask = gui_color(0,255,255,255);
-	txt->foreground ^= mask;
-}
-
 void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
-	if( !(txt->flags & GUI_TEXT_REND_TEXT) ) return;
-
 	const int scrollXEnable = txt->flags & GUI_TEXT_SCROLL_X;
 	const int scrollYEnable = txt->flags & GUI_TEXT_SCROLL_Y;
 	const unsigned w = gui->surface->img->w;
 	const unsigned h = gui->surface->img->h;
 	const g2dColor_t colClear = gui_color(0,0,0,0);
+	int select = 0;
 	g2dCoord_s newCursor = { 0, 0, txt->cursor.w, txt->cursor.h};
 	g2dCoord_s cursor = newCursor;
 
-	g2dCoord_s part;
+	//g2dCoord_s part;
 	g2dCoord_s co = { 
 		.x = 0, 
 		.y = 0, 
@@ -381,33 +441,47 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 	if( co.w < w ) co.w = w;
 	co.h += cursor.h;
 
-	if( !txt->render || txt->render->w < co.w || txt->render->h < co.h ){
+	if( (!txt->render || txt->render->w < co.w || txt->render->h < co.h) ){
 		co.w += txt->cursor.h;
 		co.h += txt->cursor.h;
 		dbg_info("resize render %u*%u", co.w, co.h);
 		if( txt->render ) g2d_free(txt->render);
 		txt->render = g2d_new(co.w, co.h, -1);
-		partial = 0;
-	}
-	co.w = txt->render->w;
-	co.h = txt->render->h;
-	if( !partial ){
-		dbg_info("clear render %u*%u", co.w, co.h);
 		g2d_clear(txt->render, colClear, &co);
+		partial = 0;
+		txt->flags |= GUI_TEXT_REND_TEXT;
+	}
+	else{
+		co.w = txt->render->w;
+		co.h = txt->render->h;
+		if( !partial && txt->flags & GUI_TEXT_REND_TEXT ){
+			dbg_info("clear render %u*%u", co.w, co.h);
+			g2d_clear(txt->render, colClear, &co);
+		}
 	}
 
 	utf8Iterator_s it = utf8_iterator(txt->text, 0);
 
 	utf_t u;
 	while( (u=utf8_iterator_next(&it)) ){
-		if( txt->selStart == it.str ){
-			gui_text_sel_start(txt);
-		}
-		else if( txt->selEnd == it.str ){
-			gui_text_sel_end(txt);
+		if( txt->selStart != txt->selEnd ){
+		    if( txt->selStart < txt->selEnd ){
+				if( txt->selStart == it.str )
+					select = 1;
+				else if( txt->selEnd == it.str )
+					select = 0;
+			}
+			if( txt->selStart > txt->selEnd ){
+				if( txt->selEnd == it.str )
+					select = 1;
+				else if( txt->selStart == it.str )
+					select = 0;
+			}
 		}
 
+		/*
 		if( partial && (cursor.x >= txt->cursor.x || cursor.y >= txt->cursor.y) ){
+			//TODO
 			part.x = cursor.x;
 			part.y = cursor.y;
 			part.h = txt->cursor.h;
@@ -424,6 +498,7 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 			}
 			partial = 0;
 		}
+		*/
 
 		if( u >= UTF_PRIVATE0_START ){
 			continue;
@@ -492,9 +567,16 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 			}
 		}
 
-		if( !partial ){
+		if( !partial && txt->flags & GUI_TEXT_REND_TEXT ){
 			dbg_info("putch render %u %u %u*%u", cursor.x, cursor.y, rch->horiAdvance, cursor.h);
-			g2d_char_indirect(txt->render, &cursor, rch->img, txt->foreground);
+			if( select ){
+				g2dCoord_s chs = { .x = cursor.x, .y = cursor.y, .w = rch->horiAdvance, .h = cursor.h};
+				g2d_clear(txt->render, txt->select,  &chs);
+				g2d_char(txt->render, &cursor, rch->img, txt->foreground);
+			}
+			else{
+				g2d_char_indirect(txt->render, &cursor, rch->img, txt->foreground);
+			}
 		}
 
 		cursor.x += rch->horiAdvance;
@@ -510,7 +592,7 @@ void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial){
 }
 
 void gui_text_render_scroll(gui_s* gui, guiText_s* txt){
-	if( (txt->flags & GUI_TEXT_REND_SCROLL) ) return;
+	if( !(txt->flags & GUI_TEXT_REND_SCROLL) ) return;
 
 	const int scrollXEnable = txt->flags & GUI_TEXT_SCROLL_X;
 	const int scrollYEnable = txt->flags & GUI_TEXT_SCROLL_Y;
@@ -561,6 +643,7 @@ void gui_text_render_scroll(gui_s* gui, guiText_s* txt){
 void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int partial){
 	gui_background_redraw(gui, bkg);
 	gui_text_render_text(gui, txt, partial);
+	gui_text_render_scroll(gui, txt);
 
 	if( txt->render ){
 		g2dCoord_s pdest = { 
@@ -580,12 +663,14 @@ void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int parti
 		g2d_bitblt_alpha(gui->surface->img, &pdest, txt->render, &psrc);
 	}
 
-	gui_text_render_scroll(gui, txt);
 	gui_text_render_cursor(gui, txt);
 }
 
 int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_TEXT);
+	guiText_s* txt = gui->control;
+	txt->flags &= ~GUI_TEXT_SEL;
+	int partial = 0;
 
 	if( event->keyboard.event == XORG_KEY_RELEASE ){
 		if( event->keyboard.keysym == XKB_KEY_Escape )
@@ -593,39 +678,58 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 		return 0;
 	}
 
-	int partial = 0;
-
 	switch( event->keyboard.keysym ){
+		case XKB_KEY_Shift_L:
+		case XKB_KEY_Shift_R:
+			gui_text_sel(gui->control);
+		break;
+
 		case XKB_KEY_BackSpace:
-			gui_text_backspace(gui->control);
+			if( txt->selStart ){
+				gui_text_sel_del(gui->control);
+			}
+			else{
+				gui_text_backspace(gui->control);
+			}
 		break;
 
 		case XKB_KEY_Delete:
-			gui_text_del(gui->control);
+			if( txt->selStart ){
+				gui_text_sel_del(gui->control);
+			}
+			else{
+				gui_text_del(gui->control);
+			}
 		break;
 
 		case XKB_KEY_Left:
 			gui_text_cursor_prev(gui->control);
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
 		break;
 
 		case XKB_KEY_Right:
 			gui_text_cursor_next(gui->control);
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
 		break;
 
 		case XKB_KEY_Up:
 			gui_text_cursor_up(gui->control);
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
 		break;
 
 		case XKB_KEY_Down:
 			gui_text_cursor_down(gui->control);
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
 		break;
 
 		case XKB_KEY_Page_Up:
 			gui_text_cursor_pagup(gui, gui->control);
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
 		break;
 
 		case XKB_KEY_Page_Down:
 			gui_text_cursor_pagdn(gui, gui->control);
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
 		break;
 
 		case XKB_KEY_Home:
@@ -651,6 +755,9 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 
 		default:
 			if( event->keyboard.utf){
+				if( txt->selStart ){
+					gui_text_sel_del(gui->control);
+				}
 				gui_text_put(gui, gui->control, event->keyboard.utf);
 			}
 			else{
@@ -659,10 +766,16 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 		break;
 	}
 
+	if( !(txt->flags & GUI_TEXT_SEL ) ){
+		gui_text_unsel(gui->control);
+	}
+
 	if( !partial ){
+		txt->flags |= GUI_TEXT_REND_CURON;
 		gui_text_redraw(gui, gui->background[0], gui->control, partial);
 		gui_draw(gui);
 	}
+
 	return 0;
 }
 

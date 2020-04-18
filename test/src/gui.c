@@ -44,8 +44,12 @@ int button_click(gui_s* gui, xorgEvent_s* ev){
 	g2d_circle(gui->parent->surface->img, &p[0], 7, gui_color(255, 60, 60, 120), 1);
 	g2d_circle(gui->parent->surface->img, &p[1], 6, gui_color(255, 60, 60, 120), 1);
 
-	
-	
+	gui_s* text = gui->userdata;
+	guiText_s* txt = text->control;
+	utf8_t* t = gui_text_sel_get(txt);
+	dbg_error("SELECTED TEXT:'%s'", t);
+	if( t ) free(t);	
+	 
 	//g2d_circle_antialiased(gui->parent->surface->img, &p[1], 50, gui_color(255, 60, 60, 120));
 
 	//g2d_cubezier(gui->parent->surface->img, &p[0], &p[1], &p[2], &p[3], gui_color(255, 60, 60, 120), 1);
@@ -120,11 +124,12 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			0, NULL
 		),
 		gui_text_new(
-			tfont, gui_color(255,40,40,40), gui_color(255,20,20,20), 4, 600,
+			tfont, gui_color(255,40,40,40), gui_color(255, 30, 30 ,200), gui_color(255,20,20,20), 4, 600,
 			GUI_TEXT_SCROLL_X | GUI_TEXT_SCROLL_Y | GUI_TEXT_INSERT | GUI_TEXT_CUR_VISIBLE | GUI_TEXT_CURSOR_LIGHT
 		)
 	);
 
+	btn->userdata = txt;
 	gui_redraw(main);
 	gui_show(main, 1);
 

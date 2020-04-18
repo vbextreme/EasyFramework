@@ -8,8 +8,7 @@
 #include <ef/phq.h>
 
 /*TODO 
- * mouse find text
- * select text use utf custom
+ * mouse find/select text
  * msgbox
  * dialog mode:
  *	xorg_win_type(DIALOG)
@@ -18,6 +17,7 @@
  *	xorg_win_set_top
  *	text control
  *	dock up,right,bottom,left
+ * eden
  */
 
 #define GUI_TYPE_WINDOW 0
