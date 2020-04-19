@@ -78,6 +78,7 @@ err_t gui_text_cursor_up(guiText_s* txt);
 err_t gui_text_cursor_down(guiText_s* txt);
 void gui_text_cursor_pagdn(gui_s* gui, guiText_s* txt);
 void gui_text_cursor_pagup(gui_s* gui, guiText_s* txt);
+void gui_text_cursor_on_position(gui_s* gui, guiText_s* txt, unsigned x, unsigned y);
 void gui_text_render_cursor(gui_s* gui, guiText_s* txt);
 void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial);
 void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int partial);
@@ -87,6 +88,6 @@ int gui_text_event_redraw(gui_s* gui, __unused xorgEvent_s* ev);
 int gui_text_event_free(gui_s* gui, __unused xorgEvent_s* ev);
 int gui_text_timer_blink(guiTimer_s* timer);
 int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev);
-
+int gui_text_event_mouse(gui_s* gui, xorgEvent_s* event);
 
 #endif

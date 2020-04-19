@@ -46,6 +46,7 @@ gui_s* gui_text_attach(gui_s* gui, guiText_s* txt){
 	gui->type = GUI_TYPE_TEXT;
 	gui->redraw = gui_text_event_redraw;
 	gui->key = gui_text_event_key;
+	gui->mouse = gui_text_event_mouse;
 	gui->free = gui_text_event_free;
 	gui->focus = gui_text_event_focus;
 	gui->focusable = 1;
@@ -380,6 +381,97 @@ void gui_text_cursor_pagup(gui_s* gui, guiText_s* txt){
 		gui_text_cursor_next(txt);
 	}
 	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
+}
+
+void gui_text_cursor_on_position(gui_s* gui, guiText_s* txt, unsigned x, unsigned y){
+	const int scrollXEnable = txt->flags & GUI_TEXT_SCROLL_X;
+	const int scrollYEnable = txt->flags & GUI_TEXT_SCROLL_Y;
+	const unsigned w = gui->surface->img->w;
+	const unsigned h = gui->surface->img->h;
+	
+	g2dCoord_s cursor = { 0, 0, txt->cursor.w, txt->cursor.h};
+	
+	utf8Iterator_s it = utf8_iterator(txt->text, 0);
+
+	utf_t u;
+	while( (u=utf8_iterator_next(&it)) ){
+		if( u >= UTF_PRIVATE0_START ){
+			continue;
+		}
+		if( u == '\n' ){
+			if( y > (cursor.y-txt->scroll.y) && y < (cursor.y-txt->scroll.y) + cursor.h ){
+				txt->it.str = it.str - 1;
+				break;
+			}
+			if( scrollYEnable ){
+				cursor.x = 0;
+				cursor.y += txt->cursor.h;	
+				continue;
+			}
+		}
+		if( u == '\t' ){
+			if( !scrollXEnable && cursor.x + txt->spacesize * txt->tabspace >= w ){
+				if( scrollYEnable ){	
+					cursor.x = 0;
+					cursor.y += txt->cursor.h;
+					if( y > (cursor.y-txt->scroll.y) && y < (cursor.y-txt->scroll.y) + cursor.h &&
+						x > (cursor.x-txt->scroll.x) && x < (cursor.x-txt->scroll.x) + txt->spacesize * txt->tabspace ){
+						txt->it.str = it.str - 1;
+						break;
+					}
+					continue;
+				}
+				if( y > (cursor.y-txt->scroll.y) && y < (cursor.y-txt->scroll.y) + cursor.h &&
+					x > (cursor.x-txt->scroll.x) && x < (cursor.x-txt->scroll.x) + txt->spacesize * txt->tabspace ){
+					txt->it.str = it.str;
+					break;
+				}
+				break;
+			}
+			if( y > (cursor.y-txt->scroll.y) && y < (cursor.y-txt->scroll.y) + cursor.h &&
+				x > (cursor.x-txt->scroll.x) && x < (cursor.x-txt->scroll.x) + txt->spacesize * txt->tabspace ){
+				txt->it.str = it.str;
+				break;
+			}
+			cursor.x += txt->spacesize * txt->tabspace;
+			continue;
+		}
+		
+		ftRender_s* rch = ft_fonts_glyph_load(txt->fonts, u, FT_RENDER_ANTIALIASED | FT_RENDER_VALID);
+		if( !rch ){
+			dbg_warning("invalid render glyph");
+			continue;
+		}
+		if( rch->horiBearingX < 0 ){
+			unsigned const phBX = -rch->horiBearingX;
+			if( cursor.x < phBX ) 
+				cursor.x = 0;
+			else
+				cursor.x -= phBX;
+		}
+
+		if( !scrollXEnable && (cursor.x + rch->horiAdvance >= w) ){
+			if( scrollYEnable ){
+				cursor.y += txt->cursor.h;
+				cursor.x = 0;
+			}
+			else if( cursor.y + txt->cursor.h > h ){
+				break;
+			}
+		}
+
+		dbg_info("x:%u y:%u cx:%u cy:%u cw:%u ch:%u", x, y, 
+				cursor.x-txt->scroll.x, cursor.y-txt->scroll.y, (cursor.x-txt->scroll.x) + rch->horiAdvance,(cursor.y-txt->scroll.y) + cursor.h);
+		if( y > (cursor.y-txt->scroll.y) && y < (cursor.y-txt->scroll.y) + cursor.h &&
+			x > (cursor.x-txt->scroll.x) && x < (cursor.x-txt->scroll.x) + rch->horiAdvance ){
+			txt->it.str = it.str - 1;
+			break;
+		}
+
+		cursor.x += rch->horiAdvance;
+	}
+	
+	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_CURON;
 }
 
 void gui_text_render_cursor(gui_s* gui, guiText_s* txt){
@@ -834,4 +926,18 @@ int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev){
 	return 0;
 }
 
+int gui_text_event_mouse(gui_s* gui, xorgEvent_s* event){
+	iassert( gui->type == GUI_TYPE_TEXT );
 
+	if( (event->mouse.event == XORG_MOUSE_RELEASE || event->mouse.event == XORG_MOUSE_CLICK) && event->mouse.button == 1 ){
+		gui_text_cursor_on_position(gui, gui->control, event->mouse.relative.x, event->mouse.relative.y);
+		gui_text_redraw(gui, gui->background[0], gui->control, 0);
+		gui_draw(gui);
+	}
+	else if( event->mouse.event == XORG_MOUSE_DBLCLICK && event->mouse.button == 1 ){
+		
+	}
+
+	gui_event_mouse(gui, event);
+	return 0;
+}
