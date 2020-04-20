@@ -1803,7 +1803,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 				}
 			
 			}
-			dbg_info("mouse press:: button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+			dbg_info("mouse press %d:: A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
 				ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);	
 		break;
 
@@ -1826,7 +1826,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			else if( ev->mouse.button < 4 && x->_mousestate == 2 && ev->mouse.time - x->_mousetime < x->dblclickms ){
 				ev->mouse.event = XORG_MOUSE_DBLCLICK;
 			}
-			dbg_info("mouse release:: button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+			dbg_info("mouse release %d:: A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
 					ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
 		}
 		break;
@@ -1842,8 +1842,8 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			ev->mouse.button = button->detail;
 			ev->mouse.key = button->state;
 			ev->mouse.time = button->time;
-			//dbg_info("mouse move:: button %d A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
-			//		ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
+			dbg_info("mouse move %d:: A: .x %u .y %u R: .x %u .y %u .b %u .t %ld", 
+					ev->mouse.event, ev->mouse.absolute.x, ev->mouse.absolute.y, ev->mouse.relative.x, ev->mouse.relative.y, ev->mouse.button, ev->mouse.time);
 		}
 		break;
 

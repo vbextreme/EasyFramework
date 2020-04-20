@@ -21,6 +21,7 @@
 #define GUI_TEXT_CURSOR_PLENTIFUL (2<<GUI_TEXT_FLAGS_END)
 #define GUI_TEXT_CURSOR_FAT       (3<<GUI_TEXT_FLAGS_END)
 
+#define GUI_TEXT_WORD_SEP " \n\t`~!@#$%^&*()+{}|[]\\;':\"<>?,./"
 
 typedef struct guiText{
 	g2dImage_s* render;

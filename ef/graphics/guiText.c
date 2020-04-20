@@ -903,7 +903,6 @@ int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev){
 	iassert(gui->type == GUI_TYPE_TEXT);
 	guiText_s* txt = gui->control;
 	if( ev->focus.outin ){
-		iassert(txt->blink == NULL);
 		txt->flags |= GUI_TEXT_REND_CURON;
 		if( txt->blinktime && !txt->blink ) txt->blink = gui_timer_new(gui, txt->blinktime, gui_text_timer_blink, gui);
 	}
@@ -928,14 +927,43 @@ int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev){
 
 int gui_text_event_mouse(gui_s* gui, xorgEvent_s* event){
 	iassert( gui->type == GUI_TYPE_TEXT );
+	guiText_s* txt = gui->control;
 
-	if( (event->mouse.event == XORG_MOUSE_RELEASE || event->mouse.event == XORG_MOUSE_CLICK) && event->mouse.button == 1 ){
+	if( event->mouse.event == XORG_MOUSE_CLICK && event->mouse.button == 1 ){
+		gui_text_unsel(txt);
 		gui_text_cursor_on_position(gui, gui->control, event->mouse.relative.x, event->mouse.relative.y);
 		gui_text_redraw(gui, gui->background[0], gui->control, 0);
 		gui_draw(gui);
 	}
-	else if( event->mouse.event == XORG_MOUSE_DBLCLICK && event->mouse.button == 1 ){
-		
+	else if( event->mouse.event == XORG_MOUSE_RELEASE && event->mouse.button == 1 ){
+		txt->flags &= ~GUI_TEXT_SEL;
+		gui_text_redraw(gui, gui->background[0], gui->control, 0);
+		gui_draw(gui);
+	}
+	else if( event->mouse.event == XORG_MOUSE_PRESS && event->mouse.button == 1 ){
+		gui_text_unsel(txt);
+		gui_text_cursor_on_position(gui, gui->control, event->mouse.relative.x, event->mouse.relative.y);
+		gui_text_sel(gui->control);
+		gui_text_redraw(gui, gui->background[0], gui->control, 0);
+		gui_draw(gui);
+	}
+	else if( (txt->flags & GUI_TEXT_SEL) && event->mouse.event == XORG_MOUSE_MOVE ){
+		gui_text_cursor_on_position(gui, gui->control, event->mouse.relative.x, event->mouse.relative.y);
+		gui_text_sel(gui->control);
+		gui_text_redraw(gui, gui->background[0], gui->control, 0);
+		gui_draw(gui);
+	}else if( event->mouse.event == XORG_MOUSE_DBLCLICK && event->mouse.button == 1 ){
+		gui_text_unsel(txt);
+		utf_t u;
+		utf8Iterator_s it = txt->it;
+		while( (u=utf8_iterator_prev(&it)) && !strchr(GUI_TEXT_WORD_SEP,u) );
+		if( u ) utf8_iterator_next(&it);
+		txt->selStart = it.str+1;
+		while( (u=utf8_iterator_next(&it)) && !strchr(GUI_TEXT_WORD_SEP,u) );
+		txt->selEnd = *it.str ? it.str : it.str+1;
+		txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_SCROLL | GUI_TEXT_REND_CURSOR;
+		gui_text_redraw(gui, gui->background[0], gui->control, 0);
+		gui_draw(gui);
 	}
 
 	gui_event_mouse(gui, event);
