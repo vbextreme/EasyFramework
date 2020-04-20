@@ -11,6 +11,7 @@
 #include <xcb/xcb_atom.h>
 #include <xcb/xcb_icccm.h>
 #include <xcb/composite.h>
+#include <xcb/xcb_xrm.h>
 #include <xkbcommon/xkbcommon.h>
 
 #ifdef XCB_ERROR_ENABLE
@@ -165,14 +166,15 @@ typedef struct xorg{
 	xcb_errors_context_t* err;
 #endif
 	xorgAtom_e atom[XORG_ATOM_COUNT];
-	uint8_t depth;
 	xcb_visualid_t visual;
+	xcb_xrm_database_t* resources;
 	long clickms;
 	long dblclickms;
 	long _mousetime;
 	unsigned _mousestate;
 	int screenDefault;
 	int screenCurrent;
+	uint8_t depth;
 }xorg_s;
 
 #define XORG_WINDOW_HINTS_FLAGS_URGENCY(XWPTR)  ((XWPTR)->hints.flags & XCB_ICCCM_WM_HINT_X_URGENCY)
@@ -343,6 +345,10 @@ typedef struct xorgEvent{
 #define xorg_root_height(XORG) ((XORG)->monitorCurrent->size.h)
 #define xorg_root_visual(XORG) ((XORG)->screen->root_visual)
 #define xorg_fd(XORG) xcb_get_file_descriptor((XORG)->connection)
+
+#define xorg_resources_string_get(XORG, NAME, CLASS, PTRSTR) xcb_xrm_resource_get_string((XORG)->resources, NAME, CLASS, PTRSTR)
+#define xorg_resources_long_get(XORG, NAME, CLASS, PTRLONG) xcb_xrm_resource_get_long((XORG)->resources, NAME, CLASS, PTRLONG)
+#define xorg_resources_bool_get(XORG, NAME, CLASS, PTRBOOL) xcb_xrm_resource_get_bool((XORG)->resources, NAME, CLASS, PTRBOOL)
 
 /** create new xorg client*/
 xorg_s* xorg_client_new(const char* display, int defaultScreen);
@@ -576,6 +582,12 @@ void xorg_wm_reserve_dock_space_on_top(xorg_s* x, xcb_window_t id, unsigned X, u
 
 /** reserve dock space*/
 void xorg_wm_reserve_dock_space_on_bottom(xorg_s* x, xcb_window_t id, unsigned X, unsigned w, unsigned h);
+
+/** reserve dock space*/
+void xorg_wm_reserve_dock_space_on_left(xorg_s* x, xcb_window_t id, unsigned y, unsigned w, unsigned h);
+
+/** reserve dock space*/
+void xorg_wm_reserve_dock_space_on_right(xorg_s* x, xcb_window_t id, unsigned y, unsigned w, unsigned h);
 
 /** register event on window*/
 void xorg_register_events(xorg_s* x, xcb_window_t window, unsigned int eventmask);

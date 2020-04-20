@@ -8,16 +8,19 @@
 #include <ef/phq.h>
 
 /*TODO 
- * mouse find/select text
- * msgbox
- * dialog mode:
- *	xorg_win_type(DIALOG)
- *	xorg_win_state(MODAL)
- *	xorg_win_action(MOVE | CLOSE)
- *	xorg_win_set_top
- *	text control
- *	dock up,right,bottom,left
- * eden
+ * xorg clipboard
+ * xorg drag&drop
+ * xorg tray
+ * eden:
+ *	load theme
+ *	window
+ *	label
+ *	button
+ *	text
+ *	radio
+ *	check
+ *	list
+ *	msgbox
  */
 
 #define GUI_TYPE_WINDOW 0
@@ -40,6 +43,8 @@
 #define GUI_TIMER_CUSTOM 1
 
 #define GUI_FOCUS_BORDER_SIZE 3
+
+typedef enum {GUI_MODE_NORMAL, GUI_MODE_MODAL, GUI_MODE_DOCK_TOP, GUI_MODE_DOCK_BOTTOM, GUI_MODE_DOCK_LEFT, GUI_MODE_DOCK_RIGHT} guiMode_e;
 
 typedef struct gui gui_s;
 
@@ -113,9 +118,13 @@ typedef struct gui{
 void gui_begin(void);
 void gui_end();
 
+void gui_register_root_event(void);
+unsigned gui_screen_width(void);
+unsigned gui_screen_height(void);
+
 gui_s* gui_new(
 		gui_s* parent, 
-		const char* name, const char* class, 
+		const char* name, const char* class, guiMode_e mode,
 		int border, int x, int y, int width, int height, 
 		g2dColor_t colorBorder, guiBackground_s* bk,
 		int genericSize, void* userdata);
@@ -154,7 +163,6 @@ int gui_event_mouse(gui_s* gui, xorgEvent_s* event);
 int gui_event_move(gui_s* gui, xorgEvent_s* event);
 int gui_event_key(gui_s* gui, xorgEvent_s* event);
 
-
 xorgEvent_s* gui_event_get(int async);
 void gui_event_release(xorgEvent_s* ev);
 int gui_event_call(xorgEvent_s* ev);
@@ -175,5 +183,10 @@ guiBackground_s* gui_background_get(gui_s* gui, size_t id);
 void gui_background_add(gui_s* gui, guiBackground_s* bk);
 void gui_background_main_round_fn(gui_s* gui);
 void gui_background_round_fn(gui_s* gui);
+
+char* gui_resource_string_get(const char* name, const char* class);
+long gui_resource_long_get(const char* name, const char* class);
+int gui_resource_bool_get(const char* name, const char* class);
+
 
 #endif

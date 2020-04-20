@@ -70,7 +70,12 @@ xorg_s* xorg_client_new(const char* display, int defaultScreen){
 	xorg_root_init(x, -1);
 	xorg_randr_monitor_refresh(x);
 	xorg_monitor_primary(x);
-	
+
+	x->resources = xcb_xrm_database_from_default(x->connection);
+	if( x->resources == NULL ){
+		dbg_error("database connection");
+	}
+
 	x->visual = xorg_find_depth(x, 32);
 	if( (int)x->visual == -1 ){
 		x->visual = x->screen->root_visual;
@@ -99,6 +104,7 @@ xorg_s* xorg_client_new(const char* display, int defaultScreen){
 }
 
 void xorg_client_free(xorg_s* x){
+	if( x->resources ) xcb_xrm_database_free(x->resources);
 	xcb_free_colormap(x->connection, x->colormap);
 	xkb_keymap_unref(x->key.keymap);
 	xkb_context_unref(x->key.ctx);
@@ -1513,6 +1519,36 @@ void xorg_wm_reserve_dock_space_on_bottom(xorg_s* x, xcb_window_t id, unsigned X
 	partial.bottom_start_x = xorg_root_x(x) + X;
 	partial.bottom_end_x = partial.bottom_start_x + w - 1;
 	dbg_info("reserve: bottom %u x %u ex: %u", partial.bottom, partial.bottom_start_x, partial.bottom_end_x);
+
+	xcb_change_property(
+			x->connection, 
+			XCB_PROP_MODE_REPLACE, id, 
+			x->atom[XORG_ATOM_NET_WM_STRUT_PARTIAL], 
+			XCB_ATOM_CARDINAL, 32, 12, &partial
+	);
+}
+
+void xorg_wm_reserve_dock_space_on_left(xorg_s* x, xcb_window_t id, unsigned y, unsigned w, unsigned h){
+	xorgWindowStrutPartial_s partial = {0};
+	partial.left = xorg_root_x(x) + w;
+	partial.left_start_y = xorg_root_y(x) + y;
+	partial.left_end_y = partial.left_start_y + h - 1;
+	dbg_info("reserve: left %u y %u ey: %u", partial.left, partial.left_start_y, partial.left_end_y);
+
+	xcb_change_property(
+			x->connection, 
+			XCB_PROP_MODE_REPLACE, id, 
+			x->atom[XORG_ATOM_NET_WM_STRUT_PARTIAL], 
+			XCB_ATOM_CARDINAL, 32, 12, &partial
+	);
+}
+
+void xorg_wm_reserve_dock_space_on_right(xorg_s* x, xcb_window_t id, unsigned y, unsigned w, unsigned h){
+	xorgWindowStrutPartial_s partial = {0};
+	partial.right = xorg_root_x(x) + w;
+	partial.right_start_y = xorg_root_y(x) + y;
+	partial.right_end_y = partial.right_start_y + h - 1;
+	dbg_info("reserve: right %u y %u ey: %u", partial.right, partial.right_start_y, partial.right_end_y);
 
 	xcb_change_property(
 			x->connection, 

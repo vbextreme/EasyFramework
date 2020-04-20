@@ -75,19 +75,18 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	font_load(tfont, "fallback", "Symbola", 18);
 
 	gui_s* main = gui_new(
-		NULL, "test", NULL, 
-		0, 50, 50, 400, 400, 
+		NULL, "test", NULL, GUI_MODE_DOCK_BOTTOM,
+		0, 0, gui_screen_height()-30, 800, 30, 
 		gui_color(255,0,0,0),
 		gui_background_new(gui_color(255, 125, 125, 125), NULL, NULL, gui_background_main_round_fn, GUI_BK_COLOR | GUI_BK_FN),
 		7,NULL
 	);
 	main->destroy = main_exit;
-	gui_remove_decoration(main);
-//	main->redraw(main, NULL);
-
+//	gui_remove_decoration(main);
+/*
 	gui_s* labl = 	gui_label_attach(
 		gui_new(
-			main, "labl", "label",
+			main, "labl", "label", GUI_MODE_NORMAL,
 			1, 10, 10, 200, 50,
 			gui_color(255,0,0,0),
 			gui_background_new(gui_color(255, 50, 50, 210), NULL, NULL, NULL, GUI_BK_COLOR),
@@ -100,7 +99,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 
 	gui_s* btn = gui_button_attach(
 		gui_new(
-			main, "but", "button",
+			main, "but", "button", GUI_MODE_NORMAL,
 			0, 10, labl->position.y + labl->position.h + 10, 200, 50,
 			gui_color(255,0,0,0),	
 			gui_background_new( gui_color(255, 80, 110, 80), NULL, NULL, NULL, GUI_BK_COLOR), 
@@ -117,7 +116,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 
 	gui_s* txt = gui_text_attach(
 		gui_new(
-			main, "txt", "text",
+			main, "txt", "text", GUI_MODE_NORMAL,
 			0, 10, btn->position.y + btn->position.h + 10, 200, 100,
 			gui_color(255,0,0,0),	
 			gui_background_new( gui_color(255, 200, 200, 200), NULL, NULL, NULL, GUI_BK_COLOR), 
@@ -128,16 +127,16 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			GUI_TEXT_SCROLL_X | GUI_TEXT_SCROLL_Y | GUI_TEXT_INSERT | GUI_TEXT_CUR_VISIBLE | GUI_TEXT_CURSOR_LIGHT
 		)
 	);
-
-	btn->userdata = txt;
+*/
+	//btn->userdata = txt;
 	gui_redraw(main);
 	gui_show(main, 1);
 
-	gui_show(labl, 1);
-	gui_show(btn, 1);
-	gui_show(txt, 1);
-	gui_focus(txt);
-	
+	//gui_show(labl, 1);
+	//gui_show(btn, 1);
+	//gui_show(txt, 1);
+	//gui_focus(txt);
+
 	gui_loop();
 
 	gui_end();	

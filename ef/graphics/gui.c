@@ -71,9 +71,17 @@ void gui_register_root_event(void){
 	xorg_register_events(X, xorg_root(X), XCB_EVENT_MASK_PROPERTY_CHANGE);
 }
 
+unsigned gui_screen_width(void){
+	return xorg_root_width(X);
+}
+
+unsigned gui_screen_height(void){
+	return xorg_root_height(X);
+}
+
 gui_s* gui_new(
 		gui_s* parent, 
-		const char* name, const char* class, 
+		const char* name, const char* class, guiMode_e mode, 
 		int border, int x, int y, int width, int height, 
 		g2dColor_t colorBorder, guiBackground_s* bk,
 		int genericSize, void* userdata)
@@ -126,6 +134,37 @@ gui_s* gui_new(
 	gui->genericSize = genericSize;
 
 	allgui_add(gui);
+
+	switch( mode ){
+		case GUI_MODE_MODAL:
+			xorg_win_type_set(X, gui->id, XORG_WINDOW_TYPE_DIALOG);
+			xorg_win_state_set(X, gui->id, XORG_WINDOW_STATE_MODAL);
+			xorg_win_action_set(X, gui->id, XORG_WINDOW_ACTION_CLOSE | XORG_WINDOW_ACTION_MOVE);
+			xorg_win_set_top(X, xorg_parent(X, gui->id), gui->id, 1);
+		break;
+
+		case GUI_MODE_DOCK_TOP:
+			xorg_win_type_set(X, gui->id, XORG_WINDOW_TYPE_DOCK);
+			xorg_wm_reserve_dock_space_on_top(X, gui->id, gui->position.x, gui->position.w, gui->position.h);
+		break;
+
+		case GUI_MODE_DOCK_BOTTOM:
+			xorg_win_type_set(X, gui->id, XORG_WINDOW_TYPE_DOCK);
+			xorg_wm_reserve_dock_space_on_bottom(X, gui->id, gui->position.x, gui->position.w, gui->position.h);
+		break;
+
+		case GUI_MODE_DOCK_LEFT:
+			xorg_win_type_set(X, gui->id, XORG_WINDOW_TYPE_DOCK);
+			xorg_wm_reserve_dock_space_on_left(X, gui->id, gui->position.y, gui->position.w, gui->position.h);
+		break;
+
+		case GUI_MODE_DOCK_RIGHT:
+			xorg_win_type_set(X, gui->id, XORG_WINDOW_TYPE_DOCK);
+			xorg_wm_reserve_dock_space_on_right(X, gui->id, gui->position.y, gui->position.w, gui->position.h);
+		break;
+
+		default: case GUI_MODE_NORMAL: break;
+	}
 
 	return gui;
 }
@@ -759,17 +798,27 @@ void gui_background_round_fn(gui_s* gui){
 	g2d_free(orig);
 }
 
+char* gui_resource_string_get(const char* name, const char* class){
+	char* out = NULL;
+	if( xorg_resources_string_get(X, name, class,&out) ) return NULL;
+	return out;
+}
 
+long gui_resource_long_get(const char* name, const char* class){
+	long out = 0;
+	if( xorg_resources_long_get(X, name, class,&out) ){
+		errno = EINVAL;
+		return -1;
+	}
+	return out;
+}
 
-
-
-
-
-
-
-
-
-
-
-
+int gui_resource_bool_get(const char* name, const char* class){
+	bool out = 0;
+	if( xorg_resources_bool_get(X, name, class,&out) ){
+		errno = EINVAL;
+		return -1;
+	}
+	return out;
+}
 
