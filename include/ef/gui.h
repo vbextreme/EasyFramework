@@ -110,6 +110,7 @@ typedef struct gui{
 	guiEvent_f move;
 	guiEvent_f atom;
 	guiEvent_f client;
+	guiEvent_f clipboard;
 
 }gui_s;
 
@@ -148,6 +149,8 @@ int gui_focus_next_id(gui_s* parent);
 void gui_focus_next(gui_s* gui);
 int gui_focus_prev_id(gui_s* parent);
 void gui_focus_prev(gui_s* gui);
+void gui_clipboard_copy(gui_s* gui, int primary);
+void gui_clipboard_paste(gui_s* gui, int primary);
 void gui_draw(gui_s* gui);
 void gui_redraw(gui_s* gui);
 void gui_opacity(gui_s* gui, double op);

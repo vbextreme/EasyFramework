@@ -88,6 +88,9 @@ typedef enum {
 	XORG_ATOM_WM_TRANSIENT_FOR,
 	XORG_ATOM_WM_STATE,
 	XORG_ATOM_XROOTPMAP_ID,
+	XORG_ATOM_PRIMARY,
+	XORG_ATOM_CLIPBOARD,
+	XORG_ATOM_XSEL_DATA,
 	XORG_ATOM_UTF8_STRING,
 	XORG_ATOM_COUNT
 }xorgAtom_e;
@@ -234,7 +237,8 @@ typedef enum {
 	XORG_EVENT_UNMAP          = XCB_UNMAP_NOTIFY,
 	XORG_EVENT_MOVE           = XCB_CONFIGURE_NOTIFY,
 	XORG_EVENT_ATOM           = XCB_PROPERTY_NOTIFY,
-	XORG_EVENT_CLIENT         = XCB_CLIENT_MESSAGE
+	XORG_EVENT_CLIENT         = XCB_CLIENT_MESSAGE,
+	XORG_EVENT_CLIPBOARD      = XCB_SELECTION_NOTIFY
 }xorgEvent_e;
 
 typedef struct xorgMouse{
@@ -320,6 +324,12 @@ typedef struct xorgClient{
 	uint8_t data[20];
 }xorgClient_s;
 
+typedef struct xorgClipboard{
+	xcb_window_t requestor;
+	int primary;
+	utf8_t* str;
+}xorgClipboard_s;
+
 typedef struct xorgEvent{
 	int type;
 	void* userdata;
@@ -335,6 +345,7 @@ typedef struct xorgEvent{
 		xorgVisible_s visible;
 		xorgProperty_s property;
 		xorgClient_s client;
+		xorgClipboard_s clipboard;
 	};
 }xorgEvent_s;	
 
@@ -621,5 +632,17 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async);
 
 /** free message*/
 void xorg_event_free(xorgEvent_s* ev);
+
+/** set primary owner for receve copy event*/
+void xorg_clipboard_primary_copy(xorg_s* x, xcb_window_t owner);
+
+/** set clipboard owner for receve copy event*/
+void xorg_clipboard_clipboard_copy(xorg_s* x, xcb_window_t owner);
+
+/** request paste*/
+void xorg_clipboard_primary_paste(xorg_s* x, xcb_window_t win);
+
+/** request paste*/
+void xorg_clipboard_clipboard_paste(xorg_s* x, xcb_window_t win);
 
 #endif 

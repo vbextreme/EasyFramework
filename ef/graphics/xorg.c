@@ -99,6 +99,7 @@ xorg_s* xorg_client_new(const char* display, int defaultScreen){
 	x->dblclickms = XORG_MOUSE_DBLCLICL_MS;
 	x->_mousetime = 0;
 	x->_mousestate = 0;
+
 	dbg_info("xorg initializated");
 	return x;
 }
@@ -374,6 +375,9 @@ void xorg_atom_load(xorg_s* x){
 		[XORG_ATOM_WM_TRANSIENT_FOR]               = "WM_TRANSIENT_FOR",
 		[XORG_ATOM_WM_STATE]                       = "WM_STATE",
 		[XORG_ATOM_XROOTPMAP_ID]                   = "_XROOTPMAP_ID",
+		[XORG_ATOM_PRIMARY]                        = "PRIMARY",
+		[XORG_ATOM_CLIPBOARD]                      = "CLIPBOARD",
+		[XORG_ATOM_XSEL_DATA]                      = "XSEL_DATA",
 		[XORG_ATOM_UTF8_STRING]                    = "UTF8_STRING"
 	};
 
@@ -522,7 +526,11 @@ ONEND:
 }
 
 xcb_get_property_cookie_t xorg_xcb_property_cookie_string(xorg_s* x, xcb_window_t win, xcb_atom_t atom){
-	return xcb_get_property(x->connection, 0, win, atom, XCB_ATOM_STRING, 0, 4096L);
+	return xcb_get_property(x->connection, 0, win, atom, XCB_ATOM_STRING, 0, UINT32_MAX);
+}
+
+xcb_get_property_cookie_t xorg_xcb_property_cookie_utf8(xorg_s* x, xcb_window_t win, xcb_atom_t atom){
+	return xcb_get_property(x->connection, 0, win, atom, x->atom[XORG_ATOM_UTF8_STRING], 0, UINT32_MAX);
 }
 
 char* xorg_xcb_property_string(xorg_s* x, xcb_get_property_cookie_t cookie){
@@ -1981,6 +1989,17 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 		}
 		break;
 
+		case XCB_SELECTION_NOTIFY:{
+			xcb_selection_notify_event_t* notify = (xcb_selection_notify_event_t*)event;
+			if( !notify->property ) break;
+			ev->win = notify->target;
+			ev->clipboard.requestor = notify->requestor;
+			ev->clipboard.primary = notify->selection == x->atom[XORG_ATOM_PRIMARY];
+			xcb_get_property_cookie_t cookie = xorg_xcb_property_cookie_utf8(x, notify->requestor, notify->property);
+			ev->clipboard.str = (utf8_t*)xorg_xcb_property_string(x, cookie);
+		}
+		break;
+
 		default:
 			dbg_info("unknown %u", event->response_type & ~0x80 );
 		break;
@@ -1992,4 +2011,21 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 void xorg_event_free(xorgEvent_s* ev){
 	free(ev);
 }
+
+void xorg_clipboard_primary_copy(xorg_s* x, xcb_window_t owner){
+	xcb_set_selection_owner(x->connection, owner, x->atom[XORG_ATOM_PRIMARY], time(NULL));
+}
+
+void xorg_clipboard_clipboard_copy(xorg_s* x, xcb_window_t owner){
+ 	xcb_set_selection_owner(x->connection, owner, x->atom[XORG_ATOM_CLIPBOARD], time(NULL));
+}
+
+void xorg_clipboard_primary_paste(xorg_s* x, xcb_window_t win){
+    xcb_convert_selection(x->connection, win, x->atom[XORG_ATOM_PRIMARY], x->atom[XORG_ATOM_UTF8_STRING], x->atom[XORG_ATOM_XSEL_DATA], time(NULL));
+}
+
+void xorg_clipboard_clipboard_paste(xorg_s* x, xcb_window_t win){
+    xcb_convert_selection(x->connection, win, x->atom[XORG_ATOM_CLIPBOARD], x->atom[XORG_ATOM_UTF8_STRING], x->atom[XORG_ATOM_XSEL_DATA], time(NULL));
+}
+
 

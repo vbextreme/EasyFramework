@@ -108,6 +108,7 @@ gui_s* gui_new(
 	gui->map = NULL;
 	gui->atom = NULL;
 	gui->client = NULL;
+	gui->clipboard = NULL;
 	gui->redraw = gui_event_redraw;
 	gui->draw = gui_event_draw;
 	gui->key = gui->parent ? gui_event_key :  NULL;
@@ -331,6 +332,24 @@ int gui_focus_prev_id(gui_s* parent){
 void gui_focus_prev(gui_s* gui){
 	iassert(gui);
 	gui_focus_from_parent(gui->parent, gui_focus_prev_id(gui->parent));
+}
+
+void gui_clipboard_copy(gui_s* gui, int primary){
+	if( primary ){
+		xorg_clipboard_primary_copy(X, gui->id);
+	}
+	else{
+		xorg_clipboard_clipboard_copy(X, gui->id);
+	}
+}
+
+void gui_clipboard_paste(gui_s* gui, int primary){
+	if( primary ){
+		xorg_clipboard_primary_paste(X, gui->id);
+	}
+	else{
+		xorg_clipboard_clipboard_paste(X, gui->id);
+	}
 }
 
 void gui_draw(gui_s* gui){
