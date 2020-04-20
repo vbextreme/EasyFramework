@@ -795,12 +795,28 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 		break;
 
 		case XKB_KEY_Left:
-			gui_text_cursor_prev(gui->control);
+			if( event->keyboard.modifier & XORG_KEY_MOD_CONTROL ){
+				utf_t u;
+				while( (u=utf8_iterator_prev(&txt->it)) && !strchr(GUI_TEXT_WORD_SEP,u) );
+				if( u ) utf8_iterator_next(&txt->it);
+				txt->flags |= GUI_TEXT_REND_SCROLL | GUI_TEXT_REND_CURSOR;
+			}
+			else{
+				gui_text_cursor_prev(gui->control);
+			}
 			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
 		break;
 
 		case XKB_KEY_Right:
-			gui_text_cursor_next(gui->control);
+			if( event->keyboard.modifier & XORG_KEY_MOD_CONTROL ){
+				utf_t u;
+				while( (u=utf8_iterator_next(&txt->it)) && !strchr(GUI_TEXT_WORD_SEP,u) );
+				if( u ) utf8_iterator_prev(&txt->it);
+				txt->flags |= GUI_TEXT_REND_SCROLL | GUI_TEXT_REND_CURSOR;
+			}
+			else{
+				gui_text_cursor_next(gui->control);
+			}
 			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
 		break;
 
