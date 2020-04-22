@@ -2070,9 +2070,9 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			ev->clipboard.size = 0;
 			ev->clipboard.type = request->target;
 			ev->clipboard.property = request->property;
-			dbg_error("REQUEST primary %d clipboard %d xsel %d utf8 %d", 
+			dbg_info("request primary %d clipboard %d xsel %d utf8 %d", 
 					x->atom[XORG_ATOM_PRIMARY], x->atom[XORG_ATOM_CLIPBOARD], x->atom[XORG_ATOM_XSEL_DATA], x->atom[XORG_ATOM_UTF8_STRING]);
-			dbg_error("responce %d selection %d sequence %d property %d %s target %d %s", 
+			dbg_info("responce %d selection %d sequence %d property %d %s target %d %s", 
 					request->response_type, request->selection, request->sequence, 
 					request->property, xorg_atom_name(x, request->property),
 					request->target, xorg_atom_name(x, request->target));
@@ -2082,9 +2082,9 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 
 		case XCB_SELECTION_NOTIFY:{
 			xcb_selection_notify_event_t* notify = (xcb_selection_notify_event_t*)event;
-			dbg_error("SELECTION primary %d clipboard %d xsel %d utf8 %d", 
+			dbg_info("selection primary %d clipboard %d xsel %d utf8 %d", 
 					x->atom[XORG_ATOM_PRIMARY], x->atom[XORG_ATOM_CLIPBOARD], x->atom[XORG_ATOM_XSEL_DATA], x->atom[XORG_ATOM_UTF8_STRING]);
-			dbg_error("responce %d selection %d sequence %d property %d %s target %d %s", 
+			dbg_info("responce %d selection %d sequence %d property %d %s target %d %s", 
 					notify->response_type, notify->selection, notify->sequence, notify->property, xorg_atom_name(x, notify->property),
 					notify->target, xorg_atom_name(x, notify->target));
 			if( !notify->property ){

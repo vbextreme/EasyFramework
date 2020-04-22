@@ -894,6 +894,13 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 						if( txt->clipmem ) free(txt->clipmem);
 						txt->clipmem = gui_text_sel_get(txt);
 					break;
+				
+					case XKB_KEY_x:
+						gui_clipboard_copy(gui, 0);
+						if( txt->clipmem ) free(txt->clipmem);
+						txt->clipmem = gui_text_sel_get(txt);
+						if( txt->selStart ) gui_text_sel_del(txt);
+					break;
 
 					default:
 						//txt->flags |= GUI_TEXT_SEL;	
@@ -1018,6 +1025,10 @@ int gui_text_event_mouse(gui_s* gui, xorgEvent_s* event){
 		txt->flags &= ~GUI_TEXT_SEL;
 		gui_text_redraw(gui, gui->background[0], gui->control, 0);
 		gui_draw(gui);
+	}
+	else if( event->mouse.event == XORG_MOUSE_RELEASE && event->mouse.button == 2 ){
+		if( txt->selStart ) gui_text_sel_del(txt);
+		gui_clipboard_paste(gui, 1);
 	}
 	else if( event->mouse.event == XORG_MOUSE_PRESS && event->mouse.button == 1 ){
 		gui_text_unsel(txt);
