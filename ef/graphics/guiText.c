@@ -17,6 +17,7 @@ guiText_s* gui_text_new(ftFonts_s* font, g2dColor_t foreground, g2dColor_t selec
 	txt->blink = NULL;
 	txt->blinktime = blinktime;
 	txt->selStart = txt->selEnd = NULL;
+	txt->clipmem = NULL;
 
 	dbg_info("genric glyph size: %u*%u", txt->cursor.w, txt->cursor.h);
 
@@ -49,6 +50,7 @@ gui_s* gui_text_attach(gui_s* gui, guiText_s* txt){
 	gui->mouse = gui_text_event_mouse;
 	gui->free = gui_text_event_free;
 	gui->focus = gui_text_event_focus;
+	gui->clipboard = gui_text_event_clipboard;
 	gui->focusable = 1;
 
 	txt->resize = txt->size = (gui->surface->img->w / ft_line_lenght(txt->fonts, U8(" "))) * (gui->surface->img->h / txt->cursor.h);
@@ -67,6 +69,7 @@ ERR:
 void gui_text_free(guiText_s* txt){
 	if( txt->text ) free(txt->text);
 	if( txt->render ) free(txt->render);
+	if( txt->clipmem ) free(txt->render);
 	free(txt);
 }
 
@@ -103,15 +106,14 @@ utf8_t* gui_text_str(guiText_s* txt){
 	return str;
 }
 
-void gui_text_sel(guiText_s* txt){
+void gui_text_sel(gui_s* gui, guiText_s* txt){
 	if( txt->selStart ){
 		txt->selEnd = txt->it.str+1;
-		dbg_error("sel next(%d):%p", *txt->it.str,txt->selEnd);
 	}
 	else{
 		txt->selStart = txt->it.str + 1;
 		txt->selEnd = txt->selStart;
-		dbg_error("sel begin at:%p", txt->selStart);
+		gui_clipboard_copy(gui, 1);
 	}
 	txt->flags |= GUI_TEXT_SEL | GUI_TEXT_REND_TEXT;
 }
@@ -144,6 +146,7 @@ void gui_text_sel_del(guiText_s* txt){
 	txt->it.str = it.str;
 	utf8_iterator_delete_to(&it, n);
 
+	gui_text_unsel(txt);
 	txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 }
 
@@ -151,6 +154,7 @@ utf8_t* gui_text_sel_get(guiText_s* txt){
 	utf8Iterator_s it;
 	utf8_t* end;
 
+	dbg_info("its %p ite %p", txt->selStart, txt->selEnd);
 	if( txt->selStart < txt->selEnd ){
 		it = utf8_iterator(txt->selStart > txt->text ? txt->selStart - 1 : txt->text, 0);
 		end = txt->selEnd;
@@ -245,6 +249,7 @@ void gui_text_put(__unused gui_s* gui, guiText_s* txt, utf_t utf){
 }
 
 void gui_text_puts(gui_s* gui, guiText_s* txt, utf8_t* str){
+	if( txt->selStart ) gui_text_sel_del(txt);
 	utf8Iterator_s it = utf8_iterator(str, 0);
 	utf_t utf;
 	while( (utf=utf8_iterator_next(&it)) ){
@@ -761,7 +766,6 @@ void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int parti
 int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_TEXT);
 	guiText_s* txt = gui->control;
-	txt->flags &= ~GUI_TEXT_SEL;
 	int partial = 0;
 
 	if( event->keyboard.event == XORG_KEY_RELEASE ){
@@ -773,7 +777,7 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 	switch( event->keyboard.keysym ){
 		case XKB_KEY_Shift_L:
 		case XKB_KEY_Shift_R:
-			gui_text_sel(gui->control);
+			gui_text_sel(gui, gui->control);
 		break;
 
 		case XKB_KEY_BackSpace:
@@ -804,7 +808,8 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 			else{
 				gui_text_cursor_prev(gui->control);
 			}
-			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui, gui->control);	
+			else gui_text_unsel(gui->control);
 		break;
 
 		case XKB_KEY_Right:
@@ -817,36 +822,45 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 			else{
 				gui_text_cursor_next(gui->control);
 			}
-			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui, gui->control);	
+			else gui_text_unsel(gui->control);
 		break;
 
 		case XKB_KEY_Up:
 			gui_text_cursor_up(gui->control);
-			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui, gui->control);
+			else gui_text_unsel(gui->control);
 		break;
 
 		case XKB_KEY_Down:
 			gui_text_cursor_down(gui->control);
-			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui, gui->control);	
+			else gui_text_unsel(gui->control);
 		break;
 
 		case XKB_KEY_Page_Up:
 			gui_text_cursor_pagup(gui, gui->control);
-			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui, gui->control);	
+			else gui_text_unsel(gui->control);
 		break;
 
 		case XKB_KEY_Page_Down:
 			gui_text_cursor_pagdn(gui, gui->control);
-			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui->control);	
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui, gui->control);	
+			else gui_text_unsel(gui->control);
 		break;
 
 		case XKB_KEY_Home:
 		case XKB_KEY_Begin:
 			gui_text_cursor_home(gui->control);
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui, gui->control);	
+			else gui_text_unsel(gui->control);
 		break;
 
 		case XKB_KEY_End:
 			gui_text_cursor_end(gui->control);
+			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui, gui->control);	
+			else gui_text_unsel(gui->control);
 		break;
 
 		case XKB_KEY_Insert:
@@ -854,15 +868,39 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 		break;
 
 		case XKB_KEY_Return:
+			if( txt->selStart ){
+				gui_text_sel_del(gui->control);
+			}
 			gui_text_put(gui, gui->control, '\n');
 		break;
 
 		case XKB_KEY_Tab:
+			if( txt->selStart ){
+				gui_text_sel_del(gui->control);
+			}
 			gui_text_put(gui, gui->control, '\t');
 		break;
 
 		default:
-			if( event->keyboard.utf){
+			dbg_info("modifier 0x%X 0x%X 0x%X", event->keyboard.modifier, XORG_KEY_MOD_CONTROL, XORG_KEY_MOD_CONTROL_L);
+			if( (event->keyboard.modifier & XORG_KEY_MOD_CONTROL) ){
+				switch( event->keyboard.keysym ){
+					case XKB_KEY_v:
+						gui_clipboard_paste(gui, 0);
+					break;
+
+					case XKB_KEY_c:
+						gui_clipboard_copy(gui, 0);
+						if( txt->clipmem ) free(txt->clipmem);
+						txt->clipmem = gui_text_sel_get(txt);
+					break;
+
+					default:
+						//txt->flags |= GUI_TEXT_SEL;	
+					break;
+				}
+			}
+			else if( event->keyboard.utf){
 				if( txt->selStart ){
 					gui_text_sel_del(gui->control);
 				}
@@ -874,9 +912,9 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 		break;
 	}
 
-	if( !(txt->flags & GUI_TEXT_SEL ) ){
-		gui_text_unsel(gui->control);
-	}
+	//if( !(txt->flags & GUI_TEXT_SEL ) ){
+	//	gui_text_unsel(gui->control);
+	//}
 
 	if( !partial ){
 		txt->flags |= GUI_TEXT_REND_CURON;
@@ -890,6 +928,31 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 int gui_text_event_redraw(gui_s* gui, __unused xorgEvent_s* ev){
 	iassert(gui->type == GUI_TYPE_TEXT);
 	gui_text_redraw(gui, gui->background[0], gui->control, 0);
+	return 0;
+}
+
+int gui_text_event_clipboard(gui_s* gui, xorgEvent_s* ev){
+	iassert(gui->type == GUI_TYPE_TEXT);
+	if( ev->clipboard.eventPaste ){
+		if( ev->clipboard.data ){
+			gui_text_puts(gui, gui->control, ev->clipboard.data);
+			free(ev->clipboard.data);
+		}
+	}
+	else{
+		guiText_s* txt = gui->control;
+		if( ev->clipboard.primary || !txt->clipmem ){
+			utf8_t* sel = gui_text_sel_get(gui->control);
+			if( !sel ){
+				return 0;
+			}
+			gui_clipboard_send(&ev->clipboard, sel, strlen((char*)sel));
+			free(sel);
+		}
+		else{
+			gui_clipboard_send(&ev->clipboard, txt->clipmem, strlen((char*)txt->clipmem));
+		}
+	}
 	return 0;
 }
 
@@ -959,13 +1022,13 @@ int gui_text_event_mouse(gui_s* gui, xorgEvent_s* event){
 	else if( event->mouse.event == XORG_MOUSE_PRESS && event->mouse.button == 1 ){
 		gui_text_unsel(txt);
 		gui_text_cursor_on_position(gui, gui->control, event->mouse.relative.x, event->mouse.relative.y);
-		gui_text_sel(gui->control);
+		gui_text_sel(gui, gui->control);
 		gui_text_redraw(gui, gui->background[0], gui->control, 0);
 		gui_draw(gui);
 	}
 	else if( (txt->flags & GUI_TEXT_SEL) && event->mouse.event == XORG_MOUSE_MOVE ){
 		gui_text_cursor_on_position(gui, gui->control, event->mouse.relative.x, event->mouse.relative.y);
-		gui_text_sel(gui->control);
+		gui_text_sel(gui, gui->control);
 		gui_text_redraw(gui, gui->background[0], gui->control, 0);
 		gui_draw(gui);
 	}else if( event->mouse.event == XORG_MOUSE_DBLCLICK && event->mouse.button == 1 ){

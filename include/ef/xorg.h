@@ -90,7 +90,10 @@ typedef enum {
 	XORG_ATOM_XROOTPMAP_ID,
 	XORG_ATOM_PRIMARY,
 	XORG_ATOM_CLIPBOARD,
+	XORG_ATOM_TARGETS,
+	XORG_ATOM_TIMESTAMP,
 	XORG_ATOM_XSEL_DATA,
+	XORG_ATOM_XA_STRING,
 	XORG_ATOM_UTF8_STRING,
 	XORG_ATOM_COUNT
 }xorgAtom_e;
@@ -165,6 +168,8 @@ typedef struct xorg{
 	const char* display;
 	xcb_colormap_t colormap;
 	xkb_s key;
+	xcb_window_t primary;
+	xcb_window_t clipboard;
 #ifdef XCB_ERROR_ENABLE
 	xcb_errors_context_t* err;
 #endif
@@ -238,7 +243,8 @@ typedef enum {
 	XORG_EVENT_MOVE           = XCB_CONFIGURE_NOTIFY,
 	XORG_EVENT_ATOM           = XCB_PROPERTY_NOTIFY,
 	XORG_EVENT_CLIENT         = XCB_CLIENT_MESSAGE,
-	XORG_EVENT_CLIPBOARD      = XCB_SELECTION_NOTIFY
+	XORG_EVENT_CLIPBOARD_PASTE= XCB_SELECTION_NOTIFY,
+	XORG_EVENT_CLIPBOARD_COPY = XCB_SELECTION_REQUEST
 }xorgEvent_e;
 
 typedef struct xorgMouse{
@@ -325,9 +331,13 @@ typedef struct xorgClient{
 }xorgClient_s;
 
 typedef struct xorgClipboard{
+	int eventPaste;
 	xcb_window_t requestor;
+	xcb_atom_t property;
+	xcb_atom_t type;
 	int primary;
-	utf8_t* str;
+	void* data;
+	size_t size;
 }xorgClipboard_s;
 
 typedef struct xorgEvent{
@@ -495,6 +505,9 @@ void xorg_send_current_desktop(xorg_s* x, uint32_t desktop);
 /** send set desktop*/
 void xorg_send_set_desktop(xorg_s* x, xcb_window_t win, uint32_t desktop);
 
+/** send copy reply for selection request*/
+void xorg_send_copy(xorg_s* x, xorgClipboard_s* clipboard, void* str, size_t len);
+
 /** free window */
 void xorg_window_release(xorgWindow_s* win);
 
@@ -633,16 +646,13 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async);
 /** free message*/
 void xorg_event_free(xorgEvent_s* ev);
 
-/** set primary owner for receve copy event*/
-void xorg_clipboard_primary_copy(xorg_s* x, xcb_window_t owner);
+/** get owner clipboard*/
+xcb_window_t xorg_clipboard_owner(xorg_s* x, xcb_atom_t selection);
 
-/** set clipboard owner for receve copy event*/
-void xorg_clipboard_clipboard_copy(xorg_s* x, xcb_window_t owner);
-
-/** request paste*/
-void xorg_clipboard_primary_paste(xorg_s* x, xcb_window_t win);
+/** set owner for receve copy event*/
+void xorg_clipboard_copy(xorg_s* x, xcb_window_t owner, xcb_atom_t selection);
 
 /** request paste*/
-void xorg_clipboard_clipboard_paste(xorg_s* x, xcb_window_t win);
+void xorg_clipboard_paste(xorg_s* x, xcb_window_t win, xcb_atom_t selection);
 
 #endif 

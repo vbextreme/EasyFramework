@@ -39,7 +39,8 @@ typedef struct guiText{
 	utf8Iterator_s it;
 	utf8_t* selStart;
 	utf8_t* selEnd;
-		
+	utf8_t* clipmem;	
+
 	ftFonts_s* fonts;
 	g2dColor_t foreground;
 	g2dColor_t select;
@@ -57,7 +58,7 @@ void gui_text_flags_set(guiText_s* txt, unsigned flags);
 void gui_text_ir_toggle(guiText_s* txt);
 const utf8_t* gui_text_str_raw(guiText_s* txt);
 utf8_t* gui_text_str(guiText_s* txt);
-void gui_text_sel(guiText_s* txt);
+void gui_text_sel(gui_s* gui, guiText_s* txt);
 void gui_text_unsel(guiText_s* txt);
 void gui_text_sel_del(guiText_s* txt);
 utf8_t* gui_text_sel_get(guiText_s* txt);
@@ -86,6 +87,7 @@ void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int parti
 
 int gui_text_event_key(gui_s* gui, xorgEvent_s* event);
 int gui_text_event_redraw(gui_s* gui, __unused xorgEvent_s* ev);
+int gui_text_event_clipboard(gui_s* gui, xorgEvent_s* ev);
 int gui_text_event_free(gui_s* gui, __unused xorgEvent_s* ev);
 int gui_text_timer_blink(guiTimer_s* timer);
 int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev);

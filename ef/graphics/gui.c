@@ -336,20 +336,24 @@ void gui_focus_prev(gui_s* gui){
 
 void gui_clipboard_copy(gui_s* gui, int primary){
 	if( primary ){
-		xorg_clipboard_primary_copy(X, gui->id);
+		xorg_clipboard_copy(X, gui->id, X->atom[XORG_ATOM_PRIMARY]);
 	}
 	else{
-		xorg_clipboard_clipboard_copy(X, gui->id);
+		xorg_clipboard_copy(X, gui->id, X->atom[XORG_ATOM_CLIPBOARD]);
 	}
 }
 
 void gui_clipboard_paste(gui_s* gui, int primary){
 	if( primary ){
-		xorg_clipboard_primary_paste(X, gui->id);
+		xorg_clipboard_paste(X, gui->id, X->atom[XORG_ATOM_PRIMARY]);
 	}
 	else{
-		xorg_clipboard_clipboard_paste(X, gui->id);
+		xorg_clipboard_paste(X, gui->id, X->atom[XORG_ATOM_CLIPBOARD]);
 	}
+}
+
+void gui_clipboard_send(xorgClipboard_s* clipboard, void* data, size_t size){
+	xorg_send_copy(X, clipboard, data, size);
 }
 
 void gui_draw(gui_s* gui){
@@ -568,6 +572,8 @@ int gui_event_call(xorgEvent_s* ev){
 		case XORG_EVENT_MOVE:           if( gui->move )    return gui->move(gui,ev);    break;
 		case XORG_EVENT_ATOM:           if( gui->atom )    return gui->atom(gui,ev);    break;
 		case XORG_EVENT_CLIENT:         if( gui->client )  return gui->client(gui,ev);  break;
+		case XORG_EVENT_CLIPBOARD_PASTE:if( gui->clipboard)return gui->clipboard(gui,ev);break;
+		case XORG_EVENT_CLIPBOARD_COPY: if( gui->clipboard)return gui->clipboard(gui,ev);break;
 	}
 	dbg_warning("not event called");
 	return 0;

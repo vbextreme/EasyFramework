@@ -75,15 +75,15 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	font_load(tfont, "fallback", "Symbola", 18);
 
 	gui_s* main = gui_new(
-		NULL, "test", NULL, GUI_MODE_DOCK_BOTTOM,
-		0, 0, gui_screen_height()-30, 800, 30, 
+		NULL, "test", NULL, GUI_MODE_NORMAL,
+		0, 50, 50, 400, 400, 
 		gui_color(255,0,0,0),
 		gui_background_new(gui_color(255, 125, 125, 125), NULL, NULL, gui_background_main_round_fn, GUI_BK_COLOR | GUI_BK_FN),
 		7,NULL
 	);
 	main->destroy = main_exit;
 //	gui_remove_decoration(main);
-/*
+
 	gui_s* labl = 	gui_label_attach(
 		gui_new(
 			main, "labl", "label", GUI_MODE_NORMAL,
@@ -127,15 +127,15 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			GUI_TEXT_SCROLL_X | GUI_TEXT_SCROLL_Y | GUI_TEXT_INSERT | GUI_TEXT_CUR_VISIBLE | GUI_TEXT_CURSOR_LIGHT
 		)
 	);
-*/
-	//btn->userdata = txt;
+
+	btn->userdata = txt;
 	gui_redraw(main);
 	gui_show(main, 1);
 
-	//gui_show(labl, 1);
-	//gui_show(btn, 1);
-	//gui_show(txt, 1);
-	//gui_focus(txt);
+	gui_show(labl, 1);
+	gui_show(btn, 1);
+	gui_show(txt, 1);
+	gui_focus(txt);
 
 	gui_loop();
 

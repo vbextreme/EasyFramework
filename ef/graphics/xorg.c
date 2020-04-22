@@ -208,7 +208,7 @@ void xorg_randr_monitor_refresh(xorg_s* x){
 
 		if( x->monitor[i].connected ){
 			xcb_randr_get_crtc_info_reply_t *crtc = xcb_randr_get_crtc_info_reply(x->connection,
-					xcb_randr_get_crtc_info(x->connection, routi->crtc, time(NULL)), NULL);
+					xcb_randr_get_crtc_info(x->connection, routi->crtc, XCB_CURRENT_TIME), NULL);
 			x->monitor[i].size.x = crtc->x;
 		   	x->monitor[i].size.y = crtc->y;
 		   	x->monitor[i].size.w = crtc->width;
@@ -304,12 +304,25 @@ const char* xorg_atom_name(xorg_s* x, xcb_atom_t atom){
 }
 
 xcb_atom_t xorg_atom_id(xorg_s* x, const char* name){
+	XCB_ERR_DEC;
 	xcb_intern_atom_cookie_t cookie = xcb_intern_atom(x->connection, 1, strlen(name), name);
-    xcb_intern_atom_reply_t *reply = xcb_intern_atom_reply(x->connection, cookie, NULL);
+    xcb_intern_atom_reply_t *reply = xcb_intern_atom_reply(x->connection, cookie, XCB_ERR_VAR);
+
+#ifdef XCB_ERROR_ENABLE	
+	if( err ){
+		dbg_error("xcb code: %d", err->error_code);
+		if( reply ) free(reply);
+		XCB_ERR_FREE;
+		return 0;
+	}
+#endif
+
 	if( !reply ){
+		XCB_ERR_FREE;
 		return 0;
 	}
 	xcb_atom_t ret = reply->atom;
+	XCB_ERR_FREE;
 	free(reply);
 	return ret;
 }
@@ -378,6 +391,9 @@ void xorg_atom_load(xorg_s* x){
 		[XORG_ATOM_PRIMARY]                        = "PRIMARY",
 		[XORG_ATOM_CLIPBOARD]                      = "CLIPBOARD",
 		[XORG_ATOM_XSEL_DATA]                      = "XSEL_DATA",
+		[XORG_ATOM_XA_STRING]                      = "STRING",
+		[XORG_ATOM_TARGETS]                        = "TARGETS",
+		[XORG_ATOM_TIMESTAMP]                      = "TIMESTAMP",
 		[XORG_ATOM_UTF8_STRING]                    = "UTF8_STRING"
 	};
 
@@ -431,21 +447,23 @@ xcb_visualid_t xorg_find_depth(xorg_s* x, uint8_t depth){
 }
 
 int xorg_xcb_attribute(xorg_s* x, xcb_get_window_attributes_cookie_t cookie){
-	xcb_generic_error_t* err = NULL;
-	xcb_get_window_attributes_reply_t* reply = xcb_get_window_attributes_reply(x->connection, cookie, &err);
+	XCB_ERR_DEC;
+	xcb_get_window_attributes_reply_t* reply = xcb_get_window_attributes_reply(x->connection, cookie, XCB_ERR_VAR);
 	int ret = -1;
-	
+
+#ifdef XCB_ERROR_ENABLE	
 	if( err ){
 		dbg_error("xcb code: %d", err->error_code);
 		goto ONEND;
 	}
+#endif
 	if( !reply ){
 		dbg_warning("xcb not reply");
 		goto ONEND;
 	}
 	ret = reply->map_state;
 ONEND:
-	free(err);
+	XCB_ERR_FREE;
 	free(reply);
 	return ret;
 }
@@ -860,7 +878,7 @@ void xorg_send_property(xorg_s* x, xcb_window_t win, xcb_atom_t atom){
 	event.response_type = XCB_PROPERTY_NOTIFY;
 	event.window = win;
 	event.atom = atom;
-	event.time = time(NULL);
+	event.time = XCB_CURRENT_TIME;
 	xcb_send_event(x->connection, false, win, XCB_EVENT_MASK_PROPERTY_CHANGE, (char*)&event);
 	xorg_client_flush(x);
 }
@@ -888,18 +906,71 @@ void xorg_send_client32(xorg_s* x, xcb_window_t win, xcb_window_t dest, xcb_atom
 }
 
 void xorg_send_active_window(xorg_s* x, xcb_window_t current, xcb_window_t activate){
-	const uint32_t data[] = { 1, time(NULL), current};
+	const uint32_t data[] = { 1, XCB_CURRENT_TIME, current};
 	xorg_send_client32(x, activate, xorg_root(x), x->atom[XORG_ATOM_NET_ACTIVE_WINDOW], data, sizeof(data));
 }
 
 void xorg_send_current_desktop(xorg_s* x, uint32_t desktop){
-	const uint32_t data[] = { desktop, time(NULL) };
+	const uint32_t data[] = { desktop, XCB_CURRENT_TIME};
 	xorg_send_client32(x, 0, xorg_root(x), x->atom[XORG_ATOM_NET_CURRENT_DESKTOP], data, sizeof(data));
 }
 
 void xorg_send_set_desktop(xorg_s* x, xcb_window_t win, uint32_t desktop){
 	const uint32_t data[] = { desktop, 1 };
 	xorg_send_client32(x, 0, win, x->atom[XORG_ATOM_NET_WM_DESKTOP], data, sizeof(data));
+}
+
+void xorg_send_copy(xorg_s* x, xorgClipboard_s* clipboard, void* str, size_t len){
+	xcb_selection_notify_event_t notify = {0};
+	notify.response_type = XCB_SELECTION_NOTIFY;
+	notify.time = XCB_CURRENT_TIME;
+	notify.requestor = clipboard->requestor;
+	notify.selection = clipboard->primary ? x->atom[XORG_ATOM_PRIMARY] : x->atom[XORG_ATOM_CLIPBOARD];
+	notify.target = clipboard->type;
+
+	dbg_info("sendcopy: selection %d property %d %s target %d %s",
+			clipboard->primary, clipboard->property, xorg_atom_name(x, clipboard->property),
+			clipboard->type, xorg_atom_name(x, clipboard->type)
+	);
+
+	if( clipboard->property == XCB_NONE ){
+		dbg_info("set property to %s", xorg_atom_name(x,clipboard->type));
+		clipboard->property = clipboard->type;
+	}
+	else{
+		notify.property = clipboard->property;
+	}
+
+    if( clipboard->type == x->atom[XORG_ATOM_TARGETS] ){
+		dbg_info("targets");
+		xcb_atom_t targets[] = { 
+			x->atom[XORG_ATOM_TIMESTAMP],
+			x->atom[XORG_ATOM_TARGETS],
+			x->atom[XORG_ATOM_UTF8_STRING],
+			x->atom[XORG_ATOM_XA_STRING]
+		};
+		xcb_change_property(x->connection, XCB_PROP_MODE_REPLACE, clipboard->requestor,
+			clipboard->property, XCB_ATOM_ATOM, sizeof(xcb_atom_t) * 8, sizeof(targets) / sizeof(xcb_atom_t), targets
+		);
+	}
+	else if( clipboard->type == x->atom[XORG_ATOM_TIMESTAMP] ){
+		dbg_info("timestamp");
+        xcb_timestamp_t cur = XCB_CURRENT_TIME;
+		xcb_change_property(x->connection, XCB_PROP_MODE_REPLACE, clipboard->requestor, clipboard->property, XCB_ATOM_INTEGER, sizeof(cur) * 8, 1, &cur);
+	}
+	else if( clipboard->type == x->atom[XORG_ATOM_UTF8_STRING] || clipboard->type == x->atom[XORG_ATOM_XA_STRING] ){
+		dbg_info("string '%s'", (char*)str);
+		xcb_change_property(x->connection, XCB_PROP_MODE_REPLACE, clipboard->requestor,
+                            clipboard->property, clipboard->type, 8, len, str);
+	}
+	else{
+		notify.property = XCB_NONE;
+		dbg_warning("unknow type %d %s", clipboard->type, xorg_atom_name(x, clipboard->type));
+	}
+
+	xcb_send_event(x->connection, false, clipboard->requestor, XCB_EVENT_MASK_PROPERTY_CHANGE, (char *)&notify);
+
+	xorg_client_flush(x);
 }
 
 void xorg_window_release(xorgWindow_s* win){
@@ -1709,6 +1780,8 @@ inline __private void keyboard_modifiers(unsigned long keysym, int set){
 	}
 }
 
+
+
 xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 	xcb_generic_event_t* event;
 	
@@ -1779,6 +1852,8 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			struct xkb_state* state;
 			if( (state = xkb_x11_state_new_from_device(x->key.keymap, x->connection, x->key.device)) ){
 				ev->keyboard.keysym = xkb_state_key_get_one_sym(state, ev->keyboard.keycode);
+				keyboard_modifiers(ev->keyboard.keysym, 1);
+				ev->keyboard.modifier = mnemonicModifier;
 				int size = xkb_state_key_get_utf8(state, ev->keyboard.keycode, NULL, 0) + 1;
 				if( size > 1 && size < XKB_UTF_MAX ){
 					xkb_state_key_get_utf8(state, ev->keyboard.keycode, (char*)ev->keyboard.utf8, size);
@@ -1786,9 +1861,6 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 				}
 				xkb_state_unref(state);
 			}
-			keyboard_modifiers(ev->keyboard.keysym, 1);
-			ev->keyboard.modifier = mnemonicModifier;
-
 			dbg_info("key press:: button: %u keycode: %lu keysym: %lu utf: (%u|%X)%s", 
 					ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf, ev->keyboard.utf, ev->keyboard.utf8);
 		}
@@ -1809,10 +1881,12 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 			ev->keyboard.keysym = 0;
 			ev->keyboard.utf8[0] = 0;
 			ev->keyboard.utf = 0;
+			ev->keyboard.modifier = mnemonicModifier;
 
 			struct xkb_state* state;
 			if( (state = xkb_x11_state_new_from_device(x->key.keymap, x->connection, x->key.device)) ){
 				ev->keyboard.keysym = xkb_state_key_get_one_sym(state, ev->keyboard.keycode);
+				keyboard_modifiers(ev->keyboard.keysym, 0);
 				int size = xkb_state_key_get_utf8(state, ev->keyboard.keycode, NULL, 0) + 1;
 				if( size > 1 && size < XKB_UTF_MAX ){
 					xkb_state_key_get_utf8(state, ev->keyboard.keycode, (char*)ev->keyboard.utf8, size);
@@ -1820,9 +1894,6 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 				}
 				xkb_state_unref(state);
 			}
-			keyboard_modifiers(ev->keyboard.keysym, 0);
-			ev->keyboard.modifier = mnemonicModifier;
-
 			dbg_info("key release:: button: %u keycode: %lu keysym: %lu utf: (%u|%X)%s", 
 					ev->keyboard.button, ev->keyboard.keycode, ev->keyboard.keysym, ev->keyboard.utf, ev->keyboard.utf, ev->keyboard.utf8);
 		}
@@ -1989,15 +2060,55 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 		}
 		break;
 
+		case XCB_SELECTION_REQUEST:{
+			xcb_selection_request_event_t* request = (xcb_selection_request_event_t*) event;
+			ev->win = xorg_clipboard_owner(x, request->selection);
+			ev->clipboard.eventPaste = 0;
+			ev->clipboard.requestor = request->requestor;
+			ev->clipboard.primary = request->selection == x->atom[XORG_ATOM_PRIMARY];
+			ev->clipboard.data = NULL;
+			ev->clipboard.size = 0;
+			ev->clipboard.type = request->target;
+			ev->clipboard.property = request->property;
+			dbg_error("REQUEST primary %d clipboard %d xsel %d utf8 %d", 
+					x->atom[XORG_ATOM_PRIMARY], x->atom[XORG_ATOM_CLIPBOARD], x->atom[XORG_ATOM_XSEL_DATA], x->atom[XORG_ATOM_UTF8_STRING]);
+			dbg_error("responce %d selection %d sequence %d property %d %s target %d %s", 
+					request->response_type, request->selection, request->sequence, 
+					request->property, xorg_atom_name(x, request->property),
+					request->target, xorg_atom_name(x, request->target));
+
+		}
+		break;
+
 		case XCB_SELECTION_NOTIFY:{
 			xcb_selection_notify_event_t* notify = (xcb_selection_notify_event_t*)event;
-			if( !notify->property ) break;
-			ev->win = notify->target;
+			dbg_error("SELECTION primary %d clipboard %d xsel %d utf8 %d", 
+					x->atom[XORG_ATOM_PRIMARY], x->atom[XORG_ATOM_CLIPBOARD], x->atom[XORG_ATOM_XSEL_DATA], x->atom[XORG_ATOM_UTF8_STRING]);
+			dbg_error("responce %d selection %d sequence %d property %d %s target %d %s", 
+					notify->response_type, notify->selection, notify->sequence, notify->property, xorg_atom_name(x, notify->property),
+					notify->target, xorg_atom_name(x, notify->target));
+			if( !notify->property ){
+				ev->type = 0;
+				break;
+			}
+			ev->clipboard.eventPaste = 1;
+			ev->clipboard.type = notify->target;
+			ev->clipboard.property = notify->property;
 			ev->clipboard.requestor = notify->requestor;
 			ev->clipboard.primary = notify->selection == x->atom[XORG_ATOM_PRIMARY];
-			xcb_get_property_cookie_t cookie = xorg_xcb_property_cookie_utf8(x, notify->requestor, notify->property);
-			ev->clipboard.str = (utf8_t*)xorg_xcb_property_string(x, cookie);
+			ev->win = ev->clipboard.primary ? x->primary : x->clipboard ;
+			if( notify->target == x->atom[XORG_ATOM_XA_STRING] || notify->target == x->atom[XORG_ATOM_UTF8_STRING] ){
+				xcb_get_property_cookie_t cookie = xorg_xcb_property_cookie_utf8(x, notify->requestor, notify->target);
+				ev->clipboard.data = (utf8_t*)xorg_xcb_property_string(x, cookie);
+				ev->clipboard.size = strlen(ev->clipboard.data);
+				dbg_info("paste string::'%s'",(char*)ev->clipboard.data);
+			}
 		}
+		break;
+
+		case XCB_SELECTION_CLEAR:
+			dbg_error("LOSE");
+			dbg_error("LOSE");
 		break;
 
 		default:
@@ -2012,20 +2123,24 @@ void xorg_event_free(xorgEvent_s* ev){
 	free(ev);
 }
 
-void xorg_clipboard_primary_copy(xorg_s* x, xcb_window_t owner){
-	xcb_set_selection_owner(x->connection, owner, x->atom[XORG_ATOM_PRIMARY], time(NULL));
+xcb_window_t xorg_clipboard_owner(xorg_s* x, xcb_atom_t selection){
+	xcb_get_selection_owner_cookie_t cookie = xcb_get_selection_owner(x->connection, selection);
+    xcb_get_selection_owner_reply_t *reply= xcb_get_selection_owner_reply(x->connection, cookie, NULL );
+	if( !reply ) return -1;
+    xcb_window_t win = reply->owner;
+	free(reply);
+	return win;
 }
 
-void xorg_clipboard_clipboard_copy(xorg_s* x, xcb_window_t owner){
- 	xcb_set_selection_owner(x->connection, owner, x->atom[XORG_ATOM_CLIPBOARD], time(NULL));
+void xorg_clipboard_copy(xorg_s* x, xcb_window_t owner, xcb_atom_t selection){
+	dbg_info("set clipboard owner:%d",owner);
+	xcb_set_selection_owner(x->connection, owner, selection, XCB_CURRENT_TIME);
+	iassert( xorg_clipboard_owner(x, selection) == owner );
 }
 
-void xorg_clipboard_primary_paste(xorg_s* x, xcb_window_t win){
-    xcb_convert_selection(x->connection, win, x->atom[XORG_ATOM_PRIMARY], x->atom[XORG_ATOM_UTF8_STRING], x->atom[XORG_ATOM_XSEL_DATA], time(NULL));
+void xorg_clipboard_paste(xorg_s* x, xcb_window_t win, xcb_atom_t selection){
+	if( selection == x->atom[XORG_ATOM_PRIMARY] ) x->primary = win;
+	else x->clipboard = win;
+    xcb_convert_selection(x->connection, win, selection, x->atom[XORG_ATOM_UTF8_STRING], x->atom[XORG_ATOM_UTF8_STRING], XCB_CURRENT_TIME);
 }
-
-void xorg_clipboard_clipboard_paste(xorg_s* x, xcb_window_t win){
-    xcb_convert_selection(x->connection, win, x->atom[XORG_ATOM_CLIPBOARD], x->atom[XORG_ATOM_UTF8_STRING], x->atom[XORG_ATOM_XSEL_DATA], time(NULL));
-}
-
 

@@ -8,7 +8,6 @@
 #include <ef/phq.h>
 
 /*TODO 
- * xorg clipboard
  * xorg drag&drop
  * xorg tray
  * eden:
@@ -111,7 +110,6 @@ typedef struct gui{
 	guiEvent_f atom;
 	guiEvent_f client;
 	guiEvent_f clipboard;
-
 }gui_s;
 
 #define gui_color(A,R,G,B) g2d_color_gen(X_COLOR_MODE, A, R, G, B)
@@ -151,6 +149,7 @@ int gui_focus_prev_id(gui_s* parent);
 void gui_focus_prev(gui_s* gui);
 void gui_clipboard_copy(gui_s* gui, int primary);
 void gui_clipboard_paste(gui_s* gui, int primary);
+void gui_clipboard_send(xorgClipboard_s* clipboard, void* data, size_t size);
 void gui_draw(gui_s* gui);
 void gui_redraw(gui_s* gui);
 void gui_opacity(gui_s* gui, double op);
