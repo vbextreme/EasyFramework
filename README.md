@@ -1,9 +1,10 @@
-EasyFramework v1.2.0
+EasyFramework v1.2.1
 ====================
 Little framework created during the study of language c.<br/>
 
 State:
 ======
+* 1.2.1 graphics docs
 * 1.2.0 introduce graphics
 * 1.1.1 retry aur
 * 1.1.0 add terminal function
@@ -29,6 +30,30 @@ gnutls<br/>
 pthread<br/>
 curl<br/>
 libgit2<br/>
+libpng<br/>
+libjpeg<br/>
+libgif<br/>
+librsvg-2.0<br/>
+gnutls<br/>
+libcurl<br/>
+libavcodec<br/>
+libavdevice<br/>
+libavfilter<br/>
+libavformat<br/>
+libavutil<br/>
+libswresample<br/>
+libswscale<br/>
+freetype2<br/>
+fontconfig<br/>
+xcb<br/>
+xcb-xrm<br/>
+xcb-composite<br/>
+xcb-util<br/>
+xcb-image<br/>
+xcb-randr<br/>
+xcb-shape<br/>
+xkbcommon<br/>
+xkbcommon-x11<br/>
 
 To install it:
 ==============
