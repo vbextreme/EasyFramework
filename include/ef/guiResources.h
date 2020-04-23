@@ -38,8 +38,10 @@ typedef struct guiResource{
 	guiResource_e type;
 }guiResource_s;
 
+/** init resource*/
 void gui_resources_init(void);
 
+/** free resource*/
 void gui_resources_free(void);
 
 void gui_resource_long_new(const char* name, long value);

@@ -29,7 +29,6 @@
 #define GUI_TYPE_DIV    5
 #define GUI_TYPE_USER   999
 
-
 #define GUI_BK_NO_OP 0x00
 #define GUI_BK_COLOR 0x01
 #define GUI_BK_CPOS  0x02
@@ -114,13 +113,22 @@ typedef struct gui{
 
 #define gui_color(A,R,G,B) g2d_color_gen(X_COLOR_MODE, A, R, G, B)
 
+/** before use gui*/
 void gui_begin(void);
+
+/** after use gui*/
 void gui_end();
 
+/** grab root event*/
 void gui_register_root_event(void);
+
+/** get screen width*/
 unsigned gui_screen_width(void);
+
+/** get screen height*/
 unsigned gui_screen_height(void);
 
+/** create gui*/
 gui_s* gui_new(
 		gui_s* parent, 
 		const char* name, const char* class, guiMode_e mode,
@@ -128,66 +136,163 @@ gui_s* gui_new(
 		g2dColor_t colorBorder, guiBackground_s* bk,
 		int genericSize, void* userdata);
 
+/** free gui, remove gui from parent*/
 void gui_free(gui_s* gui);
 
+/** add child to gui*/
 void gui_child_add(gui_s* parent, gui_s* child);
+
+/** remove child from gui*/
 gui_s* gui_child_remove(gui_s* parent, gui_s* child);
 
+/** get main parent*/
 gui_s* gui_main_parent(gui_s* gui);
+
+/** set gui name*/
 void gui_name(gui_s* gui, const char* name);
+
+/** set gui class*/
 void gui_class(gui_s* gui, const char* class);
+
+/** show gui*/
 void gui_show(gui_s* gui, int show);
+
+/** move gui*/
 void gui_move(gui_s* gui, int x, int y);
+
+/** resize gui*/
 void gui_resize(gui_s* gui, int w, int h);
+
+/** set border*/
 void gui_border(gui_s* gui, int border);
+
+/** set focus id on gui*/
 void gui_focus_from_parent(gui_s* gui, int id);
+
+/** check if gui have focus*/
 int gui_focuse_have(gui_s* gui);
+
+/** set focus on gui*/
 void gui_focus(gui_s* gui);
+
+/** get next id focus*/
 int gui_focus_next_id(gui_s* parent);
+
+/** set focus on next gui*/
 void gui_focus_next(gui_s* gui);
+
+/** get id focus prev*/ 
 int gui_focus_prev_id(gui_s* parent);
+
+/** set previous focus*/
 void gui_focus_prev(gui_s* gui);
+
+/** enable clipboard copy*/
 void gui_clipboard_copy(gui_s* gui, int primary);
+
+/** request paste*/
 void gui_clipboard_paste(gui_s* gui, int primary);
+
+/** send clipboard data*/
 void gui_clipboard_send(xorgClipboard_s* clipboard, void* data, size_t size);
+
+/** draw gui*/
 void gui_draw(gui_s* gui);
+
+/** redraw gui*/
 void gui_redraw(gui_s* gui);
+
+/** set opacity*/
 void gui_opacity(gui_s* gui, double op);
+
+/** remove round*/
 void gui_round_unset(gui_s* gui);
+
+/** set round border*/
 void gui_round_set(gui_s* gui, int radius);
+
+/** set antialiased round border*/
 void gui_round_antialiasing_set(gui_s* gui, int radius);
+
+/** request to remove decorations*/
 void gui_remove_decoration(gui_s* gui);
 
+/** default event for redraw*/
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
+
+/** default event for draw*/
 int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);
+
+/** default event for focus*/
 int gui_event_focus(gui_s* gui, xorgEvent_s* event);
+
+/** default event for mouse*/
 int gui_event_mouse(gui_s* gui, xorgEvent_s* event);
+
+/** default event for move*/
 int gui_event_move(gui_s* gui, xorgEvent_s* event);
+
+/** default event for key*/
 int gui_event_key(gui_s* gui, xorgEvent_s* event);
 
+/** get event*/
 xorgEvent_s* gui_event_get(int async);
+
+/** release event*/
 void gui_event_release(xorgEvent_s* ev);
+
+/** callback event*/
 int gui_event_call(xorgEvent_s* ev);
 
+/** deadpoll */
 err_t gui_deadpoll_event_callback(__unused deadpoll_s* dp, __unused int ev, __unused void* arg);
+
+/** deadpoll */
 void gui_deadpoll_unregister(deadpoll_s* dp);
+
+/** deadpoll */
 void gui_deadpoll_register(deadpoll_s* dp);
+
+/** deadpoll */
 int gui_deadpoll_event(deadpoll_s* dp);
+
+/** loop gui*/
 void gui_loop(void);
 
+/** create new timer*/
 guiTimer_s* gui_timer_new(gui_s* gui, size_t ms, guiTimer_f fn, void* userdata);
+
+/** change timer*/
 int gui_timer_change(guiTimer_s* timer, size_t ms);
+
+/** free timer*/
 void gui_timer_free(guiTimer_s* timer);
 
+/** create new background*/
 guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_s* pos, guiBackgroundFN_f fn, int mode);
+
+/** redraw background*/
 void gui_background_redraw(gui_s* gui, guiBackground_s* bkg);
+
+/** get background*/
 guiBackground_s* gui_background_get(gui_s* gui, size_t id);
+
+/** add background*/
 void gui_background_add(gui_s* gui, guiBackground_s* bk);
+
+/** custom background fn for rounded border*/
 void gui_background_main_round_fn(gui_s* gui);
+
+/** custom background fn for rounded border*/
 void gui_background_round_fn(gui_s* gui);
 
+/** load string resource*/
 char* gui_resource_string_get(const char* name, const char* class);
+
+/** load long resource*/
 long gui_resource_long_get(const char* name, const char* class);
+
+/** load bool resource*/
 int gui_resource_bool_get(const char* name, const char* class);
 
 

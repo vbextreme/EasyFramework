@@ -1,0 +1,506 @@
+.TH "include/ef/image.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/image.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/utf8\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBg2dImage\fP"
+.br
+.ti -1c
+.RI "struct \fBg2dCoord\fP"
+.br
+.ti -1c
+.RI "struct \fBg2dPoint\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBimg_clip\fP(V)   ((V) < 0 ? 0 : (V) > 255 ? 255 : (V))"
+.br
+.ti -1c
+.RI "#define \fBimg_clip_h\fP(V)   ((V>255)?255:V)"
+.br
+.ti -1c
+.RI "#define \fB__g2d_free\fP   \fB__cleanup\fP(\fBg2d_autofree\fP)"
+.br
+.ti -1c
+.RI "#define \fBg2d_row\fP(IMG,  Y)   (((IMG)\->p)*(Y))"
+.br
+.ti -1c
+.RI "#define \fBg2d_pixel\fP(IMG,  ROW)   (&(IMG)\->pixel[ROW])"
+.br
+.ti -1c
+.RI "#define \fBg2d_color\fP(IMG,  ROW,  X)   (unsigned*)(&(IMG)\->pixel[(ROW)+((X)*4)])"
+.br
+.ti -1c
+.RI "#define \fBg2d_color_alpha\fP(IMG,  ARGB)   (((ARGB)>>(IMG)\->sa)&0xFF)"
+.br
+.ti -1c
+.RI "#define \fBg2d_color_red\fP(IMG,  ARGB)   (((ARGB)>>(IMG)\->sr)&0xFF)"
+.br
+.ti -1c
+.RI "#define \fBg2d_color_green\fP(IMG,  ARGB)   (((ARGB)>>(IMG)\->sg)&0xFF)"
+.br
+.ti -1c
+.RI "#define \fBg2d_color_blue\fP(IMG,  ARGB)   (((ARGB)>>(IMG)\->sb)&0xFF)"
+.br
+.ti -1c
+.RI "#define \fBg2d_color_make\fP(IMG,  A,  R,  G,  B)   ( ((A)<<(IMG)\->sa) | ((R)<<(IMG)\->sr) | ((G)<<(IMG)\->sg) | ((B)<<(IMG)\->sb) )"
+.br
+.ti -1c
+.RI "#define \fBg2d_color_alpha_set\fP(IMG,  ARGB,  A)   ( ((ARGB) & (~(IMG)\->ma)) | ((A)<<(IMG)\->sa) )"
+.br
+.ti -1c
+.RI "#define \fBg2d_alpha_part\fP(ALPHA,  PART,  BACKGROUND)   ( ((PART) * (ALPHA)) / 255  + (BACKGROUND) *  (255 \- (ALPHA)) / 255 )"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBg2dImage\fP \fBg2dImage_s\fP"
+.br
+.ti -1c
+.RI "typedef unsigned int \fBg2dColor_t\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBg2dCoord\fP \fBg2dCoord_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBg2dPoint\fP \fBg2dPoint_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBg2dMode_e\fP { \fBG2D_MODE_BGRA\fP, \fBG2D_MODE_ABGR\fP, \fBG2D_MODE_ARGB\fP, \fBG2D_MODE_RGBA\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBimg_rgb_to_yuv8\fP (unsigned char *y, unsigned char *u, unsigned char *v, unsigned char r, unsigned char g, unsigned char b)"
+.br
+.ti -1c
+.RI "void \fBimg_yuv8_to_rgb\fP (unsigned char *r, unsigned char *g, unsigned char *b, unsigned char y, unsigned char u, unsigned char v)"
+.br
+.ti -1c
+.RI "unsigned char \fBimg_rgb_to_gray\fP (unsigned char r, unsigned char g, unsigned char b)"
+.br
+.ti -1c
+.RI "int \fBimg_color_h\fP (int R, int G, int B)"
+.br
+.ti -1c
+.RI "\fBg2dPoint_s\fP \fBg2d_centroid\fP (\fBg2dPoint_s\fP *points)"
+.br
+.ti -1c
+.RI "\fBg2dImage_s\fP * \fBg2d_clone\fP (unsigned w, unsigned h, \fBg2dMode_e\fP mode, uint8_t *pixels)"
+.br
+.ti -1c
+.RI "\fBg2dImage_s\fP * \fBg2d_new\fP (unsigned w, unsigned h, \fBg2dMode_e\fP mode)"
+.br
+.ti -1c
+.RI "void \fBg2d_free\fP (\fBg2dImage_s\fP *img)"
+.br
+.ti -1c
+.RI "void \fBg2d_autofree\fP (\fBg2dImage_s\fP **img)"
+.br
+.ti -1c
+.RI "void \fBg2d_ratio\fP (int modeAWH, unsigned sw, unsigned sh, unsigned *w, unsigned *h)"
+.br
+.ti -1c
+.RI "\fBg2dColor_t\fP \fBg2d_color_gen\fP (\fBg2dMode_e\fP mode, unsigned a, unsigned r, unsigned g, unsigned b)"
+.br
+.ti -1c
+.RI "\fBg2dImage_s\fP * \fBg2d_copy\fP (\fBg2dImage_s\fP *src)"
+.br
+.ti -1c
+.RI "void \fBg2d_bitblt\fP (\fBg2dImage_s\fP *dst, \fBg2dCoord_s\fP *cod, \fBg2dImage_s\fP *src, \fBg2dCoord_s\fP *cos)"
+.br
+.ti -1c
+.RI "void \fBg2d_bitblt_xor\fP (\fBg2dImage_s\fP *dst, \fBg2dCoord_s\fP *cod, \fBg2dImage_s\fP *src, \fBg2dCoord_s\fP *cos)"
+.br
+.ti -1c
+.RI "void \fBg2d_bitblt_alpha\fP (\fBg2dImage_s\fP *dst, \fBg2dCoord_s\fP *cod, \fBg2dImage_s\fP *src, \fBg2dCoord_s\fP *cos)"
+.br
+.ti -1c
+.RI "void \fBg2d_bitblt_channel\fP (\fBg2dImage_s\fP *dst, \fBg2dCoord_s\fP *cod, \fBg2dImage_s\fP *src, \fBg2dCoord_s\fP *cos, unsigned int mask)"
+.br
+.ti -1c
+.RI "void \fBg2d_clear\fP (\fBg2dImage_s\fP *img, \fBg2dColor_t\fP color, \fBg2dCoord_s\fP *coord)"
+.br
+.ti -1c
+.RI "void \fBg2d_channel_set\fP (\fBg2dImage_s\fP *img, \fBg2dColor_t\fP color, \fBg2dCoord_s\fP *coord, unsigned mask)"
+.br
+.ti -1c
+.RI "void \fBg2d_luminance\fP (\fBg2dImage_s\fP *img)"
+.br
+.ti -1c
+.RI "void \fBg2d_black_white\fP (\fBg2dImage_s\fP *gray, \fBg2dCoord_s\fP *coord)"
+.br
+.ti -1c
+.RI "void \fBg2d_black_white_dominant\fP (\fBg2dColor_t\fP *outAB, \fBg2dImage_s\fP *src, \fBg2dImage_s\fP *bw, \fBg2dCoord_s\fP *coord)"
+.br
+.ti -1c
+.RI "void \fBg2d_black_white_set\fP (\fBg2dImage_s\fP *bw, \fBg2dCoord_s\fP *coord, \fBg2dColor_t\fP *colorAB)"
+.br
+.ti -1c
+.RI "unsigned \fBg2d_compare_similar\fP (\fBg2dImage_s\fP *a, \fBg2dCoord_s\fP *ca, \fBg2dImage_s\fP *b, \fBg2dCoord_s\fP *cb)"
+.br
+.ti -1c
+.RI "unsigned \fBg2d_bitcount\fP (\fBg2dImage_s\fP *img, \fBg2dCoord_s\fP *coord)"
+.br
+.ti -1c
+.RI "void \fBg2d_resize_to\fP (\fBg2dImage_s\fP *dst, \fBg2dImage_s\fP *src)"
+.br
+.ti -1c
+.RI "\fBg2dImage_s\fP * \fBg2d_resize\fP (\fBg2dImage_s\fP *src, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "\fBg2dImage_s\fP * \fBg2d_rotate\fP (\fBg2dImage_s\fP *src, unsigned cx, unsigned cy, float grad)"
+.br
+.ti -1c
+.RI "void \fBg2d_char\fP (\fBg2dImage_s\fP *dst, \fBg2dCoord_s\fP *coord, \fBg2dImage_s\fP *ch, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_char_indirect\fP (\fBg2dImage_s\fP *dst, \fBg2dCoord_s\fP *coord, \fBg2dImage_s\fP *ch, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_point_rotate\fP (unsigned *y, unsigned *x, unsigned cy, unsigned cx, double grad)"
+.br
+.ti -1c
+.RI "void \fBg2d_points\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *points, \fBg2dColor_t\fP *colors, size_t count)"
+.br
+.ti -1c
+.RI "void \fBg2d_hline\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *st, unsigned x1, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_vline\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *st, unsigned y1, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_bline\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *st, \fBg2dPoint_s\fP *en, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_bline_antialiased\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *st, \fBg2dPoint_s\fP *en, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_line\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *st, \fBg2dPoint_s\fP *en, \fBg2dColor_t\fP col, int antialiased)"
+.br
+.ti -1c
+.RI "void \fBg2d_qubezier_antialiased\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *p0, \fBg2dPoint_s\fP *p1, \fBg2dPoint_s\fP *p2, \fBg2dColor_t\fP color)"
+.br
+.ti -1c
+.RI "void \fBg2d_cubezier_normal\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *p0, \fBg2dPoint_s\fP *p1, \fBg2dPoint_s\fP *p2, \fBg2dPoint_s\fP *p3, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_cubezier_antialiased\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *p0, \fBg2dPoint_s\fP *p1, \fBg2dPoint_s\fP *p2, \fBg2dPoint_s\fP *p3, \fBg2dColor_t\fP color)"
+.br
+.ti -1c
+.RI "void \fBg2d_cubezier\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *p0, \fBg2dPoint_s\fP *p1, \fBg2dPoint_s\fP *p2, \fBg2dPoint_s\fP *p3, \fBg2dColor_t\fP col, int antialiased)"
+.br
+.ti -1c
+.RI "void \fBg2d_triangle\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *p0, \fBg2dPoint_s\fP *p1, \fBg2dPoint_s\fP *p2, \fBg2dColor_t\fP col, int antialiased)"
+.br
+.ti -1c
+.RI "void \fBg2d_triangle_fill\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *p0, \fBg2dPoint_s\fP *p1, \fBg2dPoint_s\fP *p2, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_rect\fP (\fBg2dImage_s\fP *img, \fBg2dCoord_s\fP *rc, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_rect_fill\fP (\fBg2dImage_s\fP *img, \fBg2dCoord_s\fP *rc, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_circle_normal\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned r, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_circle_antialiased\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, int r, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_circle\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, int r, \fBg2dColor_t\fP col, int antialiased)"
+.br
+.ti -1c
+.RI "void \fBg2d_circle_fill\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned r, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_ellipse_normal\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_ellipse_antialiased\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_ellipse\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col, int antialiased)"
+.br
+.ti -1c
+.RI "void \fBg2d_repfill\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *st, \fBg2dColor_t\fP rep, \fBg2dColor_t\fP col)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define __g2d_free   \fB__cleanup\fP(\fBg2d_autofree\fP)"
+cleanup 
+.PP
+Definition at line 70 of file image\&.h\&.
+.SS "#define g2d_alpha_part(ALPHA, PART, BACKGROUND)   ( ((PART) * (ALPHA)) / 255  + (BACKGROUND) *  (255 \- (ALPHA)) / 255 )"
+calcolate alpha 
+.PP
+Definition at line 133 of file image\&.h\&.
+.SS "#define g2d_color(IMG, ROW, X)   (unsigned*)(&(IMG)\->pixel[(ROW)+((X)*4)])"
+get color pointer to pixel X 
+.PP
+Definition at line 112 of file image\&.h\&.
+.SS "#define g2d_color_alpha(IMG, ARGB)   (((ARGB)>>(IMG)\->sa)&0xFF)"
+get channel alpha 
+.PP
+Definition at line 115 of file image\&.h\&.
+.SS "#define g2d_color_alpha_set(IMG, ARGB, A)   ( ((ARGB) & (~(IMG)\->ma)) | ((A)<<(IMG)\->sa) )"
+set alpha in color 
+.PP
+Definition at line 130 of file image\&.h\&.
+.SS "#define g2d_color_blue(IMG, ARGB)   (((ARGB)>>(IMG)\->sb)&0xFF)"
+get channel blue 
+.PP
+Definition at line 124 of file image\&.h\&.
+.SS "#define g2d_color_green(IMG, ARGB)   (((ARGB)>>(IMG)\->sg)&0xFF)"
+get channel green 
+.PP
+Definition at line 121 of file image\&.h\&.
+.SS "#define g2d_color_make(IMG, A, R, G, B)   ( ((A)<<(IMG)\->sa) | ((R)<<(IMG)\->sr) | ((G)<<(IMG)\->sg) | ((B)<<(IMG)\->sb) )"
+create color from image 
+.PP
+Definition at line 127 of file image\&.h\&.
+.SS "#define g2d_color_red(IMG, ARGB)   (((ARGB)>>(IMG)\->sr)&0xFF)"
+get channel red 
+.PP
+Definition at line 118 of file image\&.h\&.
+.SS "#define g2d_pixel(IMG, ROW)   (&(IMG)\->pixel[ROW])"
+get pointer to pixel 
+.PP
+Definition at line 109 of file image\&.h\&.
+.SS "#define g2d_row(IMG, Y)   (((IMG)\->p)*(Y))"
+get pointer to row 
+.PP
+Definition at line 106 of file image\&.h\&.
+.SS "#define img_clip(V)   ((V) < 0 ? 0 : (V) > 255 ? 255 : (V))"
+
+.PP
+Definition at line 28 of file image\&.h\&.
+.SS "#define img_clip_h(V)   ((V>255)?255:V)"
+
+.PP
+Definition at line 29 of file image\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef unsigned int \fBg2dColor_t\fP"
+
+.PP
+Definition at line 17 of file image\&.h\&.
+.SS "typedef struct \fBg2dCoord\fP \fBg2dCoord_s\fP"
+
+.SS "typedef struct \fBg2dImage\fP \fBg2dImage_s\fP"
+
+.SS "typedef struct \fBg2dPoint\fP \fBg2dPoint_s\fP"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBg2dMode_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIG2D_MODE_BGRA \fP\fP
+.TP
+\fB\fIG2D_MODE_ABGR \fP\fP
+.TP
+\fB\fIG2D_MODE_ARGB \fP\fP
+.TP
+\fB\fIG2D_MODE_RGBA \fP\fP
+.PP
+Definition at line 9 of file image\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void g2d_autofree (\fBg2dImage_s\fP ** img)"
+cleanup 
+.SS "void g2d_bitblt (\fBg2dImage_s\fP * dst, \fBg2dCoord_s\fP * cod, \fBg2dImage_s\fP * src, \fBg2dCoord_s\fP * cos)"
+copy part of image src to dst cod image, size of block w*h need equal 
+.SS "void g2d_bitblt_alpha (\fBg2dImage_s\fP * dst, \fBg2dCoord_s\fP * cod, \fBg2dImage_s\fP * src, \fBg2dCoord_s\fP * cos)"
+same bitblt but with alpha color 
+.SS "void g2d_bitblt_channel (\fBg2dImage_s\fP * dst, \fBg2dCoord_s\fP * cod, \fBg2dImage_s\fP * src, \fBg2dCoord_s\fP * cos, unsigned int mask)"
+copy only a channel color 
+.SS "void g2d_bitblt_xor (\fBg2dImage_s\fP * dst, \fBg2dCoord_s\fP * cod, \fBg2dImage_s\fP * src, \fBg2dCoord_s\fP * cos)"
+xor part of image src to dst cod image, size of block w*h need equal 
+.SS "unsigned g2d_bitcount (\fBg2dImage_s\fP * img, \fBg2dCoord_s\fP * coord)"
+count bit in block 
+.SS "void g2d_black_white (\fBg2dImage_s\fP * gray, \fBg2dCoord_s\fP * coord)"
+convert gray img to black white 
+.SS "void g2d_black_white_dominant (\fBg2dColor_t\fP * outAB, \fBg2dImage_s\fP * src, \fBg2dImage_s\fP * bw, \fBg2dCoord_s\fP * coord)"
+get two dominant color from block image 
+.PP
+\fBParameters\fP
+.RS 4
+\fIoutAB\fP array of two element where store two dominant color of black and white 
+.br
+\fIsrc\fP image where calcolated dominat 
+.br
+\fIbw\fP black and white image for getting position of pixel dominant 
+.br
+\fIcoord\fP block of image 
+.RE
+.PP
+
+.SS "void g2d_black_white_set (\fBg2dImage_s\fP * bw, \fBg2dCoord_s\fP * coord, \fBg2dColor_t\fP * colorAB)"
+set bw pixel to correspective AB color in block 
+.SS "void g2d_bline (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * st, \fBg2dPoint_s\fP * en, \fBg2dColor_t\fP col)"
+draw line 
+.SS "void g2d_bline_antialiased (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * st, \fBg2dPoint_s\fP * en, \fBg2dColor_t\fP col)"
+draw line antialaised 
+.SS "\fBg2dPoint_s\fP g2d_centroid (\fBg2dPoint_s\fP * points)"
+find centroid from vector of points 
+.SS "void g2d_channel_set (\fBg2dImage_s\fP * img, \fBg2dColor_t\fP color, \fBg2dCoord_s\fP * coord, unsigned mask)"
+set channel to color img[y][x] = (img[y][x] & (~mask)) | color 
+.SS "void g2d_char (\fBg2dImage_s\fP * dst, \fBg2dCoord_s\fP * coord, \fBg2dImage_s\fP * ch, \fBg2dColor_t\fP col)"
+convert grayscaled image ch to color and copy to dst 
+.SS "void g2d_char_indirect (\fBg2dImage_s\fP * dst, \fBg2dCoord_s\fP * coord, \fBg2dImage_s\fP * ch, \fBg2dColor_t\fP col)"
+same g2d_char but not apply alpha 
+.SS "void g2d_circle (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, int r, \fBg2dColor_t\fP col, int antialiased)"
+draw circle antialiased 
+.SS "void g2d_circle_antialiased (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, int r, \fBg2dColor_t\fP col)"
+draw circle antialiased 
+.SS "void g2d_circle_fill (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned r, \fBg2dColor_t\fP col)"
+draw circle with fill color 
+.SS "void g2d_circle_normal (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned r, \fBg2dColor_t\fP col)"
+draw circle normal 
+.SS "void g2d_clear (\fBg2dImage_s\fP * img, \fBg2dColor_t\fP color, \fBg2dCoord_s\fP * coord)"
+clear part of image and set to color 
+.SS "\fBg2dImage_s\fP* g2d_clone (unsigned w, unsigned h, \fBg2dMode_e\fP mode, uint8_t * pixels)"
+create new image with pixel set to pixels 
+.PP
+\fBParameters\fP
+.RS 4
+\fIw\fP width 
+.br
+\fIh\fP height 
+.br
+\fImode\fP color mode, default argb 
+.br
+\fIpixels\fP copy pointer in to structure 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+new image, no error return 
+.RE
+.PP
+
+.SS "\fBg2dColor_t\fP g2d_color_gen (\fBg2dMode_e\fP mode, unsigned a, unsigned r, unsigned g, unsigned b)"
+create color with on mode 
+.SS "unsigned g2d_compare_similar (\fBg2dImage_s\fP * a, \fBg2dCoord_s\fP * ca, \fBg2dImage_s\fP * b, \fBg2dCoord_s\fP * cb)"
+compare two block of image, return 0 for equal or how many is different 
+.SS "\fBg2dImage_s\fP* g2d_copy (\fBg2dImage_s\fP * src)"
+return copy of img src 
+.SS "void g2d_cubezier (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * p0, \fBg2dPoint_s\fP * p1, \fBg2dPoint_s\fP * p2, \fBg2dPoint_s\fP * p3, \fBg2dColor_t\fP col, int antialiased)"
+cubeizer line 
+.SS "void g2d_cubezier_antialiased (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * p0, \fBg2dPoint_s\fP * p1, \fBg2dPoint_s\fP * p2, \fBg2dPoint_s\fP * p3, \fBg2dColor_t\fP color)"
+cubeizer antialiased line 
+.SS "void g2d_cubezier_normal (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * p0, \fBg2dPoint_s\fP * p1, \fBg2dPoint_s\fP * p2, \fBg2dPoint_s\fP * p3, \fBg2dColor_t\fP col)"
+cubeizer normal line 
+.SS "void g2d_ellipse (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col, int antialiased)"
+draw ellipse 
+.SS "void g2d_ellipse_antialiased (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col)"
+draw ellipse antialaised 
+.SS "void g2d_ellipse_normal (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col)"
+draw ellipse no antialaised 
+.SS "void g2d_free (\fBg2dImage_s\fP * img)"
+free image and pixel buffer 
+.SS "void g2d_hline (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * st, unsigned x1, \fBg2dColor_t\fP col)"
+draw horizzotal line 
+.SS "void g2d_line (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * st, \fBg2dPoint_s\fP * en, \fBg2dColor_t\fP col, int antialiased)"
+draw line and select previous function 
+.SS "void g2d_luminance (\fBg2dImage_s\fP * img)"
+convert img to grayscale using luminance 
+.SS "\fBg2dImage_s\fP* g2d_new (unsigned w, unsigned h, \fBg2dMode_e\fP mode)"
+call g2d_clone with new pixel buffer 
+.PP
+\fBParameters\fP
+.RS 4
+\fIw\fP width 
+.br
+\fIh\fP height 
+.br
+\fImode\fP color mode, default argb 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+new image, no error return 
+.RE
+.PP
+
+.SS "void g2d_point_rotate (unsigned * y, unsigned * x, unsigned cy, unsigned cx, double grad)"
+rotate a point 
+.SS "void g2d_points (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * points, \fBg2dColor_t\fP * colors, size_t count)"
+draw a points 
+.SS "void g2d_qubezier_antialiased (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * p0, \fBg2dPoint_s\fP * p1, \fBg2dPoint_s\fP * p2, \fBg2dColor_t\fP color)"
+qubeizer line 
+.SS "void g2d_ratio (int modeAWH, unsigned sw, unsigned sh, unsigned * w, unsigned * h)"
+calcolate new w*h scaling ratio 
+.PP
+\fBParameters\fP
+.RS 4
+\fImodeAWH\fP 0 automatic scaling to majour, 1 use sw / *w, 2 use sh / *h 
+.br
+\fIsw\fP source width 
+.br
+\fIsh\fP source height 
+.br
+\fIw\fP destination w 
+.br
+\fIh\fP destination h 
+.RE
+.PP
+
+.SS "void g2d_rect (\fBg2dImage_s\fP * img, \fBg2dCoord_s\fP * rc, \fBg2dColor_t\fP col)"
+draw rect 
+.SS "void g2d_rect_fill (\fBg2dImage_s\fP * img, \fBg2dCoord_s\fP * rc, \fBg2dColor_t\fP col)"
+draw rect with fill color 
+.SS "void g2d_repfill (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * st, \fBg2dColor_t\fP rep, \fBg2dColor_t\fP col)"
+replace color in region with new color 
+.SS "\fBg2dImage_s\fP* g2d_resize (\fBg2dImage_s\fP * src, unsigned w, unsigned h)"
+return new image resize, bicubic 
+.SS "void g2d_resize_to (\fBg2dImage_s\fP * dst, \fBg2dImage_s\fP * src)"
+resize bicubic from src to dst 
+.SS "\fBg2dImage_s\fP* g2d_rotate (\fBg2dImage_s\fP * src, unsigned cx, unsigned cy, float grad)"
+return new totated image 
+.SS "void g2d_triangle (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * p0, \fBg2dPoint_s\fP * p1, \fBg2dPoint_s\fP * p2, \fBg2dColor_t\fP col, int antialiased)"
+draw triangle 
+.SS "void g2d_triangle_fill (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * p0, \fBg2dPoint_s\fP * p1, \fBg2dPoint_s\fP * p2, \fBg2dColor_t\fP col)"
+draw triangle with fill color 
+.SS "void g2d_vline (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * st, unsigned y1, \fBg2dColor_t\fP col)"
+draw vertical line 
+.SS "int img_color_h (int R, int G, int B)"
+convert rgb to hue 
+.SS "unsigned char img_rgb_to_gray (unsigned char r, unsigned char g, unsigned char b)"
+convert rgb to gray 
+.SS "void img_rgb_to_yuv8 (unsigned char * y, unsigned char * u, unsigned char * v, unsigned char r, unsigned char g, unsigned char b)"
+convert rgb to yuv8 
+.SS "void img_yuv8_to_rgb (unsigned char * r, unsigned char * g, unsigned char * b, unsigned char y, unsigned char u, unsigned char v)"
+conver yuv8 to rgb 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

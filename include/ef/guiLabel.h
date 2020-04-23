@@ -17,14 +17,28 @@ typedef struct guiLabel{
 	g2dColor_t foreground;
 }guiLabel_s;
 
+/** create new label*/
 guiLabel_s* gui_label_new(ftFonts_s* font, int autowrap, g2dColor_t foreground, unsigned flags);
+
+/** attach label to gui*/
 gui_s* gui_label_attach(gui_s* gui, guiLabel_s* lbl);
+
+/** label free*/
 void gui_label_free(guiLabel_s* lbl);
+
+/** label set caption*/
 void gui_label_text_set(__unused gui_s* gui, guiLabel_s* lbl, const utf8_t* text);
+
+/** label redraw event*/
 void gui_label_redraw(gui_s* gui, guiBackground_s* bkg, guiLabel_s* lbl);
+
+/** label scroll*/
 void gui_label_scroll(gui_s* gui, guiLabel_s* lbl, unsigned x, unsigned y);
 
+/** event free*/
 int gui_label_event_free(gui_s* gui, __unused xorgEvent_s* ev);
+
+/** event redraw*/
 int gui_label_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 
 #endif

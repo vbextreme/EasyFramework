@@ -10,7 +10,6 @@ cc = meson.get_compiler('c')
 # include #
 ###########
 
-#TODO to pkgconfig
 includeDir = include_directories(['../include', '/usr/include/freetype2' ])
 
 ###############
@@ -55,10 +54,6 @@ add_global_arguments('-Wstrict-aliasing', language: 'c')
 add_global_arguments('-Wstrict-overflow', language: 'c')
 add_global_arguments('-Wfloat-equal', language: 'c')
 add_global_arguments('-Wvla', language: 'c')
-
-# TODO to CFLAGS libef
-# stack size
-#add_global_link_arguments('-Wl,--stack,16000', language: 'c')
 
 #reentrant malloc
 add_global_arguments('-pthread', language: 'c')
@@ -135,8 +130,7 @@ else
 endif
 libDeps = [ ef_dep ]
 
-# TODO to cflags ef
-libDeps += [ dependency('xcb', required: true) ] 
+#libDeps += [ dependency('xcb', required: true) ] 
 libDeps += [ cc.find_library('unistring', required : true) ]
 
 #libDeps += [ dependency('freetype2', required: true) ]
@@ -148,7 +142,6 @@ libDeps += [ cc.find_library('unistring', required : true) ]
 #libDeps += [ dependency('xkbcommon', required: true) ]
 #libDeps += [ dependency('xkbcommon-x11', required: true) ]
 
-#TODO to pkgconfig
 add_global_arguments('-DXCB_ERROR_ENABLE', language: 'c')
 
 #########################

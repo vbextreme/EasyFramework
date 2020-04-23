@@ -1,0 +1,543 @@
+.TH "include/ef/gui.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/gui.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/xorg\&.h>\fP
+.br
+\fC#include <ef/guiResources\&.h>\fP
+.br
+\fC#include <ef/deadpoll\&.h>\fP
+.br
+\fC#include <ef/phq\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBguiPosition\fP"
+.br
+.ti -1c
+.RI "struct \fBguiTimer_s\fP"
+.br
+.ti -1c
+.RI "struct \fBguiBackground\fP"
+.br
+.ti -1c
+.RI "struct \fBgui\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBGUI_TYPE_WINDOW\fP   0"
+.br
+.ti -1c
+.RI "#define \fBGUI_TYPE_LABEL\fP   1"
+.br
+.ti -1c
+.RI "#define \fBGUI_TYPE_BUTTON\fP   2"
+.br
+.ti -1c
+.RI "#define \fBGUI_TYPE_TEXT\fP   4"
+.br
+.ti -1c
+.RI "#define \fBGUI_TYPE_DIV\fP   5"
+.br
+.ti -1c
+.RI "#define \fBGUI_TYPE_USER\fP   999"
+.br
+.ti -1c
+.RI "#define \fBGUI_BK_NO_OP\fP   0x00"
+.br
+.ti -1c
+.RI "#define \fBGUI_BK_COLOR\fP   0x01"
+.br
+.ti -1c
+.RI "#define \fBGUI_BK_CPOS\fP   0x02"
+.br
+.ti -1c
+.RI "#define \fBGUI_BK_IMAGE\fP   0x04"
+.br
+.ti -1c
+.RI "#define \fBGUI_BK_ALPHA\fP   0x08"
+.br
+.ti -1c
+.RI "#define \fBGUI_BK_FN\fP   0x10"
+.br
+.ti -1c
+.RI "#define \fBGUI_TIMER_FREE\fP   \-1"
+.br
+.ti -1c
+.RI "#define \fBGUI_TIMER_NEXT\fP   0"
+.br
+.ti -1c
+.RI "#define \fBGUI_TIMER_CUSTOM\fP   1"
+.br
+.ti -1c
+.RI "#define \fBGUI_FOCUS_BORDER_SIZE\fP   3"
+.br
+.ti -1c
+.RI "#define \fBgui_color\fP(A,  R,  G,  B)   \fBg2d_color_gen\fP(\fBX_COLOR_MODE\fP, A, R, G, B)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBgui\fP \fBgui_s\fP"
+.br
+.ti -1c
+.RI "typedef void(* \fBguiBackgroundFN_f\fP) (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "typedef int(* \fBguiEvent_f\fP) (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "typedef struct \fBguiTimer_s\fP \fBguiTimer_s\fP"
+.br
+.ti -1c
+.RI "typedef int(* \fBguiTimer_f\fP) (\fBguiTimer_s\fP *timer)"
+.br
+.ti -1c
+.RI "typedef struct \fBguiPosition\fP \fBguiPosition_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBguiBackground\fP \fBguiBackground_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBguiMode_e\fP { \fBGUI_MODE_NORMAL\fP, \fBGUI_MODE_MODAL\fP, \fBGUI_MODE_DOCK_TOP\fP, \fBGUI_MODE_DOCK_BOTTOM\fP, \fBGUI_MODE_DOCK_LEFT\fP, \fBGUI_MODE_DOCK_RIGHT\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBgui_begin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBgui_end\fP ()"
+.br
+.ti -1c
+.RI "void \fBgui_register_root_event\fP (void)"
+.br
+.ti -1c
+.RI "unsigned \fBgui_screen_width\fP (void)"
+.br
+.ti -1c
+.RI "unsigned \fBgui_screen_height\fP (void)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_new\fP (\fBgui_s\fP *parent, const char *name, const char *class, \fBguiMode_e\fP mode, int border, int x, int y, int width, int height, \fBg2dColor_t\fP colorBorder, \fBguiBackground_s\fP *bk, int genericSize, void *userdata)"
+.br
+.ti -1c
+.RI "void \fBgui_free\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_child_add\fP (\fBgui_s\fP *parent, \fBgui_s\fP *child)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_child_remove\fP (\fBgui_s\fP *parent, \fBgui_s\fP *child)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_main_parent\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_name\fP (\fBgui_s\fP *\fBgui\fP, const char *name)"
+.br
+.ti -1c
+.RI "void \fBgui_class\fP (\fBgui_s\fP *\fBgui\fP, const char *class)"
+.br
+.ti -1c
+.RI "void \fBgui_show\fP (\fBgui_s\fP *\fBgui\fP, int show)"
+.br
+.ti -1c
+.RI "void \fBgui_move\fP (\fBgui_s\fP *\fBgui\fP, int x, int y)"
+.br
+.ti -1c
+.RI "void \fBgui_resize\fP (\fBgui_s\fP *\fBgui\fP, int w, int h)"
+.br
+.ti -1c
+.RI "void \fBgui_border\fP (\fBgui_s\fP *\fBgui\fP, int border)"
+.br
+.ti -1c
+.RI "void \fBgui_focus_from_parent\fP (\fBgui_s\fP *\fBgui\fP, int id)"
+.br
+.ti -1c
+.RI "int \fBgui_focuse_have\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_focus\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_focus_next_id\fP (\fBgui_s\fP *parent)"
+.br
+.ti -1c
+.RI "void \fBgui_focus_next\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_focus_prev_id\fP (\fBgui_s\fP *parent)"
+.br
+.ti -1c
+.RI "void \fBgui_focus_prev\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_clipboard_copy\fP (\fBgui_s\fP *\fBgui\fP, int primary)"
+.br
+.ti -1c
+.RI "void \fBgui_clipboard_paste\fP (\fBgui_s\fP *\fBgui\fP, int primary)"
+.br
+.ti -1c
+.RI "void \fBgui_clipboard_send\fP (\fBxorgClipboard_s\fP *clipboard, void *data, size_t size)"
+.br
+.ti -1c
+.RI "void \fBgui_draw\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_redraw\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_opacity\fP (\fBgui_s\fP *\fBgui\fP, double op)"
+.br
+.ti -1c
+.RI "void \fBgui_round_unset\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_round_set\fP (\fBgui_s\fP *\fBgui\fP, int radius)"
+.br
+.ti -1c
+.RI "void \fBgui_round_antialiasing_set\fP (\fBgui_s\fP *\fBgui\fP, int radius)"
+.br
+.ti -1c
+.RI "void \fBgui_remove_decoration\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_event_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *unset)"
+.br
+.ti -1c
+.RI "int \fBgui_event_draw\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *evdamage)"
+.br
+.ti -1c
+.RI "int \fBgui_event_focus\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_event_mouse\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_event_move\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_event_key\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "\fBxorgEvent_s\fP * \fBgui_event_get\fP (int async)"
+.br
+.ti -1c
+.RI "void \fBgui_event_release\fP (\fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBgui_event_call\fP (\fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBgui_deadpoll_event_callback\fP (\fB__unused\fP \fBdeadpoll_s\fP *dp, \fB__unused\fP int ev, \fB__unused\fP void *arg)"
+.br
+.ti -1c
+.RI "void \fBgui_deadpoll_unregister\fP (\fBdeadpoll_s\fP *dp)"
+.br
+.ti -1c
+.RI "void \fBgui_deadpoll_register\fP (\fBdeadpoll_s\fP *dp)"
+.br
+.ti -1c
+.RI "int \fBgui_deadpoll_event\fP (\fBdeadpoll_s\fP *dp)"
+.br
+.ti -1c
+.RI "void \fBgui_loop\fP (void)"
+.br
+.ti -1c
+.RI "\fBguiTimer_s\fP * \fBgui_timer_new\fP (\fBgui_s\fP *\fBgui\fP, size_t ms, \fBguiTimer_f\fP fn, void *userdata)"
+.br
+.ti -1c
+.RI "int \fBgui_timer_change\fP (\fBguiTimer_s\fP *timer, size_t ms)"
+.br
+.ti -1c
+.RI "void \fBgui_timer_free\fP (\fBguiTimer_s\fP *timer)"
+.br
+.ti -1c
+.RI "\fBguiBackground_s\fP * \fBgui_background_new\fP (\fBg2dColor_t\fP color, \fBg2dImage_s\fP *img, \fBg2dCoord_s\fP *pos, \fBguiBackgroundFN_f\fP fn, int mode)"
+.br
+.ti -1c
+.RI "void \fBgui_background_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fBguiBackground_s\fP *bkg)"
+.br
+.ti -1c
+.RI "\fBguiBackground_s\fP * \fBgui_background_get\fP (\fBgui_s\fP *\fBgui\fP, size_t id)"
+.br
+.ti -1c
+.RI "void \fBgui_background_add\fP (\fBgui_s\fP *\fBgui\fP, \fBguiBackground_s\fP *bk)"
+.br
+.ti -1c
+.RI "void \fBgui_background_main_round_fn\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_background_round_fn\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "char * \fBgui_resource_string_get\fP (const char *name, const char *class)"
+.br
+.ti -1c
+.RI "long \fBgui_resource_long_get\fP (const char *name, const char *class)"
+.br
+.ti -1c
+.RI "int \fBgui_resource_bool_get\fP (const char *name, const char *class)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define GUI_BK_ALPHA   0x08"
+
+.PP
+Definition at line 36 of file gui\&.h\&.
+.SS "#define GUI_BK_COLOR   0x01"
+
+.PP
+Definition at line 33 of file gui\&.h\&.
+.SS "#define GUI_BK_CPOS   0x02"
+
+.PP
+Definition at line 34 of file gui\&.h\&.
+.SS "#define GUI_BK_FN   0x10"
+
+.PP
+Definition at line 37 of file gui\&.h\&.
+.SS "#define GUI_BK_IMAGE   0x04"
+
+.PP
+Definition at line 35 of file gui\&.h\&.
+.SS "#define GUI_BK_NO_OP   0x00"
+
+.PP
+Definition at line 32 of file gui\&.h\&.
+.SS "#define gui_color(A, R, G, B)   \fBg2d_color_gen\fP(\fBX_COLOR_MODE\fP, A, R, G, B)"
+
+.PP
+Definition at line 114 of file gui\&.h\&.
+.SS "#define GUI_FOCUS_BORDER_SIZE   3"
+
+.PP
+Definition at line 43 of file gui\&.h\&.
+.SS "#define GUI_TIMER_CUSTOM   1"
+
+.PP
+Definition at line 41 of file gui\&.h\&.
+.SS "#define GUI_TIMER_FREE   \-1"
+
+.PP
+Definition at line 39 of file gui\&.h\&.
+.SS "#define GUI_TIMER_NEXT   0"
+
+.PP
+Definition at line 40 of file gui\&.h\&.
+.SS "#define GUI_TYPE_BUTTON   2"
+
+.PP
+Definition at line 27 of file gui\&.h\&.
+.SS "#define GUI_TYPE_DIV   5"
+
+.PP
+Definition at line 29 of file gui\&.h\&.
+.SS "#define GUI_TYPE_LABEL   1"
+
+.PP
+Definition at line 26 of file gui\&.h\&.
+.SS "#define GUI_TYPE_TEXT   4"
+
+.PP
+Definition at line 28 of file gui\&.h\&.
+.SS "#define GUI_TYPE_USER   999"
+
+.PP
+Definition at line 30 of file gui\&.h\&.
+.SS "#define GUI_TYPE_WINDOW   0"
+
+.PP
+Definition at line 25 of file gui\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBgui\fP \fBgui_s\fP"
+
+.PP
+Definition at line 47 of file gui\&.h\&.
+.SS "typedef struct \fBguiBackground\fP \fBguiBackground_s\fP"
+
+.SS "typedef void(* guiBackgroundFN_f) (\fBgui_s\fP *\fBgui\fP)"
+
+.PP
+Definition at line 49 of file gui\&.h\&.
+.SS "typedef int(* guiEvent_f) (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+
+.PP
+Definition at line 51 of file gui\&.h\&.
+.SS "typedef struct \fBguiPosition\fP \fBguiPosition_s\fP"
+
+.SS "typedef int(* guiTimer_f) (\fBguiTimer_s\fP *timer)"
+
+.PP
+Definition at line 55 of file gui\&.h\&.
+.SS "typedef struct \fBguiTimer_s\fP \fBguiTimer_s\fP"
+
+.PP
+Definition at line 53 of file gui\&.h\&.
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBguiMode_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIGUI_MODE_NORMAL \fP\fP
+.TP
+\fB\fIGUI_MODE_MODAL \fP\fP
+.TP
+\fB\fIGUI_MODE_DOCK_TOP \fP\fP
+.TP
+\fB\fIGUI_MODE_DOCK_BOTTOM \fP\fP
+.TP
+\fB\fIGUI_MODE_DOCK_LEFT \fP\fP
+.TP
+\fB\fIGUI_MODE_DOCK_RIGHT \fP\fP
+.PP
+Definition at line 45 of file gui\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void gui_background_add (\fBgui_s\fP * gui, \fBguiBackground_s\fP * bk)"
+add background 
+.SS "\fBguiBackground_s\fP* gui_background_get (\fBgui_s\fP * gui, size_t id)"
+get background 
+.SS "void gui_background_main_round_fn (\fBgui_s\fP * gui)"
+custom background fn for rounded border 
+.SS "\fBguiBackground_s\fP* gui_background_new (\fBg2dColor_t\fP color, \fBg2dImage_s\fP * img, \fBg2dCoord_s\fP * pos, \fBguiBackgroundFN_f\fP fn, int mode)"
+create new background 
+.SS "void gui_background_redraw (\fBgui_s\fP * gui, \fBguiBackground_s\fP * bkg)"
+redraw background 
+.SS "void gui_background_round_fn (\fBgui_s\fP * gui)"
+custom background fn for rounded border 
+.SS "void gui_begin (void)"
+before use gui 
+.SS "void gui_border (\fBgui_s\fP * gui, int border)"
+set border 
+.SS "void gui_child_add (\fBgui_s\fP * parent, \fBgui_s\fP * child)"
+add child to gui 
+.SS "\fBgui_s\fP* gui_child_remove (\fBgui_s\fP * parent, \fBgui_s\fP * child)"
+remove child from gui 
+.SS "void gui_class (\fBgui_s\fP * gui, const char * class)"
+set gui class 
+.SS "void gui_clipboard_copy (\fBgui_s\fP * gui, int primary)"
+enable clipboard copy 
+.SS "void gui_clipboard_paste (\fBgui_s\fP * gui, int primary)"
+request paste 
+.SS "void gui_clipboard_send (\fBxorgClipboard_s\fP * clipboard, void * data, size_t size)"
+send clipboard data 
+.SS "int gui_deadpoll_event (\fBdeadpoll_s\fP * dp)"
+deadpoll 
+.SS "\fBerr_t\fP gui_deadpoll_event_callback (\fB__unused\fP \fBdeadpoll_s\fP * dp, \fB__unused\fP int ev, \fB__unused\fP void * arg)"
+deadpoll 
+.SS "void gui_deadpoll_register (\fBdeadpoll_s\fP * dp)"
+deadpoll 
+.SS "void gui_deadpoll_unregister (\fBdeadpoll_s\fP * dp)"
+deadpoll 
+.SS "void gui_draw (\fBgui_s\fP * gui)"
+draw gui 
+.SS "void gui_end ()"
+after use gui 
+.SS "int gui_event_call (\fBxorgEvent_s\fP * ev)"
+callback event 
+.SS "int gui_event_draw (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * evdamage)"
+default event for draw 
+.SS "int gui_event_focus (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+default event for focus 
+.SS "\fBxorgEvent_s\fP* gui_event_get (int async)"
+get event 
+.SS "int gui_event_key (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+default event for key 
+.SS "int gui_event_mouse (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+default event for mouse 
+.SS "int gui_event_move (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+default event for move 
+.SS "int gui_event_redraw (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * unset)"
+default event for redraw 
+.SS "void gui_event_release (\fBxorgEvent_s\fP * ev)"
+release event 
+.SS "void gui_focus (\fBgui_s\fP * gui)"
+set focus on gui 
+.SS "void gui_focus_from_parent (\fBgui_s\fP * gui, int id)"
+set focus id on gui 
+.SS "void gui_focus_next (\fBgui_s\fP * gui)"
+set focus on next gui 
+.SS "int gui_focus_next_id (\fBgui_s\fP * parent)"
+get next id focus 
+.SS "void gui_focus_prev (\fBgui_s\fP * gui)"
+set previous focus 
+.SS "int gui_focus_prev_id (\fBgui_s\fP * parent)"
+get id focus prev 
+.SS "int gui_focuse_have (\fBgui_s\fP * gui)"
+check if gui have focus 
+.SS "void gui_free (\fBgui_s\fP * gui)"
+free gui, remove gui from parent 
+.SS "void gui_loop (void)"
+loop gui 
+.SS "\fBgui_s\fP* gui_main_parent (\fBgui_s\fP * gui)"
+get main parent 
+.SS "void gui_move (\fBgui_s\fP * gui, int x, int y)"
+move gui 
+.SS "void gui_name (\fBgui_s\fP * gui, const char * name)"
+set gui name 
+.SS "\fBgui_s\fP* gui_new (\fBgui_s\fP * parent, const char * name, const char * class, \fBguiMode_e\fP mode, int border, int x, int y, int width, int height, \fBg2dColor_t\fP colorBorder, \fBguiBackground_s\fP * bk, int genericSize, void * userdata)"
+create gui 
+.SS "void gui_opacity (\fBgui_s\fP * gui, double op)"
+set opacity 
+.SS "void gui_redraw (\fBgui_s\fP * gui)"
+redraw gui 
+.SS "void gui_register_root_event (void)"
+grab root event 
+.SS "void gui_remove_decoration (\fBgui_s\fP * gui)"
+request to remove decorations 
+.SS "void gui_resize (\fBgui_s\fP * gui, int w, int h)"
+resize gui 
+.SS "int gui_resource_bool_get (const char * name, const char * class)"
+load bool resource 
+.SS "long gui_resource_long_get (const char * name, const char * class)"
+load long resource 
+.SS "char* gui_resource_string_get (const char * name, const char * class)"
+load string resource 
+.SS "void gui_round_antialiasing_set (\fBgui_s\fP * gui, int radius)"
+set antialiased round border 
+.SS "void gui_round_set (\fBgui_s\fP * gui, int radius)"
+set round border 
+.SS "void gui_round_unset (\fBgui_s\fP * gui)"
+remove round 
+.SS "unsigned gui_screen_height (void)"
+get screen height 
+.SS "unsigned gui_screen_width (void)"
+get screen width 
+.SS "void gui_show (\fBgui_s\fP * gui, int show)"
+show gui 
+.SS "int gui_timer_change (\fBguiTimer_s\fP * timer, size_t ms)"
+change timer 
+.SS "void gui_timer_free (\fBguiTimer_s\fP * timer)"
+free timer 
+.SS "\fBguiTimer_s\fP* gui_timer_new (\fBgui_s\fP * gui, size_t ms, \fBguiTimer_f\fP fn, void * userdata)"
+create new timer 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

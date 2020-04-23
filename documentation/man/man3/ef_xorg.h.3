@@ -1,0 +1,1259 @@
+.TH "include/ef/xorg.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/xorg.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/image\&.h>\fP
+.br
+\fC#include <ef/utf8\&.h>\fP
+.br
+\fC#include <xcb/xcb\&.h>\fP
+.br
+\fC#include <xcb/xproto\&.h>\fP
+.br
+\fC#include <xcb/xcb_aux\&.h>\fP
+.br
+\fC#include <xcb/xcb_image\&.h>\fP
+.br
+\fC#include <xcb/xcb_atom\&.h>\fP
+.br
+\fC#include <xcb/xcb_icccm\&.h>\fP
+.br
+\fC#include <xcb/composite\&.h>\fP
+.br
+\fC#include <xcb/xcb_xrm\&.h>\fP
+.br
+\fC#include <xkbcommon/xkbcommon\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBxkb\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgSurface\fP"
+.br
+.ti -1c
+.RI "struct \fBmonitor\fP"
+.br
+.ti -1c
+.RI "struct \fBxorg\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgWindowStrut\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgWindowStrutPartial\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgWindow\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgMouse\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgKeyboard\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgMove\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgCreate\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgDraw\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgFocus\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgVisible\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgProperty\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgClient\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgClipboard\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgEvent\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBXKB_UTF_MAX\fP   32"
+.br
+.ti -1c
+.RI "#define \fBX_COLOR_MODE\fP   \fBG2D_MODE_ARGB\fP"
+.br
+.ti -1c
+.RI "#define \fBX_WIN_EVENT\fP"
+.br
+.ti -1c
+.RI "#define \fBXORG_MOUSE_CLICK_MS\fP   200"
+.br
+.ti -1c
+.RI "#define \fBXORG_MOUSE_DBLCLICL_MS\fP   350"
+.br
+.ti -1c
+.RI "#define \fBXORG_WINDOW_HINTS_FLAGS_URGENCY\fP(XWPTR)   ((XWPTR)\->hints\&.flags & XCB_ICCCM_WM_HINT_X_URGENCY)"
+.br
+.ti -1c
+.RI "#define \fBXORG_WINDOW_VISIBLE_UNMAP\fP   XCB_MAP_STATE_UNMAPPED"
+.br
+.ti -1c
+.RI "#define \fBXORG_WINDOW_VISIBLE_UNVIEW\fP   XCB_MAP_STATE_UNVIEWABLE"
+.br
+.ti -1c
+.RI "#define \fBXORG_WINDOW_VISIBLE_MAP\fP   XCB_MAP_STATE_VIEWABLE"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_SHIFT_L\fP   0x0001"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_SHIFT_R\fP   0x0002"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_SHIFT\fP   (3<<0)"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_CONTROL_L\fP   0x0004"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_CONTROL_R\fP   0x0008"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_CONTROL\fP   (3<<2)"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_META_L\fP   0x0010"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_META_R\fP   0x0020"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_META\fP   (3<<4)"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_ALT_L\fP   0x0040"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_ALT_R\fP   0x0080"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_ALT\fP   (3<<6)"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_SUPER_L\fP   0x0100"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_SUPER_R\fP   0x0200"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_SUPER\fP   (3<<8)"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_HYPER_L\fP   0x0400"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_HYPER_R\fP   0x0800"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_HYPER\fP   (3<<10)"
+.br
+.ti -1c
+.RI "#define \fBXORG_KEY_MOD_CAPSLOCK\fP   0x1000"
+.br
+.ti -1c
+.RI "#define \fBxorg_root\fP(XORG)   ((XORG)\->screen\->root)"
+.br
+.ti -1c
+.RI "#define \fBxorg_root_x\fP(XORG)   ((XORG)\->monitorCurrent\->size\&.x)"
+.br
+.ti -1c
+.RI "#define \fBxorg_root_y\fP(XORG)   ((XORG)\->monitorCurrent\->size\&.y)"
+.br
+.ti -1c
+.RI "#define \fBxorg_root_width\fP(XORG)   ((XORG)\->monitorCurrent\->size\&.w)"
+.br
+.ti -1c
+.RI "#define \fBxorg_root_height\fP(XORG)   ((XORG)\->monitorCurrent\->size\&.h)"
+.br
+.ti -1c
+.RI "#define \fBxorg_root_visual\fP(XORG)   ((XORG)\->screen\->root_visual)"
+.br
+.ti -1c
+.RI "#define \fBxorg_fd\fP(XORG)   xcb_get_file_descriptor((XORG)\->connection)"
+.br
+.ti -1c
+.RI "#define \fBxorg_resources_string_get\fP(XORG,  NAME,  CLASS,  PTRSTR)   xcb_xrm_resource_get_string((XORG)\->resources, NAME, CLASS, PTRSTR)"
+.br
+.ti -1c
+.RI "#define \fBxorg_resources_long_get\fP(XORG,  NAME,  CLASS,  PTRLONG)   xcb_xrm_resource_get_long((XORG)\->resources, NAME, CLASS, PTRLONG)"
+.br
+.ti -1c
+.RI "#define \fBxorg_resources_bool_get\fP(XORG,  NAME,  CLASS,  PTRBOOL)   xcb_xrm_resource_get_bool((XORG)\->resources, NAME, CLASS, PTRBOOL)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBxkb\fP \fBxkb_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgSurface\fP \fBxorgSurface_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBmonitor\fP \fBmonitor_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorg\fP \fBxorg_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgWindowStrut\fP \fBxorgWindowStrut_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgWindowStrutPartial\fP \fBxorgWindowStrutPartial_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgWindow\fP \fBxorgWindow_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgMouse\fP \fBxorgMouse_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgKeyboard\fP \fBxorgKeyboard_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgMove\fP \fBxorgMove_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgCreate\fP \fBxorgCreate_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgDraw\fP \fBxorgDraw_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgFocus\fP \fBxorgFocus_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgVisible\fP \fBxorgVisible_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgProperty\fP \fBxorgProperty_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgClient\fP \fBxorgClient_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgClipboard\fP \fBxorgClipboard_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBxorgEvent\fP \fBxorgEvent_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBxorgAtom_e\fP { \fBXORG_ATOM_NET_ACTIVE_WINDOW\fP = 0, \fBXORG_ATOM_NET_NUMBER_OF_DESKTOPS\fP, \fBXORG_ATOM_NET_CURRENT_DESKTOP\fP, \fBXORG_ATOM_NET_DESKTOP_NAMES\fP, \fBXORG_ATOM_NET_ACTIVE_DESKTOP\fP, \fBXORG_ATOM_NET_WM_DESKTOP\fP, \fBXORG_ATOM_NET_WM_WINDOW_TYPE\fP, \fBXORG_ATOM_NET_WM_WINDOW_TYPE_DESKTOP\fP, \fBXORG_ATOM_NET_WM_WINDOW_TYPE_DOCK\fP, \fBXORG_ATOM_NET_WM_WINDOW_TYPE_TOOLBAR\fP, \fBXORG_ATOM_NET_WM_WINDOW_TYPE_MENU\fP, \fBXORG_ATOM_NET_WM_WINDOW_TYPE_UTILITY\fP, \fBXORG_ATOM_NET_WM_WINDOW_TYPE_SPLASH\fP, \fBXORG_ATOM_NET_WM_WINDOW_TYPE_DIALOG\fP, \fBXORG_ATOM_NET_WM_WINDOW_TYPE_NORMAL\fP, \fBXORG_ATOM_NET_WM_STATE\fP, \fBXORG_ATOM_NET_WM_STATE_MODAL\fP, \fBXORG_ATOM_NET_WM_STATE_STICKY\fP, \fBXORG_ATOM_NET_WM_STATE_MAXIMIZED_VERT\fP, \fBXORG_ATOM_NET_WM_STATE_MAXIMIZED_HORZ\fP, \fBXORG_ATOM_NET_WM_STATE_SHADED\fP, \fBXORG_ATOM_NET_WM_STATE_SKIP_TASKBAR\fP, \fBXORG_ATOM_NET_WM_STATE_SKIP_PAGER\fP, \fBXORG_ATOM_NET_WM_STATE_HIDDEN\fP, \fBXORG_ATOM_NET_WM_STATE_FULLSCREEN\fP, \fBXORG_ATOM_NET_WM_STATE_ABOVE\fP, \fBXORG_ATOM_NET_WM_STATE_BELOW\fP, \fBXORG_ATOM_NET_WM_STATE_DEMANDS_ATTENTION\fP, \fBXORG_ATOM_NET_WM_VISIBLE_NAME\fP, \fBXORG_ATOM_NET_WM_NAME\fP, \fBXORG_ATOM_NET_WM_STRUT\fP, \fBXORG_ATOM_NET_WM_STRUT_PARTIAL\fP, \fBXORG_ATOM_NET_WM_PID\fP, \fBXORG_ATOM_NET_WM_WINDOW_OPACITY\fP, \fBXORG_ATOM_NET_WM_ALLOWED_ACTIONS\fP, \fBXORG_ATOM_NET_WM_ACTION_MOVE\fP, \fBXORG_ATOM_NET_WM_ACTION_RESIZE\fP, \fBXORG_ATOM_NET_WM_ACTION_MINIMIZE\fP, \fBXORG_ATOM_NET_WM_ACTION_SHADE\fP, \fBXORG_ATOM_NET_WM_ACTION_STICK\fP, \fBXORG_ATOM_NET_WM_ACTION_MAXIMIZE_HORZ\fP, \fBXORG_ATOM_NET_WM_ACTION_MAXIMIZE_VERT\fP, \fBXORG_ATOM_NET_WM_ACTION_FULLSCREEN\fP, \fBXORG_ATOM_NET_WM_ACTION_CHANGE_DESKTOP\fP, \fBXORG_ATOM_NET_WM_ACTION_CLOSE\fP, \fBXORG_ATOM_WM_TRANSIENT_FOR\fP, \fBXORG_ATOM_WM_STATE\fP, \fBXORG_ATOM_XROOTPMAP_ID\fP, \fBXORG_ATOM_PRIMARY\fP, \fBXORG_ATOM_CLIPBOARD\fP, \fBXORG_ATOM_TARGETS\fP, \fBXORG_ATOM_TIMESTAMP\fP, \fBXORG_ATOM_XSEL_DATA\fP, \fBXORG_ATOM_XA_STRING\fP, \fBXORG_ATOM_UTF8_STRING\fP, \fBXORG_ATOM_COUNT\fP }"
+.br
+.ti -1c
+.RI "enum \fBxorgWindowType_e\fP { \fBXORG_WINDOW_TYPE_DESKTOP\fP, \fBXORG_WINDOW_TYPE_DOCK\fP, \fBXORG_WINDOW_TYPE_TOOLBAR\fP, \fBXORG_WINDOW_TYPE_MENU\fP, \fBXORG_WINDOW_TYPE_UTILITY\fP, \fBXORG_WINDOW_TYPE_SPLASH\fP, \fBXORG_WINDOW_TYPE_DIALOG\fP, \fBXORG_WINDOW_TYPE_NORMAL\fP }"
+.br
+.ti -1c
+.RI "enum \fBxorgWindowState_e\fP { \fBXORG_WINDOW_STATE_MODAL\fP, \fBXORG_WINDOW_STATE_STICKY\fP, \fBXORG_WINDOW_STATE_MAXIMIZED_VERT\fP, \fBXORG_WINDOW_STATE_MAXIMIZED_HORZ\fP, \fBXORG_WINDOW_STATE_SHADED\fP, \fBXORG_WINDOW_STATE_SKIP_TASKBAR\fP, \fBXORG_WINDOW_STATE_SKIP_PAGER\fP, \fBXORG_WINDOW_STATE_HIDDEN\fP, \fBXORG_WINDOW_STATE_FULLSCREEN\fP, \fBXORG_WINDOW_STATE_ABOVE\fP, \fBXORG_WINDOW_STATE_BELOW\fP, \fBXORG_WINDOW_STATE_DEMANDS_ATTENTION\fP, \fBXORG_WINDOW_STATE_INVISIBLE\fP, \fBXORG_WINDOW_STATE_NORMAL\fP, \fBXORG_WINDOW_STATE_ICONIZED\fP }"
+.br
+.ti -1c
+.RI "enum \fBxorgWindowAction_e\fP { \fBXORG_WINDOW_ACTION_MOVE\fP = 0x0001, \fBXORG_WINDOW_ACTION_RESIZE\fP = 0x0002, \fBXORG_WINDOW_ACTION_MINIMIZE\fP = 0x0004, \fBXORG_WINDOW_ACTION_SHADE\fP = 0x0008, \fBXORG_WINDOW_ACTION_STICK\fP = 0x0010, \fBXORG_WINDOW_ACTION_MAXIMIZE_HORZ\fP = 0x0020, \fBXORG_WINDOW_ACTION_MAXIMIZE_VERT\fP = 0x0040, \fBXORG_WINDOW_ACTION_FULLSCREEN\fP = 0x0080, \fBXORG_WINDOW_ACTION_CHANGE_DESKTOP\fP = 0x0100, \fBXORG_WINDOW_ACTION_CLOSE\fP = 0x0200 }"
+.br
+.ti -1c
+.RI "enum \fBxorgMouse_e\fP { \fBXORG_MOUSE_RELEASE\fP, \fBXORG_MOUSE_PRESS\fP, \fBXORG_MOUSE_MOVE\fP, \fBXORG_MOUSE_ENTER\fP, \fBXORG_MOUSE_LEAVE\fP, \fBXORG_MOUSE_CLICK\fP, \fBXORG_MOUSE_DBLCLICK\fP }"
+.br
+.ti -1c
+.RI "enum \fBxorgKey_e\fP { \fBXORG_KEY_RELEASE\fP, \fBXORG_KEY_PRESS\fP }"
+.br
+.ti -1c
+.RI "enum \fBxorgEvent_e\fP { \fBXORG_EVENT_CREATE\fP = XCB_CREATE_NOTIFY, \fBXORG_EVENT_DESTROY\fP = XCB_DESTROY_NOTIFY, \fBXORG_EVENT_DRAW\fP = XCB_EXPOSE, \fBXORG_EVENT_KEY_PRESS\fP = XCB_KEY_PRESS, \fBXORG_EVENT_KEY_RELEASE\fP = XCB_KEY_RELEASE, \fBXORG_EVENT_BUTTON_PRESS\fP = XCB_BUTTON_PRESS, \fBXORG_EVENT_BUTTON_RELEASE\fP = XCB_BUTTON_RELEASE, \fBXORG_EVENT_MOTION\fP = XCB_MOTION_NOTIFY, \fBXORG_EVENT_ENTER\fP = XCB_ENTER_NOTIFY, \fBXORG_EVENT_LEAVE\fP = XCB_LEAVE_NOTIFY, \fBXORG_EVENT_FOCUS_IN\fP = XCB_FOCUS_IN, \fBXORG_EVENT_FOCUS_OUT\fP = XCB_FOCUS_OUT, \fBXORG_EVENT_MAP\fP = XCB_MAP_NOTIFY, \fBXORG_EVENT_UNMAP\fP = XCB_UNMAP_NOTIFY, \fBXORG_EVENT_MOVE\fP = XCB_CONFIGURE_NOTIFY, \fBXORG_EVENT_ATOM\fP = XCB_PROPERTY_NOTIFY, \fBXORG_EVENT_CLIENT\fP = XCB_CLIENT_MESSAGE, \fBXORG_EVENT_CLIPBOARD_PASTE\fP = XCB_SELECTION_NOTIFY, \fBXORG_EVENT_CLIPBOARD_COPY\fP = XCB_SELECTION_REQUEST }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBxorg_s\fP * \fBxorg_client_new\fP (const char *display, int defaultScreen)"
+.br
+.ti -1c
+.RI "void \fBxorg_client_free\fP (\fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBxorg_root_init\fP (\fBxorg_s\fP *x, int onscreen)"
+.br
+.ti -1c
+.RI "void \fBxorg_client_flush\fP (\fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "void \fBxorg_client_sync\fP (\fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "xcb_screen_t * \fBxorg_screen_get\fP (\fBxorg_s\fP *x, int idScreen)"
+.br
+.ti -1c
+.RI "void \fBxorg_randr_monitor_refresh\fP (\fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBxorg_monitor_byname\fP (\fBxorg_s\fP *x, char const *name)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBxorg_monitor_bysize\fP (\fBxorg_s\fP *x, \fBg2dCoord_s\fP *size)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBxorg_monitor_primary\fP (\fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "const char * \fBxorg_atom_name\fP (\fBxorg_s\fP *x, xcb_atom_t atom)"
+.br
+.ti -1c
+.RI "xcb_atom_t \fBxorg_atom_id\fP (\fBxorg_s\fP *x, const char *name)"
+.br
+.ti -1c
+.RI "xcb_atom_t \fBxorg_atom_new_id\fP (\fBxorg_s\fP *x, const char *name)"
+.br
+.ti -1c
+.RI "void \fBxorg_atom_load\fP (\fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "xcb_visualid_t \fBxorg_find_depth\fP (\fBxorg_s\fP *x, uint8_t depth)"
+.br
+.ti -1c
+.RI "int \fBxorg_xcb_attribute\fP (\fBxorg_s\fP *x, xcb_get_window_attributes_cookie_t cookie)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBxorg_xcb_geometry\fP (\fBxorg_s\fP *x, xcb_get_geometry_cookie_t cookie, unsigned *X, unsigned *Y, unsigned *W, unsigned *H, unsigned *B)"
+.br
+.ti -1c
+.RI "int \fBxorg_xcb_property_cardinal\fP (\fBxorg_s\fP *x, xcb_get_property_cookie_t cookie)"
+.br
+.ti -1c
+.RI "xcb_get_property_cookie_t \fBxorg_xcb_property_cookie_string\fP (\fBxorg_s\fP *x, xcb_window_t win, xcb_atom_t atom)"
+.br
+.ti -1c
+.RI "char * \fBxorg_xcb_property_string\fP (\fBxorg_s\fP *x, xcb_get_property_cookie_t cookie)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBxorg_xcb_property_structure\fP (void *out, \fBxorg_s\fP *x, xcb_get_property_cookie_t cookie, xcb_atom_t type, size_t size, size_t minsize)"
+.br
+.ti -1c
+.RI "xcb_pixmap_t \fBxorg_xcb_property_pixmap\fP (\fBxorg_s\fP *x, xcb_get_property_cookie_t cookie)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_creat\fP (\fBxorg_s\fP *x, xcb_window_t parent, xcb_window_t win, int px, int py, int w, int h)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_destroy\fP (\fBxorg_s\fP *x, xcb_window_t win)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_expose\fP (\fBxorg_s\fP *x, xcb_window_t win, int px, int py, int w, int h)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_key_press\fP (\fBxorg_s\fP *x, xcb_window_t win, xcb_keycode_t keycode, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_key_release\fP (\fBxorg_s\fP *x, xcb_window_t win, xcb_keycode_t keycode, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_button_press\fP (\fBxorg_s\fP *x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_button_release\fP (\fBxorg_s\fP *x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_motion\fP (\fBxorg_s\fP *x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_enter\fP (\fBxorg_s\fP *x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_leave\fP (\fBxorg_s\fP *x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_focus_in\fP (\fBxorg_s\fP *x, xcb_window_t win)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_focus_out\fP (\fBxorg_s\fP *x, xcb_window_t win)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_map\fP (\fBxorg_s\fP *x, xcb_window_t win)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_unmap\fP (\fBxorg_s\fP *x, xcb_window_t win)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_configure\fP (\fBxorg_s\fP *x, xcb_window_t win, int px, int py, int w, int h, int border)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_property\fP (\fBxorg_s\fP *x, xcb_window_t win, xcb_atom_t atom)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_client\fP (\fBxorg_s\fP *x, xcb_window_t win, uint8_t type, xcb_atom_t atom, uint8_t *data, size_t len)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_client32\fP (\fBxorg_s\fP *x, xcb_window_t win, xcb_window_t dest, xcb_atom_t atom, const uint32_t *data, size_t len)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_active_window\fP (\fBxorg_s\fP *x, xcb_window_t current, xcb_window_t activate)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_current_desktop\fP (\fBxorg_s\fP *x, uint32_t desktop)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_set_desktop\fP (\fBxorg_s\fP *x, xcb_window_t win, uint32_t desktop)"
+.br
+.ti -1c
+.RI "void \fBxorg_send_copy\fP (\fBxorg_s\fP *x, \fBxorgClipboard_s\fP *clipboard, void *str, size_t len)"
+.br
+.ti -1c
+.RI "void \fBxorg_window_release\fP (\fBxorgWindow_s\fP *win)"
+.br
+.ti -1c
+.RI "\fBxorgWindow_s\fP * \fBxorg_query_tree\fP (size_t *count, \fBxorg_s\fP *x, xcb_window_t root)"
+.br
+.ti -1c
+.RI "\fBxorgWindow_s\fP * \fBxorg_window_application\fP (\fBxorg_s\fP *x, size_t nworkspace, xcb_window_t id, \fBxorgWindow_s\fP *stack, size_t *appCount)"
+.br
+.ti -1c
+.RI "xcb_window_t \fBxorg_parent\fP (\fBxorg_s\fP *x, xcb_window_t win)"
+.br
+.ti -1c
+.RI "unsigned \fBxorg_workspace_count\fP (\fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "unsigned \fBxorg_workspace_active\fP (\fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "char ** \fBxorg_workspace_name_get\fP (\fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "uint8_t * \fBxorg_ximage_get_composite\fP (unsigned *outW, unsigned *outH, unsigned *outV, unsigned *outD, \fBxorg_s\fP *x, xcb_window_t id)"
+.br
+.ti -1c
+.RI "xcb_pixmap_t \fBxorg_root_pixmap_get\fP (\fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "uint8_t * \fBxorg_ximage_root_get\fP (unsigned *outW, unsigned *outH, unsigned *outV, unsigned *outD, \fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "\fBg2dImage_s\fP * \fBxorg_image_grab\fP (\fBxorg_s\fP *x, xcb_window_t id)"
+.br
+.ti -1c
+.RI "\fBg2dImage_s\fP * \fBxorg_root_image_grab\fP (\fBxorg_s\fP *x)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_title\fP (\fBxorg_s\fP *x, xcb_window_t id, char const *name)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_class\fP (\fBxorg_s\fP *x, xcb_window_t id, char const *name)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_show\fP (\fBxorg_s\fP *x, xcb_window_t id, int show)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_move\fP (\fBxorg_s\fP *x, xcb_window_t id, unsigned X, unsigned y)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_border\fP (\fBxorg_s\fP *x, xcb_window_t id, unsigned border)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_resize\fP (\fBxorg_s\fP *x, xcb_window_t id, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_coord\fP (\fBxorg_s\fP *x, xcb_window_t id, \fBg2dCoord_s\fP *pos)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_size\fP (\fBg2dCoord_s\fP *out, unsigned *outBorder, \fBxorg_s\fP *x, xcb_window_t idxcb)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_surface_redraw\fP (\fBxorg_s\fP *x, xcb_window_t id, \fBxorgSurface_s\fP *surface)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_type_set\fP (\fBxorg_s\fP *x, xcb_window_t id, \fBxorgWindowType_e\fP type)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_decoration_remove\fP (\fBxorg_s\fP *x, xcb_window_t id)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_state_set\fP (\fBxorg_s\fP *x, xcb_window_t id, \fBxorgWindowState_e\fP state)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_action_set\fP (\fBxorg_s\fP *x, xcb_window_t id, \fBxorgWindowAction_e\fP action)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_set_top\fP (\fBxorg_s\fP *x, xcb_window_t parent, xcb_window_t id, int enable)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_round_decoration_clear\fP (\fBxorg_s\fP *x, xcb_window_t win, const unsigned w, const unsigned h, unsigned size)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_round_border\fP (\fBxorg_s\fP *x, xcb_window_t win, const unsigned w, const unsigned h, const int r)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_round_remove\fP (\fBxorg_s\fP *x, xcb_window_t win)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_opacity_set\fP (\fBxorg_s\fP *x, xcb_window_t win, unsigned int opacity)"
+.br
+.ti -1c
+.RI "unsigned \fBxorg_win_opacity_get\fP (\fBxorg_s\fP *x, xcb_window_t win)"
+.br
+.ti -1c
+.RI "void \fBxorg_wm_reserve_dock_space_on_top\fP (\fBxorg_s\fP *x, xcb_window_t id, unsigned X, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "void \fBxorg_wm_reserve_dock_space_on_bottom\fP (\fBxorg_s\fP *x, xcb_window_t id, unsigned X, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "void \fBxorg_wm_reserve_dock_space_on_left\fP (\fBxorg_s\fP *x, xcb_window_t id, unsigned y, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "void \fBxorg_wm_reserve_dock_space_on_right\fP (\fBxorg_s\fP *x, xcb_window_t id, unsigned y, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "void \fBxorg_register_events\fP (\fBxorg_s\fP *x, xcb_window_t window, unsigned int eventmask)"
+.br
+.ti -1c
+.RI "xcb_window_t \fBxorg_win_new\fP (\fBxorgSurface_s\fP **surface, \fBxorg_s\fP *X, xcb_window_t parent, int x, int y, unsigned w, unsigned h, int border, \fBg2dColor_t\fP colbor, \fBg2dColor_t\fP background)"
+.br
+.ti -1c
+.RI "void \fBxorg_surface_resize\fP (\fBxorg_s\fP *X, \fBxorgSurface_s\fP *surface, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "void \fBxorg_surface_destroy\fP (\fBxorg_s\fP *x, \fBxorgSurface_s\fP *surface)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_destroy\fP (\fBxorg_s\fP *x, xcb_window_t id)"
+.br
+.ti -1c
+.RI "void \fBxorg_win_focus\fP (\fBxorg_s\fP *x, xcb_window_t id)"
+.br
+.ti -1c
+.RI "\fBxorgEvent_s\fP * \fBxorg_event_new\fP (\fBxorg_s\fP *x, int async)"
+.br
+.ti -1c
+.RI "void \fBxorg_event_free\fP (\fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "xcb_window_t \fBxorg_clipboard_owner\fP (\fBxorg_s\fP *x, xcb_atom_t selection)"
+.br
+.ti -1c
+.RI "void \fBxorg_clipboard_copy\fP (\fBxorg_s\fP *x, xcb_window_t owner, xcb_atom_t selection)"
+.br
+.ti -1c
+.RI "void \fBxorg_clipboard_paste\fP (\fBxorg_s\fP *x, xcb_window_t win, xcb_atom_t selection)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "struct \fBxorgWindowStrut\fP \fB__packed\fP"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define X_COLOR_MODE   \fBG2D_MODE_ARGB\fP"
+
+.PP
+Definition at line 23 of file xorg\&.h\&.
+.SS "#define X_WIN_EVENT"
+\fBValue:\fP
+.PP
+.nf
+    XCB_EVENT_MASK_EXPOSURE |\
+    XCB_EVENT_MASK_KEY_PRESS |\
+    XCB_EVENT_MASK_KEY_RELEASE |\
+    XCB_EVENT_MASK_BUTTON_PRESS |\
+    XCB_EVENT_MASK_BUTTON_RELEASE |\
+    XCB_EVENT_MASK_POINTER_MOTION |\
+    XCB_EVENT_MASK_ENTER_WINDOW |\
+    XCB_EVENT_MASK_LEAVE_WINDOW |\
+    XCB_EVENT_MASK_VISIBILITY_CHANGE |\
+    XCB_EVENT_MASK_STRUCTURE_NOTIFY |\
+    XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT |\
+    XCB_EVENT_MASK_FOCUS_CHANGE |\
+    XCB_EVENT_MASK_PROPERTY_CHANGE
+.fi
+.PP
+Definition at line 25 of file xorg\&.h\&.
+.SS "#define XKB_UTF_MAX   32"
+
+.PP
+Definition at line 21 of file xorg\&.h\&.
+.SS "#define xorg_fd(XORG)   xcb_get_file_descriptor((XORG)\->connection)"
+
+.PP
+Definition at line 368 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_ALT   (3<<6)"
+
+.PP
+Definition at line 270 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_ALT_L   0x0040"
+
+.PP
+Definition at line 268 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_ALT_R   0x0080"
+
+.PP
+Definition at line 269 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_CAPSLOCK   0x1000"
+
+.PP
+Definition at line 277 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_CONTROL   (3<<2)"
+
+.PP
+Definition at line 264 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_CONTROL_L   0x0004"
+
+.PP
+Definition at line 262 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_CONTROL_R   0x0008"
+
+.PP
+Definition at line 263 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_HYPER   (3<<10)"
+
+.PP
+Definition at line 276 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_HYPER_L   0x0400"
+
+.PP
+Definition at line 274 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_HYPER_R   0x0800"
+
+.PP
+Definition at line 275 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_META   (3<<4)"
+
+.PP
+Definition at line 267 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_META_L   0x0010"
+
+.PP
+Definition at line 265 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_META_R   0x0020"
+
+.PP
+Definition at line 266 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_SHIFT   (3<<0)"
+
+.PP
+Definition at line 261 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_SHIFT_L   0x0001"
+
+.PP
+Definition at line 259 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_SHIFT_R   0x0002"
+
+.PP
+Definition at line 260 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_SUPER   (3<<8)"
+
+.PP
+Definition at line 273 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_SUPER_L   0x0100"
+
+.PP
+Definition at line 271 of file xorg\&.h\&.
+.SS "#define XORG_KEY_MOD_SUPER_R   0x0200"
+
+.PP
+Definition at line 272 of file xorg\&.h\&.
+.SS "#define XORG_MOUSE_CLICK_MS   200"
+
+.PP
+Definition at line 39 of file xorg\&.h\&.
+.SS "#define XORG_MOUSE_DBLCLICL_MS   350"
+
+.PP
+Definition at line 40 of file xorg\&.h\&.
+.SS "#define xorg_resources_bool_get(XORG, NAME, CLASS, PTRBOOL)   xcb_xrm_resource_get_bool((XORG)\->resources, NAME, CLASS, PTRBOOL)"
+
+.PP
+Definition at line 372 of file xorg\&.h\&.
+.SS "#define xorg_resources_long_get(XORG, NAME, CLASS, PTRLONG)   xcb_xrm_resource_get_long((XORG)\->resources, NAME, CLASS, PTRLONG)"
+
+.PP
+Definition at line 371 of file xorg\&.h\&.
+.SS "#define xorg_resources_string_get(XORG, NAME, CLASS, PTRSTR)   xcb_xrm_resource_get_string((XORG)\->resources, NAME, CLASS, PTRSTR)"
+
+.PP
+Definition at line 370 of file xorg\&.h\&.
+.SS "#define xorg_root(XORG)   ((XORG)\->screen\->root)"
+
+.PP
+Definition at line 362 of file xorg\&.h\&.
+.SS "#define xorg_root_height(XORG)   ((XORG)\->monitorCurrent\->size\&.h)"
+
+.PP
+Definition at line 366 of file xorg\&.h\&.
+.SS "#define xorg_root_visual(XORG)   ((XORG)\->screen\->root_visual)"
+
+.PP
+Definition at line 367 of file xorg\&.h\&.
+.SS "#define xorg_root_width(XORG)   ((XORG)\->monitorCurrent\->size\&.w)"
+
+.PP
+Definition at line 365 of file xorg\&.h\&.
+.SS "#define xorg_root_x(XORG)   ((XORG)\->monitorCurrent\->size\&.x)"
+
+.PP
+Definition at line 363 of file xorg\&.h\&.
+.SS "#define xorg_root_y(XORG)   ((XORG)\->monitorCurrent\->size\&.y)"
+
+.PP
+Definition at line 364 of file xorg\&.h\&.
+.SS "#define XORG_WINDOW_HINTS_FLAGS_URGENCY(XWPTR)   ((XWPTR)\->hints\&.flags & XCB_ICCCM_WM_HINT_X_URGENCY)"
+
+.PP
+Definition at line 188 of file xorg\&.h\&.
+.SS "#define XORG_WINDOW_VISIBLE_MAP   XCB_MAP_STATE_VIEWABLE"
+
+.PP
+Definition at line 191 of file xorg\&.h\&.
+.SS "#define XORG_WINDOW_VISIBLE_UNMAP   XCB_MAP_STATE_UNMAPPED"
+
+.PP
+Definition at line 189 of file xorg\&.h\&.
+.SS "#define XORG_WINDOW_VISIBLE_UNVIEW   XCB_MAP_STATE_UNVIEWABLE"
+
+.PP
+Definition at line 190 of file xorg\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBmonitor\fP \fBmonitor_s\fP"
+
+.SS "typedef struct \fBxkb\fP \fBxkb_s\fP"
+
+.SS "typedef struct \fBxorg\fP \fBxorg_s\fP"
+
+.SS "typedef struct \fBxorgClient\fP \fBxorgClient_s\fP"
+
+.SS "typedef struct \fBxorgClipboard\fP \fBxorgClipboard_s\fP"
+
+.SS "typedef struct \fBxorgCreate\fP \fBxorgCreate_s\fP"
+
+.SS "typedef struct \fBxorgDraw\fP \fBxorgDraw_s\fP"
+
+.SS "typedef struct \fBxorgEvent\fP \fBxorgEvent_s\fP"
+
+.SS "typedef struct \fBxorgFocus\fP \fBxorgFocus_s\fP"
+
+.SS "typedef struct \fBxorgKeyboard\fP \fBxorgKeyboard_s\fP"
+
+.SS "typedef struct \fBxorgMouse\fP \fBxorgMouse_s\fP"
+
+.SS "typedef struct \fBxorgMove\fP \fBxorgMove_s\fP"
+
+.SS "typedef struct \fBxorgProperty\fP \fBxorgProperty_s\fP"
+
+.SS "typedef struct \fBxorgSurface\fP \fBxorgSurface_s\fP"
+
+.SS "typedef struct \fBxorgVisible\fP \fBxorgVisible_s\fP"
+
+.SS "typedef struct \fBxorgWindow\fP \fBxorgWindow_s\fP"
+
+.SS "typedef struct \fBxorgWindowStrut\fP \fBxorgWindowStrut_s\fP"
+
+.PP
+Definition at line 196 of file xorg\&.h\&.
+.SS "typedef struct \fBxorgWindowStrutPartial\fP \fBxorgWindowStrutPartial_s\fP"
+
+.PP
+Definition at line 205 of file xorg\&.h\&.
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBxorgAtom_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIXORG_ATOM_NET_ACTIVE_WINDOW \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_NUMBER_OF_DESKTOPS \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_CURRENT_DESKTOP \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_DESKTOP_NAMES \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_ACTIVE_DESKTOP \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_DESKTOP \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_WINDOW_TYPE \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_WINDOW_TYPE_DESKTOP \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_WINDOW_TYPE_DOCK \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_WINDOW_TYPE_TOOLBAR \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_WINDOW_TYPE_MENU \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_WINDOW_TYPE_UTILITY \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_WINDOW_TYPE_SPLASH \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_WINDOW_TYPE_DIALOG \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_WINDOW_TYPE_NORMAL \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_MODAL \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_STICKY \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_MAXIMIZED_VERT \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_MAXIMIZED_HORZ \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_SHADED \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_SKIP_TASKBAR \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_SKIP_PAGER \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_HIDDEN \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_FULLSCREEN \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_ABOVE \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_BELOW \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STATE_DEMANDS_ATTENTION \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_VISIBLE_NAME \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_NAME \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STRUT \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_STRUT_PARTIAL \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_PID \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_WINDOW_OPACITY \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_ALLOWED_ACTIONS \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_ACTION_MOVE \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_ACTION_RESIZE \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_ACTION_MINIMIZE \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_ACTION_SHADE \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_ACTION_STICK \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_ACTION_MAXIMIZE_HORZ \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_ACTION_MAXIMIZE_VERT \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_ACTION_FULLSCREEN \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_ACTION_CHANGE_DESKTOP \fP\fP
+.TP
+\fB\fIXORG_ATOM_NET_WM_ACTION_CLOSE \fP\fP
+.TP
+\fB\fIXORG_ATOM_WM_TRANSIENT_FOR \fP\fP
+.TP
+\fB\fIXORG_ATOM_WM_STATE \fP\fP
+.TP
+\fB\fIXORG_ATOM_XROOTPMAP_ID \fP\fP
+.TP
+\fB\fIXORG_ATOM_PRIMARY \fP\fP
+.TP
+\fB\fIXORG_ATOM_CLIPBOARD \fP\fP
+.TP
+\fB\fIXORG_ATOM_TARGETS \fP\fP
+.TP
+\fB\fIXORG_ATOM_TIMESTAMP \fP\fP
+.TP
+\fB\fIXORG_ATOM_XSEL_DATA \fP\fP
+.TP
+\fB\fIXORG_ATOM_XA_STRING \fP\fP
+.TP
+\fB\fIXORG_ATOM_UTF8_STRING \fP\fP
+.TP
+\fB\fIXORG_ATOM_COUNT \fP\fP
+.PP
+Definition at line 42 of file xorg\&.h\&.
+.SS "enum \fBxorgEvent_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIXORG_EVENT_CREATE \fP\fP
+.TP
+\fB\fIXORG_EVENT_DESTROY \fP\fP
+.TP
+\fB\fIXORG_EVENT_DRAW \fP\fP
+.TP
+\fB\fIXORG_EVENT_KEY_PRESS \fP\fP
+.TP
+\fB\fIXORG_EVENT_KEY_RELEASE \fP\fP
+.TP
+\fB\fIXORG_EVENT_BUTTON_PRESS \fP\fP
+.TP
+\fB\fIXORG_EVENT_BUTTON_RELEASE \fP\fP
+.TP
+\fB\fIXORG_EVENT_MOTION \fP\fP
+.TP
+\fB\fIXORG_EVENT_ENTER \fP\fP
+.TP
+\fB\fIXORG_EVENT_LEAVE \fP\fP
+.TP
+\fB\fIXORG_EVENT_FOCUS_IN \fP\fP
+.TP
+\fB\fIXORG_EVENT_FOCUS_OUT \fP\fP
+.TP
+\fB\fIXORG_EVENT_MAP \fP\fP
+.TP
+\fB\fIXORG_EVENT_UNMAP \fP\fP
+.TP
+\fB\fIXORG_EVENT_MOVE \fP\fP
+.TP
+\fB\fIXORG_EVENT_ATOM \fP\fP
+.TP
+\fB\fIXORG_EVENT_CLIENT \fP\fP
+.TP
+\fB\fIXORG_EVENT_CLIPBOARD_PASTE \fP\fP
+.TP
+\fB\fIXORG_EVENT_CLIPBOARD_COPY \fP\fP
+.PP
+Definition at line 228 of file xorg\&.h\&.
+.SS "enum \fBxorgKey_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIXORG_KEY_RELEASE \fP\fP
+.TP
+\fB\fIXORG_KEY_PRESS \fP\fP
+.PP
+Definition at line 227 of file xorg\&.h\&.
+.SS "enum \fBxorgMouse_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIXORG_MOUSE_RELEASE \fP\fP
+.TP
+\fB\fIXORG_MOUSE_PRESS \fP\fP
+.TP
+\fB\fIXORG_MOUSE_MOVE \fP\fP
+.TP
+\fB\fIXORG_MOUSE_ENTER \fP\fP
+.TP
+\fB\fIXORG_MOUSE_LEAVE \fP\fP
+.TP
+\fB\fIXORG_MOUSE_CLICK \fP\fP
+.TP
+\fB\fIXORG_MOUSE_DBLCLICK \fP\fP
+.PP
+Definition at line 226 of file xorg\&.h\&.
+.SS "enum \fBxorgWindowAction_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIXORG_WINDOW_ACTION_MOVE \fP\fP
+.TP
+\fB\fIXORG_WINDOW_ACTION_RESIZE \fP\fP
+.TP
+\fB\fIXORG_WINDOW_ACTION_MINIMIZE \fP\fP
+.TP
+\fB\fIXORG_WINDOW_ACTION_SHADE \fP\fP
+.TP
+\fB\fIXORG_WINDOW_ACTION_STICK \fP\fP
+.TP
+\fB\fIXORG_WINDOW_ACTION_MAXIMIZE_HORZ \fP\fP
+.TP
+\fB\fIXORG_WINDOW_ACTION_MAXIMIZE_VERT \fP\fP
+.TP
+\fB\fIXORG_WINDOW_ACTION_FULLSCREEN \fP\fP
+.TP
+\fB\fIXORG_WINDOW_ACTION_CHANGE_DESKTOP \fP\fP
+.TP
+\fB\fIXORG_WINDOW_ACTION_CLOSE \fP\fP
+.PP
+Definition at line 130 of file xorg\&.h\&.
+.SS "enum \fBxorgWindowState_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIXORG_WINDOW_STATE_MODAL \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_STICKY \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_MAXIMIZED_VERT \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_MAXIMIZED_HORZ \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_SHADED \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_SKIP_TASKBAR \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_SKIP_PAGER \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_HIDDEN \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_FULLSCREEN \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_ABOVE \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_BELOW \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_DEMANDS_ATTENTION \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_INVISIBLE \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_NORMAL \fP\fP
+.TP
+\fB\fIXORG_WINDOW_STATE_ICONIZED \fP\fP
+.PP
+Definition at line 112 of file xorg\&.h\&.
+.SS "enum \fBxorgWindowType_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIXORG_WINDOW_TYPE_DESKTOP \fP\fP
+.TP
+\fB\fIXORG_WINDOW_TYPE_DOCK \fP\fP
+.TP
+\fB\fIXORG_WINDOW_TYPE_TOOLBAR \fP\fP
+.TP
+\fB\fIXORG_WINDOW_TYPE_MENU \fP\fP
+.TP
+\fB\fIXORG_WINDOW_TYPE_UTILITY \fP\fP
+.TP
+\fB\fIXORG_WINDOW_TYPE_SPLASH \fP\fP
+.TP
+\fB\fIXORG_WINDOW_TYPE_DIALOG \fP\fP
+.TP
+\fB\fIXORG_WINDOW_TYPE_NORMAL \fP\fP
+.PP
+Definition at line 101 of file xorg\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "xcb_atom_t xorg_atom_id (\fBxorg_s\fP * x, const char * name)"
+get atom friom name 
+.SS "void xorg_atom_load (\fBxorg_s\fP * x)"
+load default atom 
+.SS "const char* xorg_atom_name (\fBxorg_s\fP * x, xcb_atom_t atom)"
+get name from atom 
+.SS "xcb_atom_t xorg_atom_new_id (\fBxorg_s\fP * x, const char * name)"
+create new atom 
+.SS "void xorg_client_flush (\fBxorg_s\fP * x)"
+flush a request, not really need 
+.SS "void xorg_client_free (\fBxorg_s\fP * x)"
+free xorg client 
+.SS "\fBxorg_s\fP* xorg_client_new (const char * display, int defaultScreen)"
+create new xorg client 
+.SS "void xorg_client_sync (\fBxorg_s\fP * x)"
+sync connectoion, not really need 
+.SS "void xorg_clipboard_copy (\fBxorg_s\fP * x, xcb_window_t owner, xcb_atom_t selection)"
+set owner for receve copy event 
+.SS "xcb_window_t xorg_clipboard_owner (\fBxorg_s\fP * x, xcb_atom_t selection)"
+get owner clipboard 
+.SS "void xorg_clipboard_paste (\fBxorg_s\fP * x, xcb_window_t win, xcb_atom_t selection)"
+request paste 
+.SS "void xorg_event_free (\fBxorgEvent_s\fP * ev)"
+free message 
+.SS "\fBxorgEvent_s\fP* xorg_event_new (\fBxorg_s\fP * x, int async)"
+get new event, remember to release event 
+.SS "xcb_visualid_t xorg_find_depth (\fBxorg_s\fP * x, uint8_t depth)"
+
+.SS "\fBg2dImage_s\fP* xorg_image_grab (\fBxorg_s\fP * x, xcb_window_t id)"
+grab image of app 
+.SS "\fBerr_t\fP xorg_monitor_byname (\fBxorg_s\fP * x, char const * name)"
+set monitor by name 
+.SS "\fBerr_t\fP xorg_monitor_bysize (\fBxorg_s\fP * x, \fBg2dCoord_s\fP * size)"
+set monitor in position size 
+.SS "\fBerr_t\fP xorg_monitor_primary (\fBxorg_s\fP * x)"
+set primary monitor 
+.SS "xcb_window_t xorg_parent (\fBxorg_s\fP * x, xcb_window_t win)"
+get window parent 
+.SS "\fBxorgWindow_s\fP* xorg_query_tree (size_t * count, \fBxorg_s\fP * x, xcb_window_t root)"
+tree of window 
+.SS "void xorg_randr_monitor_refresh (\fBxorg_s\fP * x)"
+refresh randr monitor 
+.SS "void xorg_register_events (\fBxorg_s\fP * x, xcb_window_t window, unsigned int eventmask)"
+register event on window 
+.SS "\fBg2dImage_s\fP* xorg_root_image_grab (\fBxorg_s\fP * x)"
+grab root image 
+.SS "\fBerr_t\fP xorg_root_init (\fBxorg_s\fP * x, int onscreen)"
+initialized root to screen, this function is called inside client_new 
+.SS "xcb_pixmap_t xorg_root_pixmap_get (\fBxorg_s\fP * x)"
+get root pixmap 
+.SS "xcb_screen_t* xorg_screen_get (\fBxorg_s\fP * x, int idScreen)"
+return screen from idscreen 
+.SS "void xorg_send_active_window (\fBxorg_s\fP * x, xcb_window_t current, xcb_window_t activate)"
+send active window 
+.SS "void xorg_send_button_press (\fBxorg_s\fP * x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+send button press 
+.SS "void xorg_send_button_release (\fBxorg_s\fP * x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+send button release 
+.SS "void xorg_send_client (\fBxorg_s\fP * x, xcb_window_t win, uint8_t type, xcb_atom_t atom, uint8_t * data, size_t len)"
+send client 
+.SS "void xorg_send_client32 (\fBxorg_s\fP * x, xcb_window_t win, xcb_window_t dest, xcb_atom_t atom, const uint32_t * data, size_t len)"
+send client 32 
+.SS "void xorg_send_configure (\fBxorg_s\fP * x, xcb_window_t win, int px, int py, int w, int h, int border)"
+send configure 
+.SS "void xorg_send_copy (\fBxorg_s\fP * x, \fBxorgClipboard_s\fP * clipboard, void * str, size_t len)"
+send copy reply for selection request 
+.SS "void xorg_send_creat (\fBxorg_s\fP * x, xcb_window_t parent, xcb_window_t win, int px, int py, int w, int h)"
+send creat message 
+.SS "void xorg_send_current_desktop (\fBxorg_s\fP * x, uint32_t desktop)"
+send current desktop 
+.SS "void xorg_send_destroy (\fBxorg_s\fP * x, xcb_window_t win)"
+send destroy message 
+.SS "void xorg_send_enter (\fBxorg_s\fP * x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+send mouse enter 
+.SS "void xorg_send_expose (\fBxorg_s\fP * x, xcb_window_t win, int px, int py, int w, int h)"
+send expose, redraw, message 
+.SS "void xorg_send_focus_in (\fBxorg_s\fP * x, xcb_window_t win)"
+send focus in 
+.SS "void xorg_send_focus_out (\fBxorg_s\fP * x, xcb_window_t win)"
+send focus out 
+.SS "void xorg_send_key_press (\fBxorg_s\fP * x, xcb_window_t win, xcb_keycode_t keycode, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+send key press message 
+.SS "void xorg_send_key_release (\fBxorg_s\fP * x, xcb_window_t win, xcb_keycode_t keycode, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+send key release message 
+.SS "void xorg_send_leave (\fBxorg_s\fP * x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+send mouse exit 
+.SS "void xorg_send_map (\fBxorg_s\fP * x, xcb_window_t win)"
+send map/visible 
+.SS "void xorg_send_motion (\fBxorg_s\fP * x, xcb_window_t win, xcb_button_t button, xcb_timestamp_t time, int rx, int ry, int px, int py, int state, int samescreen)"
+send mouse move 
+.SS "void xorg_send_property (\fBxorg_s\fP * x, xcb_window_t win, xcb_atom_t atom)"
+send property 
+.SS "void xorg_send_set_desktop (\fBxorg_s\fP * x, xcb_window_t win, uint32_t desktop)"
+send set desktop 
+.SS "void xorg_send_unmap (\fBxorg_s\fP * x, xcb_window_t win)"
+send unmap/hide 
+.SS "void xorg_surface_destroy (\fBxorg_s\fP * x, \fBxorgSurface_s\fP * surface)"
+deprecate resize a surface, blitting img destroy/free sourface 
+.SS "void xorg_surface_resize (\fBxorg_s\fP * X, \fBxorgSurface_s\fP * surface, unsigned w, unsigned h)"
+resize surface 
+.SS "void xorg_win_action_set (\fBxorg_s\fP * x, xcb_window_t id, \fBxorgWindowAction_e\fP action)"
+set window action 
+.SS "void xorg_win_border (\fBxorg_s\fP * x, xcb_window_t id, unsigned border)"
+change border size 
+.SS "void xorg_win_class (\fBxorg_s\fP * x, xcb_window_t id, char const * name)"
+set window class 
+.SS "void xorg_win_coord (\fBxorg_s\fP * x, xcb_window_t id, \fBg2dCoord_s\fP * pos)"
+set window coordinate 
+.SS "void xorg_win_decoration_remove (\fBxorg_s\fP * x, xcb_window_t id)"
+remove window decoration 
+.SS "void xorg_win_destroy (\fBxorg_s\fP * x, xcb_window_t id)"
+destroy window 
+.SS "void xorg_win_focus (\fBxorg_s\fP * x, xcb_window_t id)"
+set focus on window 
+.SS "void xorg_win_move (\fBxorg_s\fP * x, xcb_window_t id, unsigned X, unsigned y)"
+move window 
+.SS "xcb_window_t xorg_win_new (\fBxorgSurface_s\fP ** surface, \fBxorg_s\fP * X, xcb_window_t parent, int x, int y, unsigned w, unsigned h, int border, \fBg2dColor_t\fP colbor, \fBg2dColor_t\fP background)"
+create new window, if surface return new surface, remember to free 
+.SS "unsigned xorg_win_opacity_get (\fBxorg_s\fP * x, xcb_window_t win)"
+request a compositor to get opacity 
+.SS "void xorg_win_opacity_set (\fBxorg_s\fP * x, xcb_window_t win, unsigned int opacity)"
+request a compositor to set window opacity 
+.SS "void xorg_win_resize (\fBxorg_s\fP * x, xcb_window_t id, unsigned w, unsigned h)"
+resize window 
+.SS "void xorg_win_round_border (\fBxorg_s\fP * x, xcb_window_t win, const unsigned w, const unsigned h, const int r)"
+set round border 
+.SS "void xorg_win_round_decoration_clear (\fBxorg_s\fP * x, xcb_window_t win, const unsigned w, const unsigned h, unsigned size)"
+clear partial decoration 
+.SS "void xorg_win_round_remove (\fBxorg_s\fP * x, xcb_window_t win)"
+remove round border 
+.SS "void xorg_win_set_top (\fBxorg_s\fP * x, xcb_window_t parent, xcb_window_t id, int enable)"
+set top window 
+.SS "void xorg_win_show (\fBxorg_s\fP * x, xcb_window_t id, int show)"
+show windo 
+.SS "void xorg_win_size (\fBg2dCoord_s\fP * out, unsigned * outBorder, \fBxorg_s\fP * x, xcb_window_t idxcb)"
+set window size 
+.SS "void xorg_win_state_set (\fBxorg_s\fP * x, xcb_window_t id, \fBxorgWindowState_e\fP state)"
+set window state 
+.SS "void xorg_win_surface_redraw (\fBxorg_s\fP * x, xcb_window_t id, \fBxorgSurface_s\fP * surface)"
+redraw surface 
+.SS "void xorg_win_title (\fBxorg_s\fP * x, xcb_window_t id, char const * name)"
+set window title 
+.SS "void xorg_win_type_set (\fBxorg_s\fP * x, xcb_window_t id, \fBxorgWindowType_e\fP type)"
+set window type 
+.SS "\fBxorgWindow_s\fP* xorg_window_application (\fBxorg_s\fP * x, size_t nworkspace, xcb_window_t id, \fBxorgWindow_s\fP * stack, size_t * appCount)"
+tree of window app 
+.SS "void xorg_window_release (\fBxorgWindow_s\fP * win)"
+free window 
+.SS "void xorg_wm_reserve_dock_space_on_bottom (\fBxorg_s\fP * x, xcb_window_t id, unsigned X, unsigned w, unsigned h)"
+reserve dock space 
+.SS "void xorg_wm_reserve_dock_space_on_left (\fBxorg_s\fP * x, xcb_window_t id, unsigned y, unsigned w, unsigned h)"
+reserve dock space 
+.SS "void xorg_wm_reserve_dock_space_on_right (\fBxorg_s\fP * x, xcb_window_t id, unsigned y, unsigned w, unsigned h)"
+reserve dock space 
+.SS "void xorg_wm_reserve_dock_space_on_top (\fBxorg_s\fP * x, xcb_window_t id, unsigned X, unsigned w, unsigned h)"
+reserve dock space 
+.SS "unsigned xorg_workspace_active (\fBxorg_s\fP * x)"
+return active workspace 
+.SS "unsigned xorg_workspace_count (\fBxorg_s\fP * x)"
+return countr of workspace 
+.SS "char** xorg_workspace_name_get (\fBxorg_s\fP * x)"
+get workspace name 
+.SS "int xorg_xcb_attribute (\fBxorg_s\fP * x, xcb_get_window_attributes_cookie_t cookie)"
+xcp wrap 
+.SS "\fBerr_t\fP xorg_xcb_geometry (\fBxorg_s\fP * x, xcb_get_geometry_cookie_t cookie, unsigned * X, unsigned * Y, unsigned * W, unsigned * H, unsigned * B)"
+xcb wrap 
+.SS "int xorg_xcb_property_cardinal (\fBxorg_s\fP * x, xcb_get_property_cookie_t cookie)"
+xcb wrap 
+.SS "xcb_get_property_cookie_t xorg_xcb_property_cookie_string (\fBxorg_s\fP * x, xcb_window_t win, xcb_atom_t atom)"
+xcb wrap 
+.SS "xcb_pixmap_t xorg_xcb_property_pixmap (\fBxorg_s\fP * x, xcb_get_property_cookie_t cookie)"
+xcb wrap 
+.SS "char* xorg_xcb_property_string (\fBxorg_s\fP * x, xcb_get_property_cookie_t cookie)"
+xcb wrap 
+.SS "\fBerr_t\fP xorg_xcb_property_structure (void * out, \fBxorg_s\fP * x, xcb_get_property_cookie_t cookie, xcb_atom_t type, size_t size, size_t minsize)"
+xcb wrap 
+.SS "uint8_t* xorg_ximage_get_composite (unsigned * outW, unsigned * outH, unsigned * outV, unsigned * outD, \fBxorg_s\fP * x, xcb_window_t id)"
+return buffer ximage 
+.SS "uint8_t* xorg_ximage_root_get (unsigned * outW, unsigned * outH, unsigned * outV, unsigned * outD, \fBxorg_s\fP * x)"
+get pixel root image 
+.SH "Variable Documentation"
+.PP 
+.SS "struct \fBxorgWindowStrutPartial\fP __packed"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

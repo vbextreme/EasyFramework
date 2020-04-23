@@ -1,0 +1,178 @@
+.TH "include/ef/guiResources.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/guiResources.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/image\&.h>\fP
+.br
+\fC#include <ef/imageGif\&.h>\fP
+.br
+\fC#include <ef/media\&.h>\fP
+.br
+\fC#include <ef/ft\&.h>\fP
+.br
+\fC#include <ef/utf8\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBguiResource\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBgui_resource_new\fP(NAME,  TYPE)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBguiResource\fP \fBguiResource_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBguiResource_e\fP { \fBGUI_RESOURCE_LONG\fP, \fBGUI_RESOURCE_DOUBLE\fP, \fBGUI_RESOURCE_UTF\fP, \fBGUI_RESOURCE_TEXT\fP, \fBGUI_RESOURCE_COLOR\fP, \fBGUI_RESOURCE_POSITION\fP, \fBGUI_RESOURCE_IMG\fP, \fBGUI_RESOURCE_GIF\fP, \fBGUI_RESOURCE_MEDIA\fP, \fBGUI_RESOURCE_FONTS\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBgui_resources_init\fP (void)"
+.br
+.ti -1c
+.RI "void \fBgui_resources_free\fP (void)"
+.br
+.ti -1c
+.RI "void \fBgui_resource_long_new\fP (const char *name, long value)"
+.br
+.ti -1c
+.RI "void \fBgui_resource_double_new\fP (const char *name, double value)"
+.br
+.ti -1c
+.RI "void \fBgui_resource_utf_new\fP (const char *name, \fButf_t\fP value)"
+.br
+.ti -1c
+.RI "void \fBgui_resource_text_new\fP (const char *name, const \fButf8_t\fP *value)"
+.br
+.ti -1c
+.RI "void \fBgui_resource_color_new\fP (const char *name, \fBg2dColor_t\fP value)"
+.br
+.ti -1c
+.RI "void \fBgui_resource_position_new\fP (const char *name, \fBg2dCoord_s\fP *value)"
+.br
+.ti -1c
+.RI "void \fBgui_resource_img_new\fP (const char *name, \fBg2dImage_s\fP *value)"
+.br
+.ti -1c
+.RI "void \fBgui_resource_gif_new\fP (const char *name, \fBgif_s\fP *value)"
+.br
+.ti -1c
+.RI "void \fBgui_resource_media_new\fP (const char *name, \fBmedia_s\fP *value)"
+.br
+.ti -1c
+.RI "void \fBgui_resource_fonts_new\fP (const char *name, \fBftFonts_s\fP *value)"
+.br
+.ti -1c
+.RI "\fBguiResource_s\fP * \fBgui_resource\fP (const char *name)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define gui_resource_new(NAME, TYPE)"
+\fBValue:\fP
+.PP
+.nf
+    _Generic((TYPE),\
+    long         : gui_resource_long_new,\
+    double       : gui_resource_double_new,\
+    utf_t        : gui_resource_utf_new,\
+    utf8_t*      : gui_resource_text_new\
+    const utf8_t*: gui_resource_text_new\
+    g2dColor_t   : gui_resource_color_new\
+    g2dCoord_s   : gui_resource_position_new\
+    g2dImage_s*  : gui_resource_img_new,\
+    gif_s*       : gui_resource_gif_new,\
+    media_s*     : gui_resource_media_new,\
+    ftFonts_s*   : gui_resource_fonts_new\
+)(NAME, TYPE)
+.fi
+.PP
+Definition at line 67 of file guiResources\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBguiResource\fP \fBguiResource_s\fP"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBguiResource_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIGUI_RESOURCE_LONG \fP\fP
+.TP
+\fB\fIGUI_RESOURCE_DOUBLE \fP\fP
+.TP
+\fB\fIGUI_RESOURCE_UTF \fP\fP
+.TP
+\fB\fIGUI_RESOURCE_TEXT \fP\fP
+.TP
+\fB\fIGUI_RESOURCE_COLOR \fP\fP
+.TP
+\fB\fIGUI_RESOURCE_POSITION \fP\fP
+.TP
+\fB\fIGUI_RESOURCE_IMG \fP\fP
+.TP
+\fB\fIGUI_RESOURCE_GIF \fP\fP
+.TP
+\fB\fIGUI_RESOURCE_MEDIA \fP\fP
+.TP
+\fB\fIGUI_RESOURCE_FONTS \fP\fP
+.PP
+Definition at line 11 of file guiResources\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "\fBguiResource_s\fP* gui_resource (const char * name)"
+
+.SS "void gui_resource_color_new (const char * name, \fBg2dColor_t\fP value)"
+
+.SS "void gui_resource_double_new (const char * name, double value)"
+
+.SS "void gui_resource_fonts_new (const char * name, \fBftFonts_s\fP * value)"
+
+.SS "void gui_resource_gif_new (const char * name, \fBgif_s\fP * value)"
+
+.SS "void gui_resource_img_new (const char * name, \fBg2dImage_s\fP * value)"
+
+.SS "void gui_resource_long_new (const char * name, long value)"
+
+.SS "void gui_resource_media_new (const char * name, \fBmedia_s\fP * value)"
+
+.SS "void gui_resource_position_new (const char * name, \fBg2dCoord_s\fP * value)"
+
+.SS "void gui_resource_text_new (const char * name, const \fButf8_t\fP * value)"
+
+.SS "void gui_resource_utf_new (const char * name, \fButf_t\fP value)"
+
+.SS "void gui_resources_free (void)"
+free resource 
+.SS "void gui_resources_init (void)"
+init resource 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

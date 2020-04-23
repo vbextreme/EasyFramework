@@ -1,0 +1,363 @@
+.TH "include/ef/ft.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/ft.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/utf8\&.h>\fP
+.br
+\fC#include <ef/rbhash\&.h>\fP
+.br
+\fC#include <ef/image\&.h>\fP
+.br
+\fC#include <freetype2/ft2build\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBftRender\fP"
+.br
+.ti -1c
+.RI "struct \fBftFont\fP"
+.br
+.ti -1c
+.RI "struct \fBftFonts\fP"
+.br
+.ti -1c
+.RI "struct \fBftUtfCustom\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBFT_FONT_NAME_SIZE\fP   128"
+.br
+.ti -1c
+.RI "#define \fBFT_RENDER_ANTIALIASED\fP   0x1"
+.br
+.ti -1c
+.RI "#define \fBFT_RENDER_VERT\fP   0x2"
+.br
+.ti -1c
+.RI "#define \fBFT_RENDER_VALID\fP   0x4"
+.br
+.ti -1c
+.RI "#define \fBFT_RENDER_BYTE\fP   0x8"
+.br
+.ti -1c
+.RI "#define \fBft_buf_line\fP(Y,  P)   ((Y)*(P))"
+.br
+.ti -1c
+.RI "#define \fBft_buf_mono_get\fP(buf,  X,  Y,  P)   ((buf[\fBft_buf_line\fP(Y,P)] << (X)) & 0x80)"
+.br
+.ti -1c
+.RI "#define \fBft_pixel_byte_get\fP(PX)   ((PX)/8)"
+.br
+.ti -1c
+.RI "#define \fBft_pixel_bit_get\fP(PX)   ((PX)%8)"
+.br
+.ti -1c
+.RI "#define \fBft_pixel_bitval_get\fP(BUF,  PX)   (BUF[\fBft_pixel_byte_get\fP(PX)] & (1<<(7\-\fBft_pixel_bit_get\fP(PX))));"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef FT_Library \fBftlib_h\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBftRender\fP \fBftRender_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBftFont\fP \fBftFont_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBftFonts\fP \fBftFonts_s\fP"
+.br
+.ti -1c
+.RI "typedef void(* \fBftUtfCustom_f\fP) (\fButf_t\fP u, \fBftFonts_s\fP **fonts, unsigned *x, unsigned *y, \fBg2dColor_t\fP *fore, void *userdata)"
+.br
+.ti -1c
+.RI "typedef struct \fBftUtfCustom\fP \fBftUtfCustom_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBerr_t\fP \fBft_begin\fP (void)"
+.br
+.ti -1c
+.RI "void \fBft_end\fP (void)"
+.br
+.ti -1c
+.RI "\fBftFonts_s\fP * \fBft_fonts_new\fP (void)"
+.br
+.ti -1c
+.RI "\fBftFont_s\fP * \fBft_fonts_search_name\fP (\fBftFonts_s\fP *fonts, const char *name)"
+.br
+.ti -1c
+.RI "ssize_t \fBft_fonts_search_index_byname\fP (\fBftFonts_s\fP *fonts, const char *name)"
+.br
+.ti -1c
+.RI "\fBftFont_s\fP * \fBft_fonts_search_path\fP (\fBftFonts_s\fP *fonts, const char *path)"
+.br
+.ti -1c
+.RI "\fBftFont_s\fP * \fBft_fonts_search_index\fP (\fBftFonts_s\fP *fonts, unsigned index)"
+.br
+.ti -1c
+.RI "char * \fBft_file_search\fP (char const *path)"
+.br
+.ti -1c
+.RI "\fBftFont_s\fP * \fBft_fonts_load\fP (\fBftFonts_s\fP *fonts, const char *path, const char *internalName)"
+.br
+.ti -1c
+.RI "void \fBft_fonts_remove_byindex\fP (\fBftFonts_s\fP *fonts, size_t index)"
+.br
+.ti -1c
+.RI "void \fBft_fonts_remove_byname\fP (\fBftFonts_s\fP *fonts, const char *name)"
+.br
+.ti -1c
+.RI "void \fBft_fonts_free\fP (\fBftFonts_s\fP *fonts)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBft_font_size\fP (\fBftFont_s\fP *font, long w, long h)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBft_font_size_dpi\fP (\fBftFont_s\fP *font, long w, long h, long dpiw, long dpih)"
+.br
+.ti -1c
+.RI "\fBftRender_s\fP * \fBft_glyph_get\fP (\fBftFonts_s\fP *fonts, \fButf_t\fP utf)"
+.br
+.ti -1c
+.RI "\fBftRender_s\fP * \fBft_fonts_glyph_load\fP (\fBftFonts_s\fP *fonts, \fButf_t\fP utf, unsigned mode)"
+.br
+.ti -1c
+.RI "void \fBft_glyph_free\fP (\fBftRender_s\fP *glyph)"
+.br
+.ti -1c
+.RI "int \fBft_glyph_min_width\fP (\fBftFont_s\fP *font, \fButf_t\fP utf)"
+.br
+.ti -1c
+.RI "void \fBft_font_render_size\fP (\fBftFont_s\fP *font, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "void \fBft_font_print_info\fP (\fBftFont_s\fP *font)"
+.br
+.ti -1c
+.RI "int \fBft_fonts_is_monospace\fP (\fBftFonts_s\fP *fonts)"
+.br
+.ti -1c
+.RI "unsigned \fBft_line_height\fP (\fBftFonts_s\fP *fonts)"
+.br
+.ti -1c
+.RI "unsigned \fBft_line_lenght\fP (\fBftFonts_s\fP *fonts, const \fButf8_t\fP *str)"
+.br
+.ti -1c
+.RI "unsigned \fBft_line_lenght_rev\fP (\fBftFonts_s\fP *fonts, const \fButf8_t\fP *begin, const \fButf8_t\fP *str)"
+.br
+.ti -1c
+.RI "unsigned \fBft_multiline_lenght\fP (\fBftFonts_s\fP *fonts, const \fButf8_t\fP *str)"
+.br
+.ti -1c
+.RI "unsigned \fBft_multiline_height\fP (\fBftFonts_s\fP *fonts, const \fButf8_t\fP *str)"
+.br
+.ti -1c
+.RI "unsigned \fBft_multiline_height_tostr\fP (\fBftFonts_s\fP *fonts, const \fButf8_t\fP *str, const \fButf8_t\fP *end)"
+.br
+.ti -1c
+.RI "unsigned \fBft_autowrap_height_to\fP (\fBftFonts_s\fP *fonts, const \fButf8_t\fP *str, const \fButf8_t\fP *end, unsigned width)"
+.br
+.ti -1c
+.RI "unsigned \fBft_autowrap_height\fP (\fBftFonts_s\fP *fonts, const \fButf8_t\fP *str, unsigned width)"
+.br
+.ti -1c
+.RI "int \fBg2d_putch\fP (\fBg2dImage_s\fP *dst, \fBg2dCoord_s\fP *pos, \fBftFonts_s\fP *fonts, \fButf_t\fP ch, \fBg2dColor_t\fP fore, \fBg2dColor_t\fP back, unsigned originX, int cls, int indirect)"
+.br
+.ti -1c
+.RI "const \fButf8_t\fP * \fBg2d_string\fP (\fBg2dImage_s\fP *dst, \fBg2dCoord_s\fP *pos, \fBftFonts_s\fP *fonts, \fButf8_t\fP const *str, \fBg2dColor_t\fP col, unsigned originX, int indirect)"
+.br
+.ti -1c
+.RI "void \fBg2d_string_autowrap\fP (\fBg2dImage_s\fP *dst, \fBg2dCoord_s\fP *pos, \fBftFonts_s\fP *fonts, \fButf8_t\fP const *str, \fBg2dColor_t\fP col, unsigned originX, int indirect)"
+.br
+.ti -1c
+.RI "void \fBg2d_string_replace\fP (\fBg2dImage_s\fP *dst, \fBg2dCoord_s\fP *pos, \fBftFonts_s\fP *fonts, \fButf8_t\fP const *str, \fButf8_t\fP const *old, \fBg2dColor_t\fP f, \fBg2dColor_t\fP b, unsigned originX)"
+.br
+.ti -1c
+.RI "\fButf_t\fP \fBft_utf_custom\fP (\fButf_t\fP u, \fBftUtfCustom_f\fP fn, void *userdata)"
+.br
+.ti -1c
+.RI "\fBftUtfCustom_s\fP * \fBft_utf_custom_get\fP (\fButf_t\fP utf)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define ft_buf_line(Y, P)   ((Y)*(P))"
+
+.PP
+Definition at line 64 of file ft\&.h\&.
+.SS "#define ft_buf_mono_get(buf, X, Y, P)   ((buf[\fBft_buf_line\fP(Y,P)] << (X)) & 0x80)"
+
+.PP
+Definition at line 65 of file ft\&.h\&.
+.SS "#define FT_FONT_NAME_SIZE   128"
+
+.PP
+Definition at line 11 of file ft\&.h\&.
+.SS "#define ft_pixel_bit_get(PX)   ((PX)%8)"
+
+.PP
+Definition at line 67 of file ft\&.h\&.
+.SS "#define ft_pixel_bitval_get(BUF, PX)   (BUF[\fBft_pixel_byte_get\fP(PX)] & (1<<(7\-\fBft_pixel_bit_get\fP(PX))));"
+
+.PP
+Definition at line 68 of file ft\&.h\&.
+.SS "#define ft_pixel_byte_get(PX)   ((PX)/8)"
+
+.PP
+Definition at line 66 of file ft\&.h\&.
+.SS "#define FT_RENDER_ANTIALIASED   0x1"
+
+.PP
+Definition at line 58 of file ft\&.h\&.
+.SS "#define FT_RENDER_BYTE   0x8"
+
+.PP
+Definition at line 61 of file ft\&.h\&.
+.SS "#define FT_RENDER_VALID   0x4"
+
+.PP
+Definition at line 60 of file ft\&.h\&.
+.SS "#define FT_RENDER_VERT   0x2"
+
+.PP
+Definition at line 59 of file ft\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBftFont\fP \fBftFont_s\fP"
+
+.SS "typedef struct \fBftFonts\fP \fBftFonts_s\fP"
+
+.SS "typedef FT_Library \fBftlib_h\fP"
+
+.PP
+Definition at line 13 of file ft\&.h\&.
+.SS "typedef struct \fBftRender\fP \fBftRender_s\fP"
+
+.SS "typedef void(* ftUtfCustom_f) (\fButf_t\fP u, \fBftFonts_s\fP **fonts, unsigned *x, unsigned *y, \fBg2dColor_t\fP *fore, void *userdata)"
+
+.PP
+Definition at line 50 of file ft\&.h\&.
+.SS "typedef struct \fBftUtfCustom\fP \fBftUtfCustom_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "unsigned ft_autowrap_height (\fBftFonts_s\fP * fonts, const \fButf8_t\fP * str, unsigned width)"
+return height in autowrap text 
+.SS "unsigned ft_autowrap_height_to (\fBftFonts_s\fP * fonts, const \fButf8_t\fP * str, const \fButf8_t\fP * end, unsigned width)"
+return multiline height in pixel to end position 
+.SS "\fBerr_t\fP ft_begin (void)"
+before use ft 
+.SS "void ft_end (void)"
+end use ft 
+.SS "char* ft_file_search (char const * path)"
+return font file path, have name or path similar to path 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP absolute path or font name 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+string with font file or null for error, remember to free this 
+.RE
+.PP
+
+.SS "void ft_font_print_info (\fBftFont_s\fP * font)"
+print font info 
+.SS "void ft_font_render_size (\fBftFont_s\fP * font, unsigned w, unsigned h)"
+set font render size 
+.SS "\fBerr_t\fP ft_font_size (\fBftFont_s\fP * font, long w, long h)"
+set fonts size 
+.SS "\fBerr_t\fP ft_font_size_dpi (\fBftFont_s\fP * font, long w, long h, long dpiw, long dpih)"
+set font size with dpi 
+.SS "void ft_fonts_free (\fBftFonts_s\fP * fonts)"
+free fonts obj 
+.SS "\fBftRender_s\fP* ft_fonts_glyph_load (\fBftFonts_s\fP * fonts, \fButf_t\fP utf, unsigned mode)"
+load a glyph if not exists, return a glyph or null 
+.SS "int ft_fonts_is_monospace (\fBftFonts_s\fP * fonts)"
+check if fonts is monospace 
+.SS "\fBftFont_s\fP* ft_fonts_load (\fBftFonts_s\fP * fonts, const char * path, const char * internalName)"
+loading fonts 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfonts\fP obj 
+.br
+\fIpath\fP path or name of font, call ft_file_search insde 
+.br
+\fIinternalName\fP set a custom name for this font 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a font object 
+.RE
+.PP
+
+.SS "\fBftFonts_s\fP* ft_fonts_new (void)"
+create new fonts obj 
+.SS "void ft_fonts_remove_byindex (\fBftFonts_s\fP * fonts, size_t index)"
+remove a font by index 
+.SS "void ft_fonts_remove_byname (\fBftFonts_s\fP * fonts, const char * name)"
+remove a font by name 
+.SS "\fBftFont_s\fP* ft_fonts_search_index (\fBftFonts_s\fP * fonts, unsigned index)"
+get fonts by index 
+.SS "ssize_t ft_fonts_search_index_byname (\fBftFonts_s\fP * fonts, const char * name)"
+get index of fonts loaded by name 
+.SS "\fBftFont_s\fP* ft_fonts_search_name (\fBftFonts_s\fP * fonts, const char * name)"
+search loaded font by name 
+.SS "\fBftFont_s\fP* ft_fonts_search_path (\fBftFonts_s\fP * fonts, const char * path)"
+search fonts loaded by path 
+.SS "void ft_glyph_free (\fBftRender_s\fP * glyph)"
+free glyph 
+.SS "\fBftRender_s\fP* ft_glyph_get (\fBftFonts_s\fP * fonts, \fButf_t\fP utf)"
+get a glyph or NULL if glyph is not loaded 
+.SS "int ft_glyph_min_width (\fBftFont_s\fP * font, \fButf_t\fP utf)"
+get glyph min width 
+.SS "unsigned ft_line_height (\fBftFonts_s\fP * fonts)"
+return line height 
+.SS "unsigned ft_line_lenght (\fBftFonts_s\fP * fonts, const \fButf8_t\fP * str)"
+return line lenght in pixels 
+.SS "unsigned ft_line_lenght_rev (\fBftFonts_s\fP * fonts, const \fButf8_t\fP * begin, const \fButf8_t\fP * str)"
+return line lenght reverse in pixels 
+.SS "unsigned ft_multiline_height (\fBftFonts_s\fP * fonts, const \fButf8_t\fP * str)"
+return multiline height in pixel 
+.SS "unsigned ft_multiline_height_tostr (\fBftFonts_s\fP * fonts, const \fButf8_t\fP * str, const \fButf8_t\fP * end)"
+return multiline height in pixel to end position 
+.SS "unsigned ft_multiline_lenght (\fBftFonts_s\fP * fonts, const \fButf8_t\fP * str)"
+return multiline lenght in pixel 
+.SS "\fButf_t\fP ft_utf_custom (\fButf_t\fP u, \fBftUtfCustom_f\fP fn, void * userdata)"
+create new custom utf 
+.SS "\fBftUtfCustom_s\fP* ft_utf_custom_get (\fButf_t\fP utf)"
+get custom utf 
+.SS "int g2d_putch (\fBg2dImage_s\fP * dst, \fBg2dCoord_s\fP * pos, \fBftFonts_s\fP * fonts, \fButf_t\fP ch, \fBg2dColor_t\fP fore, \fBg2dColor_t\fP back, unsigned originX, int cls, int indirect)"
+draw utf in to dst on position pos with color fore and background back at origin X, cls clear background, pos is incremented 
+.SS "const \fButf8_t\fP* g2d_string (\fBg2dImage_s\fP * dst, \fBg2dCoord_s\fP * pos, \fBftFonts_s\fP * fonts, \fButf8_t\fP const * str, \fBg2dColor_t\fP col, unsigned originX, int indirect)"
+write a string, with putch, return NULL if end or pointer after new line 
+.SS "void g2d_string_autowrap (\fBg2dImage_s\fP * dst, \fBg2dCoord_s\fP * pos, \fBftFonts_s\fP * fonts, \fButf8_t\fP const * str, \fBg2dColor_t\fP col, unsigned originX, int indirect)"
+write a string, with putch autwrap 
+.SS "void g2d_string_replace (\fBg2dImage_s\fP * dst, \fBg2dCoord_s\fP * pos, \fBftFonts_s\fP * fonts, \fButf8_t\fP const * str, \fButf8_t\fP const * old, \fBg2dColor_t\fP f, \fBg2dColor_t\fP b, unsigned originX)"
+write a string but not rewrite previus char 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

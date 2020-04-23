@@ -1,0 +1,112 @@
+.TH "include/ef/guiDiv.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/guiDiv.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/gui\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBguiDiv\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBGUI_DIV_DEFAULT_X\fP   5"
+.br
+.ti -1c
+.RI "#define \fBGUI_DIV_DEFAULT_Y\fP   5"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBguiDiv\fP \fBguiDiv_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBguiDivMode_e\fP { \fBGUI_DIV_NONE\fP, \fBGUI_DIV_VERTICAL\fP, \fBGUI_DIV_HORIZONTAL\fP, \fBGUI_DIV_GRID\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBguiDiv_s\fP * \fBgui_div_new\fP (\fBguiDivMode_e\fP mode)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_div_attach\fP (\fBgui_s\fP *\fBgui\fP, \fBguiDiv_s\fP *div)"
+.br
+.ti -1c
+.RI "void \fBgui_div_free\fP (\fBguiDiv_s\fP *div)"
+.br
+.ti -1c
+.RI "void \fBgui_div_align\fP (\fBgui_s\fP *\fBgui\fP, \fBguiDiv_s\fP *div)"
+.br
+.ti -1c
+.RI "int \fBgui_div_event_free\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBgui_div_event_key\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define GUI_DIV_DEFAULT_X   5"
+
+.PP
+Definition at line 20 of file guiDiv\&.h\&.
+.SS "#define GUI_DIV_DEFAULT_Y   5"
+
+.PP
+Definition at line 21 of file guiDiv\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBguiDiv\fP \fBguiDiv_s\fP"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBguiDivMode_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIGUI_DIV_NONE \fP\fP
+.TP
+\fB\fIGUI_DIV_VERTICAL \fP\fP
+.TP
+\fB\fIGUI_DIV_HORIZONTAL \fP\fP
+.TP
+\fB\fIGUI_DIV_GRID \fP\fP
+.PP
+Definition at line 6 of file guiDiv\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void gui_div_align (\fBgui_s\fP * gui, \fBguiDiv_s\fP * div)"
+realign div 
+.SS "\fBgui_s\fP* gui_div_attach (\fBgui_s\fP * gui, \fBguiDiv_s\fP * div)"
+attach div to gui 
+.SS "int gui_div_event_free (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * ev)"
+event free 
+.SS "int gui_div_event_key (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+event key 
+.SS "void gui_div_free (\fBguiDiv_s\fP * div)"
+free div 
+.SS "\fBguiDiv_s\fP* gui_div_new (\fBguiDivMode_e\fP mode)"
+create new div 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

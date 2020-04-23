@@ -1,0 +1,105 @@
+.TH "include/ef/guiButton.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/guiButton.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/gui\&.h>\fP
+.br
+\fC#include <ef/guiLabel\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBguiButton\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBGUI_BUTTON_BACKGROUND_PRESS\fP   1"
+.br
+.ti -1c
+.RI "#define \fBGUI_BUTTON_BACKGROUND_HOVER\fP   2"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBguiButton\fP \fBguiButton_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBguiButton_s\fP * \fBgui_button_new\fP (\fBguiLabel_s\fP *lbl, \fBguiEvent_f\fP onclick)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_button_attach\fP (\fBgui_s\fP *\fBgui\fP, \fBguiButton_s\fP *btn, \fBguiBackground_s\fP *press, \fBguiBackground_s\fP *hover)"
+.br
+.ti -1c
+.RI "void \fBgui_button_free\fP (\fBguiButton_s\fP *btn)"
+.br
+.ti -1c
+.RI "\fBguiLabel_s\fP * \fBgui_button_label\fP (\fBguiButton_s\fP *button)"
+.br
+.ti -1c
+.RI "void \fBgui_button_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fBguiButton_s\fP *btn, int press)"
+.br
+.ti -1c
+.RI "int \fBgui_button_event_free\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBgui_button_event_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *unset)"
+.br
+.ti -1c
+.RI "int \fBgui_button_event_key\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_button_event_mouse\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define GUI_BUTTON_BACKGROUND_HOVER   2"
+
+.PP
+Definition at line 8 of file guiButton\&.h\&.
+.SS "#define GUI_BUTTON_BACKGROUND_PRESS   1"
+
+.PP
+Definition at line 7 of file guiButton\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBguiButton\fP \fBguiButton_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "\fBgui_s\fP* gui_button_attach (\fBgui_s\fP * gui, \fBguiButton_s\fP * btn, \fBguiBackground_s\fP * press, \fBguiBackground_s\fP * hover)"
+attach button to gui 
+.SS "int gui_button_event_free (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * ev)"
+button free event 
+.SS "int gui_button_event_key (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+button event key 
+.SS "int gui_button_event_mouse (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+button event mouse 
+.SS "int gui_button_event_redraw (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * unset)"
+button redraw event 
+.SS "void gui_button_free (\fBguiButton_s\fP * btn)"
+free button 
+.SS "\fBguiLabel_s\fP* gui_button_label (\fBguiButton_s\fP * button)"
+get button label 
+.SS "\fBguiButton_s\fP* gui_button_new (\fBguiLabel_s\fP * lbl, \fBguiEvent_f\fP onclick)"
+create new button 
+.SS "void gui_button_redraw (\fBgui_s\fP * gui, \fBguiButton_s\fP * btn, int press)"
+button redraw 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

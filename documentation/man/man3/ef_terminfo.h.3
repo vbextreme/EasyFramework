@@ -1,4 +1,4 @@
-.TH "include/ef/terminfo.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/terminfo.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -48,6 +48,9 @@ include/ef/terminfo.h
 .br
 .ti -1c
 .RI "#define \fBTERM_DATABASE_DIRECTORY\fP   '/usr/lib/terminfo'"
+.br
+.ti -1c
+.RI "#define \fBTERM_DATABASE_DIRECTORY_LOCAL\fP   '/usr/local/lib/terminfo'"
 .br
 .ti -1c
 .RI "#define \fBENV_TERM\fP   'TERM'"
@@ -253,34 +256,38 @@ include/ef/terminfo.h
 .SS "#define ENV_TERM   'TERM'"
 enviroment contains database name 
 .PP
-Definition at line 18 of file terminfo\&.h\&.
+Definition at line 20 of file terminfo\&.h\&.
 .SS "#define ENV_TERMEF   'TERMEF'"
 extra enviroment contains unofficial cap for common terminal 
 .PP
-Definition at line 28 of file terminfo\&.h\&.
+Definition at line 30 of file terminfo\&.h\&.
 .SS "#define ENV_TERMEX   'TERMEX'"
 extra enviroment contains unofficial cap for terminal 
 .PP
-Definition at line 23 of file terminfo\&.h\&.
+Definition at line 25 of file terminfo\&.h\&.
 .SS "#define TERM_DATABASE_DIRECTORY   '/usr/lib/terminfo'"
 directory to find terminfo 
 .PP
 Definition at line 13 of file terminfo\&.h\&.
+.SS "#define TERM_DATABASE_DIRECTORY_LOCAL   '/usr/local/lib/terminfo'"
+
+.PP
+Definition at line 14 of file terminfo\&.h\&.
 .SS "#define TERM_EF_EXTEND   'ef\-term\-extend'"
 
 .PP
-Definition at line 31 of file terminfo\&.h\&.
+Definition at line 33 of file terminfo\&.h\&.
 .SS "#define term_escape_f0(NAME)"
 \fBValue:\fP
 .PP
 .nf
-       term_escape_print(NAME, (tvariable_s[10]){\
+        term_escape_print(NAME, (tvariable_s[10]){\
         [1] = { \&.type = 0, \&.l = 0 }\
         }\
     )
 .fi
 .PP
-Definition at line 215 of file terminfo\&.h\&.
+Definition at line 217 of file terminfo\&.h\&.
 .SS "#define term_escape_f1(NAME, P1)"
 \fBValue:\fP
 .PP
@@ -291,7 +298,7 @@ Definition at line 215 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 220 of file terminfo\&.h\&.
+Definition at line 222 of file terminfo\&.h\&.
 .SS "#define term_escape_f2(NAME, P1, P2)"
 \fBValue:\fP
 .PP
@@ -303,7 +310,7 @@ Definition at line 220 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 225 of file terminfo\&.h\&.
+Definition at line 227 of file terminfo\&.h\&.
 .SS "#define term_escape_f3(NAME, P1, P2, P3)"
 \fBValue:\fP
 .PP
@@ -316,7 +323,7 @@ Definition at line 225 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 231 of file terminfo\&.h\&.
+Definition at line 233 of file terminfo\&.h\&.
 .SS "#define term_escape_f4(NAME, P1, P2, P3, P4)"
 \fBValue:\fP
 .PP
@@ -330,7 +337,7 @@ Definition at line 231 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 238 of file terminfo\&.h\&.
+Definition at line 240 of file terminfo\&.h\&.
 .SS "#define term_escape_f5(NAME, P1, P2, P3, P4, P5)"
 \fBValue:\fP
 .PP
@@ -345,7 +352,7 @@ Definition at line 238 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 246 of file terminfo\&.h\&.
+Definition at line 248 of file terminfo\&.h\&.
 .SS "#define term_escape_f6(NAME, P1, P2, P3, P4, P5, P6)"
 \fBValue:\fP
 .PP
@@ -361,7 +368,7 @@ Definition at line 246 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 255 of file terminfo\&.h\&.
+Definition at line 257 of file terminfo\&.h\&.
 .SS "#define term_escape_f7(NAME, P1, P2, P3, P4, P5, P6, P7)"
 \fBValue:\fP
 .PP
@@ -378,7 +385,7 @@ Definition at line 255 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 265 of file terminfo\&.h\&.
+Definition at line 267 of file terminfo\&.h\&.
 .SS "#define term_escape_f8(NAME, P1, P2, P3, P4, P5, P6, P7, P8)"
 \fBValue:\fP
 .PP
@@ -396,7 +403,7 @@ Definition at line 265 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 277 of file terminfo\&.h\&.
+Definition at line 279 of file terminfo\&.h\&.
 .SS "#define term_escape_f9(NAME, P1, P2, P3, P4, P5, P6, P7, P8, P9)"
 \fBValue:\fP
 .PP
@@ -415,7 +422,7 @@ Definition at line 277 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 289 of file terminfo\&.h\&.
+Definition at line 291 of file terminfo\&.h\&.
 .SS "#define term_escape_mk0(OUT, NAME)"
 \fBValue:\fP
 .PP
@@ -426,7 +433,7 @@ Definition at line 289 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 309 of file terminfo\&.h\&.
+Definition at line 311 of file terminfo\&.h\&.
 .SS "#define term_escape_mk1(OUT, NAME, P1)"
 \fBValue:\fP
 .PP
@@ -437,7 +444,7 @@ Definition at line 309 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 314 of file terminfo\&.h\&.
+Definition at line 316 of file terminfo\&.h\&.
 .SS "#define term_escape_mk2(OUT, NAME, P1, P2)"
 \fBValue:\fP
 .PP
@@ -449,7 +456,7 @@ Definition at line 314 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 319 of file terminfo\&.h\&.
+Definition at line 321 of file terminfo\&.h\&.
 .SS "#define term_escape_mk3(OUT, NAME, P1, P2, P3)"
 \fBValue:\fP
 .PP
@@ -462,7 +469,7 @@ Definition at line 319 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 325 of file terminfo\&.h\&.
+Definition at line 327 of file terminfo\&.h\&.
 .SS "#define term_escape_mk4(OUT, NAME, P1, P2, P3, P4)"
 \fBValue:\fP
 .PP
@@ -476,7 +483,7 @@ Definition at line 325 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 332 of file terminfo\&.h\&.
+Definition at line 334 of file terminfo\&.h\&.
 .SS "#define term_escape_mk5(OUT, NAME, P1, P2, P3, P4, P5)"
 \fBValue:\fP
 .PP
@@ -491,7 +498,7 @@ Definition at line 332 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 340 of file terminfo\&.h\&.
+Definition at line 342 of file terminfo\&.h\&.
 .SS "#define term_escape_mk6(OUT, NAME, P1, P2, P3, P4, P5, P6)"
 \fBValue:\fP
 .PP
@@ -507,7 +514,7 @@ Definition at line 340 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 349 of file terminfo\&.h\&.
+Definition at line 351 of file terminfo\&.h\&.
 .SS "#define term_escape_mk7(OUT, NAME, P1, P2, P3, P4, P5, P6, P7)"
 \fBValue:\fP
 .PP
@@ -524,7 +531,7 @@ Definition at line 349 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 359 of file terminfo\&.h\&.
+Definition at line 361 of file terminfo\&.h\&.
 .SS "#define term_escape_mk8(OUT, NAME, P1, P2, P3, P4, P5, P6, P7, P8)"
 \fBValue:\fP
 .PP
@@ -542,7 +549,7 @@ Definition at line 359 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 370 of file terminfo\&.h\&.
+Definition at line 372 of file terminfo\&.h\&.
 .SS "#define term_escape_mk9(OUT, NAME, P1, P2, P3, P4, P5, P6, P7, P8, P9)"
 \fBValue:\fP
 .PP
@@ -561,19 +568,19 @@ Definition at line 370 of file terminfo\&.h\&.
     )
 .fi
 .PP
-Definition at line 382 of file terminfo\&.h\&.
+Definition at line 384 of file terminfo\&.h\&.
 .SS "#define term_escapef(NAME,  \&.\&.\&.)   \fB__CONCAT_EXPAND__\fP(term_escape_f,\fB__VA_COUNT__\fP(__VA_ARGS__))(NAME,##__VA_ARGS__)"
 same term_escape_print but with stdarg for tvariable_s 
 .PP
-Definition at line 304 of file terminfo\&.h\&.
+Definition at line 306 of file terminfo\&.h\&.
 .SS "#define term_escapemk(OUT, NAME,  \&.\&.\&.)   \fB__CONCAT_EXPAND__\fP(term_escape_mk,\fB__VA_COUNT__\fP(__VA_ARGS__))(OUT,NAME,##__VA_ARGS__)"
 same term_escape_string but with stdarg for tvariable_s 
 .PP
-Definition at line 397 of file terminfo\&.h\&.
+Definition at line 399 of file terminfo\&.h\&.
 .SS "#define term_flush()   fflush(stdout)"
 flush 
 .PP
-Definition at line 152 of file terminfo\&.h\&.
+Definition at line 154 of file terminfo\&.h\&.
 .SS "#define TERM_MAGIC   282"
 
 .PP
@@ -593,7 +600,7 @@ Definition at line 9 of file terminfo\&.h\&.
 .fi
 print 
 .PP
-Definition at line 113 of file terminfo\&.h\&.
+Definition at line 115 of file terminfo\&.h\&.
 .SS "#define TVARIABLE_AUTOTYPE(V)"
 \fBValue:\fP
 .PP
@@ -609,7 +616,7 @@ Definition at line 113 of file terminfo\&.h\&.
 )(V)
 .fi
 .PP
-Definition at line 205 of file terminfo\&.h\&.
+Definition at line 207 of file terminfo\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBkbData\fP \fBkbData_s\fP"
@@ -642,17 +649,17 @@ Definition at line 205 of file terminfo\&.h\&.
 .TP
 \fB\fITI_TYPE_STR \fP\fP
 .PP
-Definition at line 33 of file terminfo\&.h\&.
+Definition at line 35 of file terminfo\&.h\&.
 .SH "Function Documentation"
 .PP 
 .SS "__always_inline \fBtvariable_s\fP __tvariable_set_numeric (long num)"
 
 .PP
-Definition at line 202 of file terminfo\&.h\&.
+Definition at line 204 of file terminfo\&.h\&.
 .SS "__always_inline \fBtvariable_s\fP __tvariable_set_string (char * str)"
 
 .PP
-Definition at line 203 of file terminfo\&.h\&.
+Definition at line 205 of file terminfo\&.h\&.
 .SS "void term_begin (void)"
 init term, call this before use other function 
 .SS "void term_end (void)"

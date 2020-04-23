@@ -1,4 +1,4 @@
-.TH "include/ef/os.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/os.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -22,6 +22,9 @@ include/ef/os.h
 .ti -1c
 .RI "const char * \fBos_setlocale\fP (int category, const char *locale)"
 .br
+.ti -1c
+.RI "void \fBos_begin\fP (void)"
+.br
 .in -1c
 .SH "Macro Definition Documentation"
 .PP 
@@ -31,6 +34,8 @@ get current locale
 Definition at line 10 of file os\&.h\&.
 .SH "Function Documentation"
 .PP 
+.SS "void os_begin (void)"
+
 .SS "const char* os_setlocale (int category, const char * locale)"
 set locale and return previous setting 
 .SH "Author"

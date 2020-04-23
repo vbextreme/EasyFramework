@@ -1,4 +1,4 @@
-.TH "include/ef/err.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/err.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -85,7 +85,7 @@ include/ef/err.h
 
 .in +1c
 .ti -1c
-.RI "thread_local \fBeerr_s\fP \fBgerr\fP"
+.RI "__thread \fBeerr_s\fP \fBgerr\fP"
 .br
 .in -1c
 .SH "Macro Definition Documentation"
@@ -110,7 +110,7 @@ Definition at line 18 of file err\&.h\&.
 .fi
 push error, print and exit 
 .PP
-Definition at line 53 of file err\&.h\&.
+Definition at line 57 of file err\&.h\&.
 .SS "#define err_push(F, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -125,7 +125,7 @@ Definition at line 53 of file err\&.h\&.
 .fi
 push new error descript, call err_pushf with 'error: your error nl' 
 .PP
-Definition at line 35 of file err\&.h\&.
+Definition at line 39 of file err\&.h\&.
 .SS "#define err_pushno(F, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -140,7 +140,7 @@ Definition at line 35 of file err\&.h\&.
 .fi
 push new error with errno descript, call err_pushf with 'error: your error nl errno(N): descript nl' 
 .PP
-Definition at line 44 of file err\&.h\&.
+Definition at line 48 of file err\&.h\&.
 .SS "#define ERR_REALLOC   32"
 
 .PP
@@ -177,7 +177,7 @@ restore enable/disable error
 store enable/disable error 
 .SH "Variable Documentation"
 .PP 
-.SS "thread_local \fBeerr_s\fP gerr"
+.SS "__thread \fBeerr_s\fP gerr"
 
 .SH "Author"
 .PP 

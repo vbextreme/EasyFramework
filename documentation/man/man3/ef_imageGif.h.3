@@ -1,0 +1,61 @@
+.TH "include/ef/imageGif.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/imageGif.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/image\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBgifFrame\fP"
+.br
+.ti -1c
+.RI "struct \fBgif\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBgifFrame\fP \fBgifFrame_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBgif\fP \fBgif_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBgif_s\fP * \fBg2d_load_gif\fP (char const *path)"
+.br
+.ti -1c
+.RI "void \fBg2d_gif_free\fP (\fBgif_s\fP *\fBgif\fP)"
+.br
+.ti -1c
+.RI "void \fBg2d_gif_resize\fP (\fBgif_s\fP *\fBgif\fP, unsigned width, unsigned height)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBgif\fP \fBgif_s\fP"
+
+.SS "typedef struct \fBgifFrame\fP \fBgifFrame_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "void g2d_gif_free (\fBgif_s\fP * gif)"
+
+.SS "void g2d_gif_resize (\fBgif_s\fP * gif, unsigned width, unsigned height)"
+
+.SS "\fBgif_s\fP* g2d_load_gif (char const * path)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

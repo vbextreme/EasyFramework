@@ -225,8 +225,10 @@ if xcb_error_dep.found()
   message('enable xcb_error')
   add_global_arguments('-DXCB_ERROR_ENABLE', language: 'c')
   libDeps += [ xcb_error_dep ]
+  pkg_xcb_error='-DXCB_ERROR_ENABLE'
 else
-   message('disable xcb_error')
+  message('disable xcb_error')
+  pkg_xcb_error=''
 endif
 
 #rl_dep = dependency('readline', required: true)
@@ -302,7 +304,7 @@ pkg.generate(
   name: 'EasyFramework',
   description : 'easy framework library.',
   libraries: [ '-lef', '-lunistring', '-pthread' ],
-  extra_cflags: [ '-I/usr/include/freetype2' ],
+  extra_cflags: [ '-I/usr/include/freetype2', pkg_xcb_error ],
   version: meson.project_version()
 )
 

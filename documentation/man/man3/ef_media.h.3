@@ -1,0 +1,68 @@
+.TH "include/ef/media.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/media.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/image\&.h>\fP
+.br
+
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct media \fBmedia_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBmedia_free\fP (\fBmedia_s\fP *media)"
+.br
+.ti -1c
+.RI "\fBmedia_s\fP * \fBmedia_load\fP (const char *path)"
+.br
+.ti -1c
+.RI "void \fBmedia_resize_set\fP (\fBmedia_s\fP *media, \fBg2dImage_s\fP *img)"
+.br
+.ti -1c
+.RI "int \fBmedia_decode\fP (\fBmedia_s\fP *media)"
+.br
+.ti -1c
+.RI "\fBg2dImage_s\fP * \fBmedia_frame_get\fP (\fBmedia_s\fP *media)"
+.br
+.ti -1c
+.RI "void \fBmedia_sleep\fP (\fBmedia_s\fP *media)"
+.br
+.ti -1c
+.RI "long \fBmedia_delay_get\fP (\fBmedia_s\fP *media)"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct media \fBmedia_s\fP"
+
+.PP
+Definition at line 6 of file media\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "int media_decode (\fBmedia_s\fP * media)"
+decode a frame 
+.SS "long media_delay_get (\fBmedia_s\fP * media)"
+get time for sync 
+.SS "\fBg2dImage_s\fP* media_frame_get (\fBmedia_s\fP * media)"
+get frame 
+.SS "void media_free (\fBmedia_s\fP * media)"
+free media 
+.SS "\fBmedia_s\fP* media_load (const char * path)"
+load media 
+.SS "void media_resize_set (\fBmedia_s\fP * media, \fBg2dImage_s\fP * img)"
+set resize media 
+.SS "void media_sleep (\fBmedia_s\fP * media)"
+sleep for sync 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

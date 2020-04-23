@@ -1,0 +1,226 @@
+.TH "gui" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+gui
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <gui\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "char * \fBname\fP"
+.br
+.ti -1c
+.RI "char * \fBclass\fP"
+.br
+.ti -1c
+.RI "struct \fBgui\fP * \fBparent\fP"
+.br
+.ti -1c
+.RI "struct \fBgui\fP ** \fBchilds\fP"
+.br
+.ti -1c
+.RI "void * \fBcontrol\fP"
+.br
+.ti -1c
+.RI "void * \fBuserdata\fP"
+.br
+.ti -1c
+.RI "int \fBtype\fP"
+.br
+.ti -1c
+.RI "xcb_window_t \fBid\fP"
+.br
+.ti -1c
+.RI "int \fBfocusable\fP"
+.br
+.ti -1c
+.RI "int \fBchildFocus\fP"
+.br
+.ti -1c
+.RI "int \fBbordersize\fP"
+.br
+.ti -1c
+.RI "int \fBbordersizefocused\fP"
+.br
+.ti -1c
+.RI "int \fBgenericSize\fP"
+.br
+.ti -1c
+.RI "\fBxorgSurface_s\fP * \fBsurface\fP"
+.br
+.ti -1c
+.RI "\fBguiPosition_s\fP \fBposition\fP"
+.br
+.ti -1c
+.RI "\fBguiBackground_s\fP ** \fBbackground\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBcreate\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBdestroy\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBfree\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBredraw\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBdraw\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBkey\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBmouse\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBfocus\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBmap\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBmove\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBatom\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBclient\fP"
+.br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBclipboard\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 79 of file gui\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "\fBguiEvent_f\fP gui::atom"
+
+.PP
+Definition at line 109 of file gui\&.h\&.
+.SS "\fBguiBackground_s\fP** gui::background"
+
+.PP
+Definition at line 97 of file gui\&.h\&.
+.SS "int gui::bordersize"
+
+.PP
+Definition at line 91 of file gui\&.h\&.
+.SS "int gui::bordersizefocused"
+
+.PP
+Definition at line 92 of file gui\&.h\&.
+.SS "int gui::childFocus"
+
+.PP
+Definition at line 90 of file gui\&.h\&.
+.SS "struct \fBgui\fP** gui::childs"
+
+.PP
+Definition at line 83 of file gui\&.h\&.
+.SS "char* gui::class"
+
+.PP
+Definition at line 81 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::client"
+
+.PP
+Definition at line 110 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::clipboard"
+
+.PP
+Definition at line 111 of file gui\&.h\&.
+.SS "void* gui::control"
+
+.PP
+Definition at line 84 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::create"
+
+.PP
+Definition at line 99 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::destroy"
+
+.PP
+Definition at line 100 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::draw"
+
+.PP
+Definition at line 103 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::focus"
+
+.PP
+Definition at line 106 of file gui\&.h\&.
+.SS "int gui::focusable"
+
+.PP
+Definition at line 89 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::free"
+
+.PP
+Definition at line 101 of file gui\&.h\&.
+.SS "int gui::genericSize"
+
+.PP
+Definition at line 93 of file gui\&.h\&.
+.SS "xcb_window_t gui::id"
+
+.PP
+Definition at line 88 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::key"
+
+.PP
+Definition at line 104 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::map"
+
+.PP
+Definition at line 107 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::mouse"
+
+.PP
+Definition at line 105 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::move"
+
+.PP
+Definition at line 108 of file gui\&.h\&.
+.SS "char* gui::name"
+
+.PP
+Definition at line 80 of file gui\&.h\&.
+.SS "struct \fBgui\fP* gui::parent"
+
+.PP
+Definition at line 82 of file gui\&.h\&.
+.SS "\fBguiPosition_s\fP gui::position"
+
+.PP
+Definition at line 96 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::redraw"
+
+.PP
+Definition at line 102 of file gui\&.h\&.
+.SS "\fBxorgSurface_s\fP* gui::surface"
+
+.PP
+Definition at line 95 of file gui\&.h\&.
+.SS "int gui::type"
+
+.PP
+Definition at line 87 of file gui\&.h\&.
+.SS "void* gui::userdata"
+
+.PP
+Definition at line 85 of file gui\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

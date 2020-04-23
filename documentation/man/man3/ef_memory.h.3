@@ -1,4 +1,4 @@
-.TH "include/ef/memory.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/memory.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -131,6 +131,9 @@ include/ef/memory.h
 .br
 .ti -1c
 .RI "\fBerr_t\fP \fBmem_protect_change\fP (\fBpkey_t\fP key, unsigned int mode, void *addr)"
+.br
+.ti -1c
+.RI "void \fBmem_swap\fP (void *restrict a, size_t sizeA, void *restrict b, size_t sizeB)"
 .br
 .in -1c
 .SH "Macro Definition Documentation"
@@ -545,6 +548,21 @@ get size of memory
 \fBParameters\fP
 .RS 4
 \fIname\fP nameof memory, examples: /mymem 
+.RE
+.PP
+
+.SS "void mem_swap (void *restrict a, size_t sizeA, void *restrict b, size_t sizeB)"
+swap block of memory, destination size need to equal, content size can be different 
+.PP
+\fBParameters\fP
+.RS 4
+\fIa\fP block a 
+.br
+\fIsizeA\fP content size 
+.br
+\fIb\fP block b 
+.br
+\fIsizeB\fP content size 
 .RE
 .PP
 

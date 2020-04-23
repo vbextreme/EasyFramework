@@ -66,6 +66,7 @@ $ sudo ninja install
 
 Doc:
 ================
+install graphviz for doc graph
 ```
 $ ./gendoc
 ```

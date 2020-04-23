@@ -1,0 +1,344 @@
+.TH "include/ef/guiText.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/guiText.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/gui\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBguiText\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBGUI_TEXT_REND_TEXT\fP   0x000001"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_REND_CURSOR\fP   0x000008"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_REND_SCROLL\fP   0x000010"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_REND_CURON\fP   0x000020"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_INSERT\fP   0x000100"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_SCROLL_X\fP   0x000200"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_SCROLL_Y\fP   0x000400"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_CUR_VISIBLE\fP   0x000800"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_SEL\fP   0x001000"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_FLAGS_END\fP   24"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_CURSOR_THIN\fP   (0<<\fBGUI_TEXT_FLAGS_END\fP)"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_CURSOR_LIGHT\fP   (1<<\fBGUI_TEXT_FLAGS_END\fP)"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_CURSOR_PLENTIFUL\fP   (2<<\fBGUI_TEXT_FLAGS_END\fP)"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_CURSOR_FAT\fP   (3<<\fBGUI_TEXT_FLAGS_END\fP)"
+.br
+.ti -1c
+.RI "#define \fBGUI_TEXT_WORD_SEP\fP   ' \\n\\t`~!@#$%^&*()+{}|[]\\\\;':\\'<>?,\&./'"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBguiText\fP \fBguiText_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBguiText_s\fP * \fBgui_text_new\fP (\fBftFonts_s\fP *font, \fBg2dColor_t\fP foreground, \fBg2dColor_t\fP select, \fBg2dColor_t\fP colCursor, unsigned tabspace, unsigned blinktime, unsigned flags)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_text_attach\fP (\fBgui_s\fP *\fBgui\fP, \fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_free\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_flags_set\fP (\fBguiText_s\fP *txt, unsigned flags)"
+.br
+.ti -1c
+.RI "void \fBgui_text_ir_toggle\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "const \fButf8_t\fP * \fBgui_text_str_raw\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "\fButf8_t\fP * \fBgui_text_str\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_sel\fP (\fBgui_s\fP *\fBgui\fP, \fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_unsel\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_sel_del\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "\fButf8_t\fP * \fBgui_text_sel_get\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "size_t \fBgui_text_line_right_len\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "size_t \fBgui_text_line_left_len\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "\fButf8_t\fP * \fBgui_text_back_line_ptr\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "\fButf8_t\fP * \fBgui_text_next_line_ptr\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_put\fP (\fBgui_s\fP *\fBgui\fP, \fBguiText_s\fP *txt, \fButf_t\fP utf)"
+.br
+.ti -1c
+.RI "void \fBgui_text_del\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_backspace\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_cursor_next\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_cursor_prev\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_cursor_end\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_cursor_home\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_cursor_scroll_left\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_cursor_scroll_right\fP (\fBgui_s\fP *\fBgui\fP, \fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBgui_text_cursor_up\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBgui_text_cursor_down\fP (\fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_cursor_pagdn\fP (\fBgui_s\fP *\fBgui\fP, \fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_cursor_pagup\fP (\fBgui_s\fP *\fBgui\fP, \fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_cursor_on_position\fP (\fBgui_s\fP *\fBgui\fP, \fBguiText_s\fP *txt, unsigned x, unsigned y)"
+.br
+.ti -1c
+.RI "void \fBgui_text_render_cursor\fP (\fBgui_s\fP *\fBgui\fP, \fBguiText_s\fP *txt)"
+.br
+.ti -1c
+.RI "void \fBgui_text_render_text\fP (\fBgui_s\fP *\fBgui\fP, \fBguiText_s\fP *txt, int partial)"
+.br
+.ti -1c
+.RI "void \fBgui_text_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fBguiBackground_s\fP *bkg, \fBguiText_s\fP *txt, int partial)"
+.br
+.ti -1c
+.RI "int \fBgui_text_event_key\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_text_event_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBgui_text_event_clipboard\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBgui_text_event_free\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBgui_text_timer_blink\fP (\fBguiTimer_s\fP *timer)"
+.br
+.ti -1c
+.RI "int \fBgui_text_event_focus\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBgui_text_event_mouse\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define GUI_TEXT_CUR_VISIBLE   0x000800"
+
+.PP
+Definition at line 14 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_CURSOR_FAT   (3<<\fBGUI_TEXT_FLAGS_END\fP)"
+
+.PP
+Definition at line 22 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_CURSOR_LIGHT   (1<<\fBGUI_TEXT_FLAGS_END\fP)"
+
+.PP
+Definition at line 20 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_CURSOR_PLENTIFUL   (2<<\fBGUI_TEXT_FLAGS_END\fP)"
+
+.PP
+Definition at line 21 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_CURSOR_THIN   (0<<\fBGUI_TEXT_FLAGS_END\fP)"
+
+.PP
+Definition at line 19 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_FLAGS_END   24"
+
+.PP
+Definition at line 17 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_INSERT   0x000100"
+
+.PP
+Definition at line 11 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_REND_CURON   0x000020"
+
+.PP
+Definition at line 9 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_REND_CURSOR   0x000008"
+
+.PP
+Definition at line 7 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_REND_SCROLL   0x000010"
+
+.PP
+Definition at line 8 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_REND_TEXT   0x000001"
+
+.PP
+Definition at line 6 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_SCROLL_X   0x000200"
+
+.PP
+Definition at line 12 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_SCROLL_Y   0x000400"
+
+.PP
+Definition at line 13 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_SEL   0x001000"
+
+.PP
+Definition at line 15 of file guiText\&.h\&.
+.SS "#define GUI_TEXT_WORD_SEP   ' \\n\\t`~!@#$%^&*()+{}|[]\\\\;':\\'<>?,\&./'"
+
+.PP
+Definition at line 24 of file guiText\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBguiText\fP \fBguiText_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "\fBgui_s\fP* gui_text_attach (\fBgui_s\fP * gui, \fBguiText_s\fP * txt)"
+attach text to gui 
+.SS "\fButf8_t\fP* gui_text_back_line_ptr (\fBguiText_s\fP * txt)"
+back one line 
+.SS "void gui_text_backspace (\fBguiText_s\fP * txt)"
+backspace 
+.SS "\fBerr_t\fP gui_text_cursor_down (\fBguiText_s\fP * txt)"
+cursor down 
+.SS "void gui_text_cursor_end (\fBguiText_s\fP * txt)"
+cursor to end 
+.SS "void gui_text_cursor_home (\fBguiText_s\fP * txt)"
+cursor to home 
+.SS "void gui_text_cursor_next (\fBguiText_s\fP * txt)"
+cursor next 
+.SS "void gui_text_cursor_on_position (\fBgui_s\fP * gui, \fBguiText_s\fP * txt, unsigned x, unsigned y)"
+set cursor on coordinate 
+.SS "void gui_text_cursor_pagdn (\fBgui_s\fP * gui, \fBguiText_s\fP * txt)"
+cursor pag down 
+.SS "void gui_text_cursor_pagup (\fBgui_s\fP * gui, \fBguiText_s\fP * txt)"
+cursors pagup 
+.SS "void gui_text_cursor_prev (\fBguiText_s\fP * txt)"
+cursor prev 
+.SS "void gui_text_cursor_scroll_left (\fBguiText_s\fP * txt)"
+scroll left 
+.SS "void gui_text_cursor_scroll_right (\fBgui_s\fP * gui, \fBguiText_s\fP * txt)"
+scroll right 
+.SS "\fBerr_t\fP gui_text_cursor_up (\fBguiText_s\fP * txt)"
+cursor up 
+.SS "void gui_text_del (\fBguiText_s\fP * txt)"
+del char 
+.SS "int gui_text_event_clipboard (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * ev)"
+event clipboard 
+.SS "int gui_text_event_focus (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * ev)"
+event focus 
+.SS "int gui_text_event_free (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * ev)"
+event free 
+.SS "int gui_text_event_key (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+event on key 
+.SS "int gui_text_event_mouse (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+event mouse 
+.SS "int gui_text_event_redraw (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * ev)"
+event redraw 
+.SS "void gui_text_flags_set (\fBguiText_s\fP * txt, unsigned flags)"
+sets flags 
+.SS "void gui_text_free (\fBguiText_s\fP * txt)"
+free text 
+.SS "void gui_text_ir_toggle (\fBguiText_s\fP * txt)"
+insert/replace 
+.SS "size_t gui_text_line_left_len (\fBguiText_s\fP * txt)"
+left len 
+.SS "size_t gui_text_line_right_len (\fBguiText_s\fP * txt)"
+right len 
+.SS "\fBguiText_s\fP* gui_text_new (\fBftFonts_s\fP * font, \fBg2dColor_t\fP foreground, \fBg2dColor_t\fP select, \fBg2dColor_t\fP colCursor, unsigned tabspace, unsigned blinktime, unsigned flags)"
+create new text 
+.SS "\fButf8_t\fP* gui_text_next_line_ptr (\fBguiText_s\fP * txt)"
+next ona line 
+.SS "void gui_text_put (\fBgui_s\fP * gui, \fBguiText_s\fP * txt, \fButf_t\fP utf)"
+put char 
+.SS "void gui_text_redraw (\fBgui_s\fP * gui, \fBguiBackground_s\fP * bkg, \fBguiText_s\fP * txt, int partial)"
+redraw text 
+.SS "void gui_text_render_cursor (\fBgui_s\fP * gui, \fBguiText_s\fP * txt)"
+render cursor 
+.SS "void gui_text_render_text (\fBgui_s\fP * gui, \fBguiText_s\fP * txt, int partial)"
+render text 
+.SS "void gui_text_sel (\fBgui_s\fP * gui, \fBguiText_s\fP * txt)"
+sel text 
+.SS "void gui_text_sel_del (\fBguiText_s\fP * txt)"
+delete selection 
+.SS "\fButf8_t\fP* gui_text_sel_get (\fBguiText_s\fP * txt)"
+get text selection, remember to free 
+.SS "\fButf8_t\fP* gui_text_str (\fBguiText_s\fP * txt)"
+get text string, remember to free 
+.SS "const \fButf8_t\fP* gui_text_str_raw (\fBguiText_s\fP * txt)"
+get raw str 
+.SS "int gui_text_timer_blink (\fBguiTimer_s\fP * timer)"
+event timer blink 
+.SS "void gui_text_unsel (\fBguiText_s\fP * txt)"
+unsel text 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

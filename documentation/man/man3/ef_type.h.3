@@ -1,4 +1,4 @@
-.TH "include/ef/type.h" 3 "Thu Apr 2 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/type.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -299,18 +299,18 @@ Definition at line 124 of file type\&.h\&.
 
 .PP
 Definition at line 126 of file type\&.h\&.
-.SS "#define __packed   __attribute__((packed))"
+.SS "struct \fBxorgWindowStrutPartial\fP __packed   __attribute__((packed))"
 is packed 
 .PP
 Definition at line 102 of file type\&.h\&.
 .SS "#define __parallef"
 
 .PP
-Definition at line 147 of file type\&.h\&.
+Definition at line 148 of file type\&.h\&.
 .SS "#define __parallefc(Z)"
 
 .PP
-Definition at line 148 of file type\&.h\&.
+Definition at line 149 of file type\&.h\&.
 .SS "#define __printf(FRMT, VA)   __attribute__((\fBformat\fP (printf, FRMT, VA)))"
 is printf 
 .PP
@@ -395,87 +395,87 @@ Definition at line 76 of file type\&.h\&.
 .SS "#define dbg(TYPE, FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
 
 .PP
-Definition at line 217 of file type\&.h\&.
+Definition at line 218 of file type\&.h\&.
 .SS "#define DBG_COLOR_ERROR   ''"
 
 .PP
-Definition at line 164 of file type\&.h\&.
+Definition at line 165 of file type\&.h\&.
 .SS "#define DBG_COLOR_FAIL   ''"
 
 .PP
-Definition at line 165 of file type\&.h\&.
+Definition at line 166 of file type\&.h\&.
 .SS "#define DBG_COLOR_INFO   ''"
 
 .PP
-Definition at line 162 of file type\&.h\&.
+Definition at line 163 of file type\&.h\&.
 .SS "#define DBG_COLOR_RESET   ''"
 
 .PP
-Definition at line 166 of file type\&.h\&.
+Definition at line 167 of file type\&.h\&.
 .SS "#define DBG_COLOR_WARNING   ''"
 
 .PP
-Definition at line 163 of file type\&.h\&.
+Definition at line 164 of file type\&.h\&.
 .SS "#define dbg_errno()   \fBEMPTY_MACRO\fP"
 
 .PP
-Definition at line 219 of file type\&.h\&.
+Definition at line 220 of file type\&.h\&.
 .SS "#define DBG_ERRNO   'errno'"
 
 .PP
-Definition at line 182 of file type\&.h\&.
+Definition at line 183 of file type\&.h\&.
 .SS "#define dbg_error(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
 
 .PP
-Definition at line 226 of file type\&.h\&.
+Definition at line 227 of file type\&.h\&.
 .SS "#define DBG_ERROR   'error'"
 
 .PP
-Definition at line 176 of file type\&.h\&.
+Definition at line 177 of file type\&.h\&.
 .SS "#define dbg_fail(FORMAT, arg\&.\&.\&.)   do{exit(1);}while(0)"
 
 .PP
-Definition at line 218 of file type\&.h\&.
+Definition at line 219 of file type\&.h\&.
 .SS "#define DBG_FAIL   'fail'"
 
 .PP
-Definition at line 179 of file type\&.h\&.
+Definition at line 180 of file type\&.h\&.
 .SS "#define dbg_info(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
 
 .PP
-Definition at line 240 of file type\&.h\&.
+Definition at line 241 of file type\&.h\&.
 .SS "#define DBG_INFO   'info'"
 
 .PP
-Definition at line 170 of file type\&.h\&.
+Definition at line 171 of file type\&.h\&.
 .SS "#define DBG_LVL_ERROR   2"
 
 .PP
-Definition at line 189 of file type\&.h\&.
+Definition at line 190 of file type\&.h\&.
 .SS "#define DBG_LVL_FAIL   1"
 
 .PP
-Definition at line 186 of file type\&.h\&.
+Definition at line 187 of file type\&.h\&.
 .SS "#define DBG_LVL_INFO   4"
 
 .PP
-Definition at line 195 of file type\&.h\&.
+Definition at line 196 of file type\&.h\&.
 .SS "#define DBG_LVL_WARNING   3"
 
 .PP
-Definition at line 192 of file type\&.h\&.
+Definition at line 193 of file type\&.h\&.
 .SS "#define DBG_OUTPUT   stderr"
 
 .PP
-Definition at line 152 of file type\&.h\&.
+Definition at line 153 of file type\&.h\&.
 .SS "#define dbg_warning(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
 
 .PP
-Definition at line 233 of file type\&.h\&.
+Definition at line 234 of file type\&.h\&.
 .SS "#define DBG_WARNING   'warning'"
 
 .PP
-Definition at line 173 of file type\&.h\&.
+Definition at line 174 of file type\&.h\&.
 .SS "#define DO_PRAGMA(DOP)   _Pragma(#DOP)"
 to call pragma 
 .PP
@@ -495,11 +495,11 @@ Definition at line 133 of file type\&.h\&.
 .SS "#define iassert(C)   \fBEMPTY_MACRO\fP"
 
 .PP
-Definition at line 247 of file type\&.h\&.
+Definition at line 248 of file type\&.h\&.
 .SS "#define iassert_static(EX, MSG)   _Static_assert(EX, MSG)"
 static assert 
 .PP
-Definition at line 251 of file type\&.h\&.
+Definition at line 252 of file type\&.h\&.
 .SS "#define KiB   (1024UL)"
 KiB value 
 .PP
@@ -522,12 +522,12 @@ Definition at line 131 of file type\&.h\&.
 .SS "#define scan_build_unknown_cleanup(E)"
 
 .PP
-Definition at line 256 of file type\&.h\&.
+Definition at line 257 of file type\&.h\&.
 .SS "#define SWAP(A, B)"
 \fBValue:\fP
 .PP
 .nf
-      ({ \
+        ({ \
         __auto_type __tmp__ = A;\
         A = B;\
         B = __tmp__;\

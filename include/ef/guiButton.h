@@ -13,15 +13,31 @@ typedef struct guiButton{
 	guiEvent_f parentKey;
 }guiButton_s;
 
+/** create new button*/
 guiButton_s* gui_button_new(guiLabel_s* lbl, guiEvent_f onclick);
+
+/** attach button to gui*/
 gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn, guiBackground_s* press, guiBackground_s* hover);
+
+/** free button*/
 void gui_button_free(guiButton_s* btn);
+
+/** get button label*/
 guiLabel_s* gui_button_label(guiButton_s* button);
+
+/** button redraw */
 void gui_button_redraw(gui_s* gui, guiButton_s* btn, int press);
 
+/** button free event*/
 int gui_button_event_free(gui_s* gui, __unused xorgEvent_s* ev);
+
+/** button redraw event*/
 int gui_button_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
+
+/** button event key*/
 int gui_button_event_key(gui_s* gui, xorgEvent_s* event);
+
+/** button event mouse*/
 int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event);
 
 

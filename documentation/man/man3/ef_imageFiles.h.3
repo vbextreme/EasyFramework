@@ -1,0 +1,41 @@
+.TH "include/ef/imageFiles.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/imageFiles.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/image\&.h>\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBg2dImage_s\fP * \fBg2d_load\fP (char const *path, unsigned width, unsigned height)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "\fBg2dImage_s\fP* g2d_load (char const * path, unsigned width, unsigned height)"
+load image, supported png, jpeg, svg, bmp, gif only with g2d_load_gif 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP absolute path 
+.br
+\fIwidth\fP if 0 no scaling 
+.br
+\fIheight\fP if 0 no scaling 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+new image or null for error 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

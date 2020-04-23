@@ -1,0 +1,129 @@
+.TH "xorgEvent" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+xorgEvent
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <xorg\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "int \fBtype\fP"
+.br
+.ti -1c
+.RI "void * \fBuserdata\fP"
+.br
+.ti -1c
+.RI "\fBxorg_s\fP * \fBx\fP"
+.br
+.ti -1c
+.RI "xcb_window_t \fBwin\fP"
+.br
+.ti -1c
+.RI "union {"
+.br
+.ti -1c
+.RI "   \fBxorgMouse_s\fP \fBmouse\fP"
+.br
+.ti -1c
+.RI "   \fBxorgKeyboard_s\fP \fBkeyboard\fP"
+.br
+.ti -1c
+.RI "   \fBxorgMove_s\fP \fBmove\fP"
+.br
+.ti -1c
+.RI "   \fBxorgCreate_s\fP \fBcreate\fP"
+.br
+.ti -1c
+.RI "   \fBxorgDraw_s\fP \fBdraw\fP"
+.br
+.ti -1c
+.RI "   \fBxorgFocus_s\fP \fBfocus\fP"
+.br
+.ti -1c
+.RI "   \fBxorgVisible_s\fP \fBvisible\fP"
+.br
+.ti -1c
+.RI "   \fBxorgProperty_s\fP \fBproperty\fP"
+.br
+.ti -1c
+.RI "   \fBxorgClient_s\fP \fBclient\fP"
+.br
+.ti -1c
+.RI "   \fBxorgClipboard_s\fP \fBclipboard\fP"
+.br
+.ti -1c
+.RI "}; "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 343 of file xorg\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "union { \&.\&.\&. } "
+
+.SS "\fBxorgClient_s\fP xorgEvent::client"
+
+.PP
+Definition at line 357 of file xorg\&.h\&.
+.SS "\fBxorgClipboard_s\fP xorgEvent::clipboard"
+
+.PP
+Definition at line 358 of file xorg\&.h\&.
+.SS "\fBxorgCreate_s\fP xorgEvent::create"
+
+.PP
+Definition at line 352 of file xorg\&.h\&.
+.SS "\fBxorgDraw_s\fP xorgEvent::draw"
+
+.PP
+Definition at line 353 of file xorg\&.h\&.
+.SS "\fBxorgFocus_s\fP xorgEvent::focus"
+
+.PP
+Definition at line 354 of file xorg\&.h\&.
+.SS "\fBxorgKeyboard_s\fP xorgEvent::keyboard"
+
+.PP
+Definition at line 350 of file xorg\&.h\&.
+.SS "\fBxorgMouse_s\fP xorgEvent::mouse"
+
+.PP
+Definition at line 349 of file xorg\&.h\&.
+.SS "\fBxorgMove_s\fP xorgEvent::move"
+
+.PP
+Definition at line 351 of file xorg\&.h\&.
+.SS "\fBxorgProperty_s\fP xorgEvent::property"
+
+.PP
+Definition at line 356 of file xorg\&.h\&.
+.SS "int xorgEvent::type"
+
+.PP
+Definition at line 344 of file xorg\&.h\&.
+.SS "void* xorgEvent::userdata"
+
+.PP
+Definition at line 345 of file xorg\&.h\&.
+.SS "\fBxorgVisible_s\fP xorgEvent::visible"
+
+.PP
+Definition at line 355 of file xorg\&.h\&.
+.SS "xcb_window_t xorgEvent::win"
+
+.PP
+Definition at line 347 of file xorg\&.h\&.
+.SS "\fBxorg_s\fP* xorgEvent::x"
+
+.PP
+Definition at line 346 of file xorg\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.
