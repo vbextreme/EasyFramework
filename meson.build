@@ -301,8 +301,9 @@ pkg = import('pkgconfig')
 pkg.generate(
   name: 'EasyFramework',
   description : 'easy framework library.',
-  libraries: [ '-lef', '-lunistring' ],
-  version: meson.project_version(),
+  libraries: [ '-lef', '-lunistring', '-pthread' ],
+  extra_cflags: [ '-I/usr/include/freetype2' ],
+  version: meson.project_version()
 )
 
 ###########
