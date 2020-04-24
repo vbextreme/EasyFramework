@@ -818,20 +818,25 @@ void g2d_black_white_dominant(g2dColor_t* outAB, g2dImage_s* src, g2dImage_s* bw
 	
 	outAB[0] = 0;
 	outAB[1] = 0;
+	int part[3][2] = {0};
+
 	unsigned count[2] = {0,0};
 	
 	for( unsigned y = 0; y < h; ++y ){
 		unsigned const row = g2d_row(bw, coord->y + y);
 		for( unsigned x = 0; x < w; ++x ){
 			g2dColor_t* icbw = g2d_color(bw, row, coord->x + x);
-			g2dColor_t* icsr =  g2d_color(src, row, coord->x + x);
+			g2dColor_t* icsr = g2d_color(src, row, coord->x + x);
 			unsigned id = g2d_color_red(bw, *icbw) == 0 ? 0 : 1;
-			outAB[id] = MM_NEXT(CHANNEL, A, a, g2d_color_red(src, *icsr), outAB[id]);
-			outAB[id] = MM_NEXT(CHANNEL, A, a, g2d_color_green(src, *icsr), outAB[id]);
-			outAB[id] = MM_NEXT(CHANNEL, A, a, g2d_color_blue(src, *icsr), outAB[id]);
+			part[0][id] = MM_NEXT(CHANNEL, A, a, g2d_color_red(src, *icsr), part[0][id]);
+			part[1][id] = MM_NEXT(CHANNEL, A, a, g2d_color_green(src, *icsr), part[1][id]);
+			part[2][id] = MM_NEXT(CHANNEL, A, a, g2d_color_blue(src, *icsr), part[2][id]);
 			count[id]++;
 		}
 	}
+	outAB[0] = g2d_color_make(src, 255, part[0][0], part[1][0], part[2][0]);
+	outAB[1] = g2d_color_make(src, 255, part[0][1], part[1][1], part[2][1]);
+
 	if( count[0] == 0 ){
 		outAB[0] = outAB[1];
 	}

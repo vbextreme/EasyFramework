@@ -1,9 +1,10 @@
-EasyFramework v1.2.1
+EasyFramework v1.2.2
 ====================
 Little framework created during the study of language c.<br/>
 
 State:
 ======
+* 1.2.2 fix
 * 1.2.1 graphics docs
 * 1.2.0 introduce graphics
 * 1.1.1 retry aur

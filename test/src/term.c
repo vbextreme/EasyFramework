@@ -38,7 +38,21 @@ int lst_press(tui_s* tui, int index){
 void test_term(__unused const char* argA, __unused const char* argB){
 	err_enable();
 	tui_begin();
-	
+	term_ca_mode(0);
+	for( int i = 0; i < 15; ++i ){
+		term_color256_bk(i);
+		putchar(' ');
+	}
+	term_color_reset();
+	putchar('\n');
+	for( int i = 16; i < 32; ++i ){
+		term_color256_bk(i);
+		putchar(' ');
+	}
+	term_color_reset();
+	putchar('\n');
+
+/*	
 	tui_s* root = tui_root_new();
 	
 	tui_s* win = tui_window_new(root, 1, U8("Main Win"), 1, 3, 3, 30,15);
@@ -72,7 +86,7 @@ void test_term(__unused const char* argA, __unused const char* argB){
 	term_flush();
 	tui_root_loop(root);
 	tui_free(root);
-
+*/
 	tui_end();
 	
 
