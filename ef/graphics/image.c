@@ -861,7 +861,7 @@ __private unsigned g2d_compare_similar_default(g2dImage_s* a, g2dCoord_s* ca, g2
 		g2dColor_t* ica = g2d_color(a, ra, ca->x);
 		g2dColor_t* icb = g2d_color(b, rb, cb->x);
 		for( unsigned x = 0; x < w; ++x ){
-			bits += FAST_BIT_COUNT( ((~ica[x]) & (~icb[x]))&0xFFFFFF00 );
+			bits += FAST_BIT_COUNT( ((~ica[x]) & (~icb[x]))&0xFFFFFFFF );
 		}
 	}
 	return bits;
@@ -883,7 +883,7 @@ __private unsigned g2d_compare_similar_popcount(g2dImage_s* a, g2dCoord_s* ca, g
 		g2dColor_t* ica = g2d_color(a, ra, ca->x);
 		g2dColor_t* icb = g2d_color(b, rb, cb->x);
 		for( unsigned x = 0; x < w; ++x ){
-			bits += FAST_BIT_COUNT( ((~ica[x]) & (~icb[x]))&0xFFFFFF00 );
+			bits += FAST_BIT_COUNT( ((~ica[x]) & (~icb[x]))&0xFFFFFFFF );
 		}
 	}
 	return bits;
