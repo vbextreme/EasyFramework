@@ -1,4 +1,4 @@
-.TH "include/ef/imageFiles.h" 3 "Thu Apr 23 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/imageFiles.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -13,12 +13,12 @@ include/ef/imageFiles.h
 
 .in +1c
 .ti -1c
-.RI "\fBg2dImage_s\fP * \fBg2d_load\fP (char const *path, unsigned width, unsigned height)"
+.RI "\fBg2dImage_s\fP * \fBg2d_load\fP (char const *path, unsigned width, unsigned height, int ratio)"
 .br
 .in -1c
 .SH "Function Documentation"
 .PP 
-.SS "\fBg2dImage_s\fP* g2d_load (char const * path, unsigned width, unsigned height)"
+.SS "\fBg2dImage_s\fP* g2d_load (char const * path, unsigned width, unsigned height, int ratio)"
 load image, supported png, jpeg, svg, bmp, gif only with g2d_load_gif 
 .PP
 \fBParameters\fP
@@ -28,6 +28,8 @@ load image, supported png, jpeg, svg, bmp, gif only with g2d_load_gif
 \fIwidth\fP if 0 no scaling 
 .br
 \fIheight\fP if 0 no scaling 
+.br
+\fIratio\fP calcolate ratio 
 .RE
 .PP
 \fBReturns\fP
