@@ -6,7 +6,7 @@
 #include <ef/file.h>
 #include <ef/err.h>
 
-g2dImage_s* g2d_load(char const* path, unsigned width, unsigned height){
+g2dImage_s* g2d_load(char const* path, unsigned width, unsigned height, int ratio){
 	if( !file_exists(path) ){
 		err_pushno("file not exists");
 		return NULL;
@@ -16,6 +16,7 @@ g2dImage_s* g2d_load(char const* path, unsigned width, unsigned height){
    	g2dImage_s* ret = g2d_load_png(path);
 	if( ret ){
 		if( width && height ){
+			g2d_ratio(ratio, ret->w, ret->h, &width, &height); 
 			g2dImage_s* scaled = g2d_resize(ret, width, height);
 			g2d_free(ret);
 			ret = scaled;
@@ -31,6 +32,7 @@ g2dImage_s* g2d_load(char const* path, unsigned width, unsigned height){
 	ret = g2d_load_jpeg(path);
 	if( ret ){
 		if( width && height ){
+			g2d_ratio(ratio, ret->w, ret->h, &width, &height); 
 			g2dImage_s* scaled = g2d_resize(ret, width, height);
 			g2d_free(ret);
 			ret = scaled;
@@ -46,6 +48,7 @@ g2dImage_s* g2d_load(char const* path, unsigned width, unsigned height){
 	ret = g2d_load_bmp(path);
 	if( ret ){
 		if( width && height ){
+			g2d_ratio(ratio, ret->w, ret->h, &width, &height); 
 			g2dImage_s* scaled = g2d_resize(ret, width, height);
 			g2d_free(ret);
 			ret = scaled;
@@ -58,6 +61,7 @@ g2dImage_s* g2d_load(char const* path, unsigned width, unsigned height){
 	}
 
 	errno = 0;
+	g2d_ratio(ratio, ret->w, ret->h, &width, &height);
 	ret = g2d_load_svg(path, width, height);
 	if( ret ){
 		return ret;

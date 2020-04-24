@@ -21,6 +21,6 @@ gif_s* g2d_load_gif(char const* path);
 
 void g2d_gif_free(gif_s* gif);
 
-void g2d_gif_resize(gif_s* gif, unsigned width, unsigned height);
+void g2d_gif_resize(gif_s* gif, unsigned width, unsigned height, int ratio);
 
 #endif 

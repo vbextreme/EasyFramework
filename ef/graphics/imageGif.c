@@ -164,10 +164,14 @@ void g2d_gif_free(gif_s* gif){
 	free(gif);
 }
 
-void g2d_gif_resize(gif_s* gif, unsigned width, unsigned height){
+void g2d_gif_resize(gif_s* gif, unsigned width, unsigned height, int ratio){
+	unsigned w,h;
 	vector_foreach(gif->frames, i){
 		g2dImage_s* old = gif->frames[i].img;
-		gif->frames[i].img = g2d_resize(old, width, height);
+		w = width;
+		h = height;
+		g2d_ratio(ratio, gif->frames[i].img->w, gif->frames[i].img->h, &w, &h);
+		gif->frames[i].img = g2d_resize(old, w, h);
 		g2d_free(old);
 	}
 }
