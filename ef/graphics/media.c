@@ -18,9 +18,10 @@ typedef struct media{
 	AVCodecContext* avcodecctx;
 	AVFrame* avframe;
 	AVPacket* avpacket;
-	long durate;
+	double durate;
 	long lastPTS;
 	AVRational timebase;
+	double fps;
 	long pts;
 	long synctime;
 	unsigned width;
@@ -32,6 +33,8 @@ typedef struct media{
 
 	struct SwsContext *swsctx;
 }media_s;
+
+
 
 void media_free(media_s* media){
 	if( media->avfctx ) avformat_close_input(&media->avfctx);
@@ -67,10 +70,10 @@ media_s* media_load(const char* path){
 		media_free(media);
 		return NULL;
 	}
-
+	
 	for( unsigned i = 0; i < media->avfctx->nb_streams; i++){
 		AVCodecParameters *lccodecpar = media->avfctx->streams[i]->codecpar;
-
+		
 		AVCodec *lccodec = avcodec_find_decoder(lccodecpar->codec_id);
 		if( !lccodec ){
 			err_push("unsupported codec!");
@@ -83,11 +86,26 @@ media_s* media_load(const char* path){
 				media->videoindex = i;
 				media->avcodec = lccodec;
 				media->avcodecpar = lccodecpar;
-				media->durate = media->avfctx->streams[i]->duration;
+				if( media->avfctx->streams[i]->duration != AV_NOPTS_VALUE ){
+					//media->durate = media->avfctx->streams[i]->duration / AV_TIME_BASE;
+					media->durate = media->avfctx->streams[i]->duration * av_q2d(media->avfctx->streams[i]->time_base) * 1000.0;
+				}
+				else{
+					media->durate = -1;
+				}
 				media->width = lccodecpar->width;
 				media->height = lccodecpar->height;
 				media->timebase = media->avfctx->streams[i]->time_base;
-				dbg_info("find stream:%d %u*%u", media->videoindex, media->width, media->height);
+				if( media->avfctx->streams[i]->avg_frame_rate.num && media->avfctx->streams[i]->avg_frame_rate.den ){
+					media->fps = av_q2d(media->avfctx->streams[i]->avg_frame_rate);
+				}
+				else if( media->avfctx->streams[i]->r_frame_rate.num && media->avfctx->streams[i]->r_frame_rate.den ){
+					media->fps = av_q2d(media->avfctx->streams[i]->r_frame_rate);
+				}
+				else{
+					media->fps = -1.0;
+				}
+				dbg_info("find stream:%d %u*%u %ffps %ld", media->videoindex, media->width, media->height, media->fps, media->durate);
 			}
 		}
 	   	//else if( lccodecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
@@ -132,7 +150,6 @@ media_s* media_load(const char* path){
 	media->frame = g2d_new( media->width, media->height, -1);
 	if( !media->frame ) err_fail("eom");
 	
-
 	return media;
 }
 
@@ -588,4 +605,22 @@ void media_sleep(media_s* media){
 	}
 }
 
+unsigned media_width(media_s* media){
+	iassert(media);
+	return media->width;
+}
 
+unsigned media_height(media_s* media){
+	iassert(media);
+	return media->height;
+}
+
+double media_duration(media_s* media){
+	iassert(media);
+	return media->durate;
+}
+
+double media_fps(media_s* media){
+	iassert(media);
+	return media->fps;
+}

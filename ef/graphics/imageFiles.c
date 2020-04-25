@@ -64,7 +64,6 @@ g2dImage_s* g2d_load(char const* path, unsigned width, unsigned height, int rati
 	}
 
 	errno = 0;
-	g2d_ratio(ratio, ret->w, ret->h, &width, &height);
 	ret = g2d_load_svg(path, width, height);
 	if( ret ){
 		dbg_info("return svg");

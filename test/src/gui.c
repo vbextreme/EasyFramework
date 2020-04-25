@@ -8,7 +8,7 @@
 //#include <ef/image.h>
 //#include <ef/imageFiles.h>
 //#include <ef/imageGif.h>
-//#include <ef/media.h>
+#include <ef/media.h>
 //#include <ef/xorg.h>
 //#include <ef/os.h>
 //#include <ef/utf8.h>
@@ -68,7 +68,6 @@ int button_click(gui_s* gui, xorgEvent_s* ev){
 void test_gui(__unused const char* argA, __unused const char* argB){
 	err_enable();
 	gui_begin();
-
 	ftFonts_s* tfont = ft_fonts_new();
 	font_load(tfont, "master", "Dejavu", 18);
 	font_load(tfont, "masterFall", "FiraSans", 18);

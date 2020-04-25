@@ -26,4 +26,16 @@ void media_sleep(media_s* media);
 /** get time for sync*/
 long media_delay_get(media_s* media);
 
+/** get width*/
+unsigned media_width(media_s* media);
+
+/** get height */
+unsigned media_height(media_s* media);
+
+/** get durate in ms */
+double media_duration(media_s* media);
+
+/** get fps*/
+double media_fps(media_s* media);
+
 #endif 
