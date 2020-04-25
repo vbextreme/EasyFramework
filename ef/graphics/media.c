@@ -34,8 +34,6 @@ typedef struct media{
 	struct SwsContext *swsctx;
 }media_s;
 
-
-
 void media_free(media_s* media){
 	if( media->avfctx ) avformat_close_input(&media->avfctx);
 	if( media->avpacket ) av_packet_free(&media->avpacket);
@@ -105,7 +103,7 @@ media_s* media_load(const char* path){
 				else{
 					media->fps = -1.0;
 				}
-				dbg_info("find stream:%d %u*%u %ffps %ld", media->videoindex, media->width, media->height, media->fps, media->durate);
+				dbg_info("find stream:%d %u*%u %ffps %f", media->videoindex, media->width, media->height, media->fps, media->durate);
 			}
 		}
 	   	//else if( lccodecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
@@ -544,7 +542,6 @@ __private int decode_packet(media_s* media){
 		media->lastPTS = media->pts;
 		media->pts = media->avframe->pts;		
 		dbg_info("format:%d", media->avframe->format);	
-		dbg_error("FORMAT");
 		dbg_format(media->avframe->format);
 		if( media->frameScaled ){
 			//frame_yuv_to_rgb(media->frame, media->avframe);	
@@ -623,4 +620,34 @@ double media_duration(media_s* media){
 double media_fps(media_s* media){
 	iassert(media);
 	return media->fps;
+}
+
+void media_seek_to(media_s* media, double s){
+	long frame = s * media->fps;
+	dbg_error("skip:%ld", frame);
+	AVStream* stream = media->avfctx->streams[media->videoindex];
+	long seek = frame * stream->time_base.den / stream->time_base.num;
+	if( av_seek_frame(media->avfctx, media->videoindex, seek, AVSEEK_FLAG_BACKWARD) < 0 ){
+		dbg_error("seeking");
+	}
+	else{
+		avcodec_flush_buffers(media->avcodecctx);
+	}
+}
+
+void media_seek(media_s* media, long timems){
+	int flags = 0;
+	if( timems < 0 ){
+		flags = AVSEEK_FLAG_BACKWARD;
+		timems = -timems;
+	}
+	double s = (double)timems / 1000.0;
+	long frame = s * media->fps;
+	AVStream* stream = media->avfctx->streams[media->videoindex];
+	long target_dts_usecs = (long)round(frame * (double)stream->r_frame_rate.den / stream->r_frame_rate.num * AV_TIME_BASE);
+	long first_dts_usecs = (long)round(stream->first_dts * (double)stream->time_base.num / stream->time_base.den * AV_TIME_BASE);
+	target_dts_usecs += first_dts_usecs;
+	if( av_seek_frame(media->avfctx, media->videoindex, target_dts_usecs, flags) < 0 ){
+		dbg_error("seeking");
+	}
 }

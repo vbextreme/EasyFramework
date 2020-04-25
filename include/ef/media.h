@@ -38,4 +38,10 @@ double media_duration(media_s* media);
 /** get fps*/
 double media_fps(media_s* media);
 
+/** seeking to ms from start*/
+void media_seek_to(media_s* media, double s);
+
+/** seeking from current to +- ms*/
+void media_seek(media_s* media, long timems);
+
 #endif 
