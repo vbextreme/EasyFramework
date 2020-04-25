@@ -12,7 +12,6 @@
 #ifndef TERM_DATABASE_DIRECTORY 
 	#define TERM_DATABASE_DIRECTORY       "/usr/lib/terminfo"
 	#define TERM_DATABASE_DIRECTORY_LOCAL "/usr/local/lib/terminfo"
-
 #endif
 
 /** enviroment contains database name */

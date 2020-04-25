@@ -24,13 +24,14 @@ typedef struct media{
 	double fps;
 	long pts;
 	long synctime;
+	size_t seek;
+	size_t currentframe;
 	unsigned width;
 	unsigned height;
 	int revcstate;
 	int pacstate;
 	g2dImage_s* frame;
 	g2dImage_s* frameScaled;
-
 	struct SwsContext *swsctx;
 }media_s;
 
@@ -49,6 +50,8 @@ media_s* media_load(const char* path){
 	media->videoindex = -1;
 	media->pacstate = -1;
 	media->lastPTS = AV_NOPTS_VALUE;
+	media->currentframe = 0;
+	media->seek = 0;
 
 	media->avfctx = avformat_alloc_context();
 	if( !media->avfctx ){
@@ -543,6 +546,10 @@ __private int decode_packet(media_s* media){
 		media->pts = media->avframe->pts;		
 		dbg_info("format:%d", media->avframe->format);	
 		dbg_format(media->avframe->format);
+		if( media->seek ){
+			--media->seek;
+			return 0;
+		}
 		if( media->frameScaled ){
 			//frame_yuv_to_rgb(media->frame, media->avframe);	
 			//g2d_resize_to(media->frameScaled, media->frame);
@@ -622,32 +629,17 @@ double media_fps(media_s* media){
 	return media->fps;
 }
 
-void media_seek_to(media_s* media, double s){
-	long frame = s * media->fps;
-	dbg_error("skip:%ld", frame);
-	AVStream* stream = media->avfctx->streams[media->videoindex];
-	long seek = frame * stream->time_base.den / stream->time_base.num;
-	if( av_seek_frame(media->avfctx, media->videoindex, seek, AVSEEK_FLAG_BACKWARD) < 0 ){
-		dbg_error("seeking");
+void media_seek(media_s* media, double s){
+	size_t frame = s * media->fps;
+	if( frame < media->currentframe ){
+		av_seek_frame(media->avfctx, media->videoindex, 0, AVSEEK_FLAG_BACKWARD);
+		media->seek = frame;
 	}
-	else{
-		avcodec_flush_buffers(media->avcodecctx);
-	}
+	else if( frame > media->currentframe ){
+		media->seek = frame - media->currentframe; 
+	}	
 }
 
-void media_seek(media_s* media, long timems){
-	int flags = 0;
-	if( timems < 0 ){
-		flags = AVSEEK_FLAG_BACKWARD;
-		timems = -timems;
-	}
-	double s = (double)timems / 1000.0;
-	long frame = s * media->fps;
-	AVStream* stream = media->avfctx->streams[media->videoindex];
-	long target_dts_usecs = (long)round(frame * (double)stream->r_frame_rate.den / stream->r_frame_rate.num * AV_TIME_BASE);
-	long first_dts_usecs = (long)round(stream->first_dts * (double)stream->time_base.num / stream->time_base.den * AV_TIME_BASE);
-	target_dts_usecs += first_dts_usecs;
-	if( av_seek_frame(media->avfctx, media->videoindex, target_dts_usecs, flags) < 0 ){
-		dbg_error("seeking");
-	}
+double media_time(media_s* media){
+	return media->currentframe / media->fps;
 }

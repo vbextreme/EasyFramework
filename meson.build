@@ -1,7 +1,7 @@
 ###########
 # project #
 ###########
-project('EasyFramework', 'c', version: '1.2.4', license: 'gplv3')
+project('EasyFramework', 'c', version: '1.2.5', license: 'gplv3')
 projectName = 'ef'
 
 cc = meson.get_compiler('c')
