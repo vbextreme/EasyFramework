@@ -15,7 +15,7 @@ err_t term_buff_same_screen(void){
 	if( term_winsize_get(&ws) ){
 		return -1;
 	}
-	size_t size = (ws.ws_col * ws.ws_row + 1)*4;
+	size_t size = (ws.ws_col * ws.ws_row + 1)*64;
 	hyperbuf = mem_many(char, size);
 	if( !hyperbuf ) return -1;
 	if( setvbuf(stdout, hyperbuf, _IOFBF, size) ){
