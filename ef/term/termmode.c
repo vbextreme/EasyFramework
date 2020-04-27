@@ -55,10 +55,13 @@ err_t term_winsize_get(winsize_s* ws){
 	const char* pts;
 	__fd_close int fd = -1;
 
-    if( !(pts = ttyname(STDIN_FILENO)) || !(pts = ttyname(STDOUT_FILENO)) ){
+	pts = ttyname(STDIN_FILENO);
+    if( !pts ) pts = ttyname(STDOUT_FILENO);
+    if( !pts ){
 		err_push("can't get tty name");
 		return -1;
 	}
+
 
 	dbg_info("use tty %s", pts);
     while( (fd = open(pts, O_RDWR | O_NOCTTY, 0)) == -1 && errno == EINTR);

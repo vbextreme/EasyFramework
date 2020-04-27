@@ -232,7 +232,9 @@ err_t term_cursor_position(int* r, int* c){
 	termios_s newtio;
     __fd_close int fd = -1;
 
-    if( !(dev = ttyname(STDIN_FILENO)) || !(dev = ttyname(STDOUT_FILENO)) ){
+	dev = ttyname(STDIN_FILENO);
+    if( !dev ) dev = ttyname(STDOUT_FILENO);
+	if( !dev ){
 		err_pushno("can't get tty name");
 		return -1;
 	}

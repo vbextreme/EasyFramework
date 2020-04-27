@@ -605,9 +605,7 @@ err_t stream_skip_to(stream_s* sm, const char* lst){
 
 err_t stream_skip_next(stream_s* sm, const char* lst){
 	char ch;
-	ssize_t r;
-
-	while( (r=stream_fast_read_char(sm, ch)) == 1 && !strchr(lst,ch));
+	while( stream_fast_read_char(sm, ch) == 1 && !strchr(lst,ch));
 
 	return 0;
 }

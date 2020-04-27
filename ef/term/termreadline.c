@@ -480,8 +480,7 @@ void term_readline_cursor_next(termReadLine_s* rl){
 }
 
 void term_readline_cursor_prev(termReadLine_s* rl){
-	utf_t utf;
-	while( (utf=utf8_iterator_prev(&rl->it)) >= TERM_READLINE_PRIVATE_UTF );
+	while( utf8_iterator_prev(&rl->it) >= TERM_READLINE_PRIVATE_UTF );
 
 	if( rl->cursor.mode & TERM_READLINE_MODE_SCROLL_COL && rl->cursor.scrollcol > 0 ){//
 		int lw = term_readline_line_left_width(rl);

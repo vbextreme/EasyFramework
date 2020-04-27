@@ -90,7 +90,7 @@ __private void label_render(guiLabel_s* lbl, unsigned w, unsigned h){
 		g2dCoord_s cr = { .x = 0, .y = 0, .w = w, .h = h }; 
 		g2d_clear(lbl->render, gui_color( 0, 255, 255, 255), &cr);
 		const utf8_t* txt = lbl->text;
-		while( (txt=g2d_string(lbl->render, &cr, lbl->fonts, lbl->text, lbl->foreground, cr.x,1)) );
+		while( (txt=g2d_string(lbl->render, &cr, lbl->fonts, txt, lbl->foreground, cr.x,1)) );
 	}	
 }
 

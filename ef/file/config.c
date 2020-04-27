@@ -8,8 +8,7 @@ __private char* config_value_string(stream_s* sm){
 	if( stream_inp(sm, &ch) < 1 ) return NULL;
 	
 	if( ch == '\'' || ch == '"' ){
-		ssize_t leni;
-		if( (leni=stream_inp(sm, &str, ch, 0)) < 1 ) return NULL;
+		if( stream_inp(sm, &str, ch, 0) < 1 ) return NULL;
 		stream_skip_line(sm);
 	}
 	else{

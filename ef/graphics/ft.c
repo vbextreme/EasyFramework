@@ -883,7 +883,7 @@ void g2d_string_replace(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf8
 	if( !str || !old ) return;
 	utf8Iterator_s it = utf8_iterator((utf8_t*)str, 0);
 	utf8Iterator_s ot = utf8_iterator((utf8_t*)old, 0);
-	utf_t utf, of;
+	utf_t utf, of = 0;
 	while( (utf = utf8_iterator_next(&it)) ){
 		if( utf >= UTF_PRIVATE0_START ){
 			ftUtfCustom_s* fuc = ft_utf_custom_get(utf);

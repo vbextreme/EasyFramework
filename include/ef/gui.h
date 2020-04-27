@@ -8,8 +8,11 @@
 #include <ef/phq.h>
 
 /*TODO 
- * xorg drag&drop
- * xorg tray
+ * 1.2.6
+ *		themes
+ *		bar
+ *		guiImage?
+ *			all type in one flatcolor+img+gif+vide0
  */
 
 #define GUI_TYPE_WINDOW 0

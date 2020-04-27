@@ -69,7 +69,7 @@ ERR:
 void gui_text_free(guiText_s* txt){
 	if( txt->text ) free(txt->text);
 	if( txt->render ) free(txt->render);
-	if( txt->clipmem ) free(txt->render);
+	if( txt->clipmem ) free(txt->clipmem);
 	free(txt);
 }
 
@@ -274,14 +274,12 @@ void gui_text_cursor_change(guiText_s* txt, unsigned modeflags){
 }
 
 void gui_text_cursor_next(guiText_s* txt){
-	utf_t u;
-	while( (u=utf8_iterator_next(&txt->it)) >= UTF_PRIVATE0_START );
+	while( utf8_iterator_next(&txt->it) >= UTF_PRIVATE0_START );
 	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 }
 
 void gui_text_cursor_prev(guiText_s* txt){
-	utf_t utf;
-	while( (utf=utf8_iterator_prev(&txt->it)) >= UTF_PRIVATE0_START );
+	while( utf8_iterator_prev(&txt->it) >= UTF_PRIVATE0_START );
 	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 }
 
@@ -347,7 +345,7 @@ void gui_text_cursor_pagdn(gui_s* gui, guiText_s* txt){
 	const unsigned fullLine = gui->surface->img->h / txt->cursor.h;
 	const unsigned dwnLine = fullLine - (txt->cursor.x-txt->scroll.x) / txt->cursor.h;
 	unsigned i = fullLine+dwnLine;
-	utf8_t* nl;
+	utf8_t* nl = NULL;
    	while( i-->0 && (nl=gui_text_next_line_ptr(txt)) ){
 		txt->it.str = nl;
 	}
@@ -372,7 +370,7 @@ void gui_text_cursor_pagup(gui_s* gui, guiText_s* txt){
 	const unsigned fullLine = gui->surface->img->h / txt->cursor.h;
 	const unsigned upLine = (txt->cursor.x-txt->scroll.x) / txt->cursor.h;
 	unsigned i = fullLine+upLine;
-	utf8_t* nl;
+	utf8_t* nl = NULL;
    	while( i-->0 && (nl=gui_text_back_line_ptr(txt)) ){
 		txt->it.str = nl;
 	}

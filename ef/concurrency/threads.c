@@ -70,8 +70,7 @@ void mutex_lock(mutex_s* mtx){
 }
 
 int mutex_trylock(mutex_s* mtx){
-	unsigned m;
-	if( (m = __sync_val_compare_and_swap(&mtx->futex, 0, 1)) ){
+	if( __sync_val_compare_and_swap(&mtx->futex, 0, 1) ){
 		return -1;
 	}
 	return 0;

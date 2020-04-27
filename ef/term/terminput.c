@@ -31,8 +31,7 @@ void term_screen_size_enable(void){
 
 void term_flushin(void){
     tcflush(0, TCIFLUSH);
-	int ch;
-	while( (ch = getchar()) != EOF );
+	while( getchar() != EOF );
 	if( uinp ) rbuffer_clear(uinp);	
 }
 
