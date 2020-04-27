@@ -10,16 +10,6 @@
 /*TODO 
  * xorg drag&drop
  * xorg tray
- * eden:
- *	load theme
- *	window
- *	label
- *	button
- *	text
- *	radio
- *	check
- *	list
- *	msgbox
  */
 
 #define GUI_TYPE_WINDOW 0
@@ -27,6 +17,7 @@
 #define GUI_TYPE_BUTTON 2
 #define GUI_TYPE_TEXT   4
 #define GUI_TYPE_DIV    5
+#define GUI_TYPE_BAR    6
 #define GUI_TYPE_USER   999
 
 #define GUI_BK_NO_OP 0x00

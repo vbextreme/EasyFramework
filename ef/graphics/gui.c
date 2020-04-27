@@ -973,11 +973,12 @@ void gui_themes_background(gui_s* gui, const char* name, guiBackground_s* bk){
 		free(imgname);
 		vstring = NULL;
 		if( global ){
-			guiResource_s* rs = gui_resource(res);
+			__mem_free char* sizedName = str_printf("%s::%lu*%lu", res, w, h);
+			guiResource_s* rs = gui_resource(sizedName);
 			if( !rs ){
 				g2dImage_s* img = g2d_load(vstring, w, h, -1);
 				if( img ){
-					gui_resource_new(res, img);
+					gui_resource_new(sizedName, img);
 					bk->img = img;
 					bk->mode |= GUI_BK_IMAGE;
 				}

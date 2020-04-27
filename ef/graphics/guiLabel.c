@@ -95,7 +95,7 @@ __private void label_render(guiLabel_s* lbl, unsigned w, unsigned h){
 }
 
 void gui_label_redraw(gui_s* gui, guiBackground_s* bkg, guiLabel_s* lbl){
-	gui_background_redraw(gui, bkg);
+	if( bkg ) gui_background_redraw(gui, bkg);
 	if( !lbl->text ) return;
 	if( lbl->flags & GUI_LABEL_RENDERING ) label_render(lbl, gui->surface->img->w, gui->surface->img->h);
 	unsigned x = 0;
