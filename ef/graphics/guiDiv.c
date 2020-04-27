@@ -267,3 +267,20 @@ int gui_div_event_key(gui_s* gui, xorgEvent_s* event){
 	return 0;
 }
 
+int gui_div_event_themes(gui_s* gui, xorgEvent_s* ev){
+	guiDiv_s* div = ev->data.request;
+	char* name = ev->data.data;
+
+	gui_themes_uint_set(name, GUI_THEME_DIV_SEP_X, &div->sep.x);
+	gui_themes_uint_set(name, GUI_THEME_DIV_SEP_Y, &div->sep.y);
+
+	__mem_free char* align = gui_themes_string(name, GUI_THEME_DIV_ALIGN);
+	if( align ){
+		if( !strcmp(align, "none") ) div->mode = GUI_DIV_NONE;
+		else if( !strcmp(align, "vertical") ) div->mode = GUI_DIV_VERTICAL;
+		else if( !strcmp(align, "horizontal") ) div->mode = GUI_DIV_HORIZONTAL;
+		gui_div_align(gui, div);	
+	}
+
+	return 0;
+}

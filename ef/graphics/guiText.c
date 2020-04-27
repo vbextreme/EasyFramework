@@ -269,6 +269,10 @@ void gui_text_backspace(guiText_s* txt){
 	}
 }
 
+void gui_text_cursor_change(guiText_s* txt, unsigned modeflags){
+	txt->flags = (txt->flags & GUI_TEXT_FLAGS_MASK) | modeflags;
+}
+
 void gui_text_cursor_next(guiText_s* txt){
 	utf_t u;
 	while( (u=utf8_iterator_next(&txt->it)) >= UTF_PRIVATE0_START );
@@ -1057,5 +1061,27 @@ int gui_text_event_mouse(gui_s* gui, xorgEvent_s* event){
 	}
 
 	gui_event_mouse(gui, event);
+	return 0;
+}
+
+int gui_text_event_themes(__unused gui_s* gui, xorgEvent_s* ev){
+	guiText_s* txt = ev->data.request;
+	char* name = ev->data.data;
+
+	gui_themes_font_set(name, &txt->fonts);
+	if( !gui_themes_uint_set(name, GUI_THEME_FOREGROUND, &txt->foreground) ) txt->flags |= GUI_TEXT_REND_TEXT;
+	gui_themes_uint_set(name, GUI_THEME_TEXT_BLINK, &txt->blinktime);
+	gui_themes_uint_set(name, GUI_THEME_TEXT_CURSOR_COLOR, &txt->colCursor);
+	gui_themes_uint_set(name, GUI_THEME_TEXT_SEL_COLOR, &txt->select);
+	gui_themes_uint_set(name, GUI_THEME_TEXT_TAB, &txt->tabspace);
+
+	__mem_free char* cursor = gui_themes_string(name, GUI_THEME_TEXT_CURSOR);
+	if( cursor ){
+		if( !strcmp(cursor, "thin") ) gui_text_cursor_change(txt, GUI_TEXT_CURSOR_THIN);
+		else if( !strcmp(cursor, "light") )  gui_text_cursor_change(txt, GUI_TEXT_CURSOR_THIN);
+		else if( !strcmp(cursor, "plentiful") ) gui_text_cursor_change(txt, GUI_TEXT_CURSOR_PLENTIFUL);
+		else if( !strcmp(cursor, "fat") ) gui_text_cursor_change(txt, GUI_TEXT_CURSOR_FAT);
+	}
+
 	return 0;
 }

@@ -67,11 +67,10 @@ void gui_resource_fonts_new(const char* name, ftFonts_s* value);
 #define gui_resource_new(NAME, TYPE) _Generic((TYPE),\
 	long         : gui_resource_long_new,\
 	double       : gui_resource_double_new,\
-	utf_t        : gui_resource_utf_new,\
-	utf8_t*      : gui_resource_text_new\
-	const utf8_t*: gui_resource_text_new\
-	g2dColor_t   : gui_resource_color_new\
-	g2dCoord_s   : gui_resource_position_new\
+	utf8_t*      : gui_resource_text_new,\
+	const utf8_t*: gui_resource_text_new,\
+	g2dColor_t   : gui_resource_color_new,\
+	g2dCoord_s   : gui_resource_position_new,\
 	g2dImage_s*  : gui_resource_img_new,\
 	gif_s*       : gui_resource_gif_new,\
 	media_s*     : gui_resource_media_new,\

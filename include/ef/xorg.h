@@ -244,7 +244,8 @@ typedef enum {
 	XORG_EVENT_ATOM           = XCB_PROPERTY_NOTIFY,
 	XORG_EVENT_CLIENT         = XCB_CLIENT_MESSAGE,
 	XORG_EVENT_CLIPBOARD_PASTE= XCB_SELECTION_NOTIFY,
-	XORG_EVENT_CLIPBOARD_COPY = XCB_SELECTION_REQUEST
+	XORG_EVENT_CLIPBOARD_COPY = XCB_SELECTION_REQUEST,
+	XORG_EVENT_USERDATA       = 0xFFFFFFFF
 }xorgEvent_e;
 
 typedef struct xorgMouse{
@@ -340,6 +341,13 @@ typedef struct xorgClipboard{
 	size_t size;
 }xorgClipboard_s;
 
+typedef struct xorgUserData{
+	int type;
+	void* request;
+	void* data;
+	size_t size;
+}xorgUserData_s;
+
 typedef struct xorgEvent{
 	int type;
 	void* userdata;
@@ -356,6 +364,7 @@ typedef struct xorgEvent{
 		xorgProperty_s property;
 		xorgClient_s client;
 		xorgClipboard_s clipboard;
+		xorgUserData_s data;
 	};
 }xorgEvent_s;	
 

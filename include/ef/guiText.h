@@ -15,6 +15,7 @@
 #define GUI_TEXT_SEL          0x001000
 
 #define GUI_TEXT_FLAGS_END    24
+#define GUI_TEXT_FLAGS_MASK   0xFFFFFF
 
 #define GUI_TEXT_CURSOR_THIN      (0<<GUI_TEXT_FLAGS_END)
 #define GUI_TEXT_CURSOR_LIGHT     (1<<GUI_TEXT_FLAGS_END)
@@ -22,6 +23,12 @@
 #define GUI_TEXT_CURSOR_FAT       (3<<GUI_TEXT_FLAGS_END)
 
 #define GUI_TEXT_WORD_SEP " \n\t`~!@#$%^&*()+{}|[]\\;':\"<>?,./"
+
+#define GUI_THEME_TEXT_BLINK        "text.cursor.blink"
+#define GUI_THEME_TEXT_CURSOR       "text.cursor.mode"
+#define GUI_THEME_TEXT_CURSOR_COLOR "text.cursor.color"
+#define GUI_THEME_TEXT_SEL_COLOR    "text.sel.color"
+#define GUI_THEME_TEXT_TAB          "text.tab"
 
 typedef struct guiText{
 	g2dImage_s* render;
@@ -103,6 +110,9 @@ void gui_text_del(guiText_s* txt);
 
 /** backspace*/
 void gui_text_backspace(guiText_s* txt);
+
+/** change type of cursaor*/
+void gui_text_cursor_change(guiText_s* txt, unsigned modeflags);
 
 /** cursor next*/
 void gui_text_cursor_next(guiText_s* txt);

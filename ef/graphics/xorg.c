@@ -1780,8 +1780,6 @@ inline __private void keyboard_modifiers(unsigned long keysym, int set){
 	}
 }
 
-
-
 xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 	xcb_generic_event_t* event;
 	

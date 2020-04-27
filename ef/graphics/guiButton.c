@@ -1,5 +1,6 @@
 #include <ef/guiButton.h>
 #include <ef/memory.h>
+#include <ef/str.h>
 #include <ef/err.h>
 
 guiButton_s* gui_button_new(guiLabel_s* lbl, guiEvent_f onclick){
@@ -111,4 +112,16 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event){
 	return 0;
 }
 
+int gui_button_event_themes(gui_s* gui, xorgEvent_s* ev){
+	guiButton_s* btn = ev->data.request;
+	ev->data.request = btn->label;
+	gui_label_event_themes(gui, ev);
 
+	__mem_free char* bkpress = str_printf("%s%s.", (char*)ev->data.data, "press");
+	__mem_free char* bkhover = str_printf("%s%s.", (char*)ev->data.data, "hover");
+
+	gui_themes_background(gui, bkpress, gui->background[GUI_BUTTON_BACKGROUND_PRESS]);
+	gui_themes_background(gui, bkhover, gui->background[GUI_BUTTON_BACKGROUND_HOVER]);
+
+	return 0;
+}

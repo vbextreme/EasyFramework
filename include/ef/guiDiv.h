@@ -20,6 +20,11 @@ typedef struct guiDiv{
 #define GUI_DIV_DEFAULT_X 5
 #define GUI_DIV_DEFAULT_Y 5
 
+#define GUI_THEME_DIV_ALIGN "div.align"
+#define GUI_THEME_DIV_SEP_X "div.sep.x"
+#define GUI_THEME_DIV_SEP_Y "div.sep.y"
+
+
 /** create new div*/
 guiDiv_s* gui_div_new(guiDivMode_e mode);
 

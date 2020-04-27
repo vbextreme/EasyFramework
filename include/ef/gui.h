@@ -42,6 +42,34 @@
 
 #define GUI_FOCUS_BORDER_SIZE 3
 
+#define GUI_THEME_BORDER                  "border"
+#define GUI_THEME_GENERIC                 "generic"
+#define GUI_THEME_X                       "position.x"
+#define GUI_THEME_Y                       "position.y"
+#define GUI_THEME_W                       "position.w"
+#define GUI_THEME_H                       "position.h"
+#define GUI_THEME_BACKGROUND_COLOR        "background.color"
+#define GUI_THEME_BACKGROUND_IMAGE        "background.image"
+#define GUI_THEME_BACKGROUND_IMAGE_GLOBAL "background.image.global"
+#define GUI_THEME_BACKGROUND_IMAGE_ALPHA  "background.image.alpha"
+#define GUI_THEME_BACKGROUND_IMAGE_W      "background.image.w"
+#define GUI_THEME_BACKGROUND_IMAGE_H      "background.image.h"
+#define GUI_THEME_BACKGROUND_POSITION_X   "background.position.x"
+#define GUI_THEME_BACKGROUND_POSITION_Y   "background.position.y"
+#define GUI_THEME_BACKGROUND_POSITION_W   "background.position.w"
+#define GUI_THEME_BACKGROUND_POSITION_H   "background.position.h"
+#define GUI_THEME_BACKGROUND_FN           "background.function"
+#define GUI_THEME_FONT_NAME               "font.name"
+#define GUI_THEME_FONT_SIZE               "font.size"
+#define GUI_THEME_FALLBACK_NAME           "fallback.name"
+#define GUI_THEME_FALLBACK_SIZE           "fallback.size"
+#define GUI_THEME_CAPTION                 "caption"
+#define GUI_THEME_CAPTION_AUTOWRAP        "caption.autowrap"
+#define GUI_THEME_CAPTION_CENTER_X        "caption.center.x"
+#define GUI_THEME_CAPTION_CENTER_Y        "caption.center.y"
+#define GUI_THEME_FOREGROUND              "foreground"
+
+
 typedef enum {GUI_MODE_NORMAL, GUI_MODE_MODAL, GUI_MODE_DOCK_TOP, GUI_MODE_DOCK_BOTTOM, GUI_MODE_DOCK_LEFT, GUI_MODE_DOCK_RIGHT} guiMode_e;
 
 typedef struct gui gui_s;
@@ -109,6 +137,7 @@ typedef struct gui{
 	guiEvent_f atom;
 	guiEvent_f client;
 	guiEvent_f clipboard;
+	guiEvent_f themes;
 }gui_s;
 
 #define gui_color(A,R,G,B) g2d_color_gen(X_COLOR_MODE, A, R, G, B)
@@ -295,5 +324,34 @@ long gui_resource_long_get(const char* name, const char* class);
 /** load bool resource*/
 int gui_resource_bool_get(const char* name, const char* class);
 
+/** get themes name*/
+char* gui_themes_name(const char* appName, const char* controlName);
+
+/** get string */
+char* gui_themes_string(const char* name, const char* property);
+
+/** set bool*/
+err_t gui_themes_bool_set(const char* name, const char* property, int* set);
+
+/** set int */
+err_t gui_themes_int_set(const char* name, const char* property, int* set);
+
+/** set uint*/
+err_t gui_themes_uint_set(const char* name, const char* property, unsigned* set);
+
+/** set long*/
+err_t gui_themes_long_set(const char* name, const char* property, long* set);
+
+/** set fonts */
+err_t gui_themes_font_set(const char* name, ftFonts_s** controlFonts);
+
+/** set theme background*/
+void gui_themes_background(gui_s* gui, const char* name, guiBackground_s* bk);
+
+/** set gui themes */
+void gui_themes(gui_s* gui, const char* appName, const char* controlName);
+
+/** set themes for all gui from one parent*/
+void gui_themes_all(gui_s* gui, const char* appName);
 
 #endif
