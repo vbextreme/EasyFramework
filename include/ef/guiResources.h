@@ -4,6 +4,7 @@
 #include <ef/type.h>
 #include <ef/image.h>
 #include <ef/imageGif.h>
+#include <ef/guiImage.h>
 #include <ef/media.h>
 #include <ef/ft.h>
 #include <ef/utf8.h>
@@ -22,7 +23,6 @@ typedef enum {
 }guiResource_e;
 
 typedef struct guiResource{
-	char* name;
 	union{
 		long l;
 		double d;
@@ -33,6 +33,7 @@ typedef struct guiResource{
 		g2dImage_s* img;
 		gif_s* gif;
 		media_s* media;
+		guiImage_s* image;
 		ftFonts_s* fonts;
 	};
 	guiResource_e type;

@@ -14,7 +14,10 @@ media_s* media_load(const char* path);
 /** set resize media*/
 void media_resize_set(media_s* media, g2dImage_s* img);
 
-/** decode a frame*/
+/** redraw decoded frame*/
+void media_redraw(media_s* media);
+
+/** decode a frame, -1 end or error, 0 recall decode for frame, 1 frame decoded*/
 int media_decode(media_s* media);
 
 /** get frame*/
@@ -23,7 +26,7 @@ g2dImage_s* media_frame_get(media_s* media);
 /** sleep for sync*/
 void media_sleep(media_s* media);
 
-/** get time for sync*/
+/** get time for sync in us*/
 long media_delay_get(media_s* media);
 
 /** get width*/

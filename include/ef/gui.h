@@ -3,9 +3,9 @@
 
 #include <ef/type.h>
 #include <ef/xorg.h>
-#include <ef/guiResources.h>
 #include <ef/deadpoll.h>
 #include <ef/phq.h>
+#include <ef/ft.h>
 
 /*TODO 
  * 1.2.6
@@ -103,6 +103,7 @@ typedef struct gui{
 	char* class;
 	struct gui* parent;
 	struct gui** childs;
+
 	void* control;
 	void* userdata;
 

@@ -551,8 +551,6 @@ __private int decode_packet(media_s* media){
 			return 0;
 		}
 		if( media->frameScaled ){
-			//frame_yuv_to_rgb(media->frame, media->avframe);	
-			//g2d_resize_to(media->frameScaled, media->frame);
 			frame_resize_to(media->frameScaled, media->avframe);
 		}
 		else{
@@ -564,6 +562,17 @@ __private int decode_packet(media_s* media){
 	}
 	
 	return 0;
+}
+
+void media_redraw(media_s* media){
+	if( media->frameScaled ){
+		frame_resize_to(media->frameScaled, media->avframe);
+	}
+	else{
+		iassert((unsigned)media->avframe->width == media->frame->w);
+		iassert((unsigned)media->avframe->height == media->frame->h);
+		frame_yuv_to_rgb(media->frame, media->avframe);	
+	}
 }
 
 int media_decode(media_s* media){

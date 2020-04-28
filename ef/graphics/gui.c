@@ -10,6 +10,7 @@
 #include <ef/delay.h>
 #include <ef/imageFiles.h>
 #include <ef/file.h>
+#include <ef/guiResources.h>
 
 #define GUI_CHILD_INITIAL   8
 #define GUI_KEY_SIZE        32

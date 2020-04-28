@@ -175,3 +175,10 @@ void g2d_gif_resize(gif_s* gif, unsigned width, unsigned height, int ratio){
 		g2d_free(old);
 	}
 }
+
+
+
+
+
+
+
