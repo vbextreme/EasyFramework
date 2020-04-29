@@ -683,86 +683,6 @@ void gui_timer_free(guiTimer_s* timer){
 	phq_element_free(timer->el);
 	free(timer);
 }
-/*
-guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_s* pos, guiBackgroundFN_f fn, int mode){
-	guiBackground_s* bk = mem_new(guiBackground_s);
-	if( !bk ) err_fail("eom");
-	bk->color = color;
-	bk->img = img;
-	bk->mode = mode;
-	bk->fn = fn;
-	if( pos ){
-		bk->pdest = *pos;
-	}
-	else if ( img ){
-		bk->pdest.x = 0;
-		bk->pdest.y = 0;
-		bk->pdest.w = img->w;
-		bk->pdest.h = img->h;
-	}
-	else{
-		bk->pdest.x = 0;
-		bk->pdest.y = 0;
-		bk->pdest.w = 0;
-		bk->pdest.h = 0;
-	}
-	
-	return bk;
-}
-
-void gui_background_redraw(gui_s* gui, guiBackground_s* bkg){
-	if( bkg->mode == GUI_BK_NO_OP ) return;
-
-	if( bkg->mode & GUI_BK_COLOR ){
-		g2dCoord_s origin;
-		if( (bkg->mode & GUI_BK_CPOS) && !(bkg->mode & GUI_BK_IMAGE) ){
-			dbg_info("redraw bk positional mode");
-			origin = bkg->pdest;
-		}
-		else{
-			dbg_info("redraw bk");
-			origin.x = 0;
-			origin.y = 0;
-			origin.w = gui->surface->img->w;
-			origin.h = gui->surface->img->h;
-		}
-		g2d_clear(gui->surface->img, bkg->color, &origin);
-	}
-
-	if( bkg->mode & GUI_BK_IMAGE ){
-		dbg_info("redraw img");
-		g2dImage_s* rs = NULL;
-		g2dCoord_s src = { .x = 0, .y = 0, .w = bkg->img->w, .h = bkg->img->h};
-
-		if( bkg->img->w !=  bkg->pdest.w || bkg->img->h != bkg->pdest.h ){
-			dbg_info("resize src img because != pdest");
-			rs = g2d_resize(bkg->img, bkg->pdest.w, bkg->pdest.h);
-			src.w = bkg->pdest.w;
-			src.h = bkg->pdest.h;
-		}
-		
-		if( bkg->mode & GUI_BK_ALPHA ){
-			g2d_bitblt_alpha(gui->surface->img, &bkg->pdest, rs ? rs : bkg->img, &src);
-		}
-		else{
-			g2d_bitblt(gui->surface->img, &bkg->pdest, rs ? rs : bkg->img, &src);
-		}
-	}
-	
-	if( bkg->mode & GUI_BK_FN ){
-		if( bkg->fn ) bkg->fn(gui);
-	}
-}
-
-guiBackground_s* gui_background_get(gui_s* gui, size_t id){
-	if( id > vector_count(gui->background) ) return NULL;
-	return gui->background[id];
-}
-
-void gui_background_add(gui_s* gui, guiBackground_s* bk){
-	vector_push_back(gui->background, bk);
-}
-*/
 
 void gui_background_main_round_fn(gui_s* gui){
 	gui_round_antialiasing_set(gui, gui->genericSize);
@@ -858,32 +778,28 @@ int gui_resource_bool_get(const char* name, const char* class){
 	}
 	return out;
 }
+*/
 
-char* gui_themes_name(const char* appName, const char* controlName){
-	char* name;
+__private char* themes_name(gui_s* gui, char* name){
+	if( gui->parent ){
+		name = gui_themes_name(gui->parent, name);
+	}
+	char* n = str_printf("%s.%s", name, gui->name ? gui->name : gui->class);
+	free(name);
+	return n;
+}
 
-	if( appName ){
-		if( controlName ){
-			name = str_printf("%s.%s.", appName, controlName);
-		}
-		else{
-			name = str_printf("%s*", appName);
-		}
-	}
-	else{
-		if( controlName ){
-			name = str_printf("*%s.", controlName);
-		}
-		else{
-			name = str_printf("*");
-		}
-	}
-	return name;
+char* gui_themes_name(gui_s* gui, const char* appName){
+	if( !gui || !appName ) return NULL;
+	
+	char* n = str_dup(appName, 0);
+	return themes_name(gui, n);
 }
 
 char* gui_themes_string(const char* name, const char* property){
 	char* ret = NULL;
 	__mem_free char* p = str_printf("%s%s", name, property);
+	dbg_info("request property:'%s'", p);
 	xorg_resources_string_get(X, p, NULL, &ret);
 	return ret;
 }
@@ -928,99 +844,131 @@ err_t gui_themes_long_set(const char* name, const char* property, long* set){
 	return -1;
 }
 
-err_t gui_themes_font_set(const char* name, ftFonts_s** controlFonts){
+err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts){
 	int size;
-	int fsize;
-	__mem_free char* fontname = gui_themes_string(name, GUI_THEME_FONT_NAME);
-	if( !fontname ) return -1;	
-	if( gui_themes_int_set(name, GUI_THEME_FONT_SIZE, &size) ) return -1;
-
-	__mem_free char* fallname = gui_themes_string(name, GUI_THEME_FALLBACK_NAME);
-	if( gui_themes_int_set(name, GUI_THEME_FONT_SIZE, &fsize) ) fsize=size;
-
-	__mem_free char* fontref = str_printf("%s::%d||%s::%d", fontname, size, fallname ? fallname : "", fsize);
+	char* fontname;
+	char gtfn[64] = GUI_THEME_FONT_NAME;
+	char gtfs[64] = GUI_THEME_FONT_SIZE;
+	char* gtfnid = &gtfn[strlen(GUI_THEME_FONT_NAME)];
+	char* gtfsid = &gtfs[strlen(GUI_THEME_FONT_SIZE)];
+	unsigned id = 0;
+	sprintf(gtfnid, "%u", id++);
+	sprintf(gtfsid, "%u", id++);
+	
+	__mem_free char* fontref = fontname=gui_themes_string(name, GUI_THEME_FONT_GROUP);
+	if( !fontref ) return -1;
 	guiResource_s* res = gui_resource(fontref);
 	if( res ){
 		*controlFonts = res->fonts;
+		return 0;
 	}
-	else{
-		ftFonts_s* fonts = ft_fonts_new();
-	   	ftFont_s* font = ft_fonts_load(fonts, fontname, fontname);
+
+	ftFonts_s* fonts = ft_fonts_new();
+   	while( (fontname=gui_themes_string(name, gtfn)) ){
+		if( gui_themes_int_set(name, gtfs, &size) ){
+			ft_fonts_free(fonts);
+			return -1;
+		}
+		ftFont_s* font = ft_fonts_load(fonts, fontname, fontname);
 		if( !font ){
 			ft_fonts_free(fonts);
 			return -1;
 		}
 		ft_font_size(font, size, size);
-		if( fallname ){
-			font = ft_fonts_load(fonts, fallname, fallname);
-			if( font ) ft_font_size(font, fsize, fsize);
-		}
-		gui_resource_new(fontref, fonts);
-		*controlFonts = fonts;
+		free(fontname);
+		sprintf(gtfnid, "%u", id++);
+		sprintf(gtfsid, "%u", id++);
 	}
+	gui_resource_new(fontref, fonts);
+	*controlFonts = fonts;
 
 	return 0;
 }
 
-void gui_themes_background(gui_s* gui, const char* name, guiBackground_s* bk){
-	char* property = NULL;
-	int vbool;
-	int global = 0;
-	char* vstring = NULL;
-	long w;
-	long h;
+__private void themes_composite_set(gui_s* gui, g2dColor_t color, int colorset, char* image, int aplha, int play, int loop, int dx, int dy, int dw, int dh, int sx, int sy, int sw, int sh){
 
-	gui_themes_uint_set(name, GUI_THEME_BACKGROUND_COLOR, &bk->color);
-	gui_themes_bool_set(name, GUI_THEME_BACKGROUND_IMAGE_GLOBAL, &global);
-	if( gui_themes_long_set(name, GUI_THEME_BACKGROUND_IMAGE_W, &w) ) w = gui->position.w;
-	if( gui_themes_long_set(name, GUI_THEME_BACKGROUND_IMAGE_H, &h) ) h = gui->position.h;
 
-	char* imgname = gui_themes_string(name, GUI_THEME_BACKGROUND_IMAGE);
-	if( imgname ){
-		__mem_free char* res = path_resolve(vstring);
-		free(imgname);
-		vstring = NULL;
-		if( global ){
-			__mem_free char* sizedName = str_printf("%s::%lu*%lu", res, w, h);
-			guiResource_s* rs = gui_resource(sizedName);
-			if( !rs ){
-				g2dImage_s* img = g2d_load(vstring, w, h, -1);
-				if( img ){
-					gui_resource_new(sizedName, img);
-					bk->img = img;
-					bk->mode |= GUI_BK_IMAGE;
-				}
-			}
-			else{
-				bk->img = rs->img;
-				bk->mode |= GUI_BK_IMAGE;		
+}
+
+void gui_themes_composite(gui_s* gui, const char* name){
+	g2dColor_t color;
+	int colorset = 0;
+	char* image = NULL;
+	int alpha = -1;
+	int play = -1;
+	int loop = -1;
+	int dx = -1;
+	int dy = -1;
+	int dw = -1;
+	int dh = -1;
+	int sx = -1;
+	int sy = -1;
+	int sw = -1;
+	int sh = -1;
+	char compp[64];
+	unsigned compid = 0;
+	
+	while(1){
+		colorset = 0;
+		image = NULL;
+		alpha = -1;
+		play = -1;
+		loop = -1;
+		dx = -1;
+		dy = -1;
+		dw = -1;
+		dh = -1;
+		sx = -1;
+		sy = -1;
+		sw = -1;
+		sh = -1;
+
+		sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_COLOR); 
+		if( !gui_themes_uint_set(name, compp, &color) ) colorset = 1;
+		
+		sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_IMAGE);
+		image = gui_themes_string(name, compp);
+		if( !image ){
+			sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_GIF);
+			image = gui_themes_string(name, compp);
+			if( !image ){
+				sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_VIDEO);
+				image = gui_themes_string(name, compp);
 			}
 		}
-		else{
-			g2dImage_s* img = g2d_load(vstring, w, h, -1);
-			if( img ){
-				bk->img = img;
-				bk->mode |= GUI_BK_IMAGE;
-			}
+		if( !colorset && !image ) break;
+		
+		sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_ALPHA);
+		gui_themes_bool_set(name, compp, &alpha);
+		
+		sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_DEST_X);
+		gui_themes_int_set(name, compp, &dx);
+		sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_DEST_Y);
+		gui_themes_int_set(name, compp, &dy);
+		sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_DEST_W);
+		gui_themes_int_set(name, compp, &dw);
+		sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_DEST_H);
+		gui_themes_int_set(name, compp, &dh);
+		
+		if( image ){
+			sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_PLAY);
+			gui_themes_bool_set(name, compp, &play);
+			sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_LOOP);
+			gui_themes_bool_set(name, compp, &loop);
+
+			sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_SRC_X);
+			gui_themes_int_set(name, compp, &sx);
+			sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_SRC_Y);
+			gui_themes_int_set(name, compp, &sy);
+			sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_SRC_W);
+			gui_themes_int_set(name, compp, &sw);
+			sprintf(compp, "%s.%u.%s", GUI_THEME_COMPOSITE, compid, GUI_THEME_COMPOSITE_SRC_H);
+			gui_themes_int_set(name, compp, &sh);
 		}
-	}
 
-	if( !gui_themes_bool_set(name, GUI_THEME_BACKGROUND_IMAGE_ALPHA, &vbool) && bk->mode & GUI_BK_IMAGE ){
-		if( vbool )bk->mode |= GUI_BK_ALPHA;
-		else bk->mode &= ~GUI_BK_ALPHA;
-	}
 
-	if( !gui_themes_uint_set(name, GUI_THEME_BACKGROUND_POSITION_X, &bk->pdest.x) ) bk->mode |= GUI_BK_CPOS;
-	if( !gui_themes_uint_set(name, GUI_THEME_BACKGROUND_POSITION_Y, &bk->pdest.y) ) bk->mode |= GUI_BK_CPOS;
-	if( !gui_themes_uint_set(name, GUI_THEME_BACKGROUND_POSITION_W, &bk->pdest.w) ) bk->mode |= GUI_BK_CPOS;
-	if( !gui_themes_uint_set(name, GUI_THEME_BACKGROUND_POSITION_H, &bk->pdest.h) ) bk->mode |= GUI_BK_CPOS;
-
-	property = str_printf("%s%s", name, GUI_THEME_BACKGROUND_FN);
-	if( !xorg_resources_string_get(X, property, NULL, &vstring) ){
-		if( !strcmp(vstring, "main_round") ) { bk->fn = gui_background_main_round_fn; bk->mode |= GUI_BK_FN; }
-		if( !strcmp(vstring, "round") ) { bk->fn = gui_background_round_fn; bk->mode |= GUI_BK_FN; }
+		++compid;
 	}
-	free(property);
 }
 
 void gui_themes(gui_s* gui, const char* appName, const char* controlName){

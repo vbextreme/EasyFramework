@@ -43,21 +43,40 @@
 #define GUI_THEME_Y                       "position.y"
 #define GUI_THEME_W                       "position.w"
 #define GUI_THEME_H                       "position.h"
-#define GUI_THEME_BACKGROUND_COLOR        "background.color"
-#define GUI_THEME_BACKGROUND_IMAGE        "background.image"
-#define GUI_THEME_BACKGROUND_IMAGE_GLOBAL "background.image.global"
-#define GUI_THEME_BACKGROUND_IMAGE_ALPHA  "background.image.alpha"
-#define GUI_THEME_BACKGROUND_IMAGE_W      "background.image.w"
-#define GUI_THEME_BACKGROUND_IMAGE_H      "background.image.h"
-#define GUI_THEME_BACKGROUND_POSITION_X   "background.position.x"
-#define GUI_THEME_BACKGROUND_POSITION_Y   "background.position.y"
-#define GUI_THEME_BACKGROUND_POSITION_W   "background.position.w"
-#define GUI_THEME_BACKGROUND_POSITION_H   "background.position.h"
-#define GUI_THEME_BACKGROUND_FN           "background.function"
-#define GUI_THEME_FONT_NAME               "font.name"
-#define GUI_THEME_FONT_SIZE               "font.size"
-#define GUI_THEME_FALLBACK_NAME           "fallback.name"
-#define GUI_THEME_FALLBACK_SIZE           "fallback.size"
+#define GUI_THEME_FONT_GROUP              "font.group"
+#define GUI_THEME_FONT_NAME               "font.name."
+#define GUI_THEME_FONT_SIZE               "font.size."
+
+/* app.win.background.type: 'color'
+ * app.win.background.color: 0x123456
+ * app.win.background.alpha: 1
+ * app.win.background.loop: 0
+ * app.win.background.play: 0
+ * app.win.background.img: '~/....'
+ * app.win.background.gif: '~/....'
+ * app.win.background.media: '~/...'
+ */
+
+#define GUI_THEME_COMPOSITE              "composite"
+#define GUI_THEME_COMPOSITE_COLOR        "color"
+#define GUI_THEME_COMPOSITE_IMAGE        "image"
+#define GUI_THEME_COMPOSITE_GIF          "gif"
+#define GUI_THEME_COMPOSITE_VIDEO        "video"
+#define GUI_THEME_COMPOSITE_ALPHA        "alpha"
+#define GUI_THEME_COMPOSITE_PLAY         "play"
+#define GUI_THEME_COMPOSITE_LOOP         "loop"
+#define GUI_THEME_COMPOSITE_DEST_X       "dest.x"
+#define GUI_THEME_COMPOSITE_DEST_Y       "dest.y"
+#define GUI_THEME_COMPOSITE_DEST_W       "dest.w"
+#define GUI_THEME_COMPOSITE_DEST_H       "dest.h"
+#define GUI_THEME_COMPOSITE_SRC_X        "src.x"
+#define GUI_THEME_COMPOSITE_SRC_Y        "src.y"
+#define GUI_THEME_COMPOSITE_SRC_W        "src.w"
+#define GUI_THEME_COMPOSITE_SRC_H        "src.h"
+
+
+
+
 #define GUI_THEME_CAPTION                 "caption"
 #define GUI_THEME_CAPTION_AUTOWRAP        "caption.autowrap"
 #define GUI_THEME_CAPTION_CENTER_X        "caption.center.x"
@@ -294,26 +313,17 @@ int gui_timer_change(guiTimer_s* timer, size_t ms);
 /** free timer*/
 void gui_timer_free(guiTimer_s* timer);
 
-/*
-guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_s* pos, guiBackgroundFN_f fn, int mode);
-void gui_background_redraw(gui_s* gui, guiBackground_s* bkg);
-guiBackground_s* gui_background_get(gui_s* gui, size_t id);
-void gui_background_add(gui_s* gui, guiBackground_s* bk);
-void gui_background_main_round_fn(gui_s* gui);
-void gui_background_round_fn(gui_s* gui);
-*/
-
 /** load string resource*/
-char* gui_resource_string_get(const char* name, const char* class);
+//char* gui_resource_string_get(const char* name, const char* class);
 
 /** load long resource*/
-long gui_resource_long_get(const char* name, const char* class);
+//long gui_resource_long_get(const char* name, const char* class);
 
 /** load bool resource*/
-int gui_resource_bool_get(const char* name, const char* class);
+//int gui_resource_bool_get(const char* name, const char* class);
 
 /** get themes name*/
-char* gui_themes_name(const char* appName, const char* controlName);
+char* gui_themes_name(gui_s* gui, const char* appName);
 
 /** get string */
 char* gui_themes_string(const char* name, const char* property);
@@ -332,6 +342,7 @@ err_t gui_themes_long_set(const char* name, const char* property, long* set);
 
 /** set fonts */
 err_t gui_themes_font_set(const char* name, ftFonts_s** controlFonts);
+
 
 /** set theme background*/
 //void gui_themes_background(gui_s* gui, const char* name, guiBackground_s* bk);

@@ -54,11 +54,11 @@ void gui_bar_text_set(gui_s* gui, const utf8_t* text){
 	char* p = bar->flags & GUI_BAR_SHOW_PERCENT ? "%" : "";
 	
 	char txtmin[128] = {[0]=0};
-	if( bar->flags & GUI_BAR_SHOW_MIN ) sprintf(txtmin, " %.1f", bar->min);
+	if( bar->flags & GUI_BAR_SHOW_MIN ) sprintf(txtmin, "  %.1f", bar->min);
 	char txtcur[128] = {[0]=0};
-	if( bar->flags & GUI_BAR_SHOW_CURRENT ) sprintf(txtcur, " %.1f%s", current, p);
+	if( bar->flags & GUI_BAR_SHOW_CURRENT ) sprintf(txtcur, "  %.1f%s", current, p);
 	char txtmax[128] = {[0]=0};
-	if( bar->flags & GUI_BAR_SHOW_MAX ) sprintf(txtmax, " %.1f", bar->max);
+	if( bar->flags & GUI_BAR_SHOW_MAX ) sprintf(txtmax, "  %.1f", bar->max);
 
 	__mem_free utf8_t* t = (utf8_t*)str_printf("%s%s%s%s", bar->textdescript ? (char*)bar->textdescript : "", txtmin, txtcur, txtmax);
 	gui_caption_text_set(gui, bar->caption, t);
