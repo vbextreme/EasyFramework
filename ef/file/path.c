@@ -89,7 +89,7 @@ char* path_resolve(const char* path){
 			return NULL;
 		}
 		if( path[1] && path[2] ){
-			strcpy(&cur[strlen(cur)], &path[2]);
+			strcpy(&cur[strlen(cur)], &path[1]);
 		}
 	}
 	else if( !str_equal(path, lpath, ".", 1) || !str_ancmp(path, "./") ){
