@@ -31,7 +31,7 @@
 #define GUI_THEME_TEXT_TAB          "text.tab"
 
 typedef struct guiText{
-	g2dImage_s* render;
+	guiImage_s* render;
 	g2dPoint_s scroll;
 	g2dCoord_s cursor;
 	int cursorOffsetX;
@@ -67,94 +67,97 @@ gui_s* gui_text_attach(gui_s* gui, guiText_s* txt);
 void gui_text_free(guiText_s* txt);
 
 /** sets flags*/
-void gui_text_flags_set(guiText_s* txt, unsigned flags);
+void gui_text_flags_set(gui_s* gui, unsigned flags);
 
 /** insert/replace*/
-void gui_text_ir_toggle(guiText_s* txt);
+void gui_text_ir_toggle(gui_s* gui);
 
 /** get raw str*/
-const utf8_t* gui_text_str_raw(guiText_s* txt);
+const utf8_t* gui_text_str_raw(gui_s* gui);
 
 /** get text string, remember to free*/
-utf8_t* gui_text_str(guiText_s* txt);
+utf8_t* gui_text_str(gui_s* gui);
 
 /** sel text*/
-void gui_text_sel(gui_s* gui, guiText_s* txt);
+void gui_text_sel(gui_s* gui);
 
 /** unsel text*/
-void gui_text_unsel(guiText_s* txt);
+void gui_text_unsel(gui_s* gui);
 
 /** delete selection*/
-void gui_text_sel_del(guiText_s* txt);
+void gui_text_sel_del(gui_s* gui);
 
 /** get text selection, remember to free*/
-utf8_t* gui_text_sel_get(guiText_s* txt);
+utf8_t* gui_text_sel_get(gui_s* gui);
 
 /** right len*/
-size_t gui_text_line_right_len(guiText_s* txt);
+size_t gui_text_line_right_len(gui_s* gui);
 
 /** left len*/
-size_t gui_text_line_left_len(guiText_s* txt);
+size_t gui_text_line_left_len(gui_s* gui);
 
 /** back one line*/
-utf8_t* gui_text_back_line_ptr(guiText_s* txt);
+utf8_t* gui_text_back_line_ptr(gui_s* gui);
 
 /** next ona line*/
-utf8_t* gui_text_next_line_ptr(guiText_s* txt);
+utf8_t* gui_text_next_line_ptr(gui_s* gui);
 
 /** put char*/
-void gui_text_put(gui_s* gui, guiText_s* txt, utf_t utf);
+void gui_text_put(gui_s* gui, utf_t utf);
 
 /** del char*/
-void gui_text_del(guiText_s* txt);
+void gui_text_del(gui_s* gui);
 
 /** backspace*/
-void gui_text_backspace(guiText_s* txt);
+void gui_text_backspace(gui_s* gui);
 
 /** change type of cursaor*/
-void gui_text_cursor_change(guiText_s* txt, unsigned modeflags);
+void gui_text_cursor_change(gui_s* gui, unsigned modeflags);
 
 /** cursor next*/
-void gui_text_cursor_next(guiText_s* txt);
+void gui_text_cursor_next(gui_s* gui);
 
 /** cursor prev*/
-void gui_text_cursor_prev(guiText_s* txt);
+void gui_text_cursor_prev(gui_s* gui);
 
 /** cursor to end*/
-void gui_text_cursor_end(guiText_s* txt);
+void gui_text_cursor_end(gui_s* gui);
 
 /** cursor to home*/
-void gui_text_cursor_home(guiText_s* txt);
+void gui_text_cursor_home(gui_s* gui);
 
 /** scroll left*/
-void gui_text_cursor_scroll_left(guiText_s* txt);
+void gui_text_cursor_scroll_left(gui_s* gui);
 
 /** scroll right*/
-void gui_text_cursor_scroll_right(gui_s* gui, guiText_s* txt);
+void gui_text_cursor_scroll_right(gui_s* gui);
 
 /** cursor up */
-err_t gui_text_cursor_up(guiText_s* txt);
+err_t gui_text_cursor_up(gui_s* gui);
 
 /** cursor down*/
-err_t gui_text_cursor_down(guiText_s* txt);
+err_t gui_text_cursor_down(gui_s* gui);
 
 /**cursor pag down*/
-void gui_text_cursor_pagdn(gui_s* gui, guiText_s* txt);
+void gui_text_cursor_pagdn(gui_s* gui);
 
 /** cursors pagup*/
-void gui_text_cursor_pagup(gui_s* gui, guiText_s* txt);
+void gui_text_cursor_pagup(gui_s* gui);
 
 /** set cursor on coordinate*/
-void gui_text_cursor_on_position(gui_s* gui, guiText_s* txt, unsigned x, unsigned y);
+void gui_text_cursor_on_position(gui_s* gui, unsigned x, unsigned y);
 
 /** render cursor*/
-void gui_text_render_cursor(gui_s* gui, guiText_s* txt);
+void gui_text_render_cursor(gui_s* gui, guiImage_s* img, void* ud);
 
 /** render text*/
-void gui_text_render_text(gui_s* gui, guiText_s* txt, int partial);
+void gui_text_render_text(gui_s* gui, int partial);
+
+/** render scroll*/
+void gui_text_render_scroll(gui_s* gui);
 
 /** redraw text*/
-void gui_text_redraw(gui_s* gui, guiBackground_s* bkg, guiText_s* txt, int partial);
+void gui_text_redraw(gui_s* gui, int partial);
 
 /** event on key*/
 int gui_text_event_key(gui_s* gui, xorgEvent_s* event);

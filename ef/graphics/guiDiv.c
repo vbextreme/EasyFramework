@@ -266,7 +266,7 @@ int gui_div_event_key(gui_s* gui, xorgEvent_s* event){
 
 	return 0;
 }
-
+/*
 int gui_div_event_themes(gui_s* gui, xorgEvent_s* ev){
 	guiDiv_s* div = ev->data.request;
 	char* name = ev->data.data;
@@ -284,3 +284,4 @@ int gui_div_event_themes(gui_s* gui, xorgEvent_s* ev){
 
 	return 0;
 }
+*/

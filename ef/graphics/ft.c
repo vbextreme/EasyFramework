@@ -797,7 +797,6 @@ __private void g2d_ch_clear(g2dImage_s* dst, g2dCoord_s* pos, ftRender_s* glyph,
 }
 
 int g2d_putch(g2dImage_s* dst, g2dCoord_s* pos, ftFonts_s* fonts, utf_t ch, g2dColor_t fore, g2dColor_t back, unsigned originX, int cls, int indirect){
-
 	if( ch == '\n' ){
 		pos->x = originX;
 		pos->y += ft_line_height(fonts);

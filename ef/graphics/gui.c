@@ -11,6 +11,8 @@
 #include <ef/imageFiles.h>
 #include <ef/file.h>
 #include <ef/guiResources.h>
+#include <ef/guiImage.h>
+
 
 #define GUI_CHILD_INITIAL   8
 #define GUI_KEY_SIZE        32
@@ -86,7 +88,7 @@ gui_s* gui_new(
 		gui_s* parent, 
 		const char* name, const char* class, guiMode_e mode, 
 		int border, int x, int y, int width, int height, 
-		g2dColor_t colorBorder, guiBackground_s* bk,
+		g2dColor_t colorBorder, guiComposite_s* img,
 		int genericSize, void* userdata)
 {
 	gui_s* gui = mem_new(gui_s);
@@ -124,8 +126,7 @@ gui_s* gui_new(
 	gui->position.y = y;
 	gui->position.w = width;
 	gui->position.h = height;
-	gui->background = vector_new(guiBackground_s*, GUI_BACKGROUND_SIZE, GUI_BACKGROUND_SIZE);
-	vector_push_back(gui->background, bk);
+	gui->img = img;
 	
 	gui->surface = NULL;
 	gui->type = GUI_TYPE_WINDOW;
@@ -133,7 +134,7 @@ gui_s* gui_new(
 	gui->childFocus = -1;
 	gui->bordersize = border;
 	gui->bordersizefocused = border + GUI_FOCUS_BORDER_SIZE;
-	gui->id = xorg_win_new(&gui->surface, X, xcbParent, x, y, width, height, border, colorBorder, gui->background[0]->color);
+	gui->id = xorg_win_new(&gui->surface, X, xcbParent, x, y, width, height, border, colorBorder, colorBorder);
 	gui_name(gui, name);
 	gui_class(gui, class);
 	gui->genericSize = genericSize;
@@ -188,6 +189,7 @@ void gui_free(gui_s* gui){
 
 	if( gui->name ) free(gui->name);
 	if( gui->class ) free(gui->class);
+	gui_composite_free(gui->img);
 	xorg_surface_destroy(X,  gui->surface);
 	xorg_win_destroy(X, gui->id);
 	free(gui);
@@ -442,7 +444,8 @@ void gui_remove_decoration(gui_s* gui){
 }
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
-	gui_background_redraw(gui, gui->background[0]);
+	gui_composite_redraw(gui, gui->img);
+	//gui_background_redraw(gui, gui->background[0]);
 	return 0;
 }
 
@@ -678,7 +681,7 @@ void gui_timer_free(guiTimer_s* timer){
 	phq_element_free(timer->el);
 	free(timer);
 }
-
+/*
 guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_s* pos, guiBackgroundFN_f fn, int mode){
 	guiBackground_s* bk = mem_new(guiBackground_s);
 	if( !bk ) err_fail("eom");
@@ -757,6 +760,7 @@ guiBackground_s* gui_background_get(gui_s* gui, size_t id){
 void gui_background_add(gui_s* gui, guiBackground_s* bk){
 	vector_push_back(gui->background, bk);
 }
+*/
 
 void gui_background_main_round_fn(gui_s* gui){
 	gui_round_antialiasing_set(gui, gui->genericSize);
@@ -828,6 +832,7 @@ void gui_background_round_fn(gui_s* gui){
 	g2d_free(orig);
 }
 
+/*
 char* gui_resource_string_get(const char* name, const char* class){
 	char* out = NULL;
 	if( xorg_resources_string_get(X, name, class,&out) ) return NULL;
@@ -1058,5 +1063,5 @@ void gui_themes_all(gui_s* gui, const char* appName){
 		gui_themes_all(gui->childs[i], appName);
 	}
 }
-
+*/
 

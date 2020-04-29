@@ -2,31 +2,44 @@
 #define __EF_GUI_BUTTON_H__
 
 #include <ef/gui.h>
-#include <ef/guiLabel.h>
 
-#define GUI_BUTTON_BACKGROUND_PRESS 1
-#define GUI_BUTTON_BACKGROUND_HOVER 2
+#define GUI_BUTTON_RENDERING 0x01
+#define GUI_BUTTON_CENTER_X  0x02
+#define GUI_BUTTON_CENTER_Y  0x04
+
+#define GUI_BUTTON_STATE_NORMAL 0
+#define GUI_BUTTON_STATE_PRESS  1
+#define GUI_BUTTON_STATE_HOVER  2
+#define GUI_BUTTON_STATE_COUNT  3
 
 typedef struct guiButton{
-	guiLabel_s* label;
+	guiImage_s* render;
+	guiImage_s* state[3];
+	unsigned compindex;
+	unsigned flags;
+	utf8_t* text;
+	unsigned textWidth;
+	unsigned textHeight;
+	ftFonts_s* fonts;
+	g2dColor_t foreground;
 	guiEvent_f onclick;
 	guiEvent_f parentKey;
 }guiButton_s;
 
 /** create new button*/
-guiButton_s* gui_button_new(guiLabel_s* lbl, guiEvent_f onclick);
+guiButton_s* gui_button_new(ftFonts_s* font, g2dColor_t foreground, unsigned flags, guiEvent_f onclick);
 
 /** attach button to gui*/
-gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn, guiBackground_s* press, guiBackground_s* hover);
+gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn, guiImage_s* press, guiImage_s* hover);
 
 /** free button*/
 void gui_button_free(guiButton_s* btn);
 
-/** get button label*/
-guiLabel_s* gui_button_label(guiButton_s* button);
+/** get button set text */
+void gui_button_text_set(gui_s* gui, const utf8_t* text);
 
 /** button redraw */
-void gui_button_redraw(gui_s* gui, guiButton_s* btn, int press);
+void gui_button_redraw(gui_s* gui, unsigned normalPressHover);
 
 /** button free event*/
 int gui_button_event_free(gui_s* gui, __unused xorgEvent_s* ev);
@@ -41,6 +54,6 @@ int gui_button_event_key(gui_s* gui, xorgEvent_s* event);
 int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event);
 
 /** button event theme*/
-int gui_button_event_themes(gui_s* gui, xorgEvent_s* ev);
+//int gui_button_event_themes(gui_s* gui, xorgEvent_s* ev);
 
 #endif

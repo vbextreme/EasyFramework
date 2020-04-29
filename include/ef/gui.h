@@ -6,6 +6,7 @@
 #include <ef/deadpoll.h>
 #include <ef/phq.h>
 #include <ef/ft.h>
+#include <ef/guiImage.h>
 
 /*TODO 
  * 1.2.6
@@ -89,7 +90,7 @@ typedef struct guiTimer_s{
 	guiTimer_f fn;
 	phqElement_s* el;
 }guiTimer_s;
-
+/*
 typedef struct guiBackground{
 	g2dColor_t color;
 	g2dImage_s* img;
@@ -97,7 +98,8 @@ typedef struct guiBackground{
 	guiBackgroundFN_f fn;
 	unsigned mode;
 }guiBackground_s;
-	
+*/
+
 typedef struct gui{
 	char* name;
 	char* class;
@@ -117,7 +119,7 @@ typedef struct gui{
 
 	xorgSurface_s* surface;
 	guiPosition_s position;
-	guiBackground_s** background;
+	guiComposite_s* img;
 
 	guiEvent_f create;
 	guiEvent_f destroy;
@@ -157,7 +159,7 @@ gui_s* gui_new(
 		gui_s* parent, 
 		const char* name, const char* class, guiMode_e mode,
 		int border, int x, int y, int width, int height, 
-		g2dColor_t colorBorder, guiBackground_s* bk,
+		g2dColor_t colorBorder, guiComposite_s* img,
 		int genericSize, void* userdata);
 
 /** free gui, remove gui from parent*/
@@ -292,23 +294,14 @@ int gui_timer_change(guiTimer_s* timer, size_t ms);
 /** free timer*/
 void gui_timer_free(guiTimer_s* timer);
 
-/** create new background*/
+/*
 guiBackground_s* gui_background_new(g2dColor_t color, g2dImage_s* img, g2dCoord_s* pos, guiBackgroundFN_f fn, int mode);
-
-/** redraw background*/
 void gui_background_redraw(gui_s* gui, guiBackground_s* bkg);
-
-/** get background*/
 guiBackground_s* gui_background_get(gui_s* gui, size_t id);
-
-/** add background*/
 void gui_background_add(gui_s* gui, guiBackground_s* bk);
-
-/** custom background fn for rounded border*/
 void gui_background_main_round_fn(gui_s* gui);
-
-/** custom background fn for rounded border*/
 void gui_background_round_fn(gui_s* gui);
+*/
 
 /** load string resource*/
 char* gui_resource_string_get(const char* name, const char* class);
@@ -341,12 +334,12 @@ err_t gui_themes_long_set(const char* name, const char* property, long* set);
 err_t gui_themes_font_set(const char* name, ftFonts_s** controlFonts);
 
 /** set theme background*/
-void gui_themes_background(gui_s* gui, const char* name, guiBackground_s* bk);
+//void gui_themes_background(gui_s* gui, const char* name, guiBackground_s* bk);
 
 /** set gui themes */
-void gui_themes(gui_s* gui, const char* appName, const char* controlName);
+//void gui_themes(gui_s* gui, const char* appName, const char* controlName);
 
 /** set themes for all gui from one parent*/
-void gui_themes_all(gui_s* gui, const char* appName);
+//void gui_themes_all(gui_s* gui, const char* appName);
 
 #endif

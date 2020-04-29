@@ -46,9 +46,9 @@ __private guiResource_s* resource_new(guiResource_e type){
 	guiResource_s* res = mem_new(guiResource_s);
 	if( !res ) err_fail("eom");
 	res->type = type;
+	res->reference = 1;
 	return res;
 }
-	
 
 void gui_resource_long_new(const char* name, long value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_LONG);
@@ -112,6 +112,16 @@ void gui_resource_fonts_new(const char* name, ftFonts_s* value){
 
 guiResource_s* gui_resource(const char* name){
 	if( !name ) return NULL;
-	return rbhash_find(resources, name, 0);
+	guiResource_s* res = rbhash_find(resources, name, 0);
+	if( res ) ++res->reference;
+	return res;
 }
 
+void gui_resource_release(const char* name){
+	if( !name ) return;
+	guiResource_s* res = rbhash_find(resources, name, 0);
+	if( res ){
+		if( res->reference > 0 ) --res->reference;
+		if( !res->reference ) rbhash_remove(resources, name, 0);
+	}
+}

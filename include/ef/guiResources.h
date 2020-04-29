@@ -37,6 +37,7 @@ typedef struct guiResource{
 		ftFonts_s* fonts;
 	};
 	guiResource_e type;
+	unsigned reference;
 }guiResource_s;
 
 /** init resource*/
@@ -79,5 +80,7 @@ void gui_resource_fonts_new(const char* name, ftFonts_s* value);
 )(NAME, TYPE)
 
 guiResource_s* gui_resource(const char* name);
+
+void gui_resource_release(const char* name);
 
 #endif
