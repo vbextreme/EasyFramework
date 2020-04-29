@@ -44,7 +44,7 @@ double media_fps(media_s* media);
 /** seeking to ms from start, use workaround because av_seek_frame won't works*/
 void media_seek(media_s* media, double s);
 
-/** get current video time*/
+/** get current video time in s*/
 double media_time(media_s* media);
 
 #endif 

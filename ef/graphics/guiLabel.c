@@ -5,6 +5,7 @@
 #include <ef/err.h>
 
 guiLabel_s* gui_label_new(guiCaption_s* caption){
+	if( !caption ) return NULL;
 	guiLabel_s* lbl = mem_new(guiLabel_s);
 	if( !lbl ) err_fail("eom");
 	lbl->caption = caption;

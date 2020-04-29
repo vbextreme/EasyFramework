@@ -5,6 +5,7 @@
 #include <ef/err.h>
 
 guiButton_s* gui_button_new(guiCaption_s* caption, guiImage_s* press, guiImage_s* hover, guiEvent_f onclick){
+	if( !caption ) return NULL;
 	guiButton_s* btn = mem_new(guiButton_s);
 	if( !btn ) err_fail("eom");
 	btn->caption = caption;

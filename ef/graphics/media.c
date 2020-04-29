@@ -541,9 +541,9 @@ __private int decode_packet(media_s* media){
 		return -1;
 	}
 	else if( media->pacstate >= 0 ){
-		dbg_info("convert");
 		media->lastPTS = media->pts;
 		media->pts = media->avframe->pts;		
+		++media->currentframe;
 		dbg_info("format:%d", media->avframe->format);	
 		dbg_format(media->avframe->format);
 		if( media->seek ){
@@ -643,6 +643,7 @@ void media_seek(media_s* media, double s){
 	if( frame < media->currentframe ){
 		av_seek_frame(media->avfctx, media->videoindex, 0, AVSEEK_FLAG_BACKWARD);
 		media->seek = frame;
+		media->currentframe = 0;
 	}
 	else if( frame > media->currentframe ){
 		media->seek = frame - media->currentframe; 

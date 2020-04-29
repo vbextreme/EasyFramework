@@ -3,20 +3,17 @@
 #include <ef/str.h>
 #include <ef/err.h>
 
-guiBar_s* gui_bar_new(ftFonts_s* font, g2dColor_t foreground, guiImage_s* fill, double min, double max, double start, unsigned flags){
+guiBar_s* gui_bar_new(guiCaption_s* caption, guiImage_s* fill, double min, double max, double start, unsigned flags){
+	if( !caption ) return NULL;
 	guiBar_s* bar = mem_new(guiBar_s);
 	if( !bar ) return NULL;
+	bar->caption = caption;
 	bar->min = min;
 	bar->max = max;
 	bar->current = start;
 	bar->flags = flags;
-	bar->fonts = font;
-	bar->foreground = foreground;
-	bar->text = NULL;
-	bar->textWidth = 0;
-	bar->textHeight = 0;
-	bar->render = NULL;
 	bar->fill = fill;
+	bar->textdescript = NULL;
 	return bar;
 }
 
@@ -32,14 +29,8 @@ gui_s* gui_bar_attach(gui_s* gui, guiBar_s* bar){
 	gui->free = gui_bar_event_free;
 	//TODO add composite fn
 	gui_composite_add(gui->img, bar->fill);
-	bar->render = gui_image_custom_new(
-			g2d_new(gui->surface->img->w, gui->surface->img->h, -1), 
-			GUI_IMAGE_FLAGS_ALPHA
-	);
-	gui_composite_add(gui->img, bar->render);
-
+	gui_composite_add(gui->img, bar->caption->render);
 	return gui;
-
 ERR:
 	if( bar ) gui_bar_free(bar);
 	if( gui ) gui_free(gui);
@@ -47,7 +38,7 @@ ERR:
 }
 
 void gui_bar_free(guiBar_s* bar){
-	if( bar->text ) free(bar->text);
+	gui_caption_free(bar->caption);
 	if( bar->textdescript ) free(bar->textdescript);
 	free(bar);
 }
@@ -55,7 +46,6 @@ void gui_bar_free(guiBar_s* bar){
 void gui_bar_text_set(gui_s* gui, const utf8_t* text){
 	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = gui->control;
-	if( bar->text ) free(bar->text);
 	if( text ){
 		free(bar->textdescript);
 		bar->textdescript = (utf8_t*)str_dup((char*)text,0);
@@ -68,12 +58,10 @@ void gui_bar_text_set(gui_s* gui, const utf8_t* text){
 	char txtcur[128] = {[0]=0};
 	if( bar->flags & GUI_BAR_SHOW_CURRENT ) sprintf(txtcur, " %.1f%s", current, p);
 	char txtmax[128] = {[0]=0};
-	if( bar->flags & GUI_BAR_SHOW_MIN ) sprintf(txtmax, " %.1f", bar->max);
+	if( bar->flags & GUI_BAR_SHOW_MAX ) sprintf(txtmax, " %.1f", bar->max);
 
-	bar->text = (utf8_t*)str_printf("%s%s%s%s", (char*)bar->textdescript, txtmin, txtcur, txtmax);
-	bar->textHeight = ft_multiline_height(bar->fonts, bar->text);
-	bar->textWidth  = ft_multiline_lenght(bar->fonts, bar->text);
-	bar->flags |= GUI_BAR_RENDERING;
+	__mem_free utf8_t* t = (utf8_t*)str_printf("%s%s%s%s", bar->textdescript ? (char*)bar->textdescript : "", txtmin, txtcur, txtmax);
+	gui_caption_text_set(gui, bar->caption, t);
 }
 
 __private void bar_hori(gui_s* gui){
@@ -112,42 +100,19 @@ void gui_bar_current_set(gui_s* gui, double current){
 	gui_bar_text_set(gui, NULL);
 }
 
-__private void bar_render_text(guiBar_s* bar){
-	if( !bar->text ) return;
-	bar->flags &= ~GUI_BAR_RENDERING;
-	
-	if( bar->render->img->w < bar->textWidth || bar->render->img->h < bar->textHeight ){
-		g2d_free(bar->render->img);
-		bar->render->img = g2d_new(bar->textWidth, bar->textHeight, -1);
-	}
-
-	g2dCoord_s pen = {
-		.x = 0,
-		.y = 0,
-		.w = bar->textWidth,
-		.h = bar->textHeight
-	};
-	g2d_clear(bar->render->img, gui_color( 0, 255, 255, 255), &pen);
-
-	const utf8_t* txt = bar->text;
-	while( (txt=g2d_string(bar->render->img, &pen, bar->fonts, txt, bar->foreground, pen.x,1)) );
+void gui_bar_max_set(gui_s* gui, double max){
+	iassert(gui->type == GUI_TYPE_BAR);
+	guiBar_s* bar = gui->control;
+	if( max < bar->current ) return;
+	if( max < bar->min ) return;
+	bar->max = max;
+	gui_bar_current_set(gui, bar->current);
 }
 
 void gui_bar_redraw(gui_s* gui){
 	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = gui->control;
-	if( bar->flags & GUI_BAR_RENDERING ){
-		bar_render_text(bar);
-		unsigned x = 0;
-		unsigned y = 0;
-		if( bar->flags & GUI_BAR_CENTER_X ){
-			x = abs((int)gui->surface->img->w / 2 - (int)bar->textWidth / 2);
-		}
-		if( bar->flags & GUI_BAR_CENTER_Y ){
-			y = abs((int)gui->surface->img->h / 2 - (int)bar->textHeight / 2);
-		}
-		gui_image_xy_set(bar->render, x, y);
-	}	
+	gui_caption_render(gui, bar->caption);
 	gui_composite_redraw(gui, gui->img);
 }
 

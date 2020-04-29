@@ -21,6 +21,7 @@
 
 typedef struct player{
 	gui_s* player;
+	gui_s* bar;
 	const char* path;
 	media_s* video;
 	guiTimer_s* timer;
@@ -51,6 +52,10 @@ int player_clock_frame(guiTimer_s* timer){
 	delay = delay < 1000 ? 1 : delay / 1000;
 
 	gui_draw(p->player);
+	dbg_error("CURRENT TIME: %f", media_time(p->video));
+	gui_bar_current_set(p->bar, media_time(p->video));	
+	gui_bar_redraw(p->bar);
+	gui_draw(p->bar);
 
 	gui_timer_change(p->timer, delay);
 	return GUI_TIMER_CUSTOM;
@@ -71,10 +76,12 @@ int bStart_click(gui_s* gui, xorgEvent_s* ev){
 	}	
 	media_resize_set(p->video, p->player->surface->img);
 	p->timer = gui_timer_new(p->player, 1, player_clock_frame, p);
+	gui_bar_max_set(p->bar, media_duration(p->video)/1000.0);
+	gui_bar_redraw(p->bar);
+	gui_draw(p->bar);
 
 	return 0;
 }
-
 
 /*@fn*/
 void test_gui(__unused const char* argA, __unused const char* argB){
@@ -135,8 +142,34 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 		0,NULL
 	);
 
+	gui_s* bar = gui_bar_attach(
+		gui_new(
+			main, "bar", "progrssbar", GUI_MODE_NORMAL,
+			1, 3, 359, main->position.w-6, 20,
+			gui_color(255,0,0,0),
+			gui_composite_add(
+				gui_composite_new(4),
+				gui_image_color_new(
+					gui_color(255,45,45,45),
+					main->position.w-6, 20,
+					0
+				)
+			),
+			0, NULL
+		),
+		gui_bar_new(
+			gui_caption_new(tfont, gui_color(255,200,200,200), GUI_CAPTION_CENTER_X | GUI_CAPTION_CENTER_Y),
+			gui_image_color_new(gui_color(255,90,40,40), main->position.w-6, 20, 0),
+			0.0,
+			0.0,
+			0.0,
+			GUI_BAR_HORIZONTAL | GUI_BAR_SHOW_CURRENT | GUI_BAR_SHOW_MAX
+		)
+	);
+
 	player_s p = {
 		.player = player,
+		.bar = bar,
 		.path = "~/Video/musicali/skioffi_yolandi.mp4",
 		.video = NULL,
 		.timer = NULL
@@ -185,6 +218,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_show(main, 1);
 	gui_show(lbl, 1);
 	gui_show(player, 1);
+	gui_show(bar, 1);
 	gui_show(bStart, 1);
 	
 	gui_loop();
