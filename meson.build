@@ -99,12 +99,13 @@ src += [ 'ef/graphics/ft.c' ]
 src += [ 'ef/graphics/xorg.c' ]
 src += [ 'ef/graphics/gui.c' ]
 src += [ 'ef/graphics/guiResources.c' ]
+src += [ 'ef/graphics/guiImage.c' ]
+src += [ 'ef/graphics/guiCapton.c' ]
 src += [ 'ef/graphics/guiLabel.c' ]
 src += [ 'ef/graphics/guiButton.c' ]
 src += [ 'ef/graphics/guiDiv.c' ]
 src += [ 'ef/graphics/guiText.c' ]
 src += [ 'ef/graphics/guiBar.c' ]
-src += [ 'ef/graphics/guiImage.c' ]
 
 ##################
 # compiler flags #

@@ -2,10 +2,7 @@
 #define __EF_GUI_BUTTON_H__
 
 #include <ef/gui.h>
-
-#define GUI_BUTTON_RENDERING 0x01
-#define GUI_BUTTON_CENTER_X  0x02
-#define GUI_BUTTON_CENTER_Y  0x04
+#include <ef/guiCapton.h>
 
 #define GUI_BUTTON_STATE_NORMAL 0
 #define GUI_BUTTON_STATE_PRESS  1
@@ -13,24 +10,18 @@
 #define GUI_BUTTON_STATE_COUNT  3
 
 typedef struct guiButton{
-	guiImage_s* render;
+	guiCaption_s* caption;
 	guiImage_s* state[3];
 	unsigned compindex;
-	unsigned flags;
-	utf8_t* text;
-	unsigned textWidth;
-	unsigned textHeight;
-	ftFonts_s* fonts;
-	g2dColor_t foreground;
 	guiEvent_f onclick;
 	guiEvent_f parentKey;
 }guiButton_s;
 
 /** create new button*/
-guiButton_s* gui_button_new(ftFonts_s* font, g2dColor_t foreground, unsigned flags, guiEvent_f onclick);
+guiButton_s* gui_button_new(guiCaption_s* caption, guiImage_s* press, guiImage_s* hover, guiEvent_f onclick);
 
 /** attach button to gui*/
-gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn, guiImage_s* press, guiImage_s* hover);
+gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn);
 
 /** free button*/
 void gui_button_free(guiButton_s* btn);

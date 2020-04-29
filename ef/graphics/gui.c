@@ -50,7 +50,7 @@ void gui_end(){
 }
 
 __private void allgui_add(gui_s* gui){
-	dbg_info("register gui: %u", gui->id);
+	dbg_info("register gui(%u): %s", gui->id, gui->name);
 	char key[32];
 	int len = sprintf(key,"%u",(uint32_t)gui->id);
 	if( rbhash_add_hash(allgui, gui->id, key, len, gui) ){
@@ -445,7 +445,6 @@ void gui_remove_decoration(gui_s* gui){
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 	gui_composite_redraw(gui, gui->img);
-	//gui_background_redraw(gui, gui->background[0]);
 	return 0;
 }
 
@@ -507,6 +506,9 @@ int gui_event_move(gui_s* gui, xorgEvent_s* event){
 	if( gui->surface->img->w != event->move.w || gui->surface->img->h != event->move.h ){
 		dbg_info("resize surface, redraw && draw");
 		xorg_surface_resize(X, gui->surface, event->move.w, event->move.h);
+		gui->img->img[0]->pos.w = gui->surface->img->w;
+		gui->img->img[0]->pos.h = gui->surface->img->h;
+		gui->img->img[0]->src = gui->img->img[0]->pos;
 		redraw_all(gui);
 	}
 	gui->position.x = event->move.x;

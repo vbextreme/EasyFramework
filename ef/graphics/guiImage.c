@@ -248,8 +248,14 @@ void gui_image_xy_set(guiImage_s* img, unsigned x, unsigned y){
 
 __private void gid_color(gui_s* gui, guiImage_s* img){
 	iassert( img->type == GUI_IMAGE_COLOR);
-	iassert( img->pos.x + img->pos.w <= gui->surface->img->w );
-	iassert( img->pos.y + img->pos.h <= gui->surface->img->h );
+	if( img->pos.x + img->pos.w > gui->surface->img->w ){
+		dbg_warning("try to draw offscreen x:%u w:%u", img->pos.x, img->pos.w);
+		img->pos.w = gui->surface->img->w - img->pos.x;
+	}
+	if( img->pos.y + img->pos.h > gui->surface->img->h ){
+		dbg_warning("try to draw offscreen y:%u h:%u", img->pos.y, img->pos.h);
+		img->pos.h = gui->surface->img->h - img->pos.y;
+	}
 	g2d_clear(gui->surface->img, img->color, &img->pos);
 }
 
@@ -398,7 +404,7 @@ guiComposite_s* gui_composite_add(guiComposite_s* cmp, guiImage_s* img){
 
 void gui_composite_redraw(gui_s* gui, guiComposite_s* cmp){
 	vector_foreach(cmp->img, i){
-		gui_image_redraw(gui, cmp, i, vector_count(cmp->img)); break;
+		gui_image_redraw(gui, cmp, i, vector_count(cmp->img));
 	}
 }
 

@@ -1,19 +1,30 @@
 #include "test.h"
 #include <ef/gui.h>
+#include <ef/guiCapton.h>
 #include <ef/guiLabel.h>
 #include <ef/guiButton.h>
 #include <ef/guiText.h>
+#include <ef/guiBar.h>
+#include <ef/guiImage.h>
+#include <ef/guiResources.h>
+#include <ef/guiDiv.h>
 
-//#include <ef/ft.h>
-//#include <ef/image.h>
-//#include <ef/imageFiles.h>
-//#include <ef/imageGif.h>
+#include <ef/ft.h>
+#include <ef/image.h>
+#include <ef/imageFiles.h>
+#include <ef/imageGif.h>
 #include <ef/media.h>
-//#include <ef/xorg.h>
-//#include <ef/os.h>
-//#include <ef/utf8.h>
-//#include <ef/deadpoll.h>
-//#include <ef/delay.h>
+#include <ef/xorg.h>
+#include <ef/os.h>
+#include <ef/utf8.h>
+#include <ef/delay.h>
+
+typedef struct player{
+	gui_s* player;
+	const char* path;
+	media_s* video;
+	guiTimer_s* timer;
+}player_s;
 
 /*@test -g --gui 'test gui'*/
 
@@ -27,39 +38,40 @@ int main_exit(__unused gui_s* gui, __unused xorgEvent_s* ev){
 	return -1;
 }
 
-int button_click(gui_s* gui, xorgEvent_s* ev){
-	//static double op = 1.0;
-	if( gui->type != GUI_TYPE_BUTTON ) err_fail("clang");
-	if( ev->type == XORG_EVENT_CREATE ) err_fail("clang");
+int player_clock_frame(guiTimer_s* timer){
+	player_s* p = timer->userdata;
+	int ret;
+	while( (ret=media_decode(p->video)) == 0 );
+	if( ret < 0 ){
+		media_free(p->video);
+		p->video = NULL;
+		return GUI_TIMER_FREE;
+	}
+	long delay = media_delay_get(p->video);
+	delay = delay < 1000 ? 1 : delay / 1000;
 
-	dbg_error("BUTTON %u CLICK ON: %s", (uint32_t)gui->id, ev->type == XORG_EVENT_KEY_PRESS || ev->type == XORG_EVENT_KEY_RELEASE ? "key" : "mouse");
-	
-	g2dPoint_s p[] = {
-		{.x = 100, .y = 320},
-		{.x = 100, .y = 320},
-		{.x = 250, .y = 200},
-		{.x = 350, .y = 300}
-	};
-	
-	g2d_circle(gui->parent->surface->img, &p[0], 7, gui_color(255, 60, 60, 120), 1);
-	g2d_circle(gui->parent->surface->img, &p[1], 6, gui_color(255, 60, 60, 120), 1);
+	gui_draw(p->player);
 
-	gui_s* text = gui->userdata;
-	guiText_s* txt = text->control;
-	utf8_t* t = gui_text_sel_get(txt);
-	dbg_error("SELECTED TEXT:'%s'", t);
-	if( t ) free(t);	
-	 
-	//g2d_circle_antialiased(gui->parent->surface->img, &p[1], 50, gui_color(255, 60, 60, 120));
+	gui_timer_change(p->timer, delay);
+	return GUI_TIMER_CUSTOM;
+}
 
-	//g2d_cubezier(gui->parent->surface->img, &p[0], &p[1], &p[2], &p[3], gui_color(255, 60, 60, 120), 1);
-	//g2d_cubezier2(gui->parent->surface->img, p, 4, gui_color(255, 60, 60, 120), 0);
+int bStart_click(gui_s* gui, xorgEvent_s* ev){
+	if( ev->mouse.event != XORG_MOUSE_CLICK ) return 0;
+	player_s* p = gui->userdata;
+	if( p->video ) return 0;
 
-	gui_draw(gui->parent);
+	__mem_free char* path = path_resolve(p->path);
+	dbg_info("open video:%s", path);
+	p->video = media_load(path);
+	if( !p->video ){
+		err_print();
+		dbg_error("load video");
+		return 0;
+	}	
+	media_resize_set(p->video, p->player->surface->img);
+	p->timer = gui_timer_new(p->player, 1, player_clock_frame, p);
 
-	//gui_round_antialiasing_set(gui->parent, 20);
-	//gui_opacity(gui->userdata, op);
-	//if(op) op-=0.1;
 	return 0;
 }
 
@@ -74,45 +86,85 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	font_load(tfont, "fallback", "Symbola", 18);
 
 	gui_s* main = gui_new(
-		NULL, "test", NULL, GUI_MODE_NORMAL,
-		0, 50, 50, 400, 400, 
+		NULL, "test", "window", GUI_MODE_NORMAL,
+		0, 50, 50, 600, 600, 
 		gui_color(255,0,0,0),
-		gui_background_new(gui_color(255, 125, 125, 125), NULL, NULL, gui_background_main_round_fn, GUI_BK_COLOR | GUI_BK_FN),
-		7,NULL
+		gui_composite_add(
+			gui_composite_new(4),
+			gui_image_color_new(
+				gui_color(255,125,125,125),
+				500,600,
+				0
+			)
+		),
+		0,NULL
 	);
 	main->destroy = main_exit;
-//	gui_remove_decoration(main);
 
-	gui_s* labl = 	gui_label_attach(
+	gui_s* lbl = 	gui_label_attach(
 		gui_new(
 			main, "labl", "label", GUI_MODE_NORMAL,
-			1, 10, 10, 200, 50,
+			1, 3, 3, main->position.w - 6, 50,
 			gui_color(255,0,0,0),
-			gui_background_new(gui_color(255, 50, 50, 210), NULL, NULL, NULL, GUI_BK_COLOR),
+			gui_composite_add(
+				gui_composite_new(4),
+				gui_image_color_new(
+					gui_color(255, 70, 100, 70),
+					main->position.w - 6, 50,
+					0
+				)
+			),
 			0, NULL
 		),
-		gui_label_new(tfont, 0, gui_color(255,40,40,40), GUI_LABEL_CENTER_X | GUI_LABEL_CENTER_Y)
+		gui_label_new(gui_caption_new(tfont, gui_color(255,40,40,40), GUI_CAPTION_CENTER_X | GUI_CAPTION_CENTER_Y))
 	);
-	gui_label_text_set(labl, labl->control, U8("hello"));
-//	gui_label_redraw(labl, labl->background[0], labl->control);
+	gui_label_text_set(lbl, U8("video play"));
 
-	gui_s* btn = gui_button_attach(
+	gui_s* player = gui_new(
+		main, "player", "window", GUI_MODE_NORMAL,
+		1, 3, 56, main->position.w-6, 300, 
+		gui_color(255,0,0,0),
+		gui_composite_add(
+			gui_composite_new(4),
+			gui_image_color_new(
+				gui_color(255,45,45,45),
+				main->position.w-6, 300,
+				0
+			)
+		),
+		0,NULL
+	);
+
+	player_s p = {
+		.player = player,
+		.path = "~/Video/musicali/skioffi_yolandi.mp4",
+		.video = NULL,
+		.timer = NULL
+	};
+	gui_s* bStart = gui_button_attach(
 		gui_new(
 			main, "but", "button", GUI_MODE_NORMAL,
-			0, 10, labl->position.y + labl->position.h + 10, 200, 50,
+			0, 3, 400, 50, 50,
 			gui_color(255,0,0,0),	
-			gui_background_new( gui_color(255, 80, 110, 80), NULL, NULL, NULL, GUI_BK_COLOR), 
-			0, NULL
+			gui_composite_add(
+				gui_composite_new(4),
+				gui_image_color_new(
+					gui_color(255, 70, 70, 100),
+					50, 50,
+					0
+				)
+			),
+			0, &p
 		),
 		gui_button_new(
-			gui_label_new(tfont, 0, gui_color(255,40,40,40), GUI_LABEL_CENTER_X | GUI_LABEL_CENTER_Y),
-			button_click
-		),
-		gui_background_new( gui_color(255, 80, 80, 80), NULL, NULL, NULL, GUI_BK_COLOR), 
-		gui_background_new( gui_color(255, 80, 120, 80), NULL, NULL, NULL, GUI_BK_COLOR)
+			gui_caption_new(tfont, gui_color(255,40,40,40), GUI_CAPTION_CENTER_X | GUI_CAPTION_CENTER_Y),
+			gui_image_color_new(gui_color(255,10,10,40), 50, 50, 0),
+			gui_image_color_new(gui_color(255,80,80,120), 50, 50, 0),
+			bStart_click
+		)
 	);
-	gui_label_text_set(btn, gui_button_label(btn->control), U8("click me")); 
-
+	gui_button_text_set(bStart, U8("start"));
+/*
 	gui_s* txt = gui_text_attach(
 		gui_new(
 			main, "txt", "text", GUI_MODE_NORMAL,
@@ -128,14 +180,13 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	);
 
 	btn->userdata = txt;
+*/
 	gui_redraw(main);
 	gui_show(main, 1);
-
-	gui_show(labl, 1);
-	gui_show(btn, 1);
-	gui_show(txt, 1);
-	gui_focus(txt);
-
+	gui_show(lbl, 1);
+	gui_show(player, 1);
+	gui_show(bStart, 1);
+	
 	gui_loop();
 
 	gui_end();	

@@ -59,6 +59,7 @@ void test_file(const char* argA, __unused const char* argB){
 		"../../",
 		"../../hello",
 		"~/",
+		"~/.config"
 		"/home",
 		"home/hello",
 		"home/./help",
