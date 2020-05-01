@@ -7,10 +7,10 @@ guiDiv_s* gui_div_new(guiDivMode_e mode){
 	guiDiv_s* div = mem_new(guiDiv_s);
 	if( !div ) return NULL;
 	div->mode = mode;
-	div->sep.x = GUI_DIV_DEFAULT_X;
-	div->sep.y = GUI_DIV_DEFAULT_Y;
+	div->padding.left = div->padding.right = div->padding.top = div->padding.bottom = GUI_DIV_DEFAULT_PADDING; 
 	div->scroll.x = 0;
 	div->scroll.y = 0;
+	if( mode == GUI_DIV_TABLE && !(div->vrows = vector_new(guiDivRow_s, 4, 4)) ) err_fail("eom");
 	return div;
 }
 
@@ -19,7 +19,7 @@ gui_s* gui_div_attach(gui_s* gui, guiDiv_s* div){
 	if( !div ) goto ERR;
 	gui->control = div;
 	gui->type = GUI_TYPE_DIV;
-	gui->key = gui_div_event_key;
+	gui->key = gui_div_child_event_key;
 	gui->free = gui_div_event_free;
 	if( gui->parent ) gui->focus = NULL;
 	return gui;
@@ -33,54 +33,131 @@ void gui_div_free(guiDiv_s* div){
 	free(div);
 }
 
+void gui_div_padding_top(gui_s* gui, int top){
+	iassert( gui->type == GUI_TYPE_DIV );
+	guiDiv_s* div = gui->control;
+	div->padding.top = top;
+}
+
+void gui_div_padding_bottom(gui_s* gui, int bottom){
+	iassert( gui->type == GUI_TYPE_DIV );
+	guiDiv_s* div = gui->control;
+	div->padding.bottom = bottom;
+}
+
+void gui_div_padding_left(gui_s* gui, int left){
+	iassert( gui->type == GUI_TYPE_DIV );
+	guiDiv_s* div = gui->control;
+	div->padding.left = left;
+}
+
+void gui_div_padding_right(gui_s* gui, int right){
+	iassert( gui->type == GUI_TYPE_DIV );
+	guiDiv_s* div = gui->control;
+	div->padding.right = right;
+}
+
+void gui_div_table_create_row(gui_s* tab, double raph, unsigned cols){
+	iassert( tab->type == GUI_TYPE_DIV );
+	guiDiv_s* div = tab->control;
+	guiDivRow_s* row = vector_get_push_back(div->vrows);
+	row->proph = raph;
+	row->vcols = vector_new(guiDivCols_s, cols+1, 1);
+	if( !row->vcols ) err_fail("eom");
+	vector_foreach(row->vcols, c){
+		guiDivCols_s* col = vector_get_push_back(row->vcols);
+		col->flags = 0;
+		col->gui = NULL;
+		col->propw = 100.0/cols;
+	}
+}
+
+void gui_div_table_child_attach(gui_s* tab, unsigned idrow, unsigned idcol, gui_s* child){
+	iassert( tab->type == GUI_TYPE_DIV );
+	guiDiv_s* div = tab->control;
+	if( idrow >= vector_count(div->vrows) ) return;
+	guiDivRow_s* row = &div->vrows[idrow];
+	if( idcol >= vector_count(row->vcols) ) return;
+	guiDivCols_s* col = &row->vcols[idcol];
+	col->gui = child;
+}
+
+void gui_div_table_row_prop(gui_s* tab, unsigned idrow, double prop){
+	iassert( tab->type == GUI_TYPE_DIV );
+	guiDiv_s* div = tab->control;
+	if( idrow >= vector_count(div->vrows) ) return;
+	guiDivRow_s* row = &div->vrows[idrow];
+	row->proph = prop;
+}
+
+void gui_div_table_col_prop(gui_s* tab, unsigned idrow, unsigned idcol, double prop){
+	iassert( tab->type == GUI_TYPE_DIV );
+	guiDiv_s* div = tab->control;
+	if( idrow >= vector_count(div->vrows) ) return;
+	guiDivRow_s* row = &div->vrows[idrow];
+	if( idcol >= vector_count(row->vcols) ) return;
+	guiDivCols_s* col = &row->vcols[idcol];
+	col->propw = prop;
+}
+
+
 __private void div_align_vertical(gui_s* gui, guiDiv_s* div){
-	const unsigned x = div->sep.x;
-	unsigned y = div->sep.y - div->scroll.y;
+	const unsigned x = div->padding.left;
+	int y = div->padding.top - div->scroll.y;
 	
 	vector_foreach(gui->childs, i){
-		gui_move(gui->childs[i], x, y);
-		y += gui->childs[i]->surface->img->h + div->sep.y;
+		gui_s* child = gui->childs[i];
+		gui_move(child, x + child->userMargin.left, y + child->userMargin.top);
+		y += child->userMargin.top + child->position.h + child->userMargin.bottom;
 	}
-	div->lastElement.x = x;
-	div->lastElement.y = y;
 }
 
 __private void div_align_horizontal(gui_s* gui, guiDiv_s* div){
-	unsigned x = div->sep.x - div->scroll.x;
-	const unsigned y = div->sep.y;
+	int x = div->padding.left - div->scroll.x;
+	const unsigned y = div->padding.top;
 	
 	vector_foreach(gui->childs, i){
-		gui_move(gui->childs[i], x, y);
-		x += gui->childs[i]->surface->img->w + div->sep.x;
+		gui_s* child = gui->childs[i];
+		gui_move(child, x + child->userMargin.left, y + child->userMargin.top);
+		x += child->userMargin.left + child->position.w + child->userMargin.right;
 	}
-	div->lastElement.x = x;
-	div->lastElement.y = y;
 }
 
-__private void div_align_grid(gui_s* gui, guiDiv_s* div){
-	unsigned x = div->sep.x;
-	unsigned y = div->sep.y - div->scroll.y;
-	unsigned maxH = 0;
+__private void div_align_table(gui_s* gui, guiDiv_s* div){
+	int y = div->padding.top - div->scroll.y;
+	const size_t rowscount = vector_count(div->vrows);
 
-	vector_foreach(gui->childs, i){
-		if( x + gui->childs[i]->surface->img->w > gui->surface->img->w ){
-			x = div->sep.x;
-			y += maxH;
+	for( size_t r = 0; r < rowscount; ++r){
+		int x = div->padding.left - div->scroll.x;
+		const guiDivRow_s* row = &div->vrows[r];
+		const size_t colscount = vector_count(row->vcols);
+		const unsigned ph = ((double)gui->surface->img->h * row->proph)/100.0;
+		for( size_t c = 0; c < colscount; ++c){
+			const guiDivCols_s* col = &row->vcols[c];
+			const unsigned pw = ((double)gui->surface->img->w * col->propw)/100.0;
+			gui_move(col->gui, x + col->gui->userMargin.left, y + col->gui->userMargin.top);
+			if( col->flags & GUI_DIV_TABLE_FIT ){
+				gui_resize(
+						col->gui, 
+						pw - (col->gui->userMargin.left + col->gui->userMargin.right), 
+						ph - (col->gui->userMargin.top + col->gui->userMargin.bottom)
+				);
+			}
+			x += pw;
 		}
-		if( gui->childs[i]->surface->img->h > maxH ) maxH = gui->childs[i]->surface->img->h;
-		gui_move(gui->childs[i], x, y);
-		x += gui->childs[i]->surface->img->w + div->sep.x;
+		y += ph;
 	}
-	div->lastElement.x = x;
-	div->lastElement.y = y;
+	
 }
 
-void gui_div_align(gui_s* gui, guiDiv_s* div){
+void gui_div_align(gui_s* gui){
+	iassert(gui->type == GUI_TYPE_DIV);
+	guiDiv_s* div = gui->control;
 	switch( div->mode ){
 		default: case GUI_DIV_NONE: break;
 		case GUI_DIV_VERTICAL: div_align_vertical(gui, div); break;
 		case GUI_DIV_HORIZONTAL: div_align_horizontal(gui, div); break;
-		case GUI_DIV_GRID: div_align_grid(gui, div); break;
+		case GUI_DIV_TABLE: div_align_table(gui, div); break;
 	}
 }
 
@@ -90,185 +167,175 @@ int gui_div_event_free(gui_s* gui, __unused xorgEvent_s* ev){
 	return 0;
 }
 
-__private void div_focus_leftright(gui_s* gui, guiDiv_s* div, int right){
-	const int id = right ? gui_focus_next_id(gui) :gui_focus_prev_id(gui);
+__private err_t div_table_rc(size_t* outr, size_t* outc, guiDiv_s* div, gui_s* find){
+	const size_t rowscount = vector_count(div->vrows);
+	for( size_t r = 0; r < rowscount; ++r){
+		const guiDivRow_s* row = &div->vrows[r];
+		const size_t colscount = vector_count(row->vcols);
+		for( size_t c = 0; c < colscount; ++c){
+			const guiDivCols_s* col = &row->vcols[c];
+			if( col->gui == find ){
+				*outr = r;
+				*outc = c;
+				return 0;
+			}
+		}
+	}
+	return -1;
+}
+
+__private void div_autoscroll(gui_s* gui, guiDiv_s* div, gui_s* on){
+	int realign = 0;
+	if( on->position.y < 0 ){
+		div->scroll.y -= abs(on->position.y) + on->userMargin.top + div->padding.top;
+		++realign;
+	}
+	else if( on->position.y + on->position.h > gui->surface->img->h ){
+		div->scroll.y += (on->position.y + on->position.h + on->userMargin.bottom + div->padding.bottom) - gui->surface->img->h;
+		gui_div_align(gui);
+		++realign;
+	}
+	if( on->position.x < 0 ){
+		div->scroll.x -= abs(on->position.x) + on->userMargin.left + div->padding.left;
+		++realign;
+	}
+	else if( on->position.x + on->position.w > gui->surface->img->w ){
+		div->scroll.x += (on->position.x + on->position.h + on->userMargin.right + div->padding.right) - gui->surface->img->w;
+		++realign;
+	}
+	if( realign ) gui_div_align(gui);
+}
+
+__private void div_focus_right(guiDiv_s* div, gui_s* gui){
+	int id = -1;
+	if( div->mode == GUI_DIV_TABLE ){
+		size_t r,c;
+		if( div_table_rc(&r, &c, div, gui) ) return;
+		if( c < vector_count(div->vrows[r].vcols) - 1 ){
+			++c;
+		}
+		else{
+			if( r < vector_count(div->vrows) - 1 ){
+				++r;
+			}
+			else{
+				r = 0;
+			}
+			c = 0;
+		}
+		id = gui_id(div->vrows[r].vcols[c].gui);
+	}
+	else{
+		id = gui_focus_next_id(gui);
+	}
 	if( id < 0 ) return;
-
-	switch( div->mode ){
-		default: case GUI_DIV_NONE:	break;
-
-		case GUI_DIV_VERTICAL: return;
-		
-		case GUI_DIV_HORIZONTAL:
-			if( gui->childs[id]->position.x + gui->childs[id]->position.w > gui->position.w ){
-				div->scroll.x += (gui->childs[id]->position.x + gui->childs[id]->position.w + div->sep.x) - gui->position.w ;
-				div_align_horizontal(gui, div);
-			}
-			else if( gui->childs[id]->position.x < 0 ){
-				div->scroll.x -= (-gui->childs[id]->position.x) + div->sep.x;
-				div_align_horizontal(gui, div);		
-			}
-		break;
-
-		case GUI_DIV_GRID:
-			if( gui->childs[id]->position.y + gui->childs[id]->position.h > gui->position.h ){
-				div->scroll.y += (gui->childs[id]->position.y + gui->childs[id]->position.h + div->sep.y) - gui->position.h ;
-				div_align_grid(gui, div);
-			}
-			else if( gui->childs[id]->position.y < 0 ){
-				div->scroll.y -= (-gui->childs[id]->position.y) + div->sep.y;
-				div_align_grid(gui, div);		
-			}
-		break;
-	}
-
-	gui_focus_from_parent(gui, id);
+	gui_focus_from_parent(gui->parent, id);
+	div_autoscroll(gui, div, gui->parent->childs[id]);
 }
 
-__private void div_grid_current_id(unsigned* curRow, unsigned *curCol, gui_s* gui, guiDiv_s* div){
-	unsigned x = div->sep.x;
-	unsigned y = div->sep.y - div->scroll.y;
-	unsigned maxH = 0;
-	int curId = gui->childFocus;
-	unsigned row = 0;
-	unsigned col = 0;
-
-	vector_foreach(gui->childs, i){
-		if( x + gui->childs[i]->surface->img->w > gui->surface->img->w ){
-			x = div->sep.x;
-			y += maxH;
-			col = 0;
-			++row;
+__private void div_focus_left(guiDiv_s* div, gui_s* gui){
+	int id = -1;
+	if( div->mode == GUI_DIV_TABLE ){
+		size_t r,c;
+		if( div_table_rc(&r, &c, div, gui) ) return;
+		if( c > 0 ){
+			--c;
 		}
-		if( gui->childs[i]->surface->img->h > maxH ) maxH = gui->childs[i]->surface->img->h;
-		if( curId == (int)i ){
-			*curRow = row;
-			*curCol = col;
-			return;
-		}		
-		x += gui->childs[i]->surface->img->w + div->sep.x;
-	}
-}
-
-__private int div_grid_down_id(gui_s* gui, guiDiv_s* div){
-	unsigned x = div->sep.x;
-	unsigned y = div->sep.y - div->scroll.y;
-	unsigned maxH = 0;
-	unsigned row = 0;
-	unsigned col = 0;
-	unsigned curRow = 0;
-	unsigned curCol = 0;
-	div_grid_current_id(&curRow, &curCol, gui, div);
-	++curRow;
-
-	vector_foreach(gui->childs, i){
-		if( x + gui->childs[i]->surface->img->w > gui->surface->img->w ){
-			x = div->sep.x;
-			y += maxH;
-			col = 0;
-			++row;
+		else{
+			if( r > 0 ){
+			   --r;
+		   	}
+			else{
+				r = vector_count(div->vrows) -1 ;
+			}
+			c = vector_count(div->vrows[r].vcols) - 1;
 		}
-		if( gui->childs[i]->surface->img->h > maxH ) maxH = gui->childs[i]->surface->img->h;
-		if( curRow == row && curCol == col ){
-			return i;
-		}		
-		x += gui->childs[i]->surface->img->w + div->sep.x;
+		id = gui_id(div->vrows[r].vcols[c].gui);
 	}
-	
-	return vector_count(gui->childs)-1;
+	else{
+		id = gui_focus_prev_id(gui);
+	}
+	if( id < 0 ) return;
+	gui_focus_from_parent(gui->parent, id);
+	div_autoscroll(gui, div, gui->parent->childs[id]);
 }
 
-__private int div_grid_up_id(gui_s* gui, guiDiv_s* div){
-	unsigned x = div->sep.x;
-	unsigned y = div->sep.y - div->scroll.y;
-	unsigned maxH = 0;
-	unsigned row = 0;
-	unsigned col = 0;
-	unsigned curRow = 0;
-	unsigned curCol = 0;
-
-	div_grid_current_id(&curRow, &curCol, gui, div);
-	if( curRow == 0 ) return 0;
-	--curRow;
-
-	vector_foreach(gui->childs, i){
-		if( x + gui->childs[i]->surface->img->w > gui->surface->img->w ){
-			x = div->sep.x;
-			y += maxH;
-			col = 0;
-			++row;
-		}
-		if( gui->childs[i]->surface->img->h > maxH ) maxH = gui->childs[i]->surface->img->h;
-		if( curRow == row && curCol == col ){
-			return i;
-		}		
-		x += gui->childs[i]->surface->img->w + div->sep.x;
-	}
-	return 0;
-}
-
-__private void div_focus_updown(gui_s* gui, guiDiv_s* div, int down){
+__private void div_focus_up(guiDiv_s* div, gui_s* gui){
 	int id = 0;
-
-	switch( div->mode ){
-		default: case GUI_DIV_NONE:
-			id = down ? gui_focus_next_id(gui) :gui_focus_prev_id(gui);
-			if( id < 0 ) return;
-		break;
-
-		case GUI_DIV_VERTICAL: 
-			id = down ? gui_focus_next_id(gui) :gui_focus_prev_id(gui);
-			if( id < 0 ) return;
-			if( gui->childs[id]->position.y + gui->childs[id]->position.h > gui->position.h ){
-				div->scroll.y += (gui->childs[id]->position.y + gui->childs[id]->position.h + div->sep.y) - gui->position.h ;
-				div_align_grid(gui, div);
-			}
-			else if( gui->childs[id]->position.y < 0 ){
-				div->scroll.y -= (-gui->childs[id]->position.y) + div->sep.y;
-				div_align_grid(gui, div);		
-			}
-		break;
-		
-		case GUI_DIV_HORIZONTAL: return;
-
-		case GUI_DIV_GRID:
-			if( id < 0 ) return;
-			id = down ? div_grid_down_id(gui, div) : div_grid_up_id(gui, div);
-			if( gui->childs[id]->position.y + gui->childs[id]->position.h > gui->position.h ){
-				div->scroll.y += (gui->childs[id]->position.y + gui->childs[id]->position.h + div->sep.y) - gui->position.h ;
-				div_align_grid(gui, div);
-			}
-			else if( gui->childs[id]->position.y < 0 ){
-				div->scroll.y -= (-gui->childs[id]->position.y) + div->sep.y;
-				div_align_grid(gui, div);		
-			}
-		break;
+	if( div->mode == GUI_DIV_TABLE ){
+		size_t r,c;
+		if( div_table_rc(&r, &c, div, gui) ) return;
+		if( r > 0 ){
+			--r;
+		}
+		else{
+			r = vector_count(div->vrows) -1 ;
+		}
+		if( c >= vector_count(div->vrows[r].vcols) ) c = vector_count(div->vrows[r].vcols) -1;
+		id = gui_id(div->vrows[r].vcols[c].gui);
 	}
-
+	else{
+		id = gui_focus_prev_id(gui);
+	}
 	gui_focus_from_parent(gui, id);
+	div_autoscroll(gui, div, gui->parent->childs[id]);
 }
 
-int gui_div_event_key(gui_s* gui, xorgEvent_s* event){
-	iassert(gui->type == GUI_TYPE_DIV);
+__private void div_focus_down(guiDiv_s* div, gui_s* gui){
+	int id = 0;
+	if( div->mode == GUI_DIV_TABLE ){
+		size_t r,c;
+		if( div_table_rc(&r, &c, div, gui) ) return;
+		if( r <  vector_count(div->vrows) - 1){
+			++r;
+		}
+		else{
+			r = 0;
+		}
+		if( c >= vector_count(div->vrows[r].vcols) ) c = vector_count(div->vrows[r].vcols) -1;
+		id = gui_id(div->vrows[r].vcols[c].gui);
+	}
+	else{
+		id = gui_focus_next_id(gui);
+	}
+	gui_focus_from_parent(gui, id);
+	div_autoscroll(gui, div, gui->parent->childs[id]);
+}
 
-	if( event->keyboard.event == XORG_KEY_PRESS && event->keyboard.keysym == XKB_KEY_Right ){
-		div_focus_leftright(gui, gui->control, 1);
+int gui_div_child_event_key(gui_s* gui, xorgEvent_s* event){
+	if( !gui->parent && gui->parent->type != GUI_TYPE_DIV) return 0;
+
+	gui_s* div = gui->parent;
+	while( div && div->type != GUI_TYPE_DIV ) div = div->parent; 
+	if( !div ){
+		dbg_error("div childs object not have div parent");	
+		return 0;
+	}
+
+	if( event->keyboard.event == XORG_KEY_PRESS && 
+			(event->keyboard.keysym == XKB_KEY_Right || event->keyboard.keysym == XKB_KEY_Tab)
+	){
+		div_focus_right(div->control, gui);
 	}
 	else if( event->keyboard.event == XORG_KEY_PRESS && event->keyboard.keysym == XKB_KEY_Left ){
-		div_focus_leftright(gui, gui->control, 0);
+		div_focus_left(div->control, gui);
 	}
 	else if( event->keyboard.event == XORG_KEY_PRESS && event->keyboard.keysym == XKB_KEY_Up ){
-		div_focus_updown(gui, gui->control, 0);
+		div_focus_up(div->control, gui);
 	}
 	else if( event->keyboard.event == XORG_KEY_PRESS && event->keyboard.keysym == XKB_KEY_Down ){
-		div_focus_updown(gui, gui->control, 1);
+		div_focus_down(div->control, gui);
 	}
 
 	return 0;
 }
+
 /*
 int gui_div_event_themes(gui_s* gui, xorgEvent_s* ev){
+	guiDiv_s* div = ev->data.request;*
+int gui_div_event_themes(gui_s* gui, xorgEvent_s* ev){
 	guiDiv_s* div = ev->data.request;
+
 	char* name = ev->data.data;
 
 	gui_themes_uint_set(name, GUI_THEME_DIV_SEP_X, &div->sep.x);

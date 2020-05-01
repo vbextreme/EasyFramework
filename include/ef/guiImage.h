@@ -44,6 +44,8 @@ guiImage_s* gui_image_custom_new(g2dImage_s* g2d, unsigned flags);
 guiImage_s* gui_image_new(g2dColor_t color, const char* pathRelative, unsigned width, unsigned height, unsigned flags, int ratio);
 guiImage_s* gui_image_load(g2dColor_t color, const char* pathRelative, unsigned width, unsigned height, unsigned flags, int ratio);
 void gui_image_xy_set(guiImage_s* img, unsigned x, unsigned y);
+void gui_image_src_xy_set(guiImage_s* img, unsigned x, unsigned y);
+void gui_image_wh_set(guiImage_s* img, unsigned w, unsigned h);
 void gui_image_redraw(gui_s* gui, guiComposite_s* cmp, unsigned id, unsigned count);
 void gui_image_free(guiImage_s* img);
 

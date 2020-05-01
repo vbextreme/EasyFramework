@@ -117,11 +117,13 @@ guiResource_s* gui_resource(const char* name){
 	return res;
 }
 
-void gui_resource_release(const char* name){
-	if( !name ) return;
+err_t gui_resource_release(const char* name){
+	if( !name ) return -1;
 	guiResource_s* res = rbhash_find(resources, name, 0);
 	if( res ){
 		if( res->reference > 0 ) --res->reference;
 		if( !res->reference ) rbhash_remove(resources, name, 0);
+		return 0;
 	}
+	return -1;
 }

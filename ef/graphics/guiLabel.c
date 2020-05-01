@@ -18,7 +18,7 @@ gui_s* gui_label_attach(gui_s* gui, guiLabel_s* lbl){
 	gui->control = lbl;
 	gui->type = GUI_TYPE_LABEL;
 	gui->redraw = gui_label_event_redraw;
-	//gui->themes = gui_label_event_themes;
+	gui->themes = gui_label_event_themes;
 	gui->free = gui_label_event_free;
 	gui->focusable = 0;
 	gui_composite_add(gui->img, lbl->caption->render);
@@ -65,33 +65,11 @@ int gui_label_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 	return 0;
 }
 
-/*
 int gui_label_event_themes(gui_s* gui, xorgEvent_s* ev){
-	guiLabel_s* lbl = ev->data.request;
+	iassert(gui->type == GUI_TYPE_LABEL);
+	guiLabel_s* lbl = gui->control;
 	char* name = ev->data.data;
-	
-	int vbool = 0;
-	if( !gui_themes_bool_set(name, GUI_THEME_CAPTION_CENTER_X, &vbool) ){
-		if( vbool ) lbl->flags |= GUI_LABEL_CENTER_X;
-		else lbl->flags &= ~GUI_LABEL_CENTER_Y;
-		lbl->flags |= GUI_LABEL_RENDERING;
-	}
-
-	if( !gui_themes_bool_set(name, GUI_THEME_CAPTION_CENTER_Y, &vbool) ){
-		if( vbool ) lbl->flags |= GUI_LABEL_CENTER_Y;
-		else lbl->flags &= ~GUI_LABEL_CENTER_Y;
-		lbl->flags |= GUI_LABEL_RENDERING;
-	}
-
-	if( !gui_themes_uint_set(name, GUI_THEME_FOREGROUND, &lbl->foreground) ) lbl->flags |= GUI_LABEL_RENDERING;
-
-	if( gui_themes_int_set(name, GUI_THEME_CAPTION_AUTOWRAP, &lbl->autowrap) ) lbl->flags |= GUI_LABEL_RENDERING;
-
-	gui_themes_font_set(name, &lbl->fonts);
-
-	char* caption = gui_themes_string(name, GUI_THEME_CAPTION);
-	if( caption ) gui_label_text_set(gui, lbl, (utf8_t*)caption);
-
+	gui_caption_themes(gui, lbl->caption, name);
 	return 0;
 }
-*/
+

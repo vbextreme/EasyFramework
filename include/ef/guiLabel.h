@@ -33,6 +33,6 @@ int gui_label_event_free(gui_s* gui, __unused xorgEvent_s* ev);
 int gui_label_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
 
 /** event themes*/
-//int gui_label_event_themes(gui_s* gui, xorgEvent_s* ev);
+int gui_label_event_themes(gui_s* gui, xorgEvent_s* ev);
 
 #endif

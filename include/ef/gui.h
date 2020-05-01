@@ -9,11 +9,11 @@
 #include <ef/guiImage.h>
 
 /*TODO 
- * 1.2.6
+ * 1.2.6 -----
+ * 1.3.0 broken previous version
  *		themes
  *		bar
- *		guiImage?
- *			all type in one flatcolor+img+gif+vide0
+ *			circle
  */
 
 #define GUI_TYPE_WINDOW 0
@@ -47,16 +47,6 @@
 #define GUI_THEME_FONT_NAME               "font.name."
 #define GUI_THEME_FONT_SIZE               "font.size."
 
-/* app.win.background.type: 'color'
- * app.win.background.color: 0x123456
- * app.win.background.alpha: 1
- * app.win.background.loop: 0
- * app.win.background.play: 0
- * app.win.background.img: '~/....'
- * app.win.background.gif: '~/....'
- * app.win.background.media: '~/...'
- */
-
 #define GUI_THEME_COMPOSITE              "composite"
 #define GUI_THEME_COMPOSITE_COLOR        "color"
 #define GUI_THEME_COMPOSITE_IMAGE        "image"
@@ -65,6 +55,7 @@
 #define GUI_THEME_COMPOSITE_ALPHA        "alpha"
 #define GUI_THEME_COMPOSITE_PLAY         "play"
 #define GUI_THEME_COMPOSITE_LOOP         "loop"
+#define GUI_THEME_COMPOSITE_RATIO        "ratio"
 #define GUI_THEME_COMPOSITE_DEST_X       "dest.x"
 #define GUI_THEME_COMPOSITE_DEST_Y       "dest.y"
 #define GUI_THEME_COMPOSITE_DEST_W       "dest.w"
@@ -73,16 +64,6 @@
 #define GUI_THEME_COMPOSITE_SRC_Y        "src.y"
 #define GUI_THEME_COMPOSITE_SRC_W        "src.w"
 #define GUI_THEME_COMPOSITE_SRC_H        "src.h"
-
-
-
-
-#define GUI_THEME_CAPTION                 "caption"
-#define GUI_THEME_CAPTION_AUTOWRAP        "caption.autowrap"
-#define GUI_THEME_CAPTION_CENTER_X        "caption.center.x"
-#define GUI_THEME_CAPTION_CENTER_Y        "caption.center.y"
-#define GUI_THEME_FOREGROUND              "foreground"
-
 
 typedef enum {GUI_MODE_NORMAL, GUI_MODE_MODAL, GUI_MODE_DOCK_TOP, GUI_MODE_DOCK_BOTTOM, GUI_MODE_DOCK_LEFT, GUI_MODE_DOCK_RIGHT} guiMode_e;
 
@@ -100,6 +81,10 @@ typedef struct guiPosition{
 	int x,y;
 	unsigned w,h;
 }guiPosition_s;
+
+typedef struct guiMargin{
+	int left, right, top, bottom;
+}guiMargin_s;
 
 typedef struct guiTimer_s{
 	size_t ms;
@@ -139,6 +124,7 @@ typedef struct gui{
 	xorgSurface_s* surface;
 	guiPosition_s position;
 	guiComposite_s* img;
+	guiMargin_s userMargin;
 
 	guiEvent_f create;
 	guiEvent_f destroy;
@@ -210,6 +196,9 @@ void gui_resize(gui_s* gui, int w, int h);
 
 /** set border*/
 void gui_border(gui_s* gui, int border);
+
+/** get id */
+ssize_t gui_id(gui_s* gui);
 
 /** set focus id on gui*/
 void gui_focus_from_parent(gui_s* gui, int id);
@@ -341,16 +330,15 @@ err_t gui_themes_uint_set(const char* name, const char* property, unsigned* set)
 err_t gui_themes_long_set(const char* name, const char* property, long* set);
 
 /** set fonts */
-err_t gui_themes_font_set(const char* name, ftFonts_s** controlFonts);
+err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts);
 
-
-/** set theme background*/
-//void gui_themes_background(gui_s* gui, const char* name, guiBackground_s* bk);
+/** set theme composite*/
+void gui_themes_composite(gui_s* gui, const char* name);
 
 /** set gui themes */
-//void gui_themes(gui_s* gui, const char* appName, const char* controlName);
+void gui_themes(gui_s* gui, const char* appName);
 
 /** set themes for all gui from one parent*/
-//void gui_themes_all(gui_s* gui, const char* appName);
+void gui_themes_all(gui_s* gui, const char* appName);
 
 #endif

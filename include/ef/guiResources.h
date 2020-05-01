@@ -81,6 +81,6 @@ void gui_resource_fonts_new(const char* name, ftFonts_s* value);
 
 guiResource_s* gui_resource(const char* name);
 
-void gui_resource_release(const char* name);
+err_t gui_resource_release(const char* name);
 
 #endif

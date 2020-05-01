@@ -1,4 +1,5 @@
 #include <ef/guiCapton.h>
+#include <ef/guiResources.h>
 #include <ef/memory.h>
 #include <ef/str.h>
 #include <ef/ft.h>
@@ -89,33 +90,38 @@ void gui_caption_scroll(gui_s* gui, guiCaption_s* cap, unsigned x, unsigned y){
 	if( y < gui->surface->img->h - 5 ) cap->scroll.y = y;
 }
 
-/*
-int gui_label_event_themes(gui_s* gui, xorgEvent_s* ev){
-	guiLabel_s* lbl = ev->data.request;
-	char* name = ev->data.data;
-	
+int gui_caption_themes(gui_s* gui, guiCaption_s* cap, const char* name){
 	int vbool = 0;
 	if( !gui_themes_bool_set(name, GUI_THEME_CAPTION_CENTER_X, &vbool) ){
-		if( vbool ) lbl->flags |= GUI_LABEL_CENTER_X;
-		else lbl->flags &= ~GUI_LABEL_CENTER_Y;
-		lbl->flags |= GUI_LABEL_RENDERING;
+		if( vbool ) cap->flags |= GUI_CAPTION_CENTER_X;
+		else cap->flags &= ~GUI_CAPTION_CENTER_X;
+		cap->flags |= GUI_CAPTION_RENDERING;
 	}
 
 	if( !gui_themes_bool_set(name, GUI_THEME_CAPTION_CENTER_Y, &vbool) ){
-		if( vbool ) lbl->flags |= GUI_LABEL_CENTER_Y;
-		else lbl->flags &= ~GUI_LABEL_CENTER_Y;
-		lbl->flags |= GUI_LABEL_RENDERING;
+		if( vbool ) cap->flags |= GUI_CAPTION_CENTER_Y;
+		else cap->flags &= ~GUI_CAPTION_CENTER_Y;
+		cap->flags |= GUI_CAPTION_RENDERING;
 	}
 
-	if( !gui_themes_uint_set(name, GUI_THEME_FOREGROUND, &lbl->foreground) ) lbl->flags |= GUI_LABEL_RENDERING;
+	if( !gui_themes_bool_set(name, GUI_THEME_CAPTION_AUTOWRAP, &vbool) ){
+		if( vbool ) cap->flags |= GUI_CAPTION_AUTOWRAP;
+		else cap->flags &= ~GUI_CAPTION_AUTOWRAP;
+		cap->flags |= GUI_CAPTION_RENDERING;
+	}
 
-	if( gui_themes_int_set(name, GUI_THEME_CAPTION_AUTOWRAP, &lbl->autowrap) ) lbl->flags |= GUI_LABEL_RENDERING;
+	if( !gui_themes_uint_set(name, GUI_THEME_FOREGROUND, &cap->foreground) ) cap->flags |= GUI_CAPTION_RENDERING;
+	
+	ftFonts_s* old = cap->fonts;
+	gui_themes_fonts_set(name, &cap->fonts);
+	if( cap->fonts != old ){
+		gui_resource_release(old->groupName);
+		cap->flags |= GUI_CAPTION_RENDERING;
+	}
 
-	gui_themes_font_set(name, &lbl->fonts);
-
-	char* caption = gui_themes_string(name, GUI_THEME_CAPTION);
-	if( caption ) gui_label_text_set(gui, lbl, (utf8_t*)caption);
+	__mem_free char* caption = gui_themes_string(name, GUI_THEME_CAPTION);
+	if( caption ) gui_caption_text_set(gui, cap, (utf8_t*)caption);
 
 	return 0;
 }
-*/
+

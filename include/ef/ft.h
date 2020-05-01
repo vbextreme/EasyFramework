@@ -43,6 +43,7 @@ typedef struct ftFont{
 }ftFont_s;
 
 typedef struct ftFonts{
+	char* groupName;   /**< name of fonts group*/
 	ftFont_s* font;    /**< first is font, sucessive is fallback*/
 	rbhash_s* charmap;
 }ftFonts_s;
@@ -74,7 +75,7 @@ err_t ft_begin(void);
 void ft_end(void);
 
 /** create new fonts obj*/
-ftFonts_s* ft_fonts_new(void);
+ftFonts_s* ft_fonts_new(const char* name);
 
 /** search loaded font by name*/
 ftFont_s* ft_fonts_search_name(ftFonts_s* fonts, const char* name);

@@ -246,6 +246,16 @@ void gui_image_xy_set(guiImage_s* img, unsigned x, unsigned y){
 	img->pos.y = y;
 }
 
+void gui_image_src_xy_set(guiImage_s* img, unsigned x, unsigned y){
+	img->src.x = x;
+	img->src.y = y;
+}
+
+void gui_image_wh_set(guiImage_s* img, unsigned w, unsigned h){
+	img->pos.w = img->src.w = w;
+	img->pos.h = img->src.h = h;
+}
+
 __private void gid_color(gui_s* gui, guiImage_s* img){
 	iassert( img->type == GUI_IMAGE_COLOR);
 	if( img->pos.x + img->pos.w > gui->surface->img->w ){

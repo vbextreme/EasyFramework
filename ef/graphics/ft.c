@@ -48,7 +48,7 @@ __private void rbh_ft_glyph_free(__unused uint32_t hash, __unused const char* ke
 	ft_glyph_free(a);
 }
 
-ftFonts_s* ft_fonts_new(void){
+ftFonts_s* ft_fonts_new(const char* name){
 	ftFonts_s* fonts = mem_new(ftFonts_s);
 	if( !fonts ){
 		err_pushno("malloc");
@@ -65,6 +65,7 @@ ftFonts_s* ft_fonts_new(void){
 		free(fonts);
 		return NULL;
 	}
+	fonts->groupName = name ? str_dup(name, 0) : NULL;
 	return fonts;
 }
 
@@ -200,6 +201,7 @@ void ft_fonts_free(ftFonts_s* fonts){
 		ft_font_delete(&fonts->font[i]);
 	}
 	vector_free(fonts->font);
+	if( fonts->groupName ) free(fonts->groupName);
 	free(fonts);
 }
 

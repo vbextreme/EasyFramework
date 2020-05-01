@@ -8,6 +8,12 @@
 #define GUI_CAPTION_CENTER_Y  0x04
 #define GUI_CAPTION_AUTOWRAP  0x08
 
+#define GUI_THEME_CAPTION                 "caption"
+#define GUI_THEME_CAPTION_AUTOWRAP        "caption.autowrap"
+#define GUI_THEME_CAPTION_CENTER_X        "caption.center.x"
+#define GUI_THEME_CAPTION_CENTER_Y        "caption.center.y"
+#define GUI_THEME_FOREGROUND              "foreground"
+
 typedef struct guiCaption{
 	guiImage_s* render;
 	unsigned flags;
@@ -34,6 +40,7 @@ void gui_caption_render(gui_s* gui, guiCaption_s* cap);
 /** caption scroll*/
 void gui_caption_scroll(gui_s* gui, guiCaption_s* cap, unsigned x, unsigned y);
 
-//int gui_label_event_themes(gui_s* gui, xorgEvent_s* ev);
+/** set caption theme*/
+int gui_caption_themes(gui_s* gui, guiCaption_s* cap, const char* name);
 
 #endif
