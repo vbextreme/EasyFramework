@@ -1030,6 +1030,7 @@ int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev){
 	if( ev->focus.outin ){
 		txt->flags |= GUI_TEXT_REND_CURON;
 		if( txt->blinktime && !txt->blink ) txt->blink = gui_timer_new(gui, txt->blinktime, gui_text_timer_blink, gui);
+		gui_focus_internal(gui);
 	}
 	else{
 		if( txt->blink ) gui_timer_free(txt->blink);

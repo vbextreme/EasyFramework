@@ -25,6 +25,8 @@ __private rbhash_s* allgui;
 __private xorg_s* X;
 __private phq_s* timergui;
 __private deadpoll_s* dpgui;
+__private gui_s* focused;
+
 
 void gui_begin(){
 	os_begin();
@@ -118,7 +120,7 @@ gui_s* gui_new(
 	gui->redraw = gui_event_redraw;
 	gui->draw = gui_event_draw;
 	gui->key = gui->parent ? gui->parent->key :  NULL;
-	gui->focus = gui->parent ? NULL : gui_event_focus;
+	gui->focus = gui->parent ? gui_event_child_focus: gui_event_focus;
 	gui->mouse = gui->parent ? gui_event_mouse : NULL;
 	gui->move = gui_event_move;
 
@@ -131,7 +133,6 @@ gui_s* gui_new(
 	gui->surface = NULL;
 	gui->type = GUI_TYPE_WINDOW;
 	gui->focusable = 1;
-	gui->childFocus = -1;
 	gui->bordersize = border;
 	gui->bordersizefocused = border + GUI_FOCUS_BORDER_SIZE;
 	gui->id = xorg_win_new(&gui->surface, X, xcbParent, x, y, width, height, border, colorBorder, colorBorder);
@@ -268,99 +269,58 @@ ssize_t gui_id(gui_s* gui){
 	return -1;	
 }
 
-void gui_focus_from_parent(gui_s* gui, int id){
-	if( !gui ){
-		dbg_error("no gui");	
-		return;
-	}
-	if( id < 0 ){
-		dbg_error("id %d < 0", id);
-		return;
-	}
-	if( (size_t)id >= vector_count(gui->childs) ){
-		dbg_error("id %d > %lu", id, vector_count(gui->childs));
-		return;
-	}
-	if( gui->focusable < 1 ){
-		dbg_warning("gui %s is not focusable", gui->name);
-		return;
-	}
-	
-	gui->childFocus = id;
-	dbg_info("set focus: %s", gui->childs[id]->name);
-	xorg_win_focus(X, gui->childs[id]->id);
+int gui_focus_have(gui_s* gui){
+	return gui == focused;
 }
 
-__private int gui_focus_search(gui_s* gui, gui_s* find){
-	vector_foreach(gui->childs, i){
-		if( gui->childs[i] == find ){
-			return i;
-		}
-		int ret;
-		if( vector_count(gui->childs[i]->childs) && (ret=gui_focus_search(gui->childs[i], find)) ) return ret;
-	}
-	return -1;
-}
-
-int gui_focuse_have(gui_s* gui){
-	iassert(gui->parent);
-	int id = gui_focus_search(gui_main_parent(gui), gui);
-	if( id == gui->parent->childFocus ) return 1;
-	return 0;
+void gui_focus_internal(gui_s* gui){
+	dbg_info("internal: %s", gui->name);
+	focused = gui;
 }
 
 void gui_focus(gui_s* gui){
-	iassert(gui);
-	gui_s* main = gui_main_parent(gui);
-	int id = gui_focus_search(main, gui);
-	if( id > -1 ) gui_focus_from_parent(main, id);
+	dbg_info("set focus: %s", gui->name);
+	xorg_win_focus(X, gui->id);
 }
 
-int gui_focus_next_id(gui_s* parent){
+gui_s* gui_focus_next(gui_s* gui){
+	gui_s* parent = gui->parent;
 	if( !parent ){
 		dbg_warning("no parent");
-		return -1;
+		return NULL;
 	}
-	int focusid = parent->childFocus;
+	int focusid = gui_id(gui);
 	int childs = vector_count(parent->childs);
 	if( focusid < 0 ){
 		dbg_warning("no id");
-		return -1;
+		return NULL;
 	}
 	do{
 		++focusid;
 		if( focusid >= childs ) focusid = 0;
 	}while( parent->childs[focusid]->focusable < 1 );
-	dbg_info("focus id: %d", focusid);
-	return focusid;
+	gui_focus(parent->childs[focusid]);
+	return parent->childs[focusid];
 }
 
-void gui_focus_next(gui_s* gui){
-	iassert(gui);
-	gui_focus_from_parent(gui->parent, gui_focus_next_id(gui->parent));
-}
-
-int gui_focus_prev_id(gui_s* parent){
+gui_s* gui_focus_prev(gui_s* gui){
+	gui_s* parent = gui->parent;
 	if( !parent ){
 		dbg_error("no parent");
-		return -1;
+		return NULL;
 	}
-	int focusid = parent->childFocus;
+	int focusid = gui_id(gui);
 	int childs = vector_count(parent->childs);
 	if( focusid < 0 ){
 		dbg_error("parent no childfocus");
-		return -1;
+		return NULL;
 	}
 	do{
 		if( focusid == 0 ) focusid = childs-1;
 		else --focusid;
 	}while( parent->childs[focusid]->focusable < 1 );
-	return focusid;
-}
-
-void gui_focus_prev(gui_s* gui){
-	iassert(gui);
-	gui_focus_from_parent(gui->parent, gui_focus_prev_id(gui->parent));
+	gui_focus(parent->childs[focusid]);
+	return parent->childs[focusid];
 }
 
 void gui_clipboard_copy(gui_s* gui, int primary){
@@ -475,35 +435,22 @@ int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage){
 	return 0;
 }
 
-__private int gui_search_childfocus(gui_s* gui){
-	if( gui->childFocus >=0 ){
-		dbg_info("find childFocus %d", gui->childFocus);
-		gui_focus_from_parent(gui, gui->childFocus);
-		return 1;
-	}
-
-	vector_foreach(gui->childs, i){
-		if( gui_search_childfocus(gui->childs[i]) ) return 1;
-	}
-
-	dbg_warning("not find focusable element");
-	return 0;
-}
-
 int gui_event_focus(gui_s* gui, xorgEvent_s* event){
 	if( event->focus.outin){
-		gui_search_childfocus(gui_main_parent(gui));
+		if( focused )
+			gui_focus(focused);
+		else
+			gui_focus_internal(gui);
 	}
 	return 0;
 }
 
-/*__private void redraw_all(gui_s* gui){
-	if( gui->redraw ) gui->redraw(gui, NULL);
-	if( gui->draw ) gui->draw(gui, NULL);
-	vector_foreach(gui->childs, i){
-		redraw_all(gui->childs[i]);
+int gui_event_child_focus(gui_s* gui, xorgEvent_s* event){
+	if( event->focus.outin){
+		gui_focus_internal(gui);
 	}
-}*/
+	return 0;
+}
 
 int gui_event_mouse(gui_s* gui, xorgEvent_s* event){
 	if( 
@@ -514,7 +461,7 @@ int gui_event_mouse(gui_s* gui, xorgEvent_s* event){
 		) 
 		&& event->mouse.button == 1 
 	){
-		if( !gui_focuse_have(gui) ){
+		if( !gui_focus_have(gui) ){
 			gui_focus(gui);
 		}
 	}

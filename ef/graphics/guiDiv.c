@@ -237,8 +237,7 @@ __private void div_autoscroll(gui_s* gui, guiDiv_s* div, gui_s* on){
 	if( realign ) gui_div_align(gui);
 }
 
-__private void div_focus_right(guiDiv_s* div, gui_s* gui){
-	int id = -1;
+__private void div_focus_right(gui_s* gdiv, guiDiv_s* div, gui_s* gui){
 	if( div->mode == GUI_DIV_TABLE ){
 		size_t r,c;
 		if( div_table_rc(&r, &c, div, gui) ) return;
@@ -254,18 +253,16 @@ __private void div_focus_right(guiDiv_s* div, gui_s* gui){
 			}
 			c = 0;
 		}
-		id = gui_id(div->vrows[r].vcols[c].gui);
+		gui = div->vrows[r].vcols[c].gui;
+		gui_focus(gui);
 	}
 	else{
-		id = gui_focus_next_id(gui);
+		gui_focus_next(gui);
 	}
-	if( id < 0 ) return;
-	gui_focus_from_parent(gui->parent, id);
-	if( id >= 0 ) div_autoscroll(gui, div, gui->parent->childs[id]);
+	if( gui ) div_autoscroll(gdiv, div, gui);
 }
 
-__private void div_focus_left(guiDiv_s* div, gui_s* gui){
-	int id = -1;
+__private void div_focus_left(gui_s* gdiv, guiDiv_s* div, gui_s* gui){
 	if( div->mode == GUI_DIV_TABLE ){
 		size_t r,c;
 		if( div_table_rc(&r, &c, div, gui) ) return;
@@ -281,18 +278,15 @@ __private void div_focus_left(guiDiv_s* div, gui_s* gui){
 			}
 			c = vector_count(div->vrows[r].vcols) - 1;
 		}
-		id = gui_id(div->vrows[r].vcols[c].gui);
+		gui = div->vrows[r].vcols[c].gui;
 	}
 	else{
-		id = gui_focus_prev_id(gui);
+		gui = gui_focus_prev(gui);
 	}
-	if( id < 0 ) return;
-	gui_focus_from_parent(gui->parent, id);
-	if( id >= 0 ) div_autoscroll(gui, div, gui->parent->childs[id]);
+	if( gui ) div_autoscroll(gdiv, div, gui);
 }
 
-__private void div_focus_up(guiDiv_s* div, gui_s* gui){
-	int id = 0;
+__private void div_focus_up(gui_s* gdiv, guiDiv_s* div, gui_s* gui){
 	if( div->mode == GUI_DIV_TABLE ){
 		size_t r,c;
 		if( div_table_rc(&r, &c, div, gui) ) return;
@@ -303,17 +297,15 @@ __private void div_focus_up(guiDiv_s* div, gui_s* gui){
 			r = vector_count(div->vrows) -1 ;
 		}
 		if( c >= vector_count(div->vrows[r].vcols) ) c = vector_count(div->vrows[r].vcols) -1;
-		id = gui_id(div->vrows[r].vcols[c].gui);
+		gui = div->vrows[r].vcols[c].gui;
 	}
 	else{
-		id = gui_focus_prev_id(gui);
+		gui = gui_focus_prev(gui);
 	}
-	gui_focus_from_parent(gui, id);
-	if( id >= 0 ) div_autoscroll(gui, div, gui->parent->childs[id]);
+	if( gui ) div_autoscroll(gdiv, div, gui);
 }
 
-__private void div_focus_down(guiDiv_s* div, gui_s* gui){
-	int id = 0;
+__private void div_focus_down(gui_s* gdiv, guiDiv_s* div, gui_s* gui){
 	if( div->mode == GUI_DIV_TABLE ){
 		size_t r,c;
 		if( div_table_rc(&r, &c, div, gui) ) return;
@@ -324,13 +316,12 @@ __private void div_focus_down(guiDiv_s* div, gui_s* gui){
 			r = 0;
 		}
 		if( c >= vector_count(div->vrows[r].vcols) ) c = vector_count(div->vrows[r].vcols) -1;
-		id = gui_id(div->vrows[r].vcols[c].gui);
+		gui = div->vrows[r].vcols[c].gui;
 	}
 	else{
-		id = gui_focus_next_id(gui);
+		gui = gui_focus_next(gui);
 	}
-	gui_focus_from_parent(gui, id);
-	if( id >= 0 ) div_autoscroll(gui, div, gui->parent->childs[id]);
+	if( gui ) div_autoscroll(gdiv, div, gui);
 }
 
 int gui_div_event_redraw(gui_s* gui, __unused xorgEvent_s* event){
@@ -351,16 +342,16 @@ int gui_div_child_event_key(gui_s* gui, xorgEvent_s* event){
 	if( event->keyboard.event == XORG_KEY_PRESS && 
 			(event->keyboard.keysym == XKB_KEY_Right || event->keyboard.keysym == XKB_KEY_Tab)
 	){
-		div_focus_right(div->control, gui);
+		div_focus_right(div, div->control, gui);
 	}
 	else if( event->keyboard.event == XORG_KEY_PRESS && event->keyboard.keysym == XKB_KEY_Left ){
-		div_focus_left(div->control, gui);
+		div_focus_left(div, div->control, gui);
 	}
 	else if( event->keyboard.event == XORG_KEY_PRESS && event->keyboard.keysym == XKB_KEY_Up ){
-		div_focus_up(div->control, gui);
+		div_focus_up(div, div->control, gui);
 	}
 	else if( event->keyboard.event == XORG_KEY_PRESS && event->keyboard.keysym == XKB_KEY_Down ){
-		div_focus_down(div->control, gui);
+		div_focus_down(div, div->control, gui);
 	}
 
 	return 0;

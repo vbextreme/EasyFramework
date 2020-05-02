@@ -62,7 +62,6 @@ int player_clock_frame(guiTimer_s* timer){
 }
 
 int bStart_click(gui_s* gui, xorgEvent_s* ev){
-	if( ev->mouse.event != XORG_MOUSE_CLICK ) return 0;
 	player_s* p = gui->userdata;
 	if( p->video ) return 0;
 

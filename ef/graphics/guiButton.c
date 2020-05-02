@@ -108,7 +108,7 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event){
 	else if( (event->mouse.event == XORG_MOUSE_RELEASE || event->mouse.event == XORG_MOUSE_CLICK || event->mouse.event == XORG_MOUSE_DBLCLICK) 
 			&& event->mouse.button == 1 )
 	{
-		if( !gui_focuse_have(gui) ){
+		if( !gui_focus_have(gui) ){
 			gui_focus(gui);
 		}
 		gui_button_redraw(gui, 0);

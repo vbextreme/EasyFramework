@@ -116,7 +116,6 @@ typedef struct gui{
 	int type;
 	xcb_window_t id;
 	int focusable;
-	int childFocus;
 	int bordersize;
 	int bordersizefocused;
 	int genericSize;
@@ -200,26 +199,20 @@ void gui_border(gui_s* gui, int border);
 /** get id */
 ssize_t gui_id(gui_s* gui);
 
-/** set focus id on gui*/
-void gui_focus_from_parent(gui_s* gui, int id);
+/** set internal focus*/
+void gui_focus_internal(gui_s* gui);
 
 /** check if gui have focus*/
-int gui_focuse_have(gui_s* gui);
+int gui_focus_have(gui_s* gui);
 
 /** set focus on gui*/
 void gui_focus(gui_s* gui);
 
-/** get next id focus*/
-int gui_focus_next_id(gui_s* parent);
-
 /** set focus on next gui*/
-void gui_focus_next(gui_s* gui);
-
-/** get id focus prev*/ 
-int gui_focus_prev_id(gui_s* parent);
+gui_s* gui_focus_next(gui_s* gui);
 
 /** set previous focus*/
-void gui_focus_prev(gui_s* gui);
+gui_s* gui_focus_prev(gui_s* gui);
 
 /** enable clipboard copy*/
 void gui_clipboard_copy(gui_s* gui, int primary);
@@ -259,6 +252,7 @@ int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);
 
 /** default event for focus*/
 int gui_event_focus(gui_s* gui, xorgEvent_s* event);
+int gui_event_child_focus(gui_s* gui, xorgEvent_s* event);
 
 /** default event for mouse*/
 int gui_event_mouse(gui_s* gui, xorgEvent_s* event);
