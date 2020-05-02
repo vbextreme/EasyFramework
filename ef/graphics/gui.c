@@ -246,10 +246,10 @@ void gui_move(gui_s* gui, int x, int y){
 void gui_resize(gui_s* gui, int w, int h){
 	if( (unsigned)w != gui->position.w || (unsigned)h != gui->position.h ){
 		dbg_info("resize surface, redraw && draw");
-		//gui_composite_resize(gui, gui->img, w, h);	
-		//xorg_surface_resize(X, gui->surface, w, h);
-		//gui_redraw(gui);
-		//gui_draw(gui);
+		gui_composite_resize(gui, gui->img, w, h);	
+		xorg_surface_resize(X, gui->surface, w, h);
+		gui_redraw(gui);
+		gui_draw(gui);
 		xorg_win_resize(X, gui->id, w, h);
 	}
 }
