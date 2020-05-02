@@ -26,6 +26,7 @@ gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn){
 	gui->mouse = gui_button_event_mouse;
 	gui->key = gui_button_event_key;
 	gui->free = gui_button_event_free;	
+	gui->move = gui_button_event_move;
 	btn->compindex = vector_count(gui->img->img)-1;
 	btn->state[GUI_BUTTON_STATE_NORMAL] = gui->img->img[btn->compindex];
 	gui_composite_add(gui->img, btn->caption->render);
@@ -125,6 +126,19 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event){
 	}
 	return 0;
 }
+
+int gui_button_event_move(gui_s* gui, xorgEvent_s* event){
+	//TODO this not works with image
+	iassert(gui->type == GUI_TYPE_BUTTON);
+	guiButton_s* btn = gui->control;
+	gui_event_move(gui, event);
+	btn->state[1]->pos.w = gui->surface->img->w;
+	btn->state[1]->pos.h = gui->surface->img->h;
+	btn->state[2]->pos.w = gui->surface->img->w;
+	btn->state[2]->pos.h = gui->surface->img->h;
+	return 0;
+}
+
 /*
 int gui_button_event_themes(gui_s* gui, xorgEvent_s* ev){
 	guiButton_s* btn = ev->data.request;

@@ -48,12 +48,13 @@ void gui_image_src_xy_set(guiImage_s* img, unsigned x, unsigned y);
 void gui_image_wh_set(guiImage_s* img, unsigned w, unsigned h);
 void gui_image_redraw(gui_s* gui, guiComposite_s* cmp, unsigned id, unsigned count);
 void gui_image_free(guiImage_s* img);
+void gui_image_resize(gui_s* gui, guiImage_s* img, unsigned width, unsigned height, int ratio);
 
 guiComposite_s* gui_composite_new(unsigned count);
 void gui_composite_free(guiComposite_s* cmp);
 guiComposite_s* gui_composite_add(guiComposite_s* cmp, guiImage_s* img);
 void gui_composite_redraw(gui_s* gui, guiComposite_s* cmp);
-
+void gui_composite_resize(gui_s* gui, guiComposite_s* cmp, unsigned width, unsigned height);
 
 
 

@@ -44,6 +44,8 @@ int gui_button_event_key(gui_s* gui, xorgEvent_s* event);
 /** button event mouse*/
 int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event);
 
+int gui_button_event_move(gui_s* gui, xorgEvent_s* event);
+
 /** button event theme*/
 //int gui_button_event_themes(gui_s* gui, xorgEvent_s* ev);
 

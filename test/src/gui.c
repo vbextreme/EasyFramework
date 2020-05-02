@@ -87,26 +87,47 @@ int bStart_click(gui_s* gui, xorgEvent_s* ev){
 void test_gui(__unused const char* argA, __unused const char* argB){
 	err_enable();
 	gui_begin();
-	ftFonts_s* tfont = ft_fonts_new();
+	ftFonts_s* tfont = ft_fonts_new("defaultThemes");
 	font_load(tfont, "master", "Dejavu", 18);
 	font_load(tfont, "masterFall", "FiraSans", 18);
 	font_load(tfont, "fallback", "Symbola", 18);
 
+	gui_s* main = gui_div_attach(
+			gui_new(
+				NULL, "test", "window", GUI_MODE_NORMAL,
+				0, 50, 50, 600, 600, 
+				gui_color(255,0,0,0),
+				gui_composite_add(
+				gui_composite_new(4),
+					gui_image_color_new(
+						gui_color(255,125,125,125),
+						600,600,
+						0
+					)
+				),
+				0,NULL
+			),
+			gui_div_new(GUI_DIV_VERTICAL, GUI_DIV_FLAGS_FIT)
+	);
+	main->destroy = main_exit;
+
+/*
 	gui_s* main = gui_new(
 		NULL, "test", "window", GUI_MODE_NORMAL,
 		0, 50, 50, 600, 600, 
 		gui_color(255,0,0,0),
 		gui_composite_add(
-			gui_composite_new(4),
+		gui_composite_new(4),
 			gui_image_color_new(
 				gui_color(255,125,125,125),
-				500,600,
+				600,600,
 				0
 			)
 		),
 		0,NULL
 	);
 	main->destroy = main_exit;
+*/
 
 	gui_s* lbl = 	gui_label_attach(
 		gui_new(
@@ -197,6 +218,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 		)
 	);
 	gui_button_text_set(bStart, U8("start"));
+
 /*
 	gui_s* txt = gui_text_attach(
 		gui_new(
@@ -214,13 +236,18 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 
 	btn->userdata = txt;
 */
+	gui_redraw(lbl);
+	gui_redraw(player);
+	gui_redraw(bar);
+	gui_redraw(bStart);
 	gui_redraw(main);
 	gui_show(main, 1);
 	gui_show(lbl, 1);
 	gui_show(player, 1);
 	gui_show(bar, 1);
 	gui_show(bStart, 1);
-	
+	gui_focus(bStart);
+
 	gui_loop();
 
 	gui_end();	

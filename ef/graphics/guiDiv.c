@@ -3,13 +3,14 @@
 #include <ef/vector.h>
 #include <ef/err.h>
 
-guiDiv_s* gui_div_new(guiDivMode_e mode){
+guiDiv_s* gui_div_new(guiDivMode_e mode, unsigned flags){
 	guiDiv_s* div = mem_new(guiDiv_s);
 	if( !div ) return NULL;
 	div->mode = mode;
 	div->padding.left = div->padding.right = div->padding.top = div->padding.bottom = GUI_DIV_DEFAULT_PADDING; 
 	div->scroll.x = 0;
 	div->scroll.y = 0;
+	div->flags = flags;
 	if( mode == GUI_DIV_TABLE && !(div->vrows = vector_new(guiDivRow_s, 4, 4)) ) err_fail("eom");
 	return div;
 }
@@ -21,6 +22,8 @@ gui_s* gui_div_attach(gui_s* gui, guiDiv_s* div){
 	gui->type = GUI_TYPE_DIV;
 	gui->key = gui_div_child_event_key;
 	gui->free = gui_div_event_free;
+	gui->redraw = gui_div_event_redraw;
+	gui->move = gui_div_event_move;
 	if( gui->parent ) gui->focus = NULL;
 	return gui;
 ERR:
@@ -30,6 +33,10 @@ ERR:
 }
 
 void gui_div_free(guiDiv_s* div){
+	vector_foreach(div->vrows, i){
+		vector_free(div->vrows[i].vcols);
+	}
+	vector_free(div->vrows);
 	free(div);
 }
 
@@ -64,9 +71,9 @@ void gui_div_table_create_row(gui_s* tab, double raph, unsigned cols){
 	row->proph = raph;
 	row->vcols = vector_new(guiDivCols_s, cols+1, 1);
 	if( !row->vcols ) err_fail("eom");
-	vector_foreach(row->vcols, c){
+	for( size_t c = 0; c < cols; ++c){
 		guiDivCols_s* col = vector_get_push_back(row->vcols);
-		col->flags = 0;
+		col->flags = div->flags;
 		col->gui = NULL;
 		col->propw = 100.0/cols;
 	}
@@ -80,6 +87,16 @@ void gui_div_table_child_attach(gui_s* tab, unsigned idrow, unsigned idcol, gui_
 	if( idcol >= vector_count(row->vcols) ) return;
 	guiDivCols_s* col = &row->vcols[idcol];
 	col->gui = child;
+}
+
+void gui_div_table_child_flags(gui_s* tab, unsigned idrow, unsigned idcol, unsigned flags){
+	iassert( tab->type == GUI_TYPE_DIV );
+	guiDiv_s* div = tab->control;
+	if( idrow >= vector_count(div->vrows) ) return;
+	guiDivRow_s* row = &div->vrows[idrow];
+	if( idcol >= vector_count(row->vcols) ) return;
+	guiDivCols_s* col = &row->vcols[idcol];
+	col->flags = flags;
 }
 
 void gui_div_table_row_prop(gui_s* tab, unsigned idrow, double prop){
@@ -104,22 +121,36 @@ void gui_div_table_col_prop(gui_s* tab, unsigned idrow, unsigned idcol, double p
 __private void div_align_vertical(gui_s* gui, guiDiv_s* div){
 	const unsigned x = div->padding.left;
 	int y = div->padding.top - div->scroll.y;
-	
+	const int fit = div->flags & GUI_DIV_FLAGS_FIT;
+
 	vector_foreach(gui->childs, i){
 		gui_s* child = gui->childs[i];
-		gui_move(child, x + child->userMargin.left, y + child->userMargin.top);
-		y += child->userMargin.top + child->position.h + child->userMargin.bottom;
+		y += child->userMargin.top + child->bordersize;
+		gui_move(child, x + child->userMargin.left, y);
+		if( fit ) 
+			gui_resize(child, 
+					gui->surface->img->w - (div->padding.left + div->padding.right + child->userMargin.left + child->userMargin.right + child->bordersize* 2 ),
+					child->position.h
+			);
+		y += child->position.h + child->userMargin.bottom + child->bordersize;
 	}
 }
 
 __private void div_align_horizontal(gui_s* gui, guiDiv_s* div){
 	int x = div->padding.left - div->scroll.x;
 	const unsigned y = div->padding.top;
-	
+	const int fit = div->flags & GUI_DIV_FLAGS_FIT;
+
 	vector_foreach(gui->childs, i){
 		gui_s* child = gui->childs[i];
-		gui_move(child, x + child->userMargin.left, y + child->userMargin.top);
-		x += child->userMargin.left + child->position.w + child->userMargin.right;
+		x += child->userMargin.left + child->bordersize;
+		gui_move(child, x, y + child->userMargin.top);
+		if( fit ) 
+			gui_resize(child, 
+					child->position.w, 
+					gui->surface->img->h - (child->bordersize * 2 + div->padding.top + div->padding.bottom + child->userMargin.top+child->userMargin.bottom)
+			);
+		x += child->bordersize + child->position.w + child->userMargin.right;
 	}
 }
 
@@ -136,7 +167,7 @@ __private void div_align_table(gui_s* gui, guiDiv_s* div){
 			const guiDivCols_s* col = &row->vcols[c];
 			const unsigned pw = ((double)gui->surface->img->w * col->propw)/100.0;
 			gui_move(col->gui, x + col->gui->userMargin.left, y + col->gui->userMargin.top);
-			if( col->flags & GUI_DIV_TABLE_FIT ){
+			if( col->flags & GUI_DIV_FLAGS_FIT ){
 				gui_resize(
 						col->gui, 
 						pw - (col->gui->userMargin.left + col->gui->userMargin.right), 
@@ -230,7 +261,7 @@ __private void div_focus_right(guiDiv_s* div, gui_s* gui){
 	}
 	if( id < 0 ) return;
 	gui_focus_from_parent(gui->parent, id);
-	div_autoscroll(gui, div, gui->parent->childs[id]);
+	if( id >= 0 ) div_autoscroll(gui, div, gui->parent->childs[id]);
 }
 
 __private void div_focus_left(guiDiv_s* div, gui_s* gui){
@@ -257,7 +288,7 @@ __private void div_focus_left(guiDiv_s* div, gui_s* gui){
 	}
 	if( id < 0 ) return;
 	gui_focus_from_parent(gui->parent, id);
-	div_autoscroll(gui, div, gui->parent->childs[id]);
+	if( id >= 0 ) div_autoscroll(gui, div, gui->parent->childs[id]);
 }
 
 __private void div_focus_up(guiDiv_s* div, gui_s* gui){
@@ -278,7 +309,7 @@ __private void div_focus_up(guiDiv_s* div, gui_s* gui){
 		id = gui_focus_prev_id(gui);
 	}
 	gui_focus_from_parent(gui, id);
-	div_autoscroll(gui, div, gui->parent->childs[id]);
+	if( id >= 0 ) div_autoscroll(gui, div, gui->parent->childs[id]);
 }
 
 __private void div_focus_down(guiDiv_s* div, gui_s* gui){
@@ -299,12 +330,17 @@ __private void div_focus_down(guiDiv_s* div, gui_s* gui){
 		id = gui_focus_next_id(gui);
 	}
 	gui_focus_from_parent(gui, id);
-	div_autoscroll(gui, div, gui->parent->childs[id]);
+	if( id >= 0 ) div_autoscroll(gui, div, gui->parent->childs[id]);
+}
+
+int gui_div_event_redraw(gui_s* gui, __unused xorgEvent_s* event){
+	gui_composite_redraw(gui, gui->img);
+	gui_div_align(gui);
+	return 0;
 }
 
 int gui_div_child_event_key(gui_s* gui, xorgEvent_s* event){
-	if( !gui->parent && gui->parent->type != GUI_TYPE_DIV) return 0;
-
+	dbg_info("check focus key");
 	gui_s* div = gui->parent;
 	while( div && div->type != GUI_TYPE_DIV ) div = div->parent; 
 	if( !div ){
@@ -327,6 +363,12 @@ int gui_div_child_event_key(gui_s* gui, xorgEvent_s* event){
 		div_focus_down(div->control, gui);
 	}
 
+	return 0;
+}
+
+int gui_div_event_move(gui_s* gui, xorgEvent_s* event){
+	gui_event_move(gui, event);
+	gui_div_align(gui);
 	return 0;
 }
 

@@ -243,8 +243,14 @@ void gui_move(gui_s* gui, int x, int y){
 
 /* event move is raised*/
 void gui_resize(gui_s* gui, int w, int h){
-	if( (unsigned)w != gui->position.w || (unsigned)h != gui->position.h )
+	if( (unsigned)w != gui->position.w || (unsigned)h != gui->position.h ){
+		dbg_info("resize surface, redraw && draw");
+		//gui_composite_resize(gui, gui->img, w, h);	
+		//xorg_surface_resize(X, gui->surface, w, h);
+		//gui_redraw(gui);
+		//gui_draw(gui);
 		xorg_win_resize(X, gui->id, w, h);
+	}
 }
 
 void gui_border(gui_s* gui, int border){
@@ -335,10 +341,16 @@ void gui_focus_next(gui_s* gui){
 }
 
 int gui_focus_prev_id(gui_s* parent){
-	if( !parent ) return -1;
+	if( !parent ){
+		dbg_error("no parent");
+		return -1;
+	}
 	int focusid = parent->childFocus;
 	int childs = vector_count(parent->childs);
-	if( focusid < 0 ) return -1;
+	if( focusid < 0 ){
+		dbg_error("parent no childfocus");
+		return -1;
+	}
 	do{
 		if( focusid == 0 ) focusid = childs-1;
 		else --focusid;
@@ -485,13 +497,13 @@ int gui_event_focus(gui_s* gui, xorgEvent_s* event){
 	return 0;
 }
 
-__private void redraw_all(gui_s* gui){
+/*__private void redraw_all(gui_s* gui){
 	if( gui->redraw ) gui->redraw(gui, NULL);
 	if( gui->draw ) gui->draw(gui, NULL);
 	vector_foreach(gui->childs, i){
 		redraw_all(gui->childs[i]);
 	}
-}
+}*/
 
 int gui_event_mouse(gui_s* gui, xorgEvent_s* event){
 	if( 
@@ -512,15 +524,15 @@ int gui_event_mouse(gui_s* gui, xorgEvent_s* event){
 
 int gui_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert( event->type == XORG_EVENT_MOVE );
-	dbg_info("move event");
+	dbg_info("move event:%s", gui->name);
 	if( gui->surface->img->w != event->move.w || gui->surface->img->h != event->move.h ){
-		dbg_info("resize surface, redraw && draw");
+		dbg_info("resize composite && surface, redraw && draw");
+		gui_composite_resize(gui, gui->img, event->move.w, event->move.h);
 		xorg_surface_resize(X, gui->surface, event->move.w, event->move.h);
-		gui->img->img[0]->pos.w = gui->surface->img->w;
-		gui->img->img[0]->pos.h = gui->surface->img->h;
-		gui->img->img[0]->src = gui->img->img[0]->pos;
-		redraw_all(gui);
+		gui_redraw(gui);
+		gui_draw(gui);
 	}
+
 	gui->position.x = event->move.x;
 	gui->position.y = event->move.y;
 	gui->position.w = event->move.w;

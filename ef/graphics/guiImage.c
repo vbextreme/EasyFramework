@@ -78,12 +78,10 @@ __private guiImage_s* gui_image_color_set(guiImage_s* img, g2dColor_t color, uns
 
 __private guiImage_s* gui_image_image_set(guiImage_s* img, unsigned width, unsigned height, int ratio){
 	img->type = GUI_IMAGE_IMG;
-	if( width != img->img->w || height != img->img->h ){
-		g2d_ratio(ratio, img->img->w, img->img->h, &width, &height); 
-		g2dImage_s* scaled = g2d_resize(img->img, width, height);
-		g2d_free(img->img);
-		img->img = scaled;
-	}
+	g2d_ratio(ratio, img->img->w, img->img->h, &width, &height); 
+	g2dImage_s* scaled = g2d_resize(img->img, width, height);
+	if( !scaled ) err_fail("scaled image");
+	img->img = scaled;
 	img->pos.w = img->img->w;
 	img->pos.h = img->img->h;
 	img->src = img->pos;
@@ -121,48 +119,47 @@ guiImage_s* gui_image_new(g2dColor_t color, const char* pathRelative, unsigned w
 	img->res = NULL;
 	if( !pathRelative ) return gui_image_color_set(img, color, width, height);
 
-	__mem_free char* path = path_resolve(pathRelative);
-	if( !file_exists(path) ) return gui_image_color_set(img, color, width, height);
+	img->res = path_resolve(pathRelative);
+	if( !file_exists(img->res) ) return gui_image_color_set(img, color, width, height);
 
-	img->res = str_printf("%u*%u::%s", width, height, path);
-	if( strlen(img->res) > PATH_MAX-1 ) err_fail("name too long");
-
-   	img->img = g2d_load_png(path);
+   	img->img = g2d_load_png(img->res);
 	if( img->img ){
-		gui_image_image_set(img, width, height, ratio);
 		gui_resource_new(img->res, img->img);
+		gui_image_image_set(img, width, height, ratio);
 		return img;
 	}
 
-	img->img = g2d_load_jpeg(path);
+	img->img = g2d_load_jpeg(img->res);
 	if( img->img ){
-		gui_image_image_set(img, width, height, ratio);
 		gui_resource_new(img->res, img->img);
+		gui_image_image_set(img, width, height, ratio);
 		return img;
 	}
 	
-	img->img = g2d_load_bmp(path);
+	img->img = g2d_load_bmp(img->res);
 	if( img->img ){
+		gui_resource_new(img->res, img->img);
 		gui_image_image_set(img, width, height, ratio);	
-		gui_resource_new(img->res, img->img);
 		return img;
 	}
 	
-	img->img = g2d_load_svg(path, width, height);
+	img->img = g2d_load_svg(img->res, width, height);
 	if( img->img ){
-		gui_image_image_set(img, width, height, ratio);
-		gui_resource_new(img->res, img->img);
+		gui_resource_new(img->res, U8(img->res));
+		img->type = GUI_IMAGE_IMG;
+		img->pos.w = img->img->w;
+		img->pos.h = img->img->h;
+		img->src = img->pos;
 		return img;
 	}
 
-	img->gif = g2d_load_gif(path);
+	img->gif = g2d_load_gif(img->res);
 	if( img->gif ){
 		gui_image_gif_set(img, width, height, ratio);
-		gui_resource_new(img->res, img->gif);
 		return img;
 	}
 
-	img->video = media_load(path);
+	img->video = media_load(img->res);
 	if( img->video ){
 		gui_image_media_set(img, width, height);
 		return img;
@@ -175,16 +172,9 @@ guiImage_s* gui_image_load(g2dColor_t color, const char* pathRelative, unsigned 
 	if( !width || !height ) return NULL;
 	if( !pathRelative ) NULL;
 
-	__mem_free char* path = path_resolve(pathRelative);
-	char* name = str_printf("%u*%u::%s", width, height, path);
-	if( !name ) err_fail("eom");
-	guiImage_s* img = mem_new(guiImage_s);
-	if( !img ) err_fail("eom");
-	img->pos.x = 0;
-	img->pos.y = 0;
-	img->flags = flags;
+	char* path = path_resolve(pathRelative);
+	guiResource_s* res = gui_resource(path);
 
-	guiResource_s* res = gui_resource(name);
 	if( res ){
 		switch( res->type ){
 			default: 
@@ -195,20 +185,42 @@ guiImage_s* gui_image_load(g2dColor_t color, const char* pathRelative, unsigned 
 			case GUI_RESOURCE_LONG:
 			case GUI_RESOURCE_DOUBLE:
 			case GUI_RESOURCE_POSITION:
-			case GUI_RESOURCE_TEXT:
+			case GUI_RESOURCE_GIF:
 				err_fail("wrong resources"); 
 			break;
 			
-			case GUI_RESOURCE_IMG:
+			case GUI_RESOURCE_TEXT:{
+				guiImage_s* img = mem_new(guiImage_s);
+				if( !img ) err_fail("eom");
+				img->res = path;
+				img->pos.x = 0;
+				img->pos.y = 0;
+				img->flags = flags;
+				img->img = g2d_load_svg(img->res, width, height);
+				if( img->img ){
+					img->type = GUI_IMAGE_IMG;
+					img->pos.w = img->img->w;
+					img->pos.h = img->img->h;
+					img->src = img->pos;
+					return img;
+				}
+				err_fail("invalid stored svg");
+			}
+			break;
+
+			case GUI_RESOURCE_IMG:{
+				guiImage_s* img = mem_new(guiImage_s);
+				if( !img ) err_fail("eom");
+				img->pos.x = 0;
+				img->pos.y = 0;
+				img->flags = flags;
 				img->img = res->img;
 			return gui_image_image_set(img, width, height, ratio);
-
-			case GUI_RESOURCE_GIF:
-				img->gif = res->gif;
-			return gui_image_gif_set(img, width, height, ratio);	
+			}
 		}
 	}
 	
+	free(path);
 	return gui_image_new(color, pathRelative, width, height, flags, ratio);
 }
 
@@ -240,6 +252,59 @@ void gui_image_free(guiImage_s* img){
 	}
 	free(img);
 }
+
+void gui_image_resize(gui_s* gui, guiImage_s* img, unsigned width, unsigned height, int ratio){
+	if( !width || !height ) return;
+
+	switch( img->type ){
+		default:
+		case GUI_IMAGE_COLOR:
+		case GUI_IMAGE_FN:
+			img->pos.w = width;
+			img->pos.h = height;
+			img->src = img->pos;
+		break;
+
+		case GUI_IMAGE_CUSTOM: break;
+
+		case GUI_IMAGE_IMG:{
+			g2d_free(img->img);
+			guiResource_s* res = gui_resource(img->res);
+			if( !res ) err_fail("resize image %s", img->res);
+			if( res->type == GUI_RESOURCE_TEXT ){
+				img->img = g2d_load_svg(img->res, width, height);
+				if( img->img ){
+					img->type = GUI_IMAGE_IMG;
+					img->pos.x = 0;
+					img->pos.y = 0;
+					img->pos.w = img->img->w;
+					img->pos.h = img->img->h;
+					img->src = img->pos;
+					return;
+				}
+				err_fail("invalid stored svg");
+			}
+			else if( res->type == GUI_RESOURCE_IMG ){
+				img->pos.x = 0;
+				img->pos.y = 0;
+				img->img = res->img;
+				gui_image_image_set(img, width, height, ratio);
+				return;
+			}
+		}
+		err_fail("resize guiImage");
+		break;
+	
+		case GUI_IMAGE_GIF:
+			g2d_gif_resize(img->gif, width, height, ratio);
+		break;
+
+		case GUI_IMAGE_VIDEO:
+			media_resize_set(img->video, gui->surface->img);
+		break;
+	}
+}
+
 
 void gui_image_xy_set(guiImage_s* img, unsigned x, unsigned y){
 	img->pos.x = x;
@@ -418,4 +483,16 @@ void gui_composite_redraw(gui_s* gui, guiComposite_s* cmp){
 	}
 }
 
-
+void gui_composite_resize(gui_s* gui, guiComposite_s* cmp, unsigned width, unsigned height){
+	vector_foreach(cmp->img, i){
+		unsigned w = width;
+		unsigned h = height;
+		if( cmp->img[i]->pos.w != gui->surface->img->w ){
+			w = ((double)gui->surface->img->w * ((cmp->img[i]->pos.w * 100.0) / (double)gui->surface->img->w)) /100.0;
+		}
+		if( cmp->img[i]->pos.h != gui->surface->img->h ){
+			h = ((double)gui->surface->img->h * ((cmp->img[i]->pos.h * 100.0) / (double)gui->surface->img->h)) /100.0;
+		}
+		gui_image_resize(gui, cmp->img[i], w, h , -1);
+	}
+}
