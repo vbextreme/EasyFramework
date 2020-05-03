@@ -128,14 +128,15 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event){
 }
 
 int gui_button_event_move(gui_s* gui, xorgEvent_s* event){
-	//TODO this not works with image
 	iassert(gui->type == GUI_TYPE_BUTTON);
 	guiButton_s* btn = gui->control;
+	gui_image_resize(gui, btn->state[0], event->move.w, event->move.h , -1);
+	gui_image_resize(gui, btn->state[1], event->move.w, event->move.h , -1);
+	gui_image_resize(gui, btn->state[2], event->move.w, event->move.h , -1);
 	gui_event_move(gui, event);
-	btn->state[1]->pos.w = gui->surface->img->w;
-	btn->state[1]->pos.h = gui->surface->img->h;
-	btn->state[2]->pos.w = gui->surface->img->w;
-	btn->state[2]->pos.h = gui->surface->img->h;
+	btn->caption->flags |= GUI_CAPTION_RENDERING;
+	gui_button_redraw(gui, 0);
+	gui_draw(gui);
 	return 0;
 }
 

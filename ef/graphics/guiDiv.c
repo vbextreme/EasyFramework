@@ -64,7 +64,7 @@ void gui_div_padding_right(gui_s* gui, int right){
 	div->padding.right = right;
 }
 
-void gui_div_table_create_row(gui_s* tab, double raph, unsigned cols){
+guiDivRow_s* gui_div_table_create_row(gui_s* tab, double raph, unsigned cols){
 	iassert( tab->type == GUI_TYPE_DIV );
 	guiDiv_s* div = tab->control;
 	guiDivRow_s* row = vector_get_push_back(div->vrows);
@@ -77,46 +77,23 @@ void gui_div_table_create_row(gui_s* tab, double raph, unsigned cols){
 		col->gui = NULL;
 		col->propw = 100.0/cols;
 	}
+	return row;
 }
 
-void gui_div_table_child_attach(gui_s* tab, unsigned idrow, unsigned idcol, gui_s* child){
+guiDivRow_s* gui_div_table_row_get(gui_s* tab, unsigned idrow){
 	iassert( tab->type == GUI_TYPE_DIV );
 	guiDiv_s* div = tab->control;
-	if( idrow >= vector_count(div->vrows) ) return;
-	guiDivRow_s* row = &div->vrows[idrow];
+	return idrow < vector_count(div->vrows) ? &div->vrows[idrow] : NULL;
+}
+	
+void gui_div_table_attach(guiDivRow_s* row, gui_s* child, unsigned idcol, double propw, int flags){
+	if( !row ) return;
 	if( idcol >= vector_count(row->vcols) ) return;
 	guiDivCols_s* col = &row->vcols[idcol];
 	col->gui = child;
+	col->propw = propw;
+	if( flags != -1 ) col->flags = flags;
 }
-
-void gui_div_table_child_flags(gui_s* tab, unsigned idrow, unsigned idcol, unsigned flags){
-	iassert( tab->type == GUI_TYPE_DIV );
-	guiDiv_s* div = tab->control;
-	if( idrow >= vector_count(div->vrows) ) return;
-	guiDivRow_s* row = &div->vrows[idrow];
-	if( idcol >= vector_count(row->vcols) ) return;
-	guiDivCols_s* col = &row->vcols[idcol];
-	col->flags = flags;
-}
-
-void gui_div_table_row_prop(gui_s* tab, unsigned idrow, double prop){
-	iassert( tab->type == GUI_TYPE_DIV );
-	guiDiv_s* div = tab->control;
-	if( idrow >= vector_count(div->vrows) ) return;
-	guiDivRow_s* row = &div->vrows[idrow];
-	row->proph = prop;
-}
-
-void gui_div_table_col_prop(gui_s* tab, unsigned idrow, unsigned idcol, double prop){
-	iassert( tab->type == GUI_TYPE_DIV );
-	guiDiv_s* div = tab->control;
-	if( idrow >= vector_count(div->vrows) ) return;
-	guiDivRow_s* row = &div->vrows[idrow];
-	if( idcol >= vector_count(row->vcols) ) return;
-	guiDivCols_s* col = &row->vcols[idcol];
-	col->propw = prop;
-}
-
 
 __private void div_align_vertical(gui_s* gui, guiDiv_s* div){
 	const unsigned x = div->padding.left;
@@ -157,17 +134,27 @@ __private void div_align_horizontal(gui_s* gui, guiDiv_s* div){
 __private void div_align_table(gui_s* gui, guiDiv_s* div){
 	int y = div->padding.top - div->scroll.y;
 	const size_t rowscount = vector_count(div->vrows);
+	const size_t avw = gui->surface->img->w - (div->padding.left+div->padding.right);
+	const size_t avh = gui->surface->img->h - (div->padding.top+div->padding.bottom);
 
 	for( size_t r = 0; r < rowscount; ++r){
 		int x = div->padding.left - div->scroll.x;
 		const guiDivRow_s* row = &div->vrows[r];
 		const size_t colscount = vector_count(row->vcols);
-		const unsigned ph = ((double)gui->surface->img->h * row->proph)/100.0;
+		const unsigned ph = ((double)avh * row->proph)/100.0;
 		for( size_t c = 0; c < colscount; ++c){
 			const guiDivCols_s* col = &row->vcols[c];
-			const unsigned pw = ((double)gui->surface->img->w * col->propw)/100.0;
+			const unsigned pw = ((double)avw* col->propw)/100.0;
+			dbg_info("%s move to %u %u", col->gui->name, x + col->gui->userMargin.left, y + col->gui->userMargin.top);
 			gui_move(col->gui, x + col->gui->userMargin.left, y + col->gui->userMargin.top);
 			if( col->flags & GUI_DIV_FLAGS_FIT ){
+				dbg_info("%s resize to %u*%u->%u*%u", col->gui->name,
+						col->gui->position.w,
+						col->gui->position.h,
+						pw - (col->gui->userMargin.left + col->gui->userMargin.right),
+						ph - (col->gui->userMargin.top + col->gui->userMargin.bottom)
+				);
+
 				gui_resize(
 						col->gui, 
 						pw - (col->gui->userMargin.left + col->gui->userMargin.right), 
@@ -178,7 +165,6 @@ __private void div_align_table(gui_s* gui, guiDiv_s* div){
 		}
 		y += ph;
 	}
-	
 }
 
 void gui_div_align(gui_s* gui){

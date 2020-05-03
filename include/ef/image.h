@@ -238,6 +238,15 @@ void g2d_ellipse_antialiased(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsig
 /** draw ellipse */
 void g2d_ellipse(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col, int antialiased);
 
+/** draw ellipse and fill */
+void g2d_ellipse_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col);
+
+/** draw pie slice*/
+void g2d_pieslice(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color);
+
+/** draw and fill g2d_pieslice*/
+void g2d_pieslice_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color);
+
 /** replace color in region with new color*/ 
 void g2d_repfill(g2dImage_s* img, g2dPoint_s* st, g2dColor_t rep, g2dColor_t col);
 

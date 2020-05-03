@@ -2108,6 +2108,52 @@ void g2d_ellipse_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry,
     }
 }
 
+void g2d_pieslice(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color){
+	startAngle -= 90.0;
+	endAngle -= 90.0;
+	float const radStart = (startAngle * 3.14159265)/180.0;
+	float const radEnd =   (endAngle   * 3.14159265)/180.0;
+
+	g2dPoint_s eline = {
+		.x = cos(radStart) * r + cx->x,
+		.y = sin(radStart) * r + cx->y
+	};
+	g2d_line(img, cx, &eline, color, 0);	
+
+	for(float i = radStart + 0.01; i < radEnd - 0.01; i += 0.01){
+		float cosi = cos(i);
+		float sini = sin(i);
+		unsigned x = cosi * r + cx->x;
+		unsigned y = sini * r + cx->y;
+		_point_inside(img, x, y, color);
+	}
+
+	eline.x = cos(radEnd) * r + cx->x;
+	eline.y = sin(radEnd) * r + cx->y;
+	g2d_line(img, cx, &eline, color, 0);	
+}
+
+void g2d_pieslice_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color){
+	g2d_pieslice(img, cx, r, startAngle, endAngle, color);
+
+	r -= 2;
+	float midAngle = ((endAngle - startAngle) / 2) + startAngle;
+	midAngle -= 90;
+	float const rad = (midAngle * 3.14159265)/180.0;
+
+	g2dPoint_s ecenter = {
+		.x = cos(rad) * r + cx->x,
+		.y = sin(rad) * r + cx->y
+	};
+	
+	const unsigned row = g2d_row(img, ecenter.y);
+	g2dColor_t* rep = g2d_color(img, row, ecenter.x);
+	if( *rep != color ){
+		//_point_inside(img, ecenter.x, ecenter.y, color);
+		g2d_repfill(img, &ecenter, *rep, color);
+	}
+}
+
 void g2d_repfill(g2dImage_s* img, g2dPoint_s* st, g2dColor_t rep, g2dColor_t col){
 	g2dPoint_s* stk = vector_new(g2dPoint_s, 4096, 4096);
 	vector_push_back(stk, *st);

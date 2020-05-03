@@ -50,6 +50,7 @@ gui_s* gui_text_attach(gui_s* gui, guiText_s* txt){
 	gui->free = gui_text_event_free;
 	gui->focus = gui_text_event_focus;
 	gui->clipboard = gui_text_event_clipboard;
+	gui->move = gui_text_event_move;
 	gui->focusable = 1;
 
 	txt->resize = txt->size = (gui->surface->img->w / ft_line_lenght(txt->fonts, U8(" "))) * (gui->surface->img->h / txt->cursor.h);
@@ -1030,7 +1031,6 @@ int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev){
 	if( ev->focus.outin ){
 		txt->flags |= GUI_TEXT_REND_CURON;
 		if( txt->blinktime && !txt->blink ) txt->blink = gui_timer_new(gui, txt->blinktime, gui_text_timer_blink, gui);
-		gui_focus_internal(gui);
 	}
 	else{
 		if( txt->blink ) gui_timer_free(txt->blink);
@@ -1100,6 +1100,14 @@ int gui_text_event_mouse(gui_s* gui, xorgEvent_s* event){
 	return 0;
 }
 
+int gui_text_event_move(gui_s* gui, xorgEvent_s* event){
+	iassert(gui->type == GUI_TYPE_TEXT);
+	//guiText_s* txt = gui->control;
+	gui_event_move(gui, event);
+	gui_text_redraw(gui, 0);
+	gui_draw(gui);
+	return 0;
+}
 /*
 int gui_text_event_themes(__unused gui_s* gui, xorgEvent_s* ev){
 	guiText_s* txt = ev->data.request;

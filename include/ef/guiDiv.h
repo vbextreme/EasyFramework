@@ -51,11 +51,9 @@ void gui_div_padding_top(gui_s* gui, int top);
 void gui_div_padding_bottom(gui_s* gui, int bottom);
 void gui_div_padding_left(gui_s* gui, int left);
 void gui_div_padding_right(gui_s* gui, int right);
-void gui_div_table_create_row(gui_s* tab, double raph, unsigned cols);
-void gui_div_table_child_attach(gui_s* tab, unsigned idrow, unsigned idcol, gui_s* child);
-void gui_div_table_child_flags(gui_s* tab, unsigned idrow, unsigned idcol, unsigned flags);
-void gui_div_table_row_prop(gui_s* tab, unsigned idrow, double prop);
-void gui_div_table_col_prop(gui_s* tab, unsigned idrow, unsigned idcol, double prop);
+guiDivRow_s* gui_div_table_create_row(gui_s* tab, double raph, unsigned cols);
+guiDivRow_s* gui_div_table_row_get(gui_s* tab, unsigned idrow);
+void gui_div_table_attach(guiDivRow_s* row, gui_s* child, unsigned idcol, double propw, int flags);
 
 /** realign div*/
 void gui_div_align(gui_s* gui);

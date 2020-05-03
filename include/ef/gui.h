@@ -200,7 +200,7 @@ void gui_border(gui_s* gui, int border);
 ssize_t gui_id(gui_s* gui);
 
 /** set internal focus*/
-void gui_focus_internal(gui_s* gui);
+//void gui_focus_internal(gui_s* gui);
 
 /** check if gui have focus*/
 int gui_focus_have(gui_s* gui);
@@ -252,7 +252,6 @@ int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage);
 
 /** default event for focus*/
 int gui_event_focus(gui_s* gui, xorgEvent_s* event);
-int gui_event_child_focus(gui_s* gui, xorgEvent_s* event);
 
 /** default event for mouse*/
 int gui_event_mouse(gui_s* gui, xorgEvent_s* event);

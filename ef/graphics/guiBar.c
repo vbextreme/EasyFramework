@@ -24,10 +24,8 @@ gui_s* gui_bar_attach(gui_s* gui, guiBar_s* bar){
 	gui->control = bar;
 	gui->type = GUI_TYPE_BAR;
 	gui->redraw = gui_bar_event_redraw;
-	//TODO gui->mouse = gui_button_event_mouse;
-	//TODO gui->key = gui_button_event_key;
 	gui->free = gui_bar_event_free;
-	//TODO add composite fn
+	gui->move = gui_bar_event_move;
 	gui_composite_add(gui->img, bar->fill);
 	gui_composite_add(gui->img, bar->caption->render);
 	return gui;
@@ -68,9 +66,10 @@ __private void bar_hori(gui_s* gui){
 	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = gui->control;
 	const double max = bar->max - bar->min;
+	const double cur = bar->current - bar->min;
 	bar->fill->pos.x = 0;
 	bar->fill->pos.y = 0;
-	bar->fill->pos.w = (gui->surface->img->w * bar->current) / max;
+	bar->fill->pos.w = (gui->surface->img->w * cur) / max;
 	bar->fill->pos.h = gui->surface->img->h;
 	bar->fill->src = bar->fill->pos;
 	if( bar->fill->pos.w > gui->surface->img->w ) bar->fill->pos.w = gui->surface->img->w;
@@ -80,13 +79,32 @@ __private void bar_vert(gui_s* gui){
 	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = gui->control;
 	const double max = bar->max - bar->min;
-	unsigned height = (gui->surface->img->h * bar->current) / max;
+	const double cur = bar->current - bar->min;
+	unsigned height = (gui->surface->img->h * cur) / max;
 	if( height > gui->surface->img->h ) height = gui->surface->img->h;
 	bar->fill->pos.x = 0;
 	bar->fill->pos.y = gui->surface->img->h - height;
 	bar->fill->pos.w = gui->surface->img->w;
 	bar->fill->pos.h = height;
 	bar->fill->src = bar->fill->pos;
+}
+
+void gui_bar_circle_fn(gui_s* gui, __unused guiImage_s* img, void* generic){
+	iassert(gui->type == GUI_TYPE_BAR);
+	g2dColor_t* color = generic;
+	guiBar_s* bar = gui->control;
+	const int usemin = bar->flags & GUI_BAR_MIN_ANGLE ? 0 : 1;
+	const float max = usemin ? bar->max - bar->min : bar->max;
+	const float cur = usemin ? bar->current - bar->min : bar->current;
+	const float ea = (cur*360.0)/max;
+	const float sa = usemin ? 0 : (bar->min*360)/max;
+	g2dPoint_s cx = {
+		.x = gui->surface->img->w / 2,
+		.y = gui->surface->img->h / 2
+	};
+	unsigned r = MTH_MIN(gui->surface->img->w, gui->surface->img->h);
+	r /= 2;
+	g2d_pieslice_fill(gui->surface->img, &cx, r, sa, ea, *color);
 }
 
 void gui_bar_current_set(gui_s* gui, double current){
@@ -96,17 +114,46 @@ void gui_bar_current_set(gui_s* gui, double current){
 	if( current < bar->min ) current = bar->min;
 	bar->current = current;
 	if( bar->flags & GUI_BAR_HORIZONTAL ) bar_hori(gui);
-	else if ( bar->flags & GUI_BAR_VERTICAL ) bar_vert(gui);
+	else if( bar->flags & GUI_BAR_VERTICAL ) bar_vert(gui);
 	gui_bar_text_set(gui, NULL);
+}
+
+double gui_bar_current(gui_s* gui){
+	iassert(gui->type == GUI_TYPE_BAR);
+	guiBar_s* bar = gui->control;
+	return bar->current;
 }
 
 void gui_bar_max_set(gui_s* gui, double max){
 	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = gui->control;
-	if( max < bar->current ) return;
-	if( max < bar->min ) return;
 	bar->max = max;
-	gui_bar_current_set(gui, bar->current);
+	if( bar->current < bar->max ) bar->current = bar->max;
+	if( bar->flags & GUI_BAR_HORIZONTAL ) bar_hori(gui);
+	else if( bar->flags & GUI_BAR_VERTICAL ) bar_vert(gui);
+	gui_bar_text_set(gui, NULL);
+}
+
+double gui_bar_max(gui_s* gui){
+	iassert(gui->type == GUI_TYPE_BAR);
+	guiBar_s* bar = gui->control;
+	return bar->max;
+}
+
+void gui_bar_min_set(gui_s* gui, double min){
+	iassert(gui->type == GUI_TYPE_BAR);
+	guiBar_s* bar = gui->control;
+	bar->min = min;
+	if( bar->current < bar->min ) bar->current = bar->min;
+	if( bar->flags & GUI_BAR_HORIZONTAL ) bar_hori(gui);
+	else if( bar->flags & GUI_BAR_VERTICAL ) bar_vert(gui);
+	gui_bar_text_set(gui, NULL);
+}
+
+double gui_bar_min(gui_s* gui){
+	iassert(gui->type == GUI_TYPE_BAR);
+	guiBar_s* bar = gui->control;
+	return bar->min;
 }
 
 void gui_bar_redraw(gui_s* gui){
@@ -128,6 +175,15 @@ int gui_bar_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 	return 0;
 }
 
+int gui_bar_event_move(gui_s* gui, xorgEvent_s* event){
+	iassert(gui->type == GUI_TYPE_BAR);
+	guiBar_s* bar = gui->control;
+	gui_event_move(gui, event);
+	bar->caption->flags |= GUI_CAPTION_RENDERING;
+	gui_bar_redraw(gui);
+	gui_draw(gui);
+	return 0;
+}
 /*
 int gui_bar_event_themes(gui_s* gui, xorgEvent_s* ev){
 	guiBar_s* bar = ev->data.request;

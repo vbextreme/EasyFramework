@@ -120,7 +120,7 @@ gui_s* gui_new(
 	gui->redraw = gui_event_redraw;
 	gui->draw = gui_event_draw;
 	gui->key = gui->parent ? gui->parent->key :  NULL;
-	gui->focus = gui->parent ? gui_event_child_focus: gui_event_focus;
+	gui->focus = !gui->parent ? gui_event_focus : NULL;
 	gui->mouse = gui->parent ? gui_event_mouse : NULL;
 	gui->move = gui_event_move;
 
@@ -273,13 +273,9 @@ int gui_focus_have(gui_s* gui){
 	return gui == focused;
 }
 
-void gui_focus_internal(gui_s* gui){
-	dbg_info("internal: %s", gui->name);
-	focused = gui;
-}
-
 void gui_focus(gui_s* gui){
 	dbg_info("set focus: %s", gui->name);
+	focused = gui;
 	xorg_win_focus(X, gui->id);
 }
 
@@ -435,19 +431,10 @@ int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage){
 	return 0;
 }
 
-int gui_event_focus(gui_s* gui, xorgEvent_s* event){
+int gui_event_focus(__unused gui_s* gui, xorgEvent_s* event){
 	if( event->focus.outin){
 		if( focused )
 			gui_focus(focused);
-		else
-			gui_focus_internal(gui);
-	}
-	return 0;
-}
-
-int gui_event_child_focus(gui_s* gui, xorgEvent_s* event){
-	if( event->focus.outin){
-		gui_focus_internal(gui);
 	}
 	return 0;
 }

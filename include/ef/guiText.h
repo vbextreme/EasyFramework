@@ -180,4 +180,6 @@ int gui_text_event_focus(gui_s* gui, xorgEvent_s* ev);
 /** event mouse*/
 int gui_text_event_mouse(gui_s* gui, xorgEvent_s* event);
 
+int gui_text_event_move(gui_s* gui, xorgEvent_s* event);
+
 #endif

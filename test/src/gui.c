@@ -61,7 +61,7 @@ int player_clock_frame(guiTimer_s* timer){
 	return GUI_TIMER_CUSTOM;
 }
 
-int bStart_click(gui_s* gui, xorgEvent_s* ev){
+int bStart_click(gui_s* gui,__unused xorgEvent_s* ev){
 	player_s* p = gui->userdata;
 	if( p->video ) return 0;
 
@@ -80,6 +80,42 @@ int bStart_click(gui_s* gui, xorgEvent_s* ev){
 	gui_draw(p->bar);
 
 	return 0;
+}
+
+int bar2_timer(guiTimer_s* timer){
+	static int fillmode = 1;
+	gui_s* bar2 = timer->gui;
+	if( fillmode ){
+		double cur = gui_bar_current(bar2);
+		cur += 1.0;
+		if( cur > 100.0 ){
+			gui_bar_current_set(bar2, 100.0);
+			fillmode = !fillmode;
+		}
+		else{
+			gui_bar_current_set(bar2, cur);
+			gui_redraw(bar2);
+			gui_draw(bar2);
+			return GUI_TIMER_NEXT;
+		}
+	}
+
+	if( !fillmode ){
+		double min = gui_bar_min(bar2);
+		min += 1.0;
+		if( min > 100.0 ){
+			gui_bar_min_set(bar2, 0.0);
+			gui_bar_current_set(bar2, 0.0);
+			fillmode = !fillmode;
+		}
+		else{
+			gui_bar_min_set(bar2, min);
+		}
+		gui_redraw(bar2);
+		gui_draw(bar2);
+	}
+
+	return GUI_TIMER_NEXT;
 }
 
 /*@fn*/
@@ -106,9 +142,10 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 				),
 				0,NULL
 			),
-			gui_div_new(GUI_DIV_VERTICAL, GUI_DIV_FLAGS_FIT)
+			gui_div_new(GUI_DIV_TABLE, GUI_DIV_FLAGS_FIT)
 	);
 	main->destroy = main_exit;
+	
 
 /*
 	gui_s* main = gui_new(
@@ -146,6 +183,13 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 		gui_label_new(gui_caption_new(tfont, gui_color(255,40,40,40), GUI_CAPTION_CENTER_X | GUI_CAPTION_CENTER_Y))
 	);
 	gui_label_text_set(lbl, U8("video play"));
+	gui_div_table_attach(
+			gui_div_table_create_row(main, 12, 1),
+			lbl,
+			0,
+			100,
+			-1
+	);
 
 	gui_s* player = gui_new(
 		main, "player", "window", GUI_MODE_NORMAL,
@@ -160,6 +204,13 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			)
 		),
 		0,NULL
+	);
+	gui_div_table_attach(
+			gui_div_table_create_row(main, 50, 1),
+			player,
+			0,
+			100,
+			-1
 	);
 
 	gui_s* bar = gui_bar_attach(
@@ -186,6 +237,14 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 			GUI_BAR_HORIZONTAL | GUI_BAR_SHOW_CURRENT | GUI_BAR_SHOW_MAX
 		)
 	);
+	gui_bar_text_set(bar, U8("seconds"));
+	gui_div_table_attach(
+			gui_div_table_create_row(main, 5, 1),
+			bar,
+			0,
+			100,
+			-1
+	);
 
 	player_s p = {
 		.player = player,
@@ -197,7 +256,7 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_s* bStart = gui_button_attach(
 		gui_new(
 			main, "but", "button", GUI_MODE_NORMAL,
-			0, 3, 400, 50, 50,
+			1, 3, 400, 50, 50,
 			gui_color(255,0,0,0),	
 			gui_composite_add(
 				gui_composite_new(4),
@@ -217,6 +276,49 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 		)
 	);
 	gui_button_text_set(bStart, U8("start"));
+	gui_div_table_attach(
+			gui_div_table_create_row(main, 12, 2),
+			bStart,
+			0,
+			50,
+			-1
+	);
+
+	g2dColor_t fillcolor = gui_color(255, 40, 80, 120);	
+	gui_s* bar2 = gui_bar_attach(
+		gui_new(
+			main, "bar2", "progrssbar", GUI_MODE_NORMAL,
+			0, 3, 359, main->position.w-6, 20,
+			gui_color(255,0,0,0),
+			gui_composite_add(
+				gui_composite_new(4),
+				gui_image_color_new(
+					gui_color(255,125,125,125),
+					main->position.w-6, 20,
+					0
+				)
+			),
+			0, NULL
+		),
+		gui_bar_new(
+			gui_caption_new(tfont, gui_color(255,200,200,200), GUI_CAPTION_CENTER_X | GUI_CAPTION_CENTER_Y),
+			gui_image_fn_new(gui_bar_circle_fn, &fillcolor, main->position.w-6, 20, 0),
+			0.0,
+			100.0,
+			0.0,
+			GUI_BAR_CIRCLE | GUI_BAR_SHOW_CURRENT | GUI_BAR_MIN_ANGLE
+		)
+	);
+	gui_div_table_attach(
+			gui_div_table_row_get(main, 3),
+			bar2,
+			1,
+			50,
+			-1
+	);
+	bar2->userMargin.left = 2;
+	bar2->userMargin.top = 2;
+	guiTimer_s* tbar2 = gui_timer_new(bar2, 50, bar2_timer, bar2);
 
 /*
 	gui_s* txt = gui_text_attach(
@@ -238,13 +340,16 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_redraw(lbl);
 	gui_redraw(player);
 	gui_redraw(bar);
+	gui_redraw(bar2);
 	gui_redraw(bStart);
 	gui_redraw(main);
+	gui_div_align(main);
 	gui_show(main, 1);
 	gui_show(lbl, 1);
 	gui_show(player, 1);
 	gui_show(bar, 1);
 	gui_show(bStart, 1);
+	gui_show(bar2,1);
 	gui_focus(bStart);
 
 	gui_loop();

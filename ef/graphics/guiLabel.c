@@ -20,6 +20,7 @@ gui_s* gui_label_attach(gui_s* gui, guiLabel_s* lbl){
 	gui->redraw = gui_label_event_redraw;
 	gui->themes = gui_label_event_themes;
 	gui->free = gui_label_event_free;
+	gui->move = gui_label_event_move;
 	gui->focusable = 0;
 	gui_composite_add(gui->img, lbl->caption->render);
 	return gui;
@@ -73,3 +74,12 @@ int gui_label_event_themes(gui_s* gui, xorgEvent_s* ev){
 	return 0;
 }
 
+int gui_label_event_move(gui_s* gui, xorgEvent_s* event){
+	iassert(gui->type == GUI_TYPE_LABEL);
+	guiLabel_s* lbl = gui->control;
+	gui_event_move(gui, event);
+	lbl->caption->flags |= GUI_CAPTION_RENDERING;
+	gui_label_redraw(gui);
+	gui_draw(gui);
+	return 0;
+}

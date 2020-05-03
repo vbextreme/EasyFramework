@@ -10,10 +10,11 @@
 #define GUI_BAR_HORIZONTAL   0x0001
 #define GUI_BAR_VERTICAL     0x0002
 #define GUI_BAR_CIRCLE       0x0004
-#define GUI_BAR_SHOW_CURRENT 0x0008
-#define GUI_BAR_SHOW_MIN     0x0010
-#define GUI_BAR_SHOW_MAX     0x0020
-#define GUI_BAR_SHOW_PERCENT 0x0040
+#define GUI_BAR_MIN_ANGLE    0x0008
+#define GUI_BAR_SHOW_CURRENT 0x0010
+#define GUI_BAR_SHOW_MIN     0x0020
+#define GUI_BAR_SHOW_MAX     0x0040
+#define GUI_BAR_SHOW_PERCENT 0x0080
 
 typedef struct guiBar{
 	guiCaption_s* caption;
@@ -37,8 +38,15 @@ void gui_bar_free(guiBar_s* bar);
 /** set bar text*/
 void gui_bar_text_set(gui_s* gui, const utf8_t* text);
 
+void gui_bar_circle_fn(gui_s* gui, __unused guiImage_s* img, void* generic);
+
 /** set current value*/
 void gui_bar_current_set(gui_s* gui, double current);
+double gui_bar_current(gui_s* gui);
+void gui_bar_max_set(gui_s* gui, double max);
+double gui_bar_max(gui_s* gui);
+void gui_bar_min_set(gui_s* gui, double min);
+double gui_bar_min(gui_s* gui);
 
 /** set max value*/
 void gui_bar_max_set(gui_s* gui, double max);
@@ -51,6 +59,9 @@ int gui_bar_event_free(gui_s* gui, __unused xorgEvent_s* ev);
 
 /** bar redraw event*/
 int gui_bar_event_redraw(gui_s* gui, __unused xorgEvent_s* unset);
+
+int gui_bar_event_move(gui_s* gui, xorgEvent_s* event);
+
 
 /** button event theme*/
 //int gui_bar_event_themes(gui_s* gui, xorgEvent_s* ev);
