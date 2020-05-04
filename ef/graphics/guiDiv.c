@@ -448,7 +448,9 @@ int gui_div_event_themes(gui_s* gui, xorgEvent_s* ev){
 	gui_themes_int_set(name, GUI_THEME_DIV_SEL_PAD_RIGHT, &div->selectpad.right);
 	gui_themes_int_set(name, GUI_THEME_DIV_SEL_PAD_TOP, &div->selectpad.top);
 	gui_themes_int_set(name, GUI_THEME_DIV_SEL_PAD_BOTTOM, &div->selectpad.bottom);
-	if( !gui_themes_gui_image(gui, GUI_THEME_DIV_SELECTION, &div->select) ) div->flags |= GUI_DIV_FLAGS_SELECT;
+
+	__mem_free char* selname = str_printf("%s.%s", name, GUI_THEME_DIV_SELECTION);
+	if( !gui_themes_gui_image(gui, selname, &div->select) ) div->flags |= GUI_DIV_FLAGS_SELECT;
 
 	if( div->mode != GUI_DIV_TABLE ) return 0;
 

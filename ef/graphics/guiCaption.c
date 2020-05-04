@@ -91,6 +91,8 @@ void gui_caption_scroll(gui_s* gui, guiCaption_s* cap, unsigned x, unsigned y){
 }
 
 int gui_caption_themes(gui_s* gui, guiCaption_s* cap, const char* name){
+	dbg_info("caption themes name:%s", name);
+
 	int vbool = 0;
 	if( !gui_themes_bool_set(name, GUI_THEME_CAPTION_CENTER_X, &vbool) ){
 		if( vbool ) cap->flags |= GUI_CAPTION_CENTER_X;

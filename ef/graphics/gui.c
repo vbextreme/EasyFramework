@@ -779,7 +779,7 @@ char* gui_themes_name(gui_s* gui, const char* appName){
 
 char* gui_themes_string(const char* name, const char* property){
 	char* ret = NULL;
-	__mem_free char* p = str_printf("%s%s", name, property);
+	__mem_free char* p = str_printf("%s.%s", name, property);
 	dbg_info("request property:'%s'", p);
 	xorg_resources_string_get(X, p, NULL, &ret);
 	return ret;
@@ -787,7 +787,7 @@ char* gui_themes_string(const char* name, const char* property){
 
 err_t gui_themes_bool_set(const char* name, const char* property, int* set){
 	bool v;
-	__mem_free char* p = str_printf("%s%s", name, property);
+	__mem_free char* p = str_printf("%s.%s", name, property);
 	if( !xorg_resources_bool_get(X, p, NULL, &v) ){
 		*set = v;
 		return 0;
@@ -797,7 +797,7 @@ err_t gui_themes_bool_set(const char* name, const char* property, int* set){
 
 err_t gui_themes_int_set(const char* name, const char* property, int* set){
 	long v;
-	__mem_free char* p = str_printf("%s%s", name, property);
+	__mem_free char* p = str_printf("%s.%s", name, property);
 	if( !xorg_resources_long_get(X, p, NULL, &v) ){
 		*set = v;
 		return 0;
@@ -807,7 +807,7 @@ err_t gui_themes_int_set(const char* name, const char* property, int* set){
 
 err_t gui_themes_uint_set(const char* name, const char* property, unsigned* set){
 	long v;
-	__mem_free char* p = str_printf("%s%s", name, property);
+	__mem_free char* p = str_printf("%s.%s", name, property);
 	if( !xorg_resources_long_get(X, p, NULL, &v) ){
 		*set = v;
 		return 0;
@@ -817,7 +817,7 @@ err_t gui_themes_uint_set(const char* name, const char* property, unsigned* set)
 
 err_t gui_themes_long_set(const char* name, const char* property, long* set){
 	long v;
-	__mem_free char* p = str_printf("%s%s", name, property);
+	__mem_free char* p = str_printf("%s.%s", name, property);
 	if( !xorg_resources_long_get(X, p, NULL, &v) ){
 		*set = v;
 		return 0;
@@ -877,36 +877,26 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 	int dw = -1;
 	int dh = -1;
 	unsigned flags;
-	__mem_free char* compp = mem_many(char, strlen(name) + 128);
 	guiImage_s* img = NULL;
 
-	sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_COLOR); 
-	if( !gui_themes_uint_set(name, compp, &color) ) colorset = 1;
+	if( !gui_themes_uint_set(name, GUI_THEME_COMPOSITE_COLOR, &color) ) colorset = 1;
 		
-	sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_IMAGE);
-	image = gui_themes_string(name, compp);
+	image = gui_themes_string(name, GUI_THEME_COMPOSITE_IMAGE);
 	if( !image ){
-		sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_GIF);
-		image = gui_themes_string(name, compp);
+		image = gui_themes_string(name, GUI_THEME_COMPOSITE_GIF);
 		if( !image ){
-			sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_VIDEO);
-			image = gui_themes_string(name, compp);
+			image = gui_themes_string(name, GUI_THEME_COMPOSITE_VIDEO);
 		}
 	}
 	if( !colorset && !image ) return -1;
 		
-	sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_ALPHA);
-	gui_themes_bool_set(name, compp, &alpha);
+	gui_themes_bool_set(name, GUI_THEME_COMPOSITE_ALPHA, &alpha);
 	flags = alpha ? GUI_IMAGE_FLAGS_ALPHA : 0;
 
-	sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_DEST_X);
-	gui_themes_int_set(name, compp, &dx);
-	sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_DEST_Y);
-	gui_themes_int_set(name, compp, &dy);
-	sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_DEST_W);
-	gui_themes_int_set(name, compp, &dw);
-	sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_DEST_H);
-	gui_themes_int_set(name, compp, &dh);
+	gui_themes_int_set(name, GUI_THEME_COMPOSITE_DEST_X, &dx);
+	gui_themes_int_set(name, GUI_THEME_COMPOSITE_DEST_Y, &dy);
+	gui_themes_int_set(name, GUI_THEME_COMPOSITE_DEST_W, &dw);
+	gui_themes_int_set(name, GUI_THEME_COMPOSITE_DEST_H, &dh);
 		
 	if( image ){
 		int play = 0;
@@ -917,25 +907,18 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 		int sw = -1;
 		int sh = -1;
 
-		sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_PLAY);
-		gui_themes_bool_set(name, compp, &play);
+		gui_themes_bool_set(name, GUI_THEME_COMPOSITE_PLAY, &play);
 		if( play ) flags |= GUI_IMAGE_FLAGS_PLAY;
 		
-		sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_LOOP);
-		gui_themes_bool_set(name, compp, &loop);
+		gui_themes_bool_set(name, GUI_THEME_COMPOSITE_LOOP, &loop);
 		if( loop ) flags |= GUI_IMAGE_FLAGS_LOOP;
 
-		sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_RATIO);
-		gui_themes_int_set(name, compp, &ratio);
+		gui_themes_int_set(name, GUI_THEME_COMPOSITE_RATIO, &ratio);
 
-		sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_SRC_X);
-		gui_themes_int_set(name, compp, &sx);
-		sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_SRC_Y);
-		gui_themes_int_set(name, compp, &sy);
-		sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_SRC_W);
-		gui_themes_int_set(name, compp, &sw);
-		sprintf(compp, "%s.%s", name, GUI_THEME_COMPOSITE_SRC_H);
-		gui_themes_int_set(name, compp, &sh);
+		gui_themes_int_set(name, GUI_THEME_COMPOSITE_SRC_X, &sx);
+		gui_themes_int_set(name, GUI_THEME_COMPOSITE_SRC_Y, &sy);
+		gui_themes_int_set(name, GUI_THEME_COMPOSITE_SRC_W, &sw);
+		gui_themes_int_set(name, GUI_THEME_COMPOSITE_SRC_H, &sh);
 
 		__mem_free char* path = path_resolve(image);
 		img = gui_image_load(color, path, sw != -1 ? sw : (int)gui->surface->img->w, sh != -1 ? sh : (int)gui->surface->img->h, flags, ratio);
@@ -959,14 +942,18 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 void gui_themes_composite(gui_s* gui, const char* name, const char* compname){
 	guiImage_s* img = NULL;
 
+	dbg_info("name:%s composite:%s",name,compname);
+
 	vector_foreach(gui->img->img, i){
 		__mem_free char* cname = str_printf("%s.%s.%lu", name, compname, i);
+		dbg_info("composite name:%s",cname);
 		if( gui_themes_gui_image(gui, cname, &gui->img->img[i]) ) return;
 	}
 	
 	for( size_t i = vector_count(gui->img->img); i < UINT32_MAX; ++i ){
 		guiImage_s* newimg = NULL;
 		__mem_free char* cname = str_printf("%s.%s.%lu", name, compname, i);
+		dbg_info("composite new name:%s",cname);
 		if( gui_themes_gui_image(gui, cname, &img) ) return;
 		gui_composite_add(gui->img, newimg);
 	}
@@ -974,6 +961,7 @@ void gui_themes_composite(gui_s* gui, const char* name, const char* compname){
 
 void gui_themes(gui_s* gui, const char* appName){
 	__mem_free char* name = gui_themes_name(gui, appName);
+	dbg_info("gui themes for:%s", name);
 	long vlong;
 	g2dCoord_s position = {-1,-1,-1,-1};
 
@@ -1002,7 +990,7 @@ void gui_themes(gui_s* gui, const char* appName){
 		xorgEvent_s ev;
 		ev.type = XORG_EVENT_USERDATA;
 		ev.data.request = gui->control;
-		ev.data.data = (void*)appName;
+		ev.data.data = name;
 		ev.data.size = 0;
 		gui->themes(gui, &ev);
 	}
