@@ -2,6 +2,7 @@
 #include <ef/memory.h>
 #include <ef/str.h>
 #include <ef/err.h>
+#include <ef/guiResources.h>
 
 guiBar_s* gui_bar_new(guiCaption_s* caption, guiImage_s* fill, double min, double max, double start, unsigned flags){
 	if( !caption ) return NULL;
@@ -184,19 +185,37 @@ int gui_bar_event_move(gui_s* gui, xorgEvent_s* event){
 	gui_draw(gui);
 	return 0;
 }
-/*
+
 int gui_bar_event_themes(gui_s* gui, xorgEvent_s* ev){
+	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = ev->data.request;
-	
-	gui_themes_uint_set(ev->data.data, GUI_THEMES_BAR_COLOR, &bar->color);
+	char* name = ev->data.data;
+
+	gui_caption_themes(gui, bar->caption, name);
+
+	gui_themes_gui_image(gui, name, &bar->fill);
+
 	__mem_free char* mode = gui_themes_string(ev->data.data, GUI_THEMES_BAR_MODE);
 	if( mode ){
-		if( !strcmp(mode, "horizontal") ) gui->background[0]->fn = gui_bar_hori_color_fn;
-		else if( !strcmp(mode, "vertical") ) gui->background[0]->fn = gui_bar_vert_color_fn;
+		if( !strcmp(mode, "horizontal") ){
+		   	bar->flags &= ~(GUI_BAR_CIRCLE | GUI_BAR_VERTICAL);
+			bar->flags |= GUI_BAR_HORIZONTAL;
+		}
+		else if( !strcmp(mode, "vertical") ){
+			bar->flags &= ~(GUI_BAR_CIRCLE | GUI_BAR_HORIZONTAL);
+			bar->flags |= GUI_BAR_VERTICAL;
+		}
+		else if( !strcmp(mode, "circle") ){
+			bar->flags &= ~(GUI_BAR_VERTICAL | GUI_BAR_HORIZONTAL);
+			bar->flags |= GUI_BAR_CIRCLE;
+			g2dColor_t color;
+			gui_themes_uint_set(name, GUI_THEMES_BAR_COLOR, &color);
+			gui_resource_new(name, color);
+			gui_image_free(bar->fill);
+			bar->fill = gui_image_fn_new(gui_bar_circle_fn, &color, gui->surface->img->w, gui->surface->img->h, 0);
+		}
 	}
-	ev->data.request = bar->label;
-	gui_label_event_themes(gui, ev);
 
 	return 0;
 }
-*/
+

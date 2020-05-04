@@ -37,8 +37,12 @@ void gui_resources_free(void){
 }
 
 __private void resource_set(guiResource_s* res, const char* name){
+	dbg_info("add resource name %s", name);
 	guiResource_s* old = rbhash_find(resources, name, 0);
-	if( old ) rbhash_remove(resources, name, 0);
+	if( old ){
+		dbg_warning("replace resource");
+		rbhash_remove(resources, name, 0);
+	}
 	rbhash_add(resources, name, 0, res);
 }
 
@@ -108,6 +112,7 @@ void gui_resource_fonts_new(const char* name, ftFonts_s* value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_FONTS);
 	res->fonts = value;
 	resource_set(res, name);
+	dbg_info("add fonts resources: %s", res->fonts->groupName);
 }
 
 guiResource_s* gui_resource(const char* name){

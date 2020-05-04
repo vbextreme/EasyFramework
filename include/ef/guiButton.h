@@ -2,12 +2,15 @@
 #define __EF_GUI_BUTTON_H__
 
 #include <ef/gui.h>
-#include <ef/guiCapton.h>
+#include <ef/guiCaption.h>
 
 #define GUI_BUTTON_STATE_NORMAL 0
 #define GUI_BUTTON_STATE_PRESS  1
 #define GUI_BUTTON_STATE_HOVER  2
 #define GUI_BUTTON_STATE_COUNT  3
+
+#define GUI_THEME_BUTTON_PRESS "press"
+#define GUI_THEME_BUTTON_HOVER "hover"
 
 typedef struct guiButton{
 	guiCaption_s* caption;
@@ -47,6 +50,6 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event);
 int gui_button_event_move(gui_s* gui, xorgEvent_s* event);
 
 /** button event theme*/
-//int gui_button_event_themes(gui_s* gui, xorgEvent_s* ev);
+int gui_button_event_themes(gui_s* gui, xorgEvent_s* ev);
 
 #endif

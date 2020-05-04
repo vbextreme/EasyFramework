@@ -180,7 +180,9 @@ ftFont_s* ft_fonts_load(ftFonts_s* fonts, const char* path, const char* internal
 }
 
 __private void ft_font_delete(ftFont_s* font){
-	FT_Done_Face(font->face);
+	dbg_info("delete %s", font->fname);
+	//unload library autounload font->face
+	//FT_Done_Face(font->face);
 	free((void*)font->fname);
 }
 

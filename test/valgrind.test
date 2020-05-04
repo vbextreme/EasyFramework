@@ -1,6 +1,12 @@
 #!/bin/bash
 
-cd build
+cd ..
+cd build-dbg
+meson configure -Doptimize=0 -Dautovectorization=0
+ninja
+cd ..
+
+cd ./test/build
 meson configure -Defdbg=1 -Doptimize=0 -Dautovectorization=0
 ninja
 cd ..

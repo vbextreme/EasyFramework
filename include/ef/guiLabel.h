@@ -2,7 +2,7 @@
 #define __EF_GUI_LABEL_H__
 
 #include <ef/gui.h>
-#include <ef/guiCapton.h>
+#include <ef/guiCaption.h>
 
 typedef struct guiLabel{
 	guiCaption_s* caption;

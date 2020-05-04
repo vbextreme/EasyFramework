@@ -2,7 +2,7 @@
 #define __EF_GUI_BAR_H__
 
 #include <ef/gui.h>
-#include <ef/guiLabel.h>
+#include <ef/guiCaption.h>
 
 #define GUI_THEMES_BAR_COLOR "bar.color"
 #define GUI_THEMES_BAR_MODE  "bar.mode"

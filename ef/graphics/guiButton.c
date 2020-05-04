@@ -27,6 +27,7 @@ gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn){
 	gui->key = gui_button_event_key;
 	gui->free = gui_button_event_free;	
 	gui->move = gui_button_event_move;
+	gui->themes = gui_button_event_themes;
 	btn->compindex = vector_count(gui->img->img)-1;
 	btn->state[GUI_BUTTON_STATE_NORMAL] = gui->img->img[btn->compindex];
 	gui_composite_add(gui->img, btn->caption->render);
@@ -140,18 +141,21 @@ int gui_button_event_move(gui_s* gui, xorgEvent_s* event){
 	return 0;
 }
 
-/*
 int gui_button_event_themes(gui_s* gui, xorgEvent_s* ev){
-	guiButton_s* btn = ev->data.request;
-	ev->data.request = btn->label;
-	gui_label_event_themes(gui, ev);
+	iassert(gui->type == GUI_TYPE_BUTTON);
+	guiButton_s* btn = gui->control;
 
-	__mem_free char* bkpress = str_printf("%s%s.", (char*)ev->data.data, "press");
-	__mem_free char* bkhover = str_printf("%s%s.", (char*)ev->data.data, "hover");
+	char* name = ev->data.data;
+	gui_caption_themes(gui, btn->caption, name);
 
-	gui_themes_background(gui, bkpress, gui->background[GUI_BUTTON_BACKGROUND_PRESS]);
-	gui_themes_background(gui, bkhover, gui->background[GUI_BUTTON_BACKGROUND_HOVER]);
+	char* iname = str_printf("%s.%s", name, GUI_THEME_BUTTON_PRESS);
+	gui_themes_gui_image(gui, iname, &btn->state[GUI_BUTTON_STATE_PRESS]);
+	free(iname);
+
+	iname = str_printf("%s.%s", name, GUI_THEME_BUTTON_HOVER);
+	gui_themes_gui_image(gui, iname, &btn->state[GUI_BUTTON_STATE_HOVER]);
+	free(iname);
 
 	return 0;
 }
-*/
+

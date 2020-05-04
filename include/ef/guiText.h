@@ -29,6 +29,7 @@
 #define GUI_THEME_TEXT_CURSOR_COLOR "text.cursor.color"
 #define GUI_THEME_TEXT_SEL_COLOR    "text.sel.color"
 #define GUI_THEME_TEXT_TAB          "text.tab"
+#define GUI_THEME_TEXT_FOREGROUND   "text.foreground"
 
 typedef struct guiText{
 	guiImage_s* render;
@@ -170,6 +171,8 @@ int gui_text_event_clipboard(gui_s* gui, xorgEvent_s* ev);
 
 /** event free*/
 int gui_text_event_free(gui_s* gui, __unused xorgEvent_s* ev);
+
+int gui_text_event_themes(__unused gui_s* gui, xorgEvent_s* ev);
 
 /** event timer blink*/
 int gui_text_timer_blink(guiTimer_s* timer);

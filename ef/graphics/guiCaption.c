@@ -1,4 +1,4 @@
-#include <ef/guiCapton.h>
+#include <ef/guiCaption.h>
 #include <ef/guiResources.h>
 #include <ef/memory.h>
 #include <ef/str.h>

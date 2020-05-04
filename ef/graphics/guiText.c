@@ -51,6 +51,7 @@ gui_s* gui_text_attach(gui_s* gui, guiText_s* txt){
 	gui->focus = gui_text_event_focus;
 	gui->clipboard = gui_text_event_clipboard;
 	gui->move = gui_text_event_move;
+	gui->themes = gui_text_event_themes;
 	gui->focusable = 1;
 
 	txt->resize = txt->size = (gui->surface->img->w / ft_line_lenght(txt->fonts, U8(" "))) * (gui->surface->img->h / txt->cursor.h);
@@ -1108,13 +1109,13 @@ int gui_text_event_move(gui_s* gui, xorgEvent_s* event){
 	gui_draw(gui);
 	return 0;
 }
-/*
+
 int gui_text_event_themes(__unused gui_s* gui, xorgEvent_s* ev){
 	guiText_s* txt = ev->data.request;
 	char* name = ev->data.data;
 
-	gui_themes_font_set(name, &txt->fonts);
-	if( !gui_themes_uint_set(name, GUI_THEME_FOREGROUND, &txt->foreground) ) txt->flags |= GUI_TEXT_REND_TEXT;
+	gui_themes_fonts_set(name, &txt->fonts);
+	if( !gui_themes_uint_set(name, GUI_THEME_TEXT_FOREGROUND, &txt->foreground) ) txt->flags |= GUI_TEXT_REND_TEXT;
 	gui_themes_uint_set(name, GUI_THEME_TEXT_BLINK, &txt->blinktime);
 	gui_themes_uint_set(name, GUI_THEME_TEXT_CURSOR_COLOR, &txt->colCursor);
 	gui_themes_uint_set(name, GUI_THEME_TEXT_SEL_COLOR, &txt->select);
@@ -1130,4 +1131,4 @@ int gui_text_event_themes(__unused gui_s* gui, xorgEvent_s* ev){
 
 	return 0;
 }
-*/
+

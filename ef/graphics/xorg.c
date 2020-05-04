@@ -1587,9 +1587,17 @@ void xorg_wm_reserve_dock_space_on_top(xorg_s* x, xcb_window_t id, unsigned X, u
 	xcb_change_property(
 			x->connection, 
 			XCB_PROP_MODE_REPLACE, id, 
+			x->atom[XORG_ATOM_NET_WM_STRUT], 
+			XCB_ATOM_CARDINAL, 32, 12, &partial
+	);
+
+	xcb_change_property(
+			x->connection, 
+			XCB_PROP_MODE_REPLACE, id, 
 			x->atom[XORG_ATOM_NET_WM_STRUT_PARTIAL], 
 			XCB_ATOM_CARDINAL, 32, 12, &partial
 	);
+
 }
 
 void xorg_wm_reserve_dock_space_on_bottom(xorg_s* x, xcb_window_t id, unsigned X, unsigned w, unsigned h){
@@ -1598,6 +1606,13 @@ void xorg_wm_reserve_dock_space_on_bottom(xorg_s* x, xcb_window_t id, unsigned X
 	partial.bottom_start_x = xorg_root_x(x) + X;
 	partial.bottom_end_x = partial.bottom_start_x + w - 1;
 	dbg_info("reserve: bottom %u x %u ex: %u", partial.bottom, partial.bottom_start_x, partial.bottom_end_x);
+
+	xcb_change_property(
+			x->connection, 
+			XCB_PROP_MODE_REPLACE, id, 
+			x->atom[XORG_ATOM_NET_WM_STRUT], 
+			XCB_ATOM_CARDINAL, 32, 12, &partial
+	);
 
 	xcb_change_property(
 			x->connection, 
@@ -1617,6 +1632,13 @@ void xorg_wm_reserve_dock_space_on_left(xorg_s* x, xcb_window_t id, unsigned y, 
 	xcb_change_property(
 			x->connection, 
 			XCB_PROP_MODE_REPLACE, id, 
+			x->atom[XORG_ATOM_NET_WM_STRUT], 
+			XCB_ATOM_CARDINAL, 32, 12, &partial
+	);
+
+	xcb_change_property(
+			x->connection, 
+			XCB_PROP_MODE_REPLACE, id, 
 			x->atom[XORG_ATOM_NET_WM_STRUT_PARTIAL], 
 			XCB_ATOM_CARDINAL, 32, 12, &partial
 	);
@@ -1628,6 +1650,13 @@ void xorg_wm_reserve_dock_space_on_right(xorg_s* x, xcb_window_t id, unsigned y,
 	partial.right_start_y = xorg_root_y(x) + y;
 	partial.right_end_y = partial.right_start_y + h - 1;
 	dbg_info("reserve: right %u y %u ey: %u", partial.right, partial.right_start_y, partial.right_end_y);
+
+	xcb_change_property(
+			x->connection, 
+			XCB_PROP_MODE_REPLACE, id, 
+			x->atom[XORG_ATOM_NET_WM_STRUT], 
+			XCB_ATOM_CARDINAL, 32, 12, &partial
+	);
 
 	xcb_change_property(
 			x->connection, 
@@ -2110,7 +2139,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 		break;
 
 		default:
-			dbg_info("unknown %u", event->response_type & ~0x80 );
+			dbg_info("unknown %u: %s", event->response_type & ~0x80, xorg_atom_name(x, event->response_type & ~0x80));
 		break;
 	}
 

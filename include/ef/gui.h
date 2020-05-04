@@ -158,6 +158,10 @@ unsigned gui_screen_width(void);
 /** get screen height*/
 unsigned gui_screen_height(void);
 
+void gui_register_internal_focus_event(gui_s* gui, guiEvent_f fn);
+void gui_unregister_internal_focus_event(gui_s* gui);
+void gui_internal_focus_event(void);
+
 /** create gui*/
 gui_s* gui_new(
 		gui_s* parent, 
@@ -325,8 +329,11 @@ err_t gui_themes_long_set(const char* name, const char* property, long* set);
 /** set fonts */
 err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts);
 
+/** load gui image */
+err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg);
+
 /** set theme composite*/
-void gui_themes_composite(gui_s* gui, const char* name);
+void gui_themes_composite(gui_s* gui, const char* name, const char* compname);
 
 /** set gui themes */
 void gui_themes(gui_s* gui, const char* appName);
