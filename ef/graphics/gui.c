@@ -27,12 +27,6 @@ typedef struct guiInternalFocusEvent{
 	guiEvent_f fn;
 }guiInternalFocusEvent_s;
 
-typedef struct guiInternalPid{
-	gui_s* gui;
-	guiEvent_f fn;
-	pid_t pid;
-}guiInternalPid_s;
-
 typedef struct guiInternalFd{
 	gui_s* gui;
 	guiEvent_f fn;
@@ -45,8 +39,6 @@ __private phq_s* timergui;
 __private deadpoll_s* dpgui;
 __private gui_s* focused;
 __private guiInternalFocusEvent_s* vgife;
-__private int waitfd = -1;
-__private guiInternalPid_s* pidcbk;
 
 void gui_begin(){
 	os_begin();
@@ -61,8 +53,6 @@ void gui_begin(){
 	if( !dpgui ) err_fail("deadpoll");
 	gui_deadpoll_register(dpgui);
 	vgife = vector_new(guiInternalFocusEvent_s, 2, 1);
-	waitfd = spawn_waitfd();
-	pidcbk = vector_new(guiInternalPid_s, 4, 4);
 }
 
 void gui_end(){
@@ -73,13 +63,6 @@ void gui_end(){
 	gui_resources_free();
 	deadpoll_free(dpgui);
 	vector_free(vgife);
-	vector_free(pidcbk);
-}
-
-void gui_wait_all_pid(){
-	vector_foreach(pidcbk,i){
-		spawn_wait(pidcbk[i].pid, NULL);
-	}
 }
 
 __private void allgui_add(gui_s* gui){
@@ -606,22 +589,6 @@ err_t gui_deadpoll_event_callback(__unused deadpoll_s* dp, __unused int ev, __un
 	return ret;
 }
 
-err_t gui_deadpoll_waitfd_callback(__unused deadpoll_s* dp, __unused int ev, __unused void* arg){
-	pid_t pid = spawn_waitfd_pid(waitfd);
-	vector_foreach(pidcbk, i){
-		if( pid == pidcbk[i].pid ){
-			xorgEvent_s ev;
-			ev.type = XORG_EVENT_USERDATA;
-			ev.data.data = &pid;
-			if( pidcbk[i].fn( pidcbk[i].gui, &ev) ){
-				vector_remove(pidcbk, i);
-			}
-			return 0;
-		}
-	}
-	return 0;
-}
-
 err_t gui_deadpoll_fd_callback(__unused deadpoll_s* dp, int ev, void* arg){
 	guiInternalFd_s* gif = arg;
 	xorgEvent_s xev;
@@ -634,12 +601,10 @@ err_t gui_deadpoll_fd_callback(__unused deadpoll_s* dp, int ev, void* arg){
 
 void gui_deadpoll_unregister(deadpoll_s* dp){
 	deadpoll_unregister(dp, xorg_fd(X));
-	deadpoll_unregister(dp, waitfd);
 }
 
 void gui_deadpoll_register(deadpoll_s* dp){
 	deadpoll_register(dp, xorg_fd(X), gui_deadpoll_event_callback, NULL, 0, NULL);
-	deadpoll_register(dp, waitfd, gui_deadpoll_event_callback, NULL, 0, NULL);
 }
 
 __private void gui_timer_timeout(guiTimer_s* timer){
@@ -718,28 +683,17 @@ void gui_timer_free(guiTimer_s* timer){
 	free(timer);
 }
 
-void gui_pid_register(gui_s* gui, pid_t pid, guiEvent_f fn){
-	guiInternalPid_s* gip = vector_get_push_back(pidcbk);
-	gip->gui = gui;
-	gip->pid = pid;
-	gip->fn = fn;
+__private void gif_free(void* data){
+	pollEvent_s* pe = data;
+	free(pe->arg);
 }
-
-void gui_pid_unregister(pid_t pid){
-	vector_foreach(pidcbk, i){
-		if( pid == pidcbk[i].pid ){
-			vector_remove(pidcbk, i);
-			return;
-		}
-	}
-}
-
+	
 void gui_fd_register(gui_s* gui, int fd, int event, guiEvent_f fn){
 	guiInternalFd_s* gif = mem_new(guiInternalFd_s);
 	gif->gui = gui;
 	gif->fd = fd;
 	gif->fn = fn;
-	deadpoll_register(dpgui, fd, gui_deadpoll_fd_callback, gif, event, free);	
+	deadpoll_register(dpgui, fd, gui_deadpoll_fd_callback, gif, event, gif_free);
 }
 
 void gui_fd_unregister(int fd){

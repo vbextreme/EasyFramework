@@ -37,6 +37,61 @@ typedef struct netDev {
 	size_t transmit[ND_COUNT];
 }netDev_s;
 
+typedef struct pidStat{
+	pid_t pid;
+	char comm[PATH_MAX];
+	char state;
+	int ppid;
+	int pgrp;
+	int session;
+	int ttynr;
+	int tpgid;
+	unsigned flags;
+	unsigned long minflt;
+	unsigned long cminflt;
+	unsigned long majflt;
+	unsigned long cmajflt;
+	unsigned long utime;
+	unsigned long stime;
+	long cutime;
+	long cstime;
+	long priority;
+	long nice;
+	long numthreads;
+	long itrealvalue;
+	unsigned long statrtime;
+	unsigned long vsize;
+	long rss;
+	unsigned long rsslim;
+	unsigned long startcode;
+	unsigned long endcode;
+	unsigned long startstack;
+	unsigned long kstkesp;
+	unsigned long kstkeip;
+	unsigned long signal;
+	unsigned long blocked;
+	unsigned long sigignore;
+	unsigned long sigcatch;
+	unsigned long wchan;
+	unsigned long nswap;
+    unsigned long cnswap;
+	int exitsignal;
+	int processor;
+	unsigned rtpriority;
+	unsigned policy;
+	unsigned long delayacctblkioticks;
+	unsigned long guesttime;
+	long cguesttime;
+	unsigned long startdata;
+	unsigned long enddata;
+	unsigned long startbrk;
+	unsigned long argstart;
+	unsigned long argend;
+	unsigned long envstart;
+	unsigned long envend;
+	int exit_code;
+}pidStat_s;
+
 /** return numbers of cores*/
 int cpu_core_count(void);
 
@@ -85,5 +140,12 @@ err_t net_device(netDev_s* net, const char* device);
  * @return vector or NULL for error
  */
 int* proc_pid_fd(pid_t pid);
+
+/** get /proc/pid/stat
+ * @param ps structure where stored stat
+ * @param pid pid to stat
+ * @return -1 error 0 successfull
+ */
+err_t proc_pid_stat(pidStat_s* ps, pid_t pid);
 
 #endif

@@ -16,12 +16,6 @@ const char* os_shell_get(void);
 /** disable zombie, warning, this disable get exit status*/
 void spawn_disable_zombie(void);
 
-/** get fd where wait pid*/
-int spawn_waitfd(void);
-
-/** read from fd and get pid have raised sigchild*/
-pid_t spawn_waitfd_pid(int fd);
-
 /** call whend end of use spawn, wait(NULL)*/
 void spawn_end(void);
 
@@ -44,7 +38,17 @@ err_t spawn_shell_slurp(char** out, char** err, int* exitcode, const char* cmdli
 /** wait a pid*/
 err_t spawn_wait(pid_t pid, int* exitcode);
 
+/** wait a pid is not child*/
+err_t spawn_wait_any(pid_t pid, int* exitcode);
+
 /** same wait pid but without wait*/
 err_t spawn_check(pid_t pid, int* exitcode);
+
+/** return fd where write on pid exited*/
+int spawn_waitfd(pid_t pid);
+
+/** read and clean waitfd, close fd and waitpid on master process*/
+err_t spawn_waitfd_read(int fd, pid_t* slave, int* res);
+
 
 #endif

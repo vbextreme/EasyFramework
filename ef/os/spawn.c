@@ -3,11 +3,13 @@
 #include <ef/proc.h>
 #include <ef/str.h>
 #include <ef/err.h>
+#include <ef/delay.h>
 
 #include <spawn.h>
 #include <signal.h>
 #include <sys/wait.h>
 #include <sys/signalfd.h>
+#include <sys/inotify.h>
 
 extern char** environ;
 
@@ -33,40 +35,6 @@ void spawn_disable_zombie(void){
 		dbg_error("sigaction");
 		dbg_errno();
 	}
-}
-
-int spawn_waitfd(void){
-	sigset_t mask;	
-	sigemptyset(&mask);
-	sigaddset(&mask, SIGCHLD);
-	if( sigprocmask(SIG_BLOCK, &mask, NULL ) == -1){
-		err_pushno("block signal != child");
-		return -1;
-	}
-    
-	int fd = signalfd(-1, &mask, 0);
-	if( fd == -1 ){
-		err_pushno("signalfd");
-		return -1;
-	}
-
-	return fd;	
-}
-
-pid_t spawn_waitfd_pid(int fd){
-	struct signalfd_siginfo si;
-	
-	if( read(fd, &si, sizeof(struct signalfd_siginfo)) != sizeof(struct signalfd_siginfo) ){
-		err_push("read size");
-		return -1;
-	}
-
-    if (si.ssi_signo == SIGCHLD) {
-        return si.ssi_pid;
-    }
-	
-	err_push("unexpected signal");
-    return -1;
 }
 
 void spawn_end(void){
@@ -158,6 +126,8 @@ err_t spawn_shell_slurp(char** out, char** err, int* exitcode, const char* cmdli
 
 err_t spawn_wait(pid_t pid, int* exitcode){
 	if( waitpid(pid, exitcode, 0) == -1 ){
+		dbg_errno();
+		dbg_error("waitpid");
 		err_pushno("wait pid %d", pid);
 		return -1;
 	}
@@ -174,3 +144,99 @@ err_t spawn_check(pid_t pid, int* exitcode){
 	if( exitcode ) *exitcode = exited ? WEXITSTATUS(*exitcode) : -1;
 	return exited;
 }
+
+err_t spawn_wait_any(pid_t pid, int* exitcode){
+	size_t ms = 0;
+	pidStat_s ps;
+	while( !proc_pid_stat(&ps, pid) ){
+		if( ps.state == 'Z' || ps.state == 'X' ){
+			if( exitcode ){
+				*exitcode = WEXITSTATUS(ps.exit_code);
+			}
+			else{
+				*exitcode = -1;
+			}
+			return 0;
+		}
+		if( ms < 1000 ) ms += 10;
+		delay_ms(ms);
+	}
+	return 0;
+}
+
+__private void fork_waitpid(int fdNotify, pid_t pid){
+	pid_t mypid = getpid();
+	int ec = 0;
+	spawn_wait_any(pid, &ec);
+	fd_write(fdNotify, &mypid, sizeof(pid_t));
+	fd_write(fdNotify, &pid, sizeof(pid_t));
+	fd_close(fdNotify);
+	exit(ec);
+}
+
+__private void spawn_close_files_but(int but){
+	pid_t pid = getpid();
+	__vector_free int* vfd = proc_pid_fd(pid);
+	if( !vfd ){
+		dbg_warning("fail to get fd");
+		return;
+	}
+	vector_foreach(vfd, i){
+		if( vfd[i] == but ) continue;
+		close(vfd[i]);
+	}
+}
+
+int spawn_waitfd(pid_t pid){
+	int p[2];
+	
+	if( pipe(p) ){
+		dbg_errno();
+		dbg_error("open pipe");
+		err_pushno("opening opipe");
+		return -1;
+	}
+
+	pid_t child = fork();
+	switch( child ){
+		case -1:{
+			dbg_errno();
+			dbg_error("fork");
+			return -1;
+		}
+		case 0:{
+			dbg_error("child");
+			fd_close(p[0]);
+			spawn_close_files_but(p[1]);
+			fork_waitpid(p[0], pid); 
+		}
+		return -1;
+	}
+
+	dbg_error("parent");
+	fd_close(p[1]);
+	return p[0];
+}
+
+err_t spawn_waitfd_read(int fd, pid_t* slave, int* res){
+	pid_t master;
+	if( fd_read(fd, &master, sizeof(pid_t)) < 0 ){
+		err_pushno("reading master");
+		fd_close(fd);
+		return -1;
+	}
+
+	pid_t sl;
+	if( fd_read(fd, &sl, sizeof(pid_t)) < 0 ){
+		err_pushno("reading slave");
+		spawn_wait(master, NULL);
+		fd_close(fd);
+		return -1;
+	}
+
+	spawn_wait(master, res);
+	if( slave ) *slave = sl;
+	fd_close(fd);
+	return 0;
+}
+

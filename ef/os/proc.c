@@ -246,5 +246,132 @@ int* proc_pid_fd(pid_t pid){
 	return ret;
 }
 
+err_t proc_pid_stat(pidStat_s* ps, pid_t pid){
+	char proc[PATH_MAX];
+	sprintf(proc, "/proc/%d/stat", pid);
+	__fd_close int fd = fd_open(proc, "r", 0);
+	if( fd == -1 ){
+		err_pushno("open pid %d", pid);
+		return -1;
+	}
+	__mem_free char* data = fd_slurp(NULL, fd, 4096, 1);
+	if( !data ){
+		err_push("read pid %d", pid);
+		return -1;
+	}
 
+	char* p = data;
+	char* en;
+	ps->pid = strtol(p, &en, 10);
+	p = en + 2;
+
+	char* d = ps->comm;
+	while( *p && *p != ')' && *(p+1) !=' '){
+		*d++ = *p++;
+	}
+	*d = 0;
+	p += 2;
+
+	ps->state = *p;
+	p+=2;
+	ps->ppid = strtol(p, &en, 10);
+	p = en + 1;
+	ps->pgrp = strtol(p, &en, 10);
+	p = en + 1;
+	ps->session = strtol(p, &en, 10);
+	p = en + 1;
+	ps->ttynr = strtol(p, &en, 10);
+	p = en + 1;
+	ps->tpgid = strtol(p, &en, 10);
+	p = en + 1;
+	ps->flags = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->minflt = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->cminflt = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->majflt = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->cmajflt = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->utime = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->stime = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->cutime = strtol(p, &en, 10);
+	p = en + 1;
+	ps->cstime = strtol(p, &en, 10);
+	p = en + 1;
+	ps->priority = strtol(p, &en, 10);
+	p = en + 1;
+	ps->nice = strtol(p, &en, 10);
+	p = en + 1;
+	ps->numthreads = strtol(p, &en, 10);
+	p = en + 1;
+	ps->itrealvalue = strtol(p, &en, 10);
+	p = en + 1;
+	ps->statrtime = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->vsize = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->rss = strtol(p, &en, 10);
+	p = en + 1;
+	ps->rsslim = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->startcode = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->endcode = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->startstack = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->kstkesp = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->kstkeip = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->signal = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->blocked = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->sigignore = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->sigcatch = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->wchan = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->nswap = strtoul(p, &en, 10);
+	p = en + 1;
+    ps->cnswap = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->exitsignal = strtol(p, &en, 10);
+	p = en + 1;
+	ps->processor = strtol(p, &en, 10);
+	p = en + 1;
+	ps->rtpriority = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->policy = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->delayacctblkioticks = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->guesttime = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->cguesttime = strtol(p, &en, 10);
+	p = en + 1;
+	ps->startdata = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->enddata = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->startbrk = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->argstart = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->argend = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->envstart = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->envend = strtoul(p, &en, 10);
+	p = en + 1;
+	ps->exit_code = strtol(p, &en, 10);
+
+	return 0;
+}
 

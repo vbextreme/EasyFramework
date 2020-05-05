@@ -171,8 +171,8 @@ __private void div_child_move(gui_s* gdiv, guiDiv_s* div, gui_s* child, const gu
 		);
 		if( fit ){
 			gui_resize(child,
-				guiPos->w - (div->selectpad.left + div->selectpad.right + child->userMargin.left + child->userMargin.right),
-				guiPos->h - (div->selectpad.top + div->selectpad.bottom + child->userMargin.top + child->userMargin.bottom)
+				guiPos->w - (div->selectpad.left + div->selectpad.right + child->userMargin.left + child->userMargin.right + child->bordersize*2),
+				guiPos->h - (div->selectpad.top + div->selectpad.bottom + child->userMargin.top + child->userMargin.bottom + child->bordersize*2)
 			);
 		}
 	}
@@ -183,8 +183,8 @@ __private void div_child_move(gui_s* gdiv, guiDiv_s* div, gui_s* child, const gu
 		);
 		if( fit ){
 			gui_resize(child, 
-				guiPos->w - (child->userMargin.left + child->userMargin.right),
-				guiPos->h - (child->userMargin.top + child->userMargin.bottom)
+				guiPos->w - (child->userMargin.left + child->userMargin.right + child->bordersize*2),
+				guiPos->h - (child->userMargin.top + child->userMargin.bottom + child->bordersize*2)
 			);
 		}
 	}
