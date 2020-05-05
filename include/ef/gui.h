@@ -154,6 +154,9 @@ void gui_begin(void);
 /** after use gui*/
 void gui_end();
 
+/** wait all pid, if you want exit without zombie, call before gui_end*/
+void gui_wait_all_pid();
+
 /** grab root event*/
 void gui_register_root_event(void);
 
@@ -283,6 +286,12 @@ int gui_event_call(xorgEvent_s* ev);
 /** deadpoll */
 err_t gui_deadpoll_event_callback(__unused deadpoll_s* dp, __unused int ev, __unused void* arg);
 
+/** deadpoll*/
+err_t gui_deadpoll_waitfd_callback(__unused deadpoll_s* dp, __unused int ev, __unused void* arg);
+
+/** deadpoll */
+err_t gui_deadpoll_fd_callback(__unused deadpoll_s* dp, int ev, void* arg);
+
 /** deadpoll */
 void gui_deadpoll_unregister(deadpoll_s* dp);
 
@@ -304,14 +313,17 @@ int gui_timer_change(guiTimer_s* timer, size_t ms);
 /** free timer*/
 void gui_timer_free(guiTimer_s* timer);
 
-/** load string resource*/
-//char* gui_resource_string_get(const char* name, const char* class);
+/** register pid sigchild callback*/
+void gui_pid_register(gui_s* gui, pid_t pid, guiEvent_f fn);
 
-/** load long resource*/
-//long gui_resource_long_get(const char* name, const char* class);
+/** unregister pid, if fn() return true value this function is auto call*/
+void gui_pid_unregister(pid_t pid);
 
-/** load bool resource*/
-//int gui_resource_bool_get(const char* name, const char* class);
+/** reister event fd */
+void gui_fd_register(gui_s* gui, int fd, int event, guiEvent_f fn);
+
+/** unregister event fd*/
+void gui_fd_unregister(int fd);
 
 /** get themes name*/
 char* gui_themes_name(gui_s* gui, const char* appName);

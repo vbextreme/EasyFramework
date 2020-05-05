@@ -16,6 +16,12 @@ const char* os_shell_get(void);
 /** disable zombie, warning, this disable get exit status*/
 void spawn_disable_zombie(void);
 
+/** get fd where wait pid*/
+int spawn_waitfd(void);
+
+/** read from fd and get pid have raised sigchild*/
+pid_t spawn_waitfd_pid(int fd);
+
 /** call whend end of use spawn, wait(NULL)*/
 void spawn_end(void);
 

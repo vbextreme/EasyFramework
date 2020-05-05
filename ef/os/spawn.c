@@ -7,6 +7,7 @@
 #include <spawn.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <sys/signalfd.h>
 
 extern char** environ;
 
@@ -32,6 +33,40 @@ void spawn_disable_zombie(void){
 		dbg_error("sigaction");
 		dbg_errno();
 	}
+}
+
+int spawn_waitfd(void){
+	sigset_t mask;	
+	sigemptyset(&mask);
+	sigaddset(&mask, SIGCHLD);
+	if( sigprocmask(SIG_BLOCK, &mask, NULL ) == -1){
+		err_pushno("block signal != child");
+		return -1;
+	}
+    
+	int fd = signalfd(-1, &mask, 0);
+	if( fd == -1 ){
+		err_pushno("signalfd");
+		return -1;
+	}
+
+	return fd;	
+}
+
+pid_t spawn_waitfd_pid(int fd){
+	struct signalfd_siginfo si;
+	
+	if( read(fd, &si, sizeof(struct signalfd_siginfo)) != sizeof(struct signalfd_siginfo) ){
+		err_push("read size");
+		return -1;
+	}
+
+    if (si.ssi_signo == SIGCHLD) {
+        return si.ssi_pid;
+    }
+	
+	err_push("unexpected signal");
+    return -1;
 }
 
 void spawn_end(void){
