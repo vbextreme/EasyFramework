@@ -148,6 +148,9 @@ typedef struct xkb{
 
 typedef struct xorgSurface{
 	xcb_gcontext_t gc;
+	xcb_shm_segment_info_t shmi;
+	size_t shmsize;
+	size_t offsetAlign;
 	xcb_image_t* ximage;
 	g2dImage_s* img;
 }xorgSurface_s;
@@ -182,6 +185,7 @@ typedef struct xorg{
 	unsigned _mousestate;
 	int screenDefault;
 	int screenCurrent;
+	int shared;
 	uint8_t depth;
 }xorg_s;
 
@@ -631,14 +635,9 @@ xcb_window_t xorg_win_new(
 		int x, int y, unsigned w, unsigned h, int border, 
 		g2dColor_t colbor, g2dColor_t background
 );
-//xcb_window_t xorg_win_new(xorgSurface_s** surface, xorg_s* X, xcb_window_t parent, int x, int y, unsigned w, unsigned h, unsigned border, g2dColor_t background);
 
 /** resize surface*/
 void xorg_surface_resize(xorg_s* X, xorgSurface_s* surface, unsigned w, unsigned h);
-//void xorg_surface_resize(xorgSurface_s* surface, unsigned w, unsigned h);
-
-/** deprecate resize a surface, blitting img*/
-//void xorg_surface_resize_bitblt(xorgSurface_s* surface, unsigned w, unsigned h);
 
 /** destroy/free sourface*/
 void xorg_surface_destroy(xorg_s* x, xorgSurface_s* surface);

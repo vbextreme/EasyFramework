@@ -5,6 +5,10 @@
 #include <xkbcommon/xkbcommon-x11.h>
 #include <xcb/randr.h>
 #include <xcb/shape.h>
+#include <xcb/shm.h>
+
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #ifdef XCB_ERROR_ENABLE
 	#define XCB_ERR_DEC xcb_generic_error_t* err
@@ -95,6 +99,16 @@ xorg_s* xorg_client_new(const char* display, int defaultScreen){
             x->visual
 	);
 
+	xcb_shm_query_version_reply_t*  replyShm = xcb_shm_query_version_reply(x->connection, xcb_shm_query_version(x->connection), NULL );
+    if( !replyShm || !replyShm->shared_pixmaps ){
+		if( reply ) free(reply);
+		dbg_warning("no shared mem available");
+		x->shared = 0;
+    }
+	else{
+		dbg_info("enable shared mem");
+		x->shared = 1;
+	}
 	x->clickms = XORG_MOUSE_CLICK_MS;
 	x->dblclickms = XORG_MOUSE_DBLCLICL_MS;
 	x->_mousetime = 0;
@@ -1406,8 +1420,19 @@ void xorg_win_size(g2dCoord_s* out, unsigned* outBorder, xorg_s* x, xcb_window_t
 }
 
 void xorg_win_surface_redraw(xorg_s* x, xcb_window_t id,  xorgSurface_s* surface){
-	dbg_info("");
-	xcb_image_put(x->connection, id, surface->gc, surface->ximage, 0, 0, 0);
+	if( x->shared ){
+		dbg_info("shared");
+		xcb_shm_put_image(x->connection, id, surface->gc, 
+			surface->ximage->width, surface->ximage->height,
+			0, 0, surface->img->w, surface->img->h,
+			0, 0,
+			x->depth, XCB_IMAGE_FORMAT_Z_PIXMAP, 0, surface->shmi.shmseg, surface->offsetAlign
+		);
+	}
+	else{
+		dbg_info("socket");
+		xcb_image_put(x->connection, id, surface->gc, surface->ximage, 0, 0, 0);
+	}
 	xorg_client_flush(x);
 }
 
@@ -1683,21 +1708,57 @@ void xorg_register_events(xorg_s* x, xcb_window_t window, unsigned int eventmask
 #endif
 }
 
+__private xorgSurface_s* surface_private_new(xorg_s* X, xcb_window_t win,  unsigned w, unsigned h, g2dColor_t background){
+	xorgSurface_s* surface = mem_zero(xorgSurface_s);
+	if( !surface ) err_fail("malloc");
+	surface->img = g2d_new(w, h, X_COLOR_MODE);
+	if( !surface->img ) err_fail("eom");
+	g2dCoord_s area = { .x = 0, .y = 0, .w = w, .h = h };
+	g2d_clear(surface->img, background, &area);
+	surface->ximage = xcb_image_create(
+		w, h,
+		XCB_IMAGE_FORMAT_Z_PIXMAP, 32, X->depth, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
+		surface->img->pixel, surface->img->p * surface->img->h, surface->img->pixel
+	);
+	surface->gc = xcb_generate_id(X->connection);
+	xcb_create_gc(X->connection, surface->gc, win, 0, 0);
+	return surface;
+}
+
+__private xorgSurface_s* surface_shared_new(xorg_s* X, xcb_window_t win,  unsigned w, unsigned h, g2dColor_t background){
+	xorgSurface_s* surface = mem_zero(xorgSurface_s);
+	if( !surface ) err_fail("malloc");
+	
+	surface->shmsize      = h*(w*4);
+	surface->shmsize      = ROUND_UP(surface->shmsize, 16);	
+	surface->offsetAlign  = 0;
+	surface->shmi.shmid   = shmget(IPC_PRIVATE, surface->shmsize, 0600);
+	surface->shmi.shmaddr = shmat(surface->shmi.shmid, 0, 0); 
+	surface->shmi.shmseg  = xcb_generate_id(X->connection);
+	xcb_shm_attach(X->connection, surface->shmi.shmseg, surface->shmi.shmid, 0);
+    shmctl(surface->shmi.shmid, IPC_RMID, 0);
+
+	surface->img = g2d_clone(w, h, X_COLOR_MODE, surface->shmi.shmaddr);
+	if( !surface->img ) err_fail("eom");
+	g2dCoord_s area = { .x = 0, .y = 0, .w = w, .h = h };
+	g2d_clear(surface->img, background, &area);
+	surface->ximage = xcb_image_create(
+		w, h,
+		XCB_IMAGE_FORMAT_Z_PIXMAP, 32, X->depth, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
+		surface->img->pixel, surface->img->p * surface->img->h, surface->img->pixel
+	);
+	surface->gc = xcb_generate_id(X->connection);
+	xcb_create_gc(X->connection, surface->gc, win, 0, 0);
+	return surface;
+}
+
 xcb_window_t xorg_win_new(
 		xorgSurface_s** surface, xorg_s* X, xcb_window_t parent, 
 		int x, int y, unsigned w, unsigned h, int border, 
 		g2dColor_t colbor, g2dColor_t background
 ){
-	//unsigned event = X_WIN_EVENT;
 	dbg_info("create window %d %d %u*%u", x, y, w, h);
 	xcb_window_t win = xcb_generate_id(X->connection);
-
-	/*
-	xcb_create_window(X->connection, XCB_COPY_FROM_PARENT, win, parent,
-			xorg_root_x(X) + x, xorg_root_y(X) + y, w, h, border,
-			XCB_WINDOW_CLASS_COPY_FROM_PARENT,
-		   	xorg_root_visual(X), XCB_CW_EVENT_MASK, &event);
-	*/
 
 	unsigned int val[] = {colbor,   X_WIN_EVENT,  X->colormap}; 
 	xcb_create_window(X->connection, X->depth, win, parent,
@@ -1707,69 +1768,52 @@ xcb_window_t xorg_win_new(
 	);
 
 	if( surface ){
-		*surface = mem_zero(xorgSurface_s);
-		if( !*surface ) err_fail("malloc");
-		(*surface)->img = g2d_new(w, h, X_COLOR_MODE);
-		if( !(*surface)->img ) err_fail("eom");
-		g2dCoord_s area = { .x = 0, .y = 0, .w = w, .h = h };
-		g2d_clear((*surface)->img, background, &area);
-/*		(*surface)->ximage = xcb_image_create(
-				w, h,
-				XCB_IMAGE_FORMAT_Z_PIXMAP, 32, 24, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
-				(*surface)->img->pixel, (*surface)->img->p * (*surface)->img->h, (*surface)->img->pixel);*/
-		(*surface)->ximage = xcb_image_create(
-			w, h,
-			XCB_IMAGE_FORMAT_Z_PIXMAP, 32, X->depth, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
-			(*surface)->img->pixel, (*surface)->img->p * (*surface)->img->h, (*surface)->img->pixel
-		);
-		(*surface)->gc = xcb_generate_id(X->connection);
-		xcb_create_gc(X->connection, (*surface)->gc, win, 0, 0);
+		if( X->shared ){
+			*surface = surface_shared_new(X, win, w, h, background);
+		}
+		else{
+			*surface = surface_private_new(X, win, w, h, background);
+		}
 	}
 	return win;
 }
 
 void xorg_surface_resize(xorg_s* X, xorgSurface_s* surface, unsigned w, unsigned h){
-	//return;
-	g2d_free(surface->img);
-	surface->img = g2d_new(w, h, X_COLOR_MODE);
+	if( X->shared ){
+		xcb_shm_detach(X->connection, surface->shmi.shmseg);
+		shmdt(surface->shmi.shmaddr);
+		surface->img->pixel = NULL;
+		g2d_free(surface->img);
+		surface->shmsize      = h*(w*4);
+		surface->shmsize      = ROUND_UP(surface->shmsize, 16);	
+		surface->offsetAlign  = 0;
+		surface->shmi.shmid   = shmget(IPC_PRIVATE, surface->shmsize, 0600);
+		surface->shmi.shmaddr = shmat(surface->shmi.shmid, 0, 0); 
+		surface->shmi.shmseg  = xcb_generate_id(X->connection);
+		xcb_shm_attach(X->connection, surface->shmi.shmseg, surface->shmi.shmid, 0);
+		shmctl(surface->shmi.shmid, IPC_RMID, 0);
+		surface->img = g2d_clone(w, h, X_COLOR_MODE, surface->shmi.shmaddr);
+	}
+	else{
+		g2d_free(surface->img);
+		free(surface->ximage);
+		surface->img = g2d_new(w, h, X_COLOR_MODE);
+	}
 	if( !surface->img ) err_fail("eom");
-	free(surface->ximage);
 	surface->ximage = xcb_image_create(
 		w, h,
 		XCB_IMAGE_FORMAT_Z_PIXMAP, 32, X->depth, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
 		surface->img->pixel, surface->img->p * surface->img->h, surface->img->pixel
 	);
-/*
-	surface->ximage = xcb_image_create(
-		w, h,
-		XCB_IMAGE_FORMAT_Z_PIXMAP, 32, 24, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
-		surface->img->pixel, surface->img->p * surface->img->h, surface->img->pixel
-	);*/
 }
-
-/*
-void xorg_surface_resize_bitblt(xorgSurface_s* surface, unsigned w, unsigned h){
-	g2dImage_s* new = g2d_new(w, h, X_COLOR_MODE);
-	g2dCoord_s blt = {
-		.x = 0,
-		.y = 0,
-		.w = w > surface->img->w ? surface->img->w : w,
-		.h = h > surface->img->h ? surface->img->h : h,
-	};
-	g2d_bitblt(new, &blt, surface->img, &blt);
-	g2d_free(surface->img);
-	surface->img = new;
-	free(surface->ximage);
-	surface->ximage = xcb_image_create(
-		w, h,
-		XCB_IMAGE_FORMAT_Z_PIXMAP, 32, 24, 32, 32, XCB_IMAGE_ORDER_LSB_FIRST, XCB_IMAGE_ORDER_LSB_FIRST,
-		surface->img->pixel, surface->img->p * surface->img->h, surface->img->pixel
-	);
-}
-*/
 
 void xorg_surface_destroy(xorg_s* x, xorgSurface_s* surface){
 	dbg_info("destroy surface");
+	if( x->shared ){
+	    xcb_shm_detach(x->connection, surface->shmi.shmseg);
+		shmdt(surface->shmi.shmaddr);
+		surface->img->pixel = NULL;
+	}
 	xcb_free_gc(x->connection, surface->gc);
 	free(surface->ximage);
 	g2d_free(surface->img);
