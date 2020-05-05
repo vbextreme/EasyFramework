@@ -30,6 +30,8 @@
 #define GUI_THEME_TEXT_SEL_COLOR    "text.sel.color"
 #define GUI_THEME_TEXT_TAB          "text.tab"
 #define GUI_THEME_TEXT_FOREGROUND   "text.foreground"
+#define GUI_THEME_TEXT_SCROLL_X     "text.scroll.x"
+#define GUI_THEME_TEXT_SCROLL_Y     "text.scroll.y"
 
 typedef struct guiText{
 	guiImage_s* render;

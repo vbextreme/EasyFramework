@@ -215,7 +215,60 @@ gui_s* gui_simple_button_new(gui_s* parent, const char* name, const utf8_t* capt
 	return gui;
 }
 
+gui_s* gui_simple_text_new(gui_s* parent, const char* name){
+	gui_s* gui = gui_text_attach( 
+		gui_new(
+			parent, name, GUI_SIMPLE_CLASS_LABEL, GUI_MODE_NORMAL,
+			GUI_SIMPLE_DEFAULT_BORDER, 0, 0, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H,
+			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
+			gui_composite_add(
+				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
+				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+			),
+			0, NULL
+		),
+		gui_text_new(
+			default_fonts_get(), 
+			GUI_SIMPLE_DEFAULT_FOREGROUND,
+			GUI_SIMPLE_DEFAULT_ACTIVE_COLOR,
+			GUI_SIMPLE_DEFAULT_CURSOR_COLOR,
+			GUI_SIMPLE_DEFAULT_TAB,
+			GUI_SIMPLE_DEFAULT_BLINK,
+			GUI_TEXT_SCROLL_Y | GUI_TEXT_CUR_VISIBLE | GUI_TEXT_INSERT | GUI_TEXT_CURSOR_LIGHT
+		)
+	);
+	gui_themes(gui, appName);
+	return gui;
+}
 
-
+gui_s* gui_simple_bar_new(gui_s* parent, const char* name, const utf8_t* caption, double max){
+	gui_s* gui = gui_bar_attach( 
+		gui_new(
+			parent, name, GUI_SIMPLE_CLASS_LABEL, GUI_MODE_NORMAL,
+			GUI_SIMPLE_DEFAULT_BORDER, 0, 0, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H,
+			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
+			gui_composite_add(
+				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
+				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+			),
+			0, NULL
+		),
+		gui_bar_new(
+			gui_caption_new(
+				default_fonts_get(), 
+				GUI_SIMPLE_DEFAULT_FOREGROUND, 
+				GUI_CAPTION_CENTER_X | GUI_CAPTION_CENTER_Y
+			),
+			gui_image_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0),
+			0.0,
+			max,
+			0.0,
+			GUI_BAR_HORIZONTAL
+		)
+	);
+	if( caption ) gui_bar_text_set(gui, caption, NULL);
+	gui_themes(gui, appName);
+	return gui;
+}
 
 

@@ -4,8 +4,11 @@
 #include <ef/gui.h>
 #include <ef/guiCaption.h>
 
-#define GUI_THEMES_BAR_COLOR "bar.color"
-#define GUI_THEMES_BAR_MODE  "bar.mode"
+#define GUI_THEMES_BAR_COLOR        "bar.color"
+#define GUI_THEMES_BAR_MODE         "bar.mode"
+#define GUI_THEMES_BAR_DESCRIPT     "bar.descript"
+#define GUI_THEMES_BAR_CUR_DESCRIPT "bar.descriptCurrent"
+
 
 #define GUI_BAR_HORIZONTAL   0x0001
 #define GUI_BAR_VERTICAL     0x0002
@@ -20,6 +23,7 @@ typedef struct guiBar{
 	guiCaption_s* caption;
 	guiImage_s* fill;
 	utf8_t* textdescript;
+	utf8_t* currentdescript;
 	double min;
 	double max;
 	double current;
@@ -36,7 +40,7 @@ gui_s* gui_bar_attach(gui_s* gui, guiBar_s* bar);
 void gui_bar_free(guiBar_s* bar);
 
 /** set bar text*/
-void gui_bar_text_set(gui_s* gui, const utf8_t* text);
+void gui_bar_text_set(gui_s* gui, const utf8_t* text, const utf8_t* aftercurrent);
 
 void gui_bar_circle_fn(gui_s* gui, __unused guiImage_s* img, void* generic);
 

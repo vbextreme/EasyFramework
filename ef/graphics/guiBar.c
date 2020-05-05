@@ -15,6 +15,7 @@ guiBar_s* gui_bar_new(guiCaption_s* caption, guiImage_s* fill, double min, doubl
 	bar->flags = flags;
 	bar->fill = fill;
 	bar->textdescript = NULL;
+	bar->currentdescript = NULL;
 	return bar;
 }
 
@@ -42,13 +43,18 @@ void gui_bar_free(guiBar_s* bar){
 	free(bar);
 }
 
-void gui_bar_text_set(gui_s* gui, const utf8_t* text){
+void gui_bar_text_set(gui_s* gui, const utf8_t* text, const utf8_t* aftercurrent){
 	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = gui->control;
 	if( text ){
-		free(bar->textdescript);
+		if( bar->textdescript )free(bar->textdescript);
 		bar->textdescript = (utf8_t*)str_dup((char*)text,0);
 	}
+	if( aftercurrent ){
+		if( bar->currentdescript ) free(bar->currentdescript);
+		bar->currentdescript = (utf8_t*)str_dup((char*)aftercurrent,0);
+	}
+
 	double current = bar->flags & GUI_BAR_SHOW_PERCENT ? (100.0 * bar->current) / (bar->max - bar->min) : bar->current;
 	char* p = bar->flags & GUI_BAR_SHOW_PERCENT ? "%" : "";
 	
@@ -59,7 +65,13 @@ void gui_bar_text_set(gui_s* gui, const utf8_t* text){
 	char txtmax[128] = {[0]=0};
 	if( bar->flags & GUI_BAR_SHOW_MAX ) sprintf(txtmax, "  %.1f", bar->max);
 
-	__mem_free utf8_t* t = (utf8_t*)str_printf("%s%s%s%s", bar->textdescript ? (char*)bar->textdescript : "", txtmin, txtcur, txtmax);
+	__mem_free utf8_t* t = (utf8_t*)str_printf("%s%s%s%s%s", 
+		bar->textdescript ? (char*)bar->textdescript : "", 
+		txtmin, 
+		txtcur,
+		bar->currentdescript ? (char*)bar->currentdescript : "",	
+		txtmax
+	);
 	gui_caption_text_set(gui, bar->caption, t);
 }
 
@@ -116,7 +128,7 @@ void gui_bar_current_set(gui_s* gui, double current){
 	bar->current = current;
 	if( bar->flags & GUI_BAR_HORIZONTAL ) bar_hori(gui);
 	else if( bar->flags & GUI_BAR_VERTICAL ) bar_vert(gui);
-	gui_bar_text_set(gui, NULL);
+	gui_bar_text_set(gui, NULL, NULL);
 }
 
 double gui_bar_current(gui_s* gui){
@@ -132,7 +144,7 @@ void gui_bar_max_set(gui_s* gui, double max){
 	if( bar->current < bar->max ) bar->current = bar->max;
 	if( bar->flags & GUI_BAR_HORIZONTAL ) bar_hori(gui);
 	else if( bar->flags & GUI_BAR_VERTICAL ) bar_vert(gui);
-	gui_bar_text_set(gui, NULL);
+	gui_bar_text_set(gui, NULL, NULL);
 }
 
 double gui_bar_max(gui_s* gui){
@@ -148,7 +160,7 @@ void gui_bar_min_set(gui_s* gui, double min){
 	if( bar->current < bar->min ) bar->current = bar->min;
 	if( bar->flags & GUI_BAR_HORIZONTAL ) bar_hori(gui);
 	else if( bar->flags & GUI_BAR_VERTICAL ) bar_vert(gui);
-	gui_bar_text_set(gui, NULL);
+	gui_bar_text_set(gui, NULL, NULL);
 }
 
 double gui_bar_min(gui_s* gui){
@@ -194,6 +206,10 @@ int gui_bar_event_themes(gui_s* gui, xorgEvent_s* ev){
 	gui_caption_themes(gui, bar->caption, name);
 
 	gui_themes_gui_image(gui, name, &bar->fill);
+
+	__mem_free char* desc = gui_themes_string(name, GUI_THEMES_BAR_DESCRIPT);
+	__mem_free char* cdes = gui_themes_string(name, GUI_THEMES_BAR_CUR_DESCRIPT);
+	gui_bar_text_set(gui, U8(desc), U8(cdes));
 
 	__mem_free char* mode = gui_themes_string(ev->data.data, GUI_THEMES_BAR_MODE);
 	if( mode ){

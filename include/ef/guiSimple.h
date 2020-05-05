@@ -19,9 +19,13 @@
 #define GUI_SIMPLE_DEFAULT_FOREGROUND              gui_color(255,0x00,0x00,0x00)
 #define GUI_SIMPLE_DEFAULT_ACTIVE_COLOR            gui_color(255,0xE0,0xE0,0xE0)
 #define GUI_SIMPLE_DEFAULT_ENABLE_COLOR            gui_color(255,0x9E,0x9E,0x9E)
+#define GUI_SIMPLE_DEFAULT_CURSOR_COLOR            gui_color(255,0x21,0x21,0x21)
+#define GUI_SIMPLE_DEFAULT_BLINK                   600
+
 #define GUI_SIMPLE_DEFAULT_BORDER                  1
 #define GUI_SIMPLE_DEFAULT_CONTROL_W               100
 #define GUI_SIMPLE_DEFAULT_CONTROL_H               100
+#define GUI_SIMPLE_DEFAULT_TAB                     4
 
 #define GUI_SIMPLE_CLASS_WINDOW                    "window"
 #define GUI_SIMPLE_CLASS_LABEL                     "label"
@@ -39,5 +43,8 @@ gui_s* gui_simple_window_layout_horizontal_new(const char* name, unsigned x, uns
 gui_s* gui_simple_window_layout_table_new(const char* name, unsigned x, unsigned y, unsigned w, unsigned h);
 void gui_simple_layout_table_add(gui_s* parent, gui_s* gui, double w, double h, int newline);
 gui_s* gui_simple_label_new(gui_s* parent, const char* name, const utf8_t* caption);
+gui_s* gui_simple_button_new(gui_s* parent, const char* name, const utf8_t* caption, guiEvent_f onclick);
+gui_s* gui_simple_text_new(gui_s* parent, const char* name);
+gui_s* gui_simple_bar_new(gui_s* parent, const char* name, const utf8_t* caption, double max);
 
 #endif

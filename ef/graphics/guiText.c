@@ -1110,8 +1110,9 @@ int gui_text_event_move(gui_s* gui, xorgEvent_s* event){
 	return 0;
 }
 
-int gui_text_event_themes(__unused gui_s* gui, xorgEvent_s* ev){
-	guiText_s* txt = ev->data.request;
+int gui_text_event_themes(gui_s* gui, xorgEvent_s* ev){
+	iassert(gui->type == GUI_TYPE_TEXT);
+	guiText_s* txt = gui->control;
 	char* name = ev->data.data;
 
 	gui_themes_fonts_set(name, &txt->fonts);
@@ -1120,6 +1121,19 @@ int gui_text_event_themes(__unused gui_s* gui, xorgEvent_s* ev){
 	gui_themes_uint_set(name, GUI_THEME_TEXT_CURSOR_COLOR, &txt->colCursor);
 	gui_themes_uint_set(name, GUI_THEME_TEXT_SEL_COLOR, &txt->select);
 	gui_themes_uint_set(name, GUI_THEME_TEXT_TAB, &txt->tabspace);
+	
+	int vbool;
+	if( gui_themes_bool_set(name, GUI_THEME_TEXT_SCROLL_X , &vbool) ){
+		if( vbool ) txt->flags |= GUI_TEXT_SCROLL_X;
+		else        txt->flags &= ~GUI_TEXT_SCROLL_X;
+		txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
+	}
+
+	if( gui_themes_bool_set(name, GUI_THEME_TEXT_SCROLL_Y , &vbool) ){
+		if( vbool ) txt->flags |= GUI_TEXT_SCROLL_Y;
+		else        txt->flags &= ~GUI_TEXT_SCROLL_Y;
+		txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
+	}
 
 	__mem_free char* cursor = gui_themes_string(name, GUI_THEME_TEXT_CURSOR);
 	if( cursor ){
