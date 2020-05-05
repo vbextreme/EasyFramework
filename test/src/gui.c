@@ -31,6 +31,10 @@
 #define TESTEF_BUTTONRT_W    50.0
 #define TESTEF_BUTTONRT_H    15.0
 
+#define TESTEF_TEXT_NAME "input"
+#define TESTEF_TEXT_W    50
+#define TESTEF_TEXT_H    15
+
 #define TESTEF_THEME_RELOAD_PATH "~/testef.Xresources"
 
 #define TESTEF_RELOAD "~/Project/c/EasyFramework/test/build/testef -g"
@@ -105,6 +109,9 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_s* loadTheme = gui_simple_button_new(main, TESTEF_BUTTONRT_NAME, U8(TESTEF_BUTTONRT_NAME), button_themes);
 	gui_simple_layout_table_add(main, loadTheme, TESTEF_BUTTONRR_W, TESTEF_BUTTONRR_H, 0);
 	loadTheme->userdata = main;
+
+	gui_s* text = gui_simple_text_new(main, TESTEF_TEXT_NAME);
+	gui_simple_layout_table_add(main, text, TESTEF_TEXT_W, TESTEF_TEXT_H, 1);
 
 	gui_simple_apply_change(main);
 	gui_simple_show_all(main, 1);

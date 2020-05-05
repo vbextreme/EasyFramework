@@ -570,7 +570,6 @@ void gui_text_render_cursor(gui_s* gui, __unused guiImage_s* img, __unused void*
 	iassert( lineEN.y < gui->surface->img->h);
 
 	for( unsigned i = 0; i < cursor.w; ++i){
-		iassert(lineST.x + i < gui->surface->img->w);
 		g2d_line(gui->surface->img, &lineST, &lineEN, txt->colCursor, 1);
 		++lineST.x;
 		++lineEN.x;
@@ -847,10 +846,10 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 				txt->flags |= GUI_TEXT_REND_SCROLL | GUI_TEXT_REND_CURSOR;
 			}
 			else{
-				gui_text_cursor_prev(gui->control);
+				gui_text_cursor_prev(gui);
 			}
 			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui);
-			else gui_text_unsel(gui->control);
+			else gui_text_unsel(gui);
 		break;
 
 		case XKB_KEY_Right:
@@ -861,63 +860,63 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 				txt->flags |= GUI_TEXT_REND_SCROLL | GUI_TEXT_REND_CURSOR;
 			}
 			else{
-				gui_text_cursor_next(gui->control);
+				gui_text_cursor_next(gui);
 			}
 			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui);
-			else gui_text_unsel(gui->control);
+			else gui_text_unsel(gui);
 		break;
 
 		case XKB_KEY_Up:
-			gui_text_cursor_up(gui->control);
+			gui_text_cursor_up(gui);
 			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui);
-			else gui_text_unsel(gui->control);
+			else gui_text_unsel(gui);
 		break;
 
 		case XKB_KEY_Down:
-			gui_text_cursor_down(gui->control);
+			gui_text_cursor_down(gui);
 			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui);
-			else gui_text_unsel(gui->control);
+			else gui_text_unsel(gui);
 		break;
 
 		case XKB_KEY_Page_Up:
 			gui_text_cursor_pagup(gui);
 			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui);
-			else gui_text_unsel(gui->control);
+			else gui_text_unsel(gui);
 		break;
 
 		case XKB_KEY_Page_Down:
 			gui_text_cursor_pagdn(gui);
 			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui);	
-			else gui_text_unsel(gui->control);
+			else gui_text_unsel(gui);
 		break;
 
 		case XKB_KEY_Home:
 		case XKB_KEY_Begin:
 			gui_text_cursor_home(gui);
 			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui);	
-			else gui_text_unsel(gui->control);
+			else gui_text_unsel(gui);
 		break;
 
 		case XKB_KEY_End:
-			gui_text_cursor_end(gui->control);
+			gui_text_cursor_end(gui);
 			if( event->keyboard.modifier & XORG_KEY_MOD_SHIFT ) gui_text_sel(gui);	
-			else gui_text_unsel(gui->control);
+			else gui_text_unsel(gui);
 		break;
 
 		case XKB_KEY_Insert:
-			gui_text_ir_toggle(gui->control);
+			gui_text_ir_toggle(gui);
 		break;
 
 		case XKB_KEY_Return:
 			if( txt->selStart ){
-				gui_text_sel_del(gui->control);
+				gui_text_sel_del(gui);
 			}
 			gui_text_put(gui, '\n');
 		break;
 
 		case XKB_KEY_Tab:
 			if( txt->selStart ){
-				gui_text_sel_del(gui->control);
+				gui_text_sel_del(gui);
 			}
 			gui_text_put(gui, '\t');
 		break;
@@ -950,7 +949,7 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 			}
 			else if( event->keyboard.utf){
 				if( txt->selStart ){
-					gui_text_sel_del(gui->control);
+					gui_text_sel_del(gui);
 				}
 				gui_text_put(gui, event->keyboard.utf);
 			}
@@ -990,7 +989,7 @@ int gui_text_event_clipboard(gui_s* gui, xorgEvent_s* ev){
 	else{
 		guiText_s* txt = gui->control;
 		if( ev->clipboard.primary || !txt->clipmem ){
-			utf8_t* sel = gui_text_sel_get(gui->control);
+			utf8_t* sel = gui_text_sel_get(gui);
 			if( !sel ){
 				return 0;
 			}
@@ -1103,7 +1102,6 @@ int gui_text_event_mouse(gui_s* gui, xorgEvent_s* event){
 
 int gui_text_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_TEXT);
-	//guiText_s* txt = gui->control;
 	gui_event_move(gui, event);
 	gui_text_redraw(gui, 0);
 	gui_draw(gui);
@@ -1123,13 +1121,13 @@ int gui_text_event_themes(gui_s* gui, xorgEvent_s* ev){
 	gui_themes_uint_set(name, GUI_THEME_TEXT_TAB, &txt->tabspace);
 	
 	int vbool;
-	if( gui_themes_bool_set(name, GUI_THEME_TEXT_SCROLL_X , &vbool) ){
+	if( !gui_themes_bool_set(name, GUI_THEME_TEXT_SCROLL_X , &vbool) ){
 		if( vbool ) txt->flags |= GUI_TEXT_SCROLL_X;
 		else        txt->flags &= ~GUI_TEXT_SCROLL_X;
 		txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
 	}
 
-	if( gui_themes_bool_set(name, GUI_THEME_TEXT_SCROLL_Y , &vbool) ){
+	if( !gui_themes_bool_set(name, GUI_THEME_TEXT_SCROLL_Y , &vbool) ){
 		if( vbool ) txt->flags |= GUI_TEXT_SCROLL_Y;
 		else        txt->flags &= ~GUI_TEXT_SCROLL_Y;
 		txt->flags |= GUI_TEXT_REND_TEXT | GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_SCROLL;
