@@ -39,8 +39,10 @@ __private phq_s* timergui;
 __private deadpoll_s* dpgui;
 __private gui_s* focused;
 __private guiInternalFocusEvent_s* vgife;
+__private const char* oldlocale;
 
 void gui_begin(){
+	oldlocale = os_setlocale(LC_NUMERIC, "C");
 	os_begin();
 	ft_begin();
 	gui_resources_init();
@@ -63,6 +65,7 @@ void gui_end(){
 	gui_resources_free();
 	deadpoll_free(dpgui);
 	vector_free(vgife);
+	os_setlocale(LC_NUMERIC, oldlocale);
 }
 
 __private void allgui_add(gui_s* gui){
@@ -297,6 +300,18 @@ ssize_t gui_id(gui_s* gui){
 		return i;
 	}
 	return -1;	
+}
+
+gui_s* gui_by_name(gui_s* gui, const char* name, const char* class){
+	if( !strcmp(gui->name, name) && !strcmp(gui->class, class) ){
+		return gui;
+	}
+
+	gui_s* ret;
+	vector_foreach(gui->childs, i){
+		if( (ret=gui_by_name(gui->childs[i], name, class)) ) return ret;
+	}
+	return NULL;
 }
 
 int gui_focus_have(gui_s* gui){
@@ -823,6 +838,7 @@ char* gui_themes_string(const char* name, const char* property){
 err_t gui_themes_bool_set(const char* name, const char* property, int* set){
 	bool v;
 	__mem_free char* p = str_printf("%s.%s", name, property);
+	dbg_info("request property:'%s'", p);
 	if( !xorg_resources_bool_get(X, p, NULL, &v) ){
 		*set = v;
 		return 0;
@@ -833,6 +849,7 @@ err_t gui_themes_bool_set(const char* name, const char* property, int* set){
 err_t gui_themes_int_set(const char* name, const char* property, int* set){
 	long v;
 	__mem_free char* p = str_printf("%s.%s", name, property);
+	dbg_info("request property:'%s'", p);
 	if( !xorg_resources_long_get(X, p, NULL, &v) ){
 		*set = v;
 		return 0;
@@ -843,6 +860,7 @@ err_t gui_themes_int_set(const char* name, const char* property, int* set){
 err_t gui_themes_uint_set(const char* name, const char* property, unsigned* set){
 	long v;
 	__mem_free char* p = str_printf("%s.%s", name, property);
+	dbg_info("request property:'%s'", p);
 	if( !xorg_resources_long_get(X, p, NULL, &v) ){
 		*set = v;
 		return 0;
@@ -853,6 +871,7 @@ err_t gui_themes_uint_set(const char* name, const char* property, unsigned* set)
 err_t gui_themes_long_set(const char* name, const char* property, long* set){
 	long v;
 	__mem_free char* p = str_printf("%s.%s", name, property);
+	dbg_info("request property:'%s'", p);
 	if( !xorg_resources_long_get(X, p, NULL, &v) ){
 		*set = v;
 		return 0;
@@ -868,9 +887,10 @@ err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts){
 	char* gtfnid = &gtfn[strlen(GUI_THEME_FONT_NAME)];
 	char* gtfsid = &gtfs[strlen(GUI_THEME_FONT_SIZE)];
 	unsigned id = 0;
-	sprintf(gtfnid, "%u", id++);
+	sprintf(gtfnid, "%u", id);
 	sprintf(gtfsid, "%u", id++);
 	
+	dbg_error("name::%s",name);
 	__mem_free char* fontref = gui_themes_string(name, GUI_THEME_FONT_GROUP);
 	if( !fontref ) return -1;
 	guiResource_s* res = gui_resource(fontref);
@@ -879,21 +899,29 @@ err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts){
 		return 0;
 	}
 
+	dbg_info("create new fonts:%s", fontref);
 	ftFonts_s* fonts = ft_fonts_new(fontref);
+	dbg_error("gtfn:%s", gtfn);
+	dbg_error("gtfs:%s", gtfs);
    	while( (fontname=gui_themes_string(name, gtfn)) ){
+		dbg_info("font name:%s", fontname);
 		if( gui_themes_int_set(name, gtfs, &size) ){
+			dbg_error("loading size");
 			ft_fonts_free(fonts);
 			return -1;
 		}
 		ftFont_s* font = ft_fonts_load(fonts, fontname, fontname);
 		if( !font ){
+			dbg_error("on loading fonts");
 			ft_fonts_free(fonts);
 			return -1;
 		}
 		ft_font_size(font, size, size);
 		free(fontname);
-		sprintf(gtfnid, "%u", id++);
+		sprintf(gtfnid, "%u", id);
 		sprintf(gtfsid, "%u", id++);
+		dbg_error("gtfn:%s", gtfn);
+		dbg_error("gtfs:%s", gtfs);
 	}
 	gui_resource_new(fontref, fonts);
 

@@ -19,6 +19,9 @@ void spawn_disable_zombie(void);
 /** call whend end of use spawn, wait(NULL)*/
 void spawn_end(void);
 
+/** replace current process with shell software*/
+void shell(const char* cmdline);
+
 /** execute command in shell
  * @param cmdline command to execute
  * @param disableoutput disable stdout stderr

@@ -29,6 +29,9 @@
 
 #define GUI_SIMPLE_CLASS_WINDOW                    "window"
 #define GUI_SIMPLE_CLASS_LABEL                     "label"
+#define GUI_SIMPLE_CLASS_BUTTON                    "button"
+#define GUI_SIMPLE_CLASS_TEXT                      "text"
+#define GUI_SIMPLE_CLASS_BAR                       "bar"
 
 #define GUI_SIMPLE_COMPOSITE_SIZE                  2
 

@@ -54,6 +54,13 @@ __private void spawn_close_files(int skipbefore){
 	}
 }
 
+void shell(const char* cmdline){
+	spawn_close_files(3);
+	const char* shell = os_shell_get();
+	execle(shell, shell, SPAWN_ARGUMENT, cmdline, NULL, environ);
+	err_pushno("fail exevc '%s %s %s'", shell, SPAWN_ARGUMENT, cmdline);
+}
+
 pid_t spawn_shell(const char* cmdline, int disableoutput){
 	pid_t child = fork();
 	switch( child ){
@@ -126,9 +133,6 @@ err_t spawn_shell_slurp(char** out, char** err, int* exitcode, const char* cmdli
 
 err_t spawn_wait(pid_t pid, int* exitcode){
 	if( waitpid(pid, exitcode, 0) == -1 ){
-		dbg_errno();
-		dbg_error("waitpid");
-		err_pushno("wait pid %d", pid);
 		return -1;
 	}
 	if( exitcode ) *exitcode = WIFEXITED(*exitcode) ? WEXITSTATUS(*exitcode) : -1;
@@ -205,7 +209,6 @@ int spawn_waitfd(pid_t pid){
 			return -1;
 		}
 		case 0:{
-			dbg_error("child");
 			fd_close(p[0]);
 			spawn_close_files_but(p[1]);
 			fork_waitpid(p[0], pid); 
@@ -213,7 +216,6 @@ int spawn_waitfd(pid_t pid){
 		return -1;
 	}
 
-	dbg_error("parent");
 	fd_close(p[1]);
 	return p[0];
 }

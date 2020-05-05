@@ -208,8 +208,8 @@ void gui_border(gui_s* gui, int border);
 /** get id */
 ssize_t gui_id(gui_s* gui);
 
-/** set internal focus*/
-//void gui_focus_internal(gui_s* gui);
+/** get gui from name and class*/
+gui_s* gui_by_name(gui_s* gui, const char* name, const char* class);
 
 /** check if gui have focus*/
 int gui_focus_have(gui_s* gui);

@@ -181,15 +181,15 @@ gui_s* gui_simple_label_new(gui_s* parent, const char* name, const utf8_t* capti
 			)
 		)
 	);
-	if( caption ) gui_label_text_set(gui, caption);
 	gui_themes(gui, appName);
+	if( caption ) gui_label_text_set(gui, caption);
 	return gui;
 }
 
 gui_s* gui_simple_button_new(gui_s* parent, const char* name, const utf8_t* caption, guiEvent_f onclick){
 	gui_s* gui = gui_button_attach( 
 		gui_new(
-			parent, name, GUI_SIMPLE_CLASS_LABEL, GUI_MODE_NORMAL,
+			parent, name, GUI_SIMPLE_CLASS_BUTTON, GUI_MODE_NORMAL,
 			GUI_SIMPLE_DEFAULT_BORDER, 0, 0, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H,
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
@@ -210,15 +210,15 @@ gui_s* gui_simple_button_new(gui_s* parent, const char* name, const utf8_t* capt
 			GUI_BUTTON_FLAGS_HOVER
 		)
 	);
-	if( caption ) gui_button_text_set(gui, caption);
 	gui_themes(gui, appName);
+	if( caption ) gui_button_text_set(gui, caption);
 	return gui;
 }
 
 gui_s* gui_simple_text_new(gui_s* parent, const char* name){
 	gui_s* gui = gui_text_attach( 
 		gui_new(
-			parent, name, GUI_SIMPLE_CLASS_LABEL, GUI_MODE_NORMAL,
+			parent, name, GUI_SIMPLE_CLASS_TEXT, GUI_MODE_NORMAL,
 			GUI_SIMPLE_DEFAULT_BORDER, 0, 0, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H,
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
@@ -244,7 +244,7 @@ gui_s* gui_simple_text_new(gui_s* parent, const char* name){
 gui_s* gui_simple_bar_new(gui_s* parent, const char* name, const utf8_t* caption, double max){
 	gui_s* gui = gui_bar_attach( 
 		gui_new(
-			parent, name, GUI_SIMPLE_CLASS_LABEL, GUI_MODE_NORMAL,
+			parent, name, GUI_SIMPLE_CLASS_BAR, GUI_MODE_NORMAL,
 			GUI_SIMPLE_DEFAULT_BORDER, 0, 0, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H,
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
@@ -266,8 +266,8 @@ gui_s* gui_simple_bar_new(gui_s* parent, const char* name, const utf8_t* caption
 			GUI_BAR_HORIZONTAL
 		)
 	);
-	if( caption ) gui_bar_text_set(gui, caption, NULL);
 	gui_themes(gui, appName);
+	if( caption ) gui_bar_text_set(gui, caption, NULL);
 	return gui;
 }
 

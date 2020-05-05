@@ -115,7 +115,8 @@ int gui_caption_themes(gui_s* gui, guiCaption_s* cap, const char* name){
 	if( !gui_themes_uint_set(name, GUI_THEME_FOREGROUND, &cap->foreground) ) cap->flags |= GUI_CAPTION_RENDERING;
 	
 	ftFonts_s* old = cap->fonts;
-	gui_themes_fonts_set(name, &cap->fonts);
+	__mem_free char* capfont = str_printf("%s.caption", name);
+	gui_themes_fonts_set(capfont, &cap->fonts);
 	if( cap->fonts != old ){
 		gui_resource_release(old->groupName);
 		cap->flags |= GUI_CAPTION_RENDERING;
