@@ -403,6 +403,7 @@ void gui_text_cursor_pagdn(gui_s* gui){
 	const unsigned fullLine = gui->surface->img->h / txt->cursor.h;
 	const unsigned dwnLine = fullLine - (txt->cursor.x-txt->scroll.x) / txt->cursor.h;
 	unsigned i = fullLine+dwnLine;
+	gui_text_cursor_home(gui);
 	utf8_t* nl = NULL;
    	while( i-->0 && (nl=gui_text_next_line_ptr(gui)) ){
 		txt->it.str = nl;
@@ -430,6 +431,7 @@ void gui_text_cursor_pagup(gui_s* gui){
 	const unsigned fullLine = gui->surface->img->h / txt->cursor.h;
 	const unsigned upLine = (txt->cursor.x-txt->scroll.x) / txt->cursor.h;
 	unsigned i = fullLine+upLine;
+	gui_text_cursor_home(gui);
 	utf8_t* nl = NULL;
    	while( i-->0 && (nl=gui_text_back_line_ptr(gui)) ){
 		txt->it.str = nl;
