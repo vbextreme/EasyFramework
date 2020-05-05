@@ -965,6 +965,15 @@ void gui_themes(gui_s* gui, const char* appName){
 	long vlong;
 	g2dCoord_s position = {-1,-1,-1,-1};
 
+	if( !gui->parent ){
+		char* stralpha = gui_themes_string(name, GUI_THEME_WM_ALPHA);
+		if( stralpha ){
+			double alpha = strtod(stralpha, NULL);
+			free(stralpha);
+			gui_opacity(gui, alpha);
+		}
+	}
+
 	if( !gui_themes_long_set(name, GUI_THEME_BORDER, &vlong) ) gui_border(gui, vlong);
 	gui_themes_int_set(name, GUI_THEME_GENERIC, &gui->genericSize);
 

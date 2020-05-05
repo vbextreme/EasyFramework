@@ -17,6 +17,8 @@
 #define GUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR gui_color(255,0xEF,0xEF,0xEF)
 #define GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR        gui_color(255,0xDB,0xDB,0xDB)
 #define GUI_SIMPLE_DEFAULT_FOREGROUND              gui_color(255,0x00,0x00,0x00)
+#define GUI_SIMPLE_DEFAULT_ACTIVE_COLOR            gui_color(255,0xE0,0xE0,0xE0)
+#define GUI_SIMPLE_DEFAULT_ENABLE_COLOR            gui_color(255,0x9E,0x9E,0x9E)
 #define GUI_SIMPLE_DEFAULT_BORDER                  1
 #define GUI_SIMPLE_DEFAULT_CONTROL_W               100
 #define GUI_SIMPLE_DEFAULT_CONTROL_H               100

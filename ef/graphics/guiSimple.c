@@ -186,7 +186,34 @@ gui_s* gui_simple_label_new(gui_s* parent, const char* name, const utf8_t* capti
 	return gui;
 }
 
-
+gui_s* gui_simple_button_new(gui_s* parent, const char* name, const utf8_t* caption, guiEvent_f onclick){
+	gui_s* gui = gui_button_attach( 
+		gui_new(
+			parent, name, GUI_SIMPLE_CLASS_LABEL, GUI_MODE_NORMAL,
+			GUI_SIMPLE_DEFAULT_BORDER, 0, 0, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H,
+			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
+			gui_composite_add(
+				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
+				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+			),
+			0, NULL
+		),
+		gui_button_new(
+			gui_caption_new(
+				default_fonts_get(), 
+				GUI_SIMPLE_DEFAULT_FOREGROUND, 
+				GUI_CAPTION_CENTER_X | GUI_CAPTION_CENTER_Y
+			),
+			gui_image_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0),
+			gui_image_color_new(GUI_SIMPLE_DEFAULT_ACTIVE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0),
+			onclick,
+			GUI_BUTTON_FLAGS_HOVER
+		)
+	);
+	if( caption ) gui_button_text_set(gui, caption);
+	gui_themes(gui, appName);
+	return gui;
+}
 
 
 

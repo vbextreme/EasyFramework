@@ -4,7 +4,7 @@
 #include <ef/str.h>
 #include <ef/err.h>
 
-guiButton_s* gui_button_new(guiCaption_s* caption, guiImage_s* press, guiImage_s* hover, guiEvent_f onclick){
+guiButton_s* gui_button_new(guiCaption_s* caption, guiImage_s* press, guiImage_s* hover, guiEvent_f onclick, int flags){
 	if( !caption ) return NULL;
 	guiButton_s* btn = mem_new(guiButton_s);
 	if( !btn ) err_fail("eom");
@@ -13,6 +13,7 @@ guiButton_s* gui_button_new(guiCaption_s* caption, guiImage_s* press, guiImage_s
 	btn->state[GUI_BUTTON_STATE_PRESS] = press;
 	btn->state[GUI_BUTTON_STATE_HOVER] = hover;
 	btn->onclick = onclick;
+	btn->flags = flags;
 	return btn;
 }
 
@@ -118,12 +119,18 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event){
 		if( btn->onclick ) btn->onclick(gui, event);
 	}
 	else if( event->mouse.event == XORG_MOUSE_ENTER ){
-		gui_button_redraw(gui, 2);
-		gui_draw(gui);
+		guiButton_s* btn = gui->control;
+		if( btn->flags & GUI_BUTTON_FLAGS_HOVER ){
+			gui_button_redraw(gui, 2);
+			gui_draw(gui);
+		}
 	}
 	else if( event->mouse.event == XORG_MOUSE_LEAVE ){
-		gui_button_redraw(gui, 0);
-		gui_draw(gui);
+		guiButton_s* btn = gui->control;
+		if( btn->flags & GUI_BUTTON_FLAGS_HOVER ){
+			gui_button_redraw(gui, 0);
+			gui_draw(gui);
+		}
 	}
 	return 0;
 }
@@ -147,6 +154,12 @@ int gui_button_event_themes(gui_s* gui, xorgEvent_s* ev){
 
 	char* name = ev->data.data;
 	gui_caption_themes(gui, btn->caption, name);
+
+	int vbool;
+	if( gui_themes_bool_set(name, GUI_THEMES_BUTTON_HOVER, &vbool) ){
+		if( vbool ) btn->flags |= GUI_BUTTON_FLAGS_HOVER;
+		else        btn->flags &= ~GUI_BUTTON_FLAGS_HOVER;
+	}
 
 	char* iname = str_printf("%s.%s", name, GUI_THEME_BUTTON_PRESS);
 	gui_themes_gui_image(gui, iname, &btn->state[GUI_BUTTON_STATE_PRESS]);

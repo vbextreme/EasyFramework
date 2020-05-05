@@ -35,35 +35,40 @@
 #define GUI_TIMER_NEXT   0
 #define GUI_TIMER_CUSTOM 1
 
+#define GUI_SHOW_VISIBLE 1
+#define GUI_SHOW_HIDE    0
+
 #define GUI_FOCUS_BORDER_SIZE 3
 
-#define GUI_THEME_BORDER                  "border"
-#define GUI_THEME_GENERIC                 "generic"
-#define GUI_THEME_X                       "position.x"
-#define GUI_THEME_Y                       "position.y"
-#define GUI_THEME_W                       "position.w"
-#define GUI_THEME_H                       "position.h"
-#define GUI_THEME_FONT_GROUP              "font.group"
-#define GUI_THEME_FONT_NAME               "font.name."
-#define GUI_THEME_FONT_SIZE               "font.size."
+#define GUI_THEME_WM_ALPHA         "wm.alpha"
 
-#define GUI_THEME_COMPOSITE              "composite"
-#define GUI_THEME_COMPOSITE_COLOR        "color"
-#define GUI_THEME_COMPOSITE_IMAGE        "image"
-#define GUI_THEME_COMPOSITE_GIF          "gif"
-#define GUI_THEME_COMPOSITE_VIDEO        "video"
-#define GUI_THEME_COMPOSITE_ALPHA        "alpha"
-#define GUI_THEME_COMPOSITE_PLAY         "play"
-#define GUI_THEME_COMPOSITE_LOOP         "loop"
-#define GUI_THEME_COMPOSITE_RATIO        "ratio"
-#define GUI_THEME_COMPOSITE_DEST_X       "dest.x"
-#define GUI_THEME_COMPOSITE_DEST_Y       "dest.y"
-#define GUI_THEME_COMPOSITE_DEST_W       "dest.w"
-#define GUI_THEME_COMPOSITE_DEST_H       "dest.h"
-#define GUI_THEME_COMPOSITE_SRC_X        "src.x"
-#define GUI_THEME_COMPOSITE_SRC_Y        "src.y"
-#define GUI_THEME_COMPOSITE_SRC_W        "src.w"
-#define GUI_THEME_COMPOSITE_SRC_H        "src.h"
+#define GUI_THEME_BORDER           "border"
+#define GUI_THEME_GENERIC          "generic"
+#define GUI_THEME_X                "position.x"
+#define GUI_THEME_Y                "position.y"
+#define GUI_THEME_W                "position.w"
+#define GUI_THEME_H                "position.h"
+#define GUI_THEME_FONT_GROUP       "font.group"
+#define GUI_THEME_FONT_NAME        "font.name."
+#define GUI_THEME_FONT_SIZE        "font.size."
+
+#define GUI_THEME_COMPOSITE        "composite"
+#define GUI_THEME_COMPOSITE_COLOR  "color"
+#define GUI_THEME_COMPOSITE_IMAGE  "image"
+#define GUI_THEME_COMPOSITE_GIF    "gif"
+#define GUI_THEME_COMPOSITE_VIDEO  "video"
+#define GUI_THEME_COMPOSITE_ALPHA  "alpha"
+#define GUI_THEME_COMPOSITE_PLAY   "play"
+#define GUI_THEME_COMPOSITE_LOOP   "loop"
+#define GUI_THEME_COMPOSITE_RATIO  "ratio"
+#define GUI_THEME_COMPOSITE_DEST_X "dest.x"
+#define GUI_THEME_COMPOSITE_DEST_Y "dest.y"
+#define GUI_THEME_COMPOSITE_DEST_W "dest.w"
+#define GUI_THEME_COMPOSITE_DEST_H "dest.h"
+#define GUI_THEME_COMPOSITE_SRC_X  "src.x"
+#define GUI_THEME_COMPOSITE_SRC_Y  "src.y"
+#define GUI_THEME_COMPOSITE_SRC_W  "src.w"
+#define GUI_THEME_COMPOSITE_SRC_H  "src.h"
 
 typedef enum {GUI_MODE_NORMAL, GUI_MODE_MODAL, GUI_MODE_DOCK_TOP, GUI_MODE_DOCK_BOTTOM, GUI_MODE_DOCK_LEFT, GUI_MODE_DOCK_RIGHT} guiMode_e;
 
