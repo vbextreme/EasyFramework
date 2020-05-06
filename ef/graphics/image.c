@@ -2108,6 +2108,20 @@ void g2d_ellipse_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry,
     }
 }
 
+void g2d_arc(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color){
+	startAngle -= 90.0;
+	endAngle -= 90.0;
+	float const radStart = (startAngle * 3.14159265)/180.0;
+	float const radEnd =   (endAngle   * 3.14159265)/180.0;
+	for(float i = radStart + 0.01; i < radEnd - 0.01; i += 0.01){
+		float cosi = cos(i);
+		float sini = sin(i);
+		unsigned x = cosi * r + cx->x;
+		unsigned y = sini * r + cx->y;
+		_point_inside(img, x, y, color);
+	}
+}
+
 void g2d_pieslice(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color){
 	startAngle -= 90.0;
 	endAngle -= 90.0;

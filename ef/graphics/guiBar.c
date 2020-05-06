@@ -4,6 +4,16 @@
 #include <ef/err.h>
 #include <ef/guiResources.h>
 
+__private guiResource_s* bar_resource_color_get(gui_s* gui){
+	__mem_free char* name = str_printf("%s::%s.color", gui->name, gui->class);
+	return gui_resource(name);
+}
+
+__private guiResource_s* bar_resource_color_set(gui_s* gui, g2dColor_t color){
+	__mem_free char* name = str_printf("%s::%s.color", gui->name, gui->class);
+	return gui_resource_new(name, color);
+}
+
 guiBar_s* gui_bar_new(guiCaption_s* caption, guiImage_s* fill, double min, double max, double start, unsigned flags){
 	if( !caption ) return NULL;
 	guiBar_s* bar = mem_new(guiBar_s);
@@ -28,6 +38,7 @@ gui_s* gui_bar_attach(gui_s* gui, guiBar_s* bar){
 	gui->redraw = gui_bar_event_redraw;
 	gui->free = gui_bar_event_free;
 	gui->move = gui_bar_event_move;
+	gui->themes = gui_bar_event_themes;
 	gui_composite_add(gui->img, bar->fill);
 	gui_composite_add(gui->img, bar->caption->render);
 	return gui;
@@ -41,6 +52,12 @@ void gui_bar_free(guiBar_s* bar){
 	gui_caption_free(bar->caption);
 	if( bar->textdescript ) free(bar->textdescript);
 	free(bar);
+}
+
+void gui_bar_flags_set(gui_s* gui, unsigned flags){
+	iassert(gui->type == GUI_TYPE_BAR);
+	guiBar_s* bar = gui->control;
+	bar->flags = flags;
 }
 
 void gui_bar_text_set(gui_s* gui, const utf8_t* text, const utf8_t* aftercurrent){
@@ -169,6 +186,42 @@ double gui_bar_min(gui_s* gui){
 	return bar->min;
 }
 
+void gui_bar_mode_horizontal(gui_s* gui, guiImage_s* fill){
+	iassert(gui->type == GUI_TYPE_BAR);
+	guiBar_s* bar = gui->control;
+	bar->flags &= ~(GUI_BAR_CIRCLE | GUI_BAR_VERTICAL);
+	bar->flags |= GUI_BAR_HORIZONTAL;
+	if( fill ){
+		if( bar->fill ) gui_image_free(bar->fill);
+		bar->fill = fill;
+	}
+}
+
+void gui_bar_mode_vertical(gui_s* gui, guiImage_s* fill){
+	iassert(gui->type == GUI_TYPE_BAR);
+	guiBar_s* bar = gui->control;
+	bar->flags &= ~(GUI_BAR_CIRCLE | GUI_BAR_HORIZONTAL);
+	bar->flags |= GUI_BAR_HORIZONTAL;
+	if( fill ){
+		if( bar->fill ) gui_image_free(bar->fill);
+		bar->fill = fill;
+	}
+}
+
+void gui_bar_mode_circle(gui_s* gui, g2dColor_t color){
+	iassert(gui->type == GUI_TYPE_BAR);
+	guiBar_s* bar = gui->control;
+	bar->flags &= ~(GUI_BAR_VERTICAL | GUI_BAR_HORIZONTAL);
+	bar->flags |= GUI_BAR_CIRCLE;
+	gui_image_free(bar->fill);
+
+	guiResource_s* res = bar_resource_color_set(gui, color);
+	bar->fill = gui_image_fn_new(gui_bar_circle_fn, &res->color, gui->surface->img->w, gui->surface->img->h, 0);
+
+	bar->flags &= ~(GUI_BAR_CIRCLE | GUI_BAR_VERTICAL);
+	bar->flags |= GUI_BAR_HORIZONTAL;
+}
+
 void gui_bar_redraw(gui_s* gui){
 	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = gui->control;
@@ -226,9 +279,10 @@ int gui_bar_event_themes(gui_s* gui, xorgEvent_s* ev){
 			bar->flags |= GUI_BAR_CIRCLE;
 			g2dColor_t color;
 			gui_themes_uint_set(name, GUI_THEMES_BAR_COLOR, &color);
-			gui_resource_new(name, color);
+			guiResource_s* res = gui_resource_new(name, color);
+			if( !res ) err_fail("internal resources error"); 
 			gui_image_free(bar->fill);
-			bar->fill = gui_image_fn_new(gui_bar_circle_fn, &color, gui->surface->img->w, gui->surface->img->h, 0);
+			bar->fill = gui_image_fn_new(gui_bar_circle_fn, &res->color, gui->surface->img->w, gui->surface->img->h, 0);
 		}
 	}
 

@@ -46,25 +46,25 @@ void gui_resources_init(void);
 /** free resource*/
 void gui_resources_free(void);
 
-void gui_resource_long_new(const char* name, long value);
+guiResource_s* gui_resource_long_new(const char* name, long value);
 
-void gui_resource_double_new(const char* name, double value);
+guiResource_s* gui_resource_double_new(const char* name, double value);
 
-void gui_resource_utf_new(const char* name, utf_t value);
+guiResource_s* gui_resource_utf_new(const char* name, utf_t value);
 
-void gui_resource_text_new(const char* name, const utf8_t* value);
+guiResource_s* gui_resource_text_new(const char* name, const utf8_t* value);
 
-void gui_resource_color_new(const char* name, g2dColor_t value);
+guiResource_s* gui_resource_color_new(const char* name, g2dColor_t value);
 
-void gui_resource_position_new(const char* name, g2dCoord_s* value);
+guiResource_s* gui_resource_position_new(const char* name, g2dCoord_s* value);
 
-void gui_resource_img_new(const char* name, g2dImage_s* value);
+guiResource_s* gui_resource_img_new(const char* name, g2dImage_s* value);
 
-void gui_resource_gif_new(const char* name, gif_s* value);
+guiResource_s* gui_resource_gif_new(const char* name, gif_s* value);
 
-void gui_resource_media_new(const char* name, media_s* value);
+guiResource_s* gui_resource_media_new(const char* name, media_s* value);
 
-void gui_resource_fonts_new(const char* name, ftFonts_s* value);
+guiResource_s* gui_resource_fonts_new(const char* name, ftFonts_s* value);
 
 #define gui_resource_new(NAME, TYPE) _Generic((TYPE),\
 	long         : gui_resource_long_new,\

@@ -313,6 +313,10 @@ void gui_fd_register(gui_s* gui, int fd, int event, guiEvent_f fn);
 /** unregister event fd*/
 void gui_fd_unregister(int fd);
 
+void gui_background_main_round_fn(gui_s* gui, __unused guiImage_s* img, __unused void* generic);
+
+void gui_background_round_fn(gui_s* gui, __unused guiImage_s* img, __unused void* generic);
+
 /** get themes name*/
 char* gui_themes_name(gui_s* gui, const char* appName);
 

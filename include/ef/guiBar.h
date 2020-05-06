@@ -9,7 +9,6 @@
 #define GUI_THEMES_BAR_DESCRIPT     "bar.descript"
 #define GUI_THEMES_BAR_CUR_DESCRIPT "bar.descriptCurrent"
 
-
 #define GUI_BAR_HORIZONTAL   0x0001
 #define GUI_BAR_VERTICAL     0x0002
 #define GUI_BAR_CIRCLE       0x0004
@@ -39,6 +38,8 @@ gui_s* gui_bar_attach(gui_s* gui, guiBar_s* bar);
 /** free bar*/
 void gui_bar_free(guiBar_s* bar);
 
+void gui_bar_flags_set(gui_s* gui, unsigned flags);
+
 /** set bar text*/
 void gui_bar_text_set(gui_s* gui, const utf8_t* text, const utf8_t* aftercurrent);
 
@@ -55,6 +56,10 @@ double gui_bar_min(gui_s* gui);
 /** set max value*/
 void gui_bar_max_set(gui_s* gui, double max);
 
+void gui_bar_mode_horizontal(gui_s* gui, guiImage_s* fill);
+void gui_bar_mode_vertical(gui_s* gui, guiImage_s* fill);
+void gui_bar_mode_circle(gui_s* gui, g2dColor_t color);
+
 /** bar redraw */
 void gui_bar_redraw(gui_s* gui);
 
@@ -68,6 +73,6 @@ int gui_bar_event_move(gui_s* gui, xorgEvent_s* event);
 
 
 /** button event theme*/
-//int gui_bar_event_themes(gui_s* gui, xorgEvent_s* ev);
+int gui_bar_event_themes(gui_s* gui, xorgEvent_s* ev);
 
 #endif

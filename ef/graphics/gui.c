@@ -715,11 +715,11 @@ void gui_fd_unregister(int fd){
 	deadpoll_unregister(dpgui, fd);
 }
 
-void gui_background_main_round_fn(gui_s* gui){
+void gui_background_main_round_fn(gui_s* gui, __unused guiImage_s* img, __unused void* generic){
 	gui_round_antialiasing_set(gui, gui->genericSize);
 }
 
-void gui_background_round_fn(gui_s* gui){
+void gui_background_round_fn(gui_s* gui, __unused guiImage_s* img, __unused void* generic){
 	iassert(gui->parent);
 	unsigned radius = gui->genericSize;
 

@@ -36,7 +36,7 @@ void gui_resources_free(void){
 	rbhash_free(resources);
 }
 
-__private void resource_set(guiResource_s* res, const char* name){
+__private guiResource_s* resource_set(guiResource_s* res, const char* name){
 	dbg_info("add resource name %s", name);
 	guiResource_s* old = rbhash_find(resources, name, 0);
 	if( old ){
@@ -44,6 +44,7 @@ __private void resource_set(guiResource_s* res, const char* name){
 		rbhash_remove(resources, name, 0);
 	}
 	rbhash_add(resources, name, 0, res);
+	return res;
 }
 
 __private guiResource_s* resource_new(guiResource_e type){
@@ -54,65 +55,65 @@ __private guiResource_s* resource_new(guiResource_e type){
 	return res;
 }
 
-void gui_resource_long_new(const char* name, long value){
+guiResource_s* gui_resource_long_new(const char* name, long value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_LONG);
 	res->l = value;
-	resource_set(res, name);
+	return resource_set(res, name);
 }
 
-void gui_resource_double_new(const char* name, double value){
+guiResource_s* gui_resource_double_new(const char* name, double value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_DOUBLE);
 	res->d = value;
-	resource_set(res, name);
+	return resource_set(res, name);
 }
 
-void gui_resource_utf_new(const char* name, utf_t value){
+guiResource_s* gui_resource_utf_new(const char* name, utf_t value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_UTF);
 	res->utf = value;
-	resource_set(res,name);
+	return resource_set(res,name);
 }
 
-void gui_resource_text_new(const char* name, const utf8_t* value){
+guiResource_s* gui_resource_text_new(const char* name, const utf8_t* value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_TEXT);
 	res->text = (utf8_t*)str_dup((const char*)value, 0);
-	resource_set(res, name);
+	return resource_set(res, name);
 }
 
-void gui_resource_color_new(const char* name, g2dColor_t value){
+guiResource_s* gui_resource_color_new(const char* name, g2dColor_t value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_COLOR);
 	res->color = value;
-	resource_set(res, name);
+	return resource_set(res, name);
 }
 
-void gui_resource_position_new(const char* name, g2dCoord_s* value){
+guiResource_s* gui_resource_position_new(const char* name, g2dCoord_s* value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_POSITION);
 	res->position = *value;
-	resource_set(res, name);
+	return resource_set(res, name);
 }
 
-void gui_resource_img_new(const char* name, g2dImage_s* value){
+guiResource_s* gui_resource_img_new(const char* name, g2dImage_s* value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_IMG);
 	res->img = value;
-	resource_set(res, name);
+	return resource_set(res, name);
 }
 
-void gui_resource_gif_new(const char* name, gif_s* value){
+guiResource_s* gui_resource_gif_new(const char* name, gif_s* value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_GIF);
 	res->gif = value;
-	resource_set(res, name);
+	return resource_set(res, name);
 }
 
-void gui_resource_media_new(const char* name, media_s* value){
+guiResource_s* gui_resource_media_new(const char* name, media_s* value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_MEDIA);
 	res->media = value;
-	resource_set(res, name);
+	return resource_set(res, name);
 }
 
-void gui_resource_fonts_new(const char* name, ftFonts_s* value){
+guiResource_s* gui_resource_fonts_new(const char* name, ftFonts_s* value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_FONTS);
 	res->fonts = value;
-	resource_set(res, name);
 	dbg_info("add fonts resources: %s", res->fonts->groupName);
+	return resource_set(res, name);
 }
 
 guiResource_s* gui_resource(const char* name){

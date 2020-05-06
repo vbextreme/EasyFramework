@@ -1080,13 +1080,11 @@ int gui_text_event_mouse(gui_s* gui, xorgEvent_s* event){
 		gui_draw(gui);
 	}
 	else if( event->mouse.event == XORG_MOUSE_PRESS && event->mouse.button == 5 ){
-		//gui_text_unsel(gui);
 		gui_text_cursor_down(gui);
 		gui_text_redraw(gui, 0);
 		gui_draw(gui);
 	}
 	else if( event->mouse.event == XORG_MOUSE_PRESS && event->mouse.button == 4 ){
-		//gui_text_unsel(gui);
 		gui_text_cursor_up(gui);
 		gui_text_redraw(gui, 0);
 		gui_draw(gui);
