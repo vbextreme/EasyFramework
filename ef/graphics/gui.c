@@ -173,6 +173,7 @@ gui_s* gui_new(
 	gui->focusable = 1;
 	gui->bordersize = border;
 	gui->bordersizefocused = border + GUI_FOCUS_BORDER_SIZE;
+	gui->borderColor = colorBorder;
 	gui->id = xorg_win_new(&gui->surface, X, xcbParent, x, y, width, height, border, colorBorder, colorBorder);
 	gui_name(gui, name);
 	gui_class(gui, class);
@@ -426,20 +427,16 @@ void gui_round_antialiasing_set(gui_s* gui, int radius){
 
 	cx.x = radius;
 	cx.y = radius;
-	g2d_circle(mask, &cx, radius, col, 1);
-	g2d_circle_fill(mask, &cx, radius, col);
+	g2d_circle_fill_antialiased(mask, &cx, radius, col);
 
 	cx.x = (mask->w) - radius;
-	g2d_circle(mask, &cx, radius, col, 1);
-	g2d_circle_fill(mask, &cx, radius, col);
+	g2d_circle_fill_antialiased(mask, &cx, radius, col);
 
 	cx.y = (mask->h) - radius;
-	g2d_circle(mask, &cx, radius, col, 1);
-	g2d_circle_fill(mask, &cx, radius, col);
+	g2d_circle_fill_antialiased(mask, &cx, radius, col);
 
 	cx.x = radius;
-	g2d_circle(mask, &cx, radius, col, 1);
-	g2d_circle_fill(mask, &cx, radius, col);
+	g2d_circle_fill_antialiased(mask, &cx, radius, col);
 
 	rc.x = radius + 2;
 	rc.y = 0;
@@ -715,74 +712,181 @@ void gui_fd_unregister(int fd){
 	deadpoll_unregister(dpgui, fd);
 }
 
-void gui_background_main_round_fn(gui_s* gui, __unused guiImage_s* img, __unused void* generic){
-	gui_round_antialiasing_set(gui, gui->genericSize);
+void gui_background_main_round_fn(gui_s* gui, __unused guiImage_s** img, void* generic){
+	guiRound_s* gr = generic;
+	gui_round_antialiasing_set(gui, gr->radius);
 }
 
-void gui_background_round_fn(gui_s* gui, __unused guiImage_s* img, __unused void* generic){
+__private void invert_alpha(g2dImage_s* quad){
+	for( unsigned y = 0; y < quad->h; ++y){
+		unsigned row = g2d_row(quad, y);
+		g2dColor_t* pixels = g2d_color(quad, row, 0);
+		for( unsigned x = 0; x < quad->w; ++x){
+			unsigned alpha = g2d_color_alpha(quad, pixels[x]);
+			alpha = 255 - alpha;
+			pixels[x] = g2d_color_alpha_set(quad, pixels[x], alpha);
+		}
+	}
+}
+
+void gui_background_round_fn(gui_s* gui, __unused guiImage_s** img, __unused void* generic){
 	iassert(gui->parent);
-	unsigned radius = gui->genericSize;
-
-	g2dImage_s* orig = g2d_copy(gui->surface->img);
-	g2dImage_s* mask = g2d_new(gui->surface->img->w, gui->surface->img->h, -1);
+	guiRound_s* ropt = generic;
 	
+	g2dColor_t empty = gui_color(0,0,0,0);
+	g2dColor_t full  = gui_color(255,255,0,0);
 	g2dPoint_s cx;
-	g2dCoord_s rc,mc;
-	g2dColor_t col = gui_color(0, 0, 0, 0);
+	g2dPoint_s sx,ex;
+	g2dCoord_s qcard = { .x = 0, .y = 0, .w = ropt->radius, .h = ropt->radius};
+	g2dImage_s* mask = g2d_new(qcard.w, qcard.h, -1);
+	g2dImage_s* quad = g2d_new(qcard.w, qcard.h, -1);
 
-	rc.x = 0;
-	rc.y = 0;
-	rc.w = mask->w;
-	rc.h = mask->h;
-	g2d_clear(mask, col, &rc); 
+	struct roco_s{
+		g2dPoint_s cx;
+		int incx;
+		int incy;
+	} roco[4];
+	roco[0].cx.x = gui->surface->img->w - ropt->radius;
+	roco[0].cx.y = ropt->radius - 1;
+	roco[0].incx = -1;
+	roco[0].incy = 1;
+	roco[1].cx.x = cx.x = gui->surface->img->w - ropt->radius;
+	roco[1].cx.y = (gui->surface->img->h - ropt->radius)+1;
+	roco[1].incx = -1,
+	roco[1].incy = -1,
+	roco[2].cx.x = ropt->radius;
+	roco[2].cx.y = (gui->surface->img->h - ropt->radius)+1;
+	roco[2].incx = 1;
+	roco[2].incy = -1;
+	roco[3].cx.x = ropt->radius;
+	roco[3].cx.y = ropt->radius - 1;
+	roco[3].incx = 1;
+	roco[3].incy = 1;
 
-	mc.x = gui->position.x;
-	mc.y = gui->position.y;
-	mc.w = mask->w;
-	mc.h = mask->h;
-	g2d_bitblt(gui->surface->img, &rc, gui->parent->surface->img, &mc);
+	double angle = 0;
+	for( unsigned i = 0; i < 4; ++i, angle += 90.0 ){
+		for( unsigned r = 0; r < ropt->border; ++r){
+			roco[i].cx.x += roco[i].incx;
+			roco[i].cx.y += roco[i].incy;
+			g2d_arc(gui->surface->img, &roco[i].cx, ropt->radius+r, angle, angle+90.0, gui->borderColor, 0);
+		}
+	}
+	
+	sx.x = ropt->radius-1;
+	sx.y = 0;
+	ex.x = (gui->surface->img->w - ropt->radius)+1;
+	ex.y = 0;
+	if( ropt->border == 1 ){
+		g2d_line(gui->surface->img, &sx, &ex, gui->borderColor, 1);
+	}
+	else{
+		for( unsigned r = 0; r < ropt->border/2 ; ++r){
+			g2d_line(gui->surface->img, &sx, &ex, gui->borderColor, 1);
+			++sx.y;
+			++ex.y;
+			--sx.x;
+			++ex.x;
+		}	
+	}
 
-	col = gui_color(255, 0, 0, 0);
+	sx.x = ropt->radius-1;
+	sx.y = gui->surface->img->h - 1;
+	ex.x = (gui->surface->img->w - ropt->radius)+1;
+	ex.y = gui->surface->img->h - 1;
+	if( ropt->border == 1 ){
+		g2d_line(gui->surface->img, &sx, &ex, gui->borderColor, 1);
+	}
+	else{
+		for( unsigned r = 0; r < ropt->border/2 ; ++r){
+			g2d_line(gui->surface->img, &sx, &ex, gui->borderColor, 1);
+			++sx.y;
+			--ex.y;
+			--sx.x;
+			--ex.x;
+		}	
+	}
 
-	cx.x = radius;
-	cx.y = radius;
-	g2d_circle(mask, &cx, radius, col, 1);
-	g2d_circle_fill(mask, &cx, radius, col);
+	sx.x = 1;
+	sx.y = ropt->radius-1;
+	ex.x = 1;
+	ex.y = (gui->surface->img->h - ropt->radius)+1;
+	if( ropt->border == 1 ){
+		g2d_line(gui->surface->img, &sx, &ex, gui->borderColor, 1);
+	}
+	else{
+		for( unsigned r = 0; r < ropt->border/2 ; ++r){
+			g2d_line(gui->surface->img, &sx, &ex, gui->borderColor, 1);
+			--sx.y;
+			++ex.y;
+			++sx.x;
+			++ex.x;
+		}	
+	}
 
-	cx.x = (mask->w) - radius;
-	g2d_circle(mask, &cx, radius, col, 1);
-	g2d_circle_fill(mask, &cx, radius, col);
+	sx.x = gui->surface->img->w - 2;
+	sx.y = ropt->radius-1;
+	ex.x = gui->surface->img->w - 2;
+	ex.y = (gui->surface->img->h - ropt->radius)+1;
+	if( ropt->border == 1 ){
+		g2d_line(gui->surface->img, &sx, &ex, gui->borderColor, 1);
+	}
+	else{
+		for( unsigned r = 0; r < ropt->border/2 ; ++r){
+			g2d_line(gui->surface->img, &sx, &ex, gui->borderColor, 1);
+			--sx.y;
+			++ex.y;
+			--sx.x;
+			--ex.x;
+		}	
+	}
 
-	cx.y = (mask->h) - radius;
-	g2d_circle(mask, &cx, radius, col, 1);
-	g2d_circle_fill(mask, &cx, radius, col);
+	struct poco_s{
+		g2dPoint_s cx;
+		g2dCoord_s co;
+	} poco[4] = {
+		[0].cx.x = ropt->radius,
+		[0].cx.y = ropt->radius-1,
+		[0].co.x = 0,
+		[0].co.y = 0,
+		[0].co.w = qcard.w,
+		[0].co.h = qcard.h,
 
-	cx.x = radius;
-	g2d_circle(mask, &cx, radius, col, 1);
-	g2d_circle_fill(mask, &cx, radius, col);
+		[1].cx.x = 0,
+		[1].cx.y = ropt->radius-1,
+		[1].co.x = gui->surface->img->w - ropt->radius,
+		[1].co.y = 0,
+		[1].co.w = qcard.w,
+		[1].co.h = qcard.h,
 
-	rc.x = radius + 2;
-	rc.y = 0;
-	rc.w = mask->w - radius*2;
-	rc.h = mask->h;
-	g2d_clear(mask, col, &rc);
+		[2].cx.x = 0,
+		[2].cx.y = 0,
+		[2].co.x = gui->surface->img->w - ropt->radius,
+		[2].co.y = gui->surface->img->h - ropt->radius,
+		[2].co.w = qcard.w,
+		[2].co.h = qcard.h,
 
-	rc.x = 0;
-	rc.y = radius+2;
-	rc.w = mask->w;
-	rc.h = mask->h - radius*2;
-	g2d_clear(mask, col, &rc);
+		[3].cx.x = ropt->radius,
+		[3].cx.y = 0,
+		[3].co.x = 0,
+		[3].co.y = gui->surface->img->h - ropt->radius,
+		[3].co.w = qcard.w,
+		[3].co.h = qcard.h,
 
-	rc.x=0;
-	rc.y=0;
-	rc.w=mask->w;
-	rc.h=mask->h;
+	};
 
-	g2d_bitblt_channel(orig, &rc, mask, &rc, mask->ma);
-	g2d_bitblt_alpha(gui->surface->img, &rc, orig, &rc);
+	for( unsigned i = 0; i < 4; ++i ){
+		g2d_clear(mask, empty, &qcard);
+		g2d_circle_fill_antialiased(mask, &poco[i].cx, ropt->radius, full);
+		g2dCoord_s org = {.x = gui->position.x + poco[i].co.x, .y = gui->position.y + poco[i].co.y, .w = qcard.w, .h = qcard.h };
+		g2d_bitblt( quad, &qcard, gui->parent->surface->img, &org);
+		g2d_bitblt_channel(quad, &qcard, mask, &qcard, quad->ma);
+		invert_alpha(quad);
+		g2d_bitblt_alpha(gui->surface->img, &poco[i].co, quad, &qcard);
+	}
 
+
+	g2d_free(quad);
 	g2d_free(mask);
-	g2d_free(orig);
 }
 
 /*
@@ -1065,6 +1169,32 @@ void gui_themes(gui_s* gui, const char* appName){
 		ev.data.data = name;
 		ev.data.size = 0;
 		gui->themes(gui, &ev);
+	}
+
+	unsigned round;
+	if( !gui_themes_uint_set(name, GUI_THEME_ROUND, &round) && round > 0 ){
+		guiRound_s* gr = mem_new(guiRound_s);
+		gr->radius = round;
+		guiImageFN_f fn;
+		if( gui->parent ){
+			gr->border = gui->bordersize;
+			fn = gui_background_round_fn;
+		}
+		else{
+			gr->border = 0;
+			fn = gui_background_main_round_fn;
+		}
+		gui_border(gui, 0);
+
+		gui_composite_add(
+			gui->img, 
+			gui_image_fn_new(
+				fn,
+				gr,
+				free,
+				0,0,0
+			)
+		);
 	}
 }
 

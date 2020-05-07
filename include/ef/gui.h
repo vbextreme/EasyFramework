@@ -43,6 +43,7 @@
 #define GUI_THEME_WM_ALPHA         "wm.alpha"
 
 #define GUI_THEME_BORDER           "border"
+#define GUI_THEME_ROUND            "round"
 #define GUI_THEME_GENERIC          "generic"
 #define GUI_THEME_X                "position.x"
 #define GUI_THEME_Y                "position.y"
@@ -99,15 +100,11 @@ typedef struct guiTimer_s{
 	guiTimer_f fn;
 	phqElement_s* el;
 }guiTimer_s;
-/*
-typedef struct guiBackground{
-	g2dColor_t color;
-	g2dImage_s* img;
-	g2dCoord_s pdest;
-	guiBackgroundFN_f fn;
-	unsigned mode;
-}guiBackground_s;
-*/
+
+typedef struct guiRound{
+	unsigned radius;
+	unsigned border;
+}guiRound_s;
 
 typedef struct gui{
 	char* name;
@@ -124,6 +121,7 @@ typedef struct gui{
 	int bordersize;
 	int bordersizefocused;
 	int genericSize;
+	g2dColor_t borderColor;
 
 	xorgSurface_s* surface;
 	guiPosition_s position;
@@ -313,9 +311,9 @@ void gui_fd_register(gui_s* gui, int fd, int event, guiEvent_f fn);
 /** unregister event fd*/
 void gui_fd_unregister(int fd);
 
-void gui_background_main_round_fn(gui_s* gui, __unused guiImage_s* img, __unused void* generic);
+void gui_background_main_round_fn(gui_s* gui, __unused guiImage_s** img, void* generic);
 
-void gui_background_round_fn(gui_s* gui, __unused guiImage_s* img, __unused void* generic);
+void gui_background_round_fn(gui_s* gui, __unused guiImage_s** img, __unused void* generic);
 
 /** get themes name*/
 char* gui_themes_name(gui_s* gui, const char* appName);

@@ -45,6 +45,7 @@ gui_s* gui_simple_window_layout_vertical_new(const char* name, unsigned x, unsig
 gui_s* gui_simple_window_layout_horizontal_new(const char* name, unsigned x, unsigned y, unsigned w, unsigned h);
 gui_s* gui_simple_window_layout_table_new(const char* name, unsigned x, unsigned y, unsigned w, unsigned h);
 void gui_simple_layout_table_add(gui_s* parent, gui_s* gui, double w, double h, int newline);
+gui_s* gui_simple_paint(gui_s* parent, const char* name);
 gui_s* gui_simple_label_new(gui_s* parent, const char* name, const utf8_t* caption);
 gui_s* gui_simple_button_new(gui_s* parent, const char* name, const utf8_t* caption, guiEvent_f onclick);
 gui_s* gui_simple_text_new(gui_s* parent, const char* name);

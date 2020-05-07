@@ -8,7 +8,8 @@
 
 typedef struct guiImage guiImage_s;
 typedef struct gui gui_s;
-typedef void (*guiImageFN_f)(gui_s* gui, guiImage_s*, void* generic);
+typedef void (*guiImageFN_f)(gui_s* gui, guiImage_s**, void* generic);
+typedef void (*guiImageFree_f)(void* generic);
 
 typedef enum { GUI_IMAGE_COLOR, GUI_IMAGE_IMG, GUI_IMAGE_GIF, GUI_IMAGE_VIDEO, GUI_IMAGE_FN, GUI_IMAGE_CUSTOM } guiImageType_e;
 
@@ -29,6 +30,7 @@ typedef struct guiImage{
 	g2dCoord_s src;
 	guiImageType_e type;
 	void* data;
+	guiImageFree_f free;
 	unsigned frameid;
 	unsigned flags;
 }guiImage_s;
@@ -39,7 +41,7 @@ typedef struct guiComposite{
 }guiComposite_s;
 
 guiImage_s* gui_image_color_new(g2dColor_t color, unsigned width, unsigned height, unsigned flags);
-guiImage_s* gui_image_fn_new(guiImageFN_f fn, void* data, unsigned width, unsigned height, unsigned flags);
+guiImage_s* gui_image_fn_new(guiImageFN_f fn, void* data, guiImageFree_f freefn, unsigned width, unsigned height, unsigned flags);
 guiImage_s* gui_image_custom_new(g2dImage_s* g2d, unsigned flags);
 guiImage_s* gui_image_new(g2dColor_t color, const char* pathRelative, unsigned width, unsigned height, unsigned flags, int ratio);
 guiImage_s* gui_image_load(g2dColor_t color, const char* pathRelative, unsigned width, unsigned height, unsigned flags, int ratio);

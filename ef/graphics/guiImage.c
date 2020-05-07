@@ -31,10 +31,11 @@ guiImage_s* gui_image_color_new(g2dColor_t color, unsigned width, unsigned heigh
 	img->type = GUI_IMAGE_COLOR;
 	img->flags = flags;
 	img->res = NULL;
+	img->free = NULL;
 	return img;
 }
 
-guiImage_s* gui_image_fn_new(guiImageFN_f fn, void* data, unsigned width, unsigned height, unsigned flags){
+guiImage_s* gui_image_fn_new(guiImageFN_f fn, void* data, guiImageFree_f freefn, unsigned width, unsigned height, unsigned flags){
 	guiImage_s* img = mem_new(guiImage_s);
 	if( !img ) err_fail("eom");
 	img->pos.x = 0;
@@ -46,6 +47,7 @@ guiImage_s* gui_image_fn_new(guiImageFN_f fn, void* data, unsigned width, unsign
 	img->flags = flags;
 	img->data = data;
 	img->fn = fn;
+	img->free = freefn;
 	img->res = NULL;
 	return img;
 }
@@ -62,6 +64,7 @@ guiImage_s* gui_image_custom_new(g2dImage_s* g2d, unsigned flags){
 	img->flags = flags;
 	img->img = g2d;
 	img->res = NULL;
+	img->free = NULL;
 	return img;
 }
 
@@ -113,6 +116,7 @@ guiImage_s* gui_image_new(g2dColor_t color, const char* pathRelative, unsigned w
 	if( !width || !height ) return NULL;
 
 	guiImage_s* img = mem_new(guiImage_s);
+	img->free = NULL;
 	img->pos.x = 0;
 	img->pos.y = 0;
 	img->flags = flags;
@@ -225,6 +229,9 @@ guiImage_s* gui_image_load(g2dColor_t color, const char* pathRelative, unsigned 
 }
 
 void gui_image_free(guiImage_s* img){
+	
+	if( img->free ) img->free(img->data);
+
 	if( img->res ){
 		gui_resource_release(img->res);
 		free(img->res);	
@@ -304,7 +311,6 @@ void gui_image_resize(gui_s* gui, guiImage_s* img, unsigned width, unsigned heig
 		break;
 	}
 }
-
 
 void gui_image_xy_set(guiImage_s* img, unsigned x, unsigned y){
 	img->pos.x = x;
@@ -441,8 +447,8 @@ __private void gid_media(gui_s* gui, guiComposite_s* cmp, unsigned id, unsigned 
 	gui_timer_new(gui, 1, gid_media_timer, git);
 }
 
-__private void gid_fn(gui_s* gui, guiImage_s* img){
-	img->fn(gui, img, img->data);
+inline __private void gid_fn(gui_s* gui, guiImage_s** img){
+	(*img)->fn(gui, img, (*img)->data);
 }
 
 void gui_image_redraw(gui_s* gui, guiComposite_s* cmp, unsigned id, unsigned count){
@@ -452,7 +458,7 @@ void gui_image_redraw(gui_s* gui, guiComposite_s* cmp, unsigned id, unsigned cou
 		case GUI_IMAGE_IMG:   gid_img(gui, &cmp->img[id]->pos, cmp->img[id]->img, &cmp->img[id]->src, cmp->img[id]->flags); break;
 		case GUI_IMAGE_GIF:   gid_gif(gui, cmp, id, count); break;
 		case GUI_IMAGE_VIDEO: gid_media(gui, cmp, id, count); break;
-		case GUI_IMAGE_FN:    gid_fn(gui, cmp->img[id]); break;
+		case GUI_IMAGE_FN:    gid_fn(gui, &cmp->img[id]); break;
 	}
 }
 

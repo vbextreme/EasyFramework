@@ -151,7 +151,7 @@ void gui_text_cursor_pagup(gui_s* gui);
 void gui_text_cursor_on_position(gui_s* gui, unsigned x, unsigned y);
 
 /** render cursor*/
-void gui_text_render_cursor(gui_s* gui, guiImage_s* img, void* ud);
+void gui_text_render_cursor(gui_s* gui, __unused guiImage_s** img, __unused void* ud);
 
 /** render text*/
 void gui_text_render_text(gui_s* gui, int partial);

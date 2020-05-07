@@ -43,7 +43,7 @@ void gui_bar_flags_set(gui_s* gui, unsigned flags);
 /** set bar text*/
 void gui_bar_text_set(gui_s* gui, const utf8_t* text, const utf8_t* aftercurrent);
 
-void gui_bar_circle_fn(gui_s* gui, __unused guiImage_s* img, void* generic);
+void gui_bar_circle_fn(gui_s* gui, __unused guiImage_s** img, void* generic);
 
 /** set current value*/
 void gui_bar_current_set(gui_s* gui, double current);

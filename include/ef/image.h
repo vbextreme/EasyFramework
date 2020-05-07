@@ -111,6 +111,9 @@ void g2d_channel_set(g2dImage_s* img, g2dColor_t color, g2dCoord_s* coord, unsig
 /** get color pointer to pixel X*/
 #define g2d_color(IMG,ROW,X) (unsigned*)(&(IMG)->pixel[(ROW)+((X)*4)])
 
+/** get color from position*/
+#define g2d_color_get(IMG, X, Y) (*(g2d_color(IMG, g2d_row(IMG, Y), X)))
+
 /** get channel alpha*/
 #define g2d_color_alpha(IMG,ARGB) (((ARGB)>>(IMG)->sa)&0xFF)
 
@@ -161,8 +164,20 @@ void g2d_resize_to(g2dImage_s* dst, g2dImage_s* src);
 /** return new image resize, bicubic*/
 g2dImage_s* g2d_resize(g2dImage_s* src, unsigned w, unsigned h);
 
+/** resize to with channel alpha*/
+void g2d_resize_to_alpha(g2dImage_s* dst, g2dImage_s* src);
+
+/**resize new image with channel alpha*/
+g2dImage_s* g2d_resize_alpha(g2dImage_s* src, unsigned w, unsigned h);
+
 /** return new totated image */
 g2dImage_s* g2d_rotate(g2dImage_s* src, unsigned cx, unsigned cy, float grad);
+
+/** apply supersampling antialiasing */
+void g2d_supersampling_to(g2dImage_s* img, unsigned mul);
+
+/** apply supersampling antialiasing indirect*/
+void g2d_supersampling_alpha_to(g2dImage_s* img, unsigned mul);
 
 /** convert grayscaled image ch to color and copy to dst*/
 void g2d_char(g2dImage_s* dst, g2dCoord_s* coord, g2dImage_s* ch, g2dColor_t col);
@@ -229,6 +244,9 @@ void g2d_circle(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t col, int anti
 /** draw circle with fill color*/
 void g2d_circle_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t col);
 
+/** draw circle fill antialiased*/
+void g2d_circle_fill_antialiased(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t col);
+
 /** draw ellipse no antialaised*/
 void g2d_ellipse_normal(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col);
 
@@ -241,8 +259,14 @@ void g2d_ellipse(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dC
 /** draw ellipse and fill */
 void g2d_ellipse_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry, g2dColor_t col);
 
+/** draw normal arc*/
+void g2d_arc_normal(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color);
+
+/** draw antialiased arc*/
+void g2d_arc_antialiased(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color);
+
 /** draw arc*/
-void g2d_arc(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color);
+void g2d_arc(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color, int antialiased);
 
 /** draw pie slice*/
 void g2d_pieslice(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color);

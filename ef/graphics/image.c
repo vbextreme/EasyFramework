@@ -485,7 +485,6 @@ __private void g2d_bitblt_channel_default(g2dImage_s* dst, g2dCoord_s* cod, g2dI
 	unsigned const dx = cod->x;
 	unsigned const sx = cos->x;
 
-
     __parallef
 	for( unsigned y = 0; y < h; ++y ){
 		unsigned const srow = g2d_row(src, cos->y + y);
@@ -509,7 +508,7 @@ __private void g2d_bitblt_channel_vectorize(g2dImage_s* dst, g2dCoord_s* cod, g2
 	uint4_v vmask = vector4_set_all(mask);
 
 	unsigned const h = cod->h;
-  	unsigned const sw = cos->x + cos->w;
+	unsigned const sw = cos->x + cos->w;
 	unsigned const dw = cod->x + cod->w;
 
 	__parallef
@@ -977,7 +976,7 @@ __private g2dColor_t sample_bicubic(g2dImage_s* img, float u, float v){
 	
 	g2dColor_t* p[4];
 	unsigned row[4];
-	float col[4][3];
+	float col[4][4];
 
 	row[0] = g2d_row(img, yint-1);
 	row[1] = g2d_row(img, yint);
@@ -1005,6 +1004,7 @@ __private g2dColor_t sample_bicubic(g2dImage_s* img, float u, float v){
 	unsigned char green = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
 	value = cubic_hermite(col[0][2], col[1][2], col[2][2], col[3][2], yfract);
 	unsigned char blue = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
+
 	return g2d_color_make(img, alpha, red, green, blue);
 } 
  
@@ -1027,6 +1027,89 @@ void g2d_resize_to(g2dImage_s* dst, g2dImage_s* src){
 g2dImage_s* g2d_resize(g2dImage_s* src, unsigned w, unsigned h){
 	g2dImage_s* img = g2d_new(w, h, src->mode);
 	g2d_resize_to(img, src);
+	return img;
+}
+
+__private g2dColor_t sample_bicubic_alpha(g2dImage_s* img, float u, float v){
+	float x = (u * img->w)-0.5;
+	int xint = (int)x;
+	float xfract = x-floor(x);
+
+	float y = (v * img->h) - 0.5;
+	int yint = (int)y;
+	float yfract = y - floor(y);
+	
+	if( xint == 0 ){
+		++xint;
+	}
+	else if( (unsigned)xint >= img->w - 1 ){
+		xint = img->w - 3;
+	}
+	else if( (unsigned)xint >= img->w - 2 ){
+		xint = img->w - 3;
+	}
+	
+	if( yint == 0 ){
+		++yint;
+	}
+	else if( (unsigned)yint >= img->h - 1 ){
+		yint = img->h - 3;
+	}
+	else if( (unsigned)yint >= img->h - 2 ){
+		yint = img->h - 3;
+	}
+	
+	g2dColor_t* p[4];
+	unsigned row[4];
+	float col[4][4];
+
+	row[0] = g2d_row(img, yint-1);
+	row[1] = g2d_row(img, yint);
+	row[2] = g2d_row(img, yint+1);
+	row[3] = g2d_row(img, yint+2);
+
+	for( unsigned y = 0; y < 4; ++y){
+		p[0] = g2d_color(img, row[y], xint-1);
+		p[1] = g2d_color(img, row[y], xint);
+		p[2] = g2d_color(img, row[y], xint+1);
+		p[3] = g2d_color(img, row[y], xint+2);
+		col[y][0] = cubic_hermite( g2d_color_red(img, *p[0]), g2d_color_red(img, *p[1]), g2d_color_red(img, *p[2]), g2d_color_red(img, *p[3]), xfract);
+		col[y][1] = cubic_hermite( g2d_color_green(img, *p[0]), g2d_color_green(img, *p[1]), g2d_color_green(img, *p[2]), g2d_color_green(img, *p[3]), xfract);
+		col[y][2] = cubic_hermite( g2d_color_blue(img, *p[0]), g2d_color_blue(img, *p[1]), g2d_color_blue(img, *p[2]), g2d_color_blue(img, *p[3]), xfract);
+		col[y][3] = cubic_hermite( g2d_color_alpha(img, *p[0]), g2d_color_alpha(img, *p[1]), g2d_color_alpha(img, *p[2]), g2d_color_alpha(img, *p[3]), xfract);
+	}
+
+	float value = cubic_hermite(col[0][0], col[1][0], col[2][0], col[3][0], yfract);
+	unsigned char red = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
+	value = cubic_hermite(col[0][1], col[1][1], col[2][1], col[3][1], yfract);
+	unsigned char green = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
+	value = cubic_hermite(col[0][2], col[1][2], col[2][2], col[3][2], yfract);
+	unsigned char blue = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
+	value = cubic_hermite(col[0][3], col[1][3], col[2][3], col[3][3], yfract);
+	unsigned char al = ( value < 0 ) ? 0 : value > 255 ? 255 : (int)value;
+
+	return g2d_color_make(img, al, red, green, blue);
+} 
+ 
+void g2d_resize_to_alpha(g2dImage_s* dst, g2dImage_s* src){
+	dbg_info("resize %u*%u -> %u*%u", src->w, src->h, dst->w, dst->h);
+	const unsigned w = dst->w;
+	const unsigned h = dst->h;
+	__parallef
+	for( unsigned y = 0; y < h; ++y ){
+		const float v = (const float)y / (const float)(h - 1);
+		unsigned const row = g2d_row(dst, y);
+		g2dColor_t* dcol = g2d_color(dst, row, 0);
+		for( unsigned x = 0; x < w; ++x ){
+            const float u = (const float)x / (const float)(w - 1);
+            dcol[x] = sample_bicubic_alpha(src, u, v);
+        }
+    }
+}      
+
+g2dImage_s* g2d_resize_alpha(g2dImage_s* src, unsigned w, unsigned h){
+	g2dImage_s* img = g2d_new(w, h, src->mode);
+	g2d_resize_to_alpha(img, src);
 	return img;
 }
 
@@ -1074,6 +1157,98 @@ g2dImage_s* g2d_rotate(g2dImage_s* src, unsigned cx, unsigned cy, float grad){
         }
     }
 	return dst;
+}
+
+__private void supersampling_to(g2dImage_s* img, g2dImage_s* sam){
+	//__g2d_free g2dImage_s* sam = g2d_resize(img, img->w * 2, img->h * 2);
+	const unsigned h = sam->h;
+	const unsigned w = sam->w;
+
+	for( unsigned y = 0; y < h; y += 2){
+		const unsigned rows[2] = {
+			g2d_row(sam, y),
+			g2d_row(sam, y+1)
+		};
+		g2dColor_t* pixels[2] = {
+			g2d_color(sam, rows[0], 0),
+			g2d_color(sam, rows[1], 0)
+		};
+		const unsigned row = g2d_row(img, y>>1);
+		g2dColor_t* pixel = g2d_color(img, row, 0);
+		for( unsigned x = 0; x < w; x += 2 ){
+			unsigned r = g2d_color_red(sam, pixels[0][x]) + g2d_color_red(sam, pixels[0][x+1]) + 
+						 g2d_color_red(sam, pixels[1][x]) + g2d_color_red(sam, pixels[1][x+1]);
+			unsigned g = g2d_color_green(sam, pixels[0][x]) + g2d_color_green(sam, pixels[0][x+1]) + 
+						 g2d_color_green(sam, pixels[1][x]) + g2d_color_green(sam, pixels[1][x+1]);
+			unsigned b = g2d_color_blue(sam, pixels[0][x]) + g2d_color_blue(sam, pixels[0][x+1]) + 
+						 g2d_color_blue(sam, pixels[1][x]) + g2d_color_blue(sam, pixels[1][x+1]);
+
+			r >>= 2;
+			g >>= 2;
+			b >>= 2;
+			pixel[x>>1] = g2d_color_make(img, 255, r, g, b);
+		}
+	}
+}
+
+void g2d_supersampling_to(g2dImage_s* img, unsigned mul){
+	const unsigned mw = 1 << mul;
+	g2dImage_s* sam = g2d_resize(img, img->w * mw, img->h * mw);
+	for( unsigned n = 1; n < mul; ++n){
+		g2dImage_s* tmp = g2d_new(sam->w >> 1, sam->h >> 1, img->mode);
+		supersampling_to(tmp, sam);
+		g2d_free(sam);
+		sam = tmp;
+	}
+	supersampling_to(img, sam);
+	free(sam);
+}
+
+__private void supersampling_alpha_to(g2dImage_s* img, g2dImage_s* sam){
+	const unsigned h = sam->h;
+	const unsigned w = sam->w;
+
+	for( unsigned y = 0; y < h; y += 2){
+		const unsigned rows[2] = {
+			g2d_row(sam, y),
+			g2d_row(sam, y+1)
+		};
+		g2dColor_t* pixels[2] = {
+			g2d_color(sam, rows[0], 0),
+			g2d_color(sam, rows[1], 0)
+		};
+		const unsigned row = g2d_row(img, y>>1);
+		g2dColor_t* pixel = g2d_color(img, row, 0);
+		for( unsigned x = 0; x < w; x += 2 ){
+			unsigned a = g2d_color_alpha(sam, pixels[0][x]) + g2d_color_alpha(sam, pixels[0][x+1]) + 
+						 g2d_color_alpha(sam, pixels[1][x]) + g2d_color_alpha(sam, pixels[1][x+1]);
+			unsigned r = g2d_color_red(sam, pixels[0][x]) + g2d_color_red(sam, pixels[0][x+1]) + 
+						 g2d_color_red(sam, pixels[1][x]) + g2d_color_red(sam, pixels[1][x+1]);
+			unsigned g = g2d_color_green(sam, pixels[0][x]) + g2d_color_green(sam, pixels[0][x+1]) + 
+						 g2d_color_green(sam, pixels[1][x]) + g2d_color_green(sam, pixels[1][x+1]);
+			unsigned b = g2d_color_blue(sam, pixels[0][x]) + g2d_color_blue(sam, pixels[0][x+1]) + 
+						 g2d_color_blue(sam, pixels[1][x]) + g2d_color_blue(sam, pixels[1][x+1]);
+
+			a >>= 2;
+			r >>= 2;
+			g >>= 2;
+			b >>= 2;
+			pixel[x>>1] = g2d_color_make(img, a, r, g, b);
+		}
+	}
+}
+
+void g2d_supersampling_alpha_to(g2dImage_s* img, unsigned mul){
+	const unsigned mw = 1 << mul;
+	g2dImage_s* sam = g2d_resize_alpha(img, img->w * mw, img->h * mw);
+	for( unsigned n = 1; n < mul; ++n){
+		g2dImage_s* tmp = g2d_new(sam->w >> 1, sam->h >> 1, img->mode);
+		supersampling_alpha_to(tmp, sam);
+		g2d_free(sam);
+		sam = tmp;
+	}
+	supersampling_alpha_to(img, sam);
+	free(sam);
 }
 
 void g2d_char(g2dImage_s* dst, g2dCoord_s* coord, g2dImage_s* ch, g2dColor_t col){
@@ -1180,7 +1355,7 @@ void g2d_points(g2dImage_s* img, g2dPoint_s* points, g2dColor_t* colors, size_t 
 
 void g2d_hline(g2dImage_s* img, g2dPoint_s* st, unsigned x1, g2dColor_t col){
     unsigned sx,ex;
-    
+	if( st->y >= img->h ) return;
     if ( st->x > x1 ){
         sx = x1;
         ex = st->x;
@@ -1189,9 +1364,10 @@ void g2d_hline(g2dImage_s* img, g2dPoint_s* st, unsigned x1, g2dColor_t col){
         sx = st->x;
         ex = x1;
     }
-    
+ 
+	if( sx >= img->w ) return;   
     if( ex >= img->w ) ex = img->w - 1;
-    
+
 	unsigned const row = g2d_row(img, st->y);
 	g2dColor_t* xc = g2d_color(img, row, sx);
 	
@@ -1835,7 +2011,6 @@ void g2d_circle_normal(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t c
     }	
 }
 
-
 /*Bresenham*/
 void g2d_circle_antialiased(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t col){
 	int x = r, y = 0;
@@ -1880,6 +2055,60 @@ void g2d_circle_antialiased(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t c
 void g2d_circle(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t col, int antialiased){
 	if( antialiased ) g2d_circle_antialiased(img, cx, r, col);
 	else g2d_circle_normal(img, cx, r, col);
+}
+
+void g2d_circle_fill_antialiased(g2dImage_s* img, g2dPoint_s* cx, int r, g2dColor_t col){
+	int x = r, y = 0;
+	int i, x2, e2, err = 2-2*r;
+	r = 1-err;
+	g2dColor_t color = col;
+
+	for(;;){
+		i = 255*abs(err+2*(x+y)-2)/r;
+		if( i < 0 ) i = 0;
+		if( i > 255 ) i = 255;
+
+		g2dPoint_s st;
+		unsigned ex1;
+		st.x = (int)cx->x - x > 0 ? cx->x - x : 0;
+		st.y = (int)cx->y + y > 0 ? cx->y + y : 0;
+		ex1 = (int)cx->x + x > 0 ? cx->x + x : 0;
+		g2d_hline(img, &st, ex1, color);
+		st.x = (int)cx->x + y > 0 ? cx->x + y : 0;
+		st.y = (int)cx->y + x > 0 ? cx->y + x : 0;
+		ex1 = (int)cx->x - y > 0 ? cx->x - y : 0;
+		g2d_hline(img, &st, ex1, color);
+	
+		col = g2d_color_alpha_set(img, col,  255-i);
+		_point_alpha_inside(img, cx->x + x, cx->y - y, col);
+		_point_alpha_inside(img, cx->x + y, cx->y + x, col);
+		_point_alpha_inside(img, cx->x - x, cx->y + y, col);
+		_point_alpha_inside(img, cx->x - y, cx->y - x, col);
+		if (x == 0) break;
+		e2 = err; x2 = x;
+		if (err > y){
+			i = 255*(err+2*x-1)/r;
+			if (i < 255) {
+				col = g2d_color_alpha_set(img, col, 255- i);
+				_point_alpha_inside(img, cx->x + x    , cx->y - y + 1, col);
+				_point_alpha_inside(img, cx->x + y - 1, cx->y + x    , col);
+				_point_alpha_inside(img, cx->x - x    , cx->y + y - 1, col);
+				_point_alpha_inside(img, cx->x - y + 1, cx->y - x    , col);
+			}
+			err -= --x*2-1;
+		}
+		if (e2 <= x2--) { 
+			i = 255*(1-2*y-e2)/r;
+			if (i < 255) {
+				col = g2d_color_alpha_set(img, col,  255-i);
+				_point_alpha_inside(img, cx->x + x2, cx->y - y , col);
+				_point_alpha_inside(img, cx->x + y , cx->y + x2, col);
+				_point_alpha_inside(img, cx->x - x2, cx->y + y , col);
+				_point_alpha_inside(img, cx->x - y , cx->y - x2, col);
+			}
+			err -= --y*2-1;
+		}
+	}
 }
 
 void g2d_circle_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned r, g2dColor_t col){
@@ -2108,17 +2337,73 @@ void g2d_ellipse_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned rx, unsigned ry,
     }
 }
 
-void g2d_arc(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color){
+void g2d_arc_normal(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color){
 	startAngle -= 90.0;
 	endAngle -= 90.0;
 	float const radStart = (startAngle * 3.14159265)/180.0;
 	float const radEnd =   (endAngle   * 3.14159265)/180.0;
-	for(float i = radStart + 0.01; i < radEnd - 0.01; i += 0.01){
+	for(float i = radStart + 0.00; i < radEnd; i += 0.01){
 		float cosi = cos(i);
 		float sini = sin(i);
 		unsigned x = cosi * r + cx->x;
 		unsigned y = sini * r + cx->y;
 		_point_inside(img, x, y, color);
+	}
+}
+
+void g2d_arc_antialiased(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t col){
+	//TODO orrible
+	startAngle -= 90.0;
+	endAngle -= 90.0;
+	float const radStart = (startAngle * 3.14159265)/180.0;
+	float const radEnd =   (endAngle   * 3.14159265)/180.0;
+	for(float i = radStart + 0.00; i < radEnd; i += 0.01){
+		float cosi = cos(i);
+		float sini = sin(i);
+		double dx = cosi * r + cx->x;
+		double dy = sini * r + cx->y;
+		unsigned x = dx;
+		unsigned y = dy;
+		double px0 = 1.0 - floor(x);
+		double py0 = 1.0 - floor(y);
+		double px1 = 1.0 - px0;
+		double py1 = 1.0 - py0;
+		double pa0 = 255.0-(255.0 * px0 * py0);
+		double pa1 = 255.0-(255.0 * px1 * py0);
+		double pa2 = 255.0-(255.0 * px0 * py1);
+		double pa3 = 255.0-(255.0 * px1 * py1);
+
+	
+		unsigned char a = pa0;
+		g2dColor_t c = g2d_color_get(img, x, y);
+		if( (c & (~img->ma)) != (col & (~img->ma)) || g2d_color_alpha(img,c) < a ){
+			col = g2d_color_alpha_set(img, col, a);
+			_point_alpha_inside(img, x  , y  , col);
+		}
+		a = pa1;
+		if( (c & (~img->ma)) != (col & (~img->ma)) || g2d_color_alpha(img,c) < a ){
+			col = g2d_color_alpha_set(img, col, a);
+			_point_alpha_inside(img, x+1, y  , col);
+		}
+		a = pa2;
+		if( (c & (~img->ma)) != (col & (~img->ma)) || g2d_color_alpha(img,c) < a ){
+			col = g2d_color_alpha_set(img, col, a);
+			_point_alpha_inside(img, x  , y+1, col);
+		}
+		a = pa3;
+		if( (c & (~img->ma)) != (col & (~img->ma)) || g2d_color_alpha(img,c) < a ){
+			col = g2d_color_alpha_set(img, col, a);
+			_point_alpha_inside(img, x+1, y+1, col);
+		}
+	}
+}
+
+void g2d_arc(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startAngle, float endAngle, g2dColor_t color, int antialiased){
+	if( antialiased ){
+		g2d_arc_antialiased(img, cx, r, startAngle, endAngle, color);
+	}
+	else{
+		g2d_arc_normal(img, cx, r, startAngle, endAngle, color);
 	}
 }
 

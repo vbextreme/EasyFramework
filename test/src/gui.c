@@ -35,6 +35,10 @@
 #define TESTEF_TEXT_W    50
 #define TESTEF_TEXT_H    15
 
+#define TESTEF_PAINT_NAME "paint"
+#define TESTEF_PAINT_W    100
+#define TESTEF_PAINT_H    30
+
 #define TESTEF_THEME_RELOAD_PATH "~/testef.Xresources"
 
 #define TESTEF_RELOAD "~/Project/c/EasyFramework/test/build/testef -g"
@@ -85,6 +89,43 @@ __private int button_themes(gui_s* gui, __unused xorgEvent_s* ev){
 	return 0;
 }
 
+__private int paint_test(gui_s* gui, __unused xorgEvent_s* ev){
+	g2dImage_s* img = gui->surface->img;
+	gui_composite_redraw(gui, gui->img);
+
+	g2dPoint_s p;
+	//g2dColor_t c = gui_color(0,0,0,0);
+	g2dColor_t e = gui_color(255,0,0,255);
+
+/*
+	p.x = 50;
+	p.y = 40;
+	g2d_arc(img, &p, 30, 0, 360, c, 0);
+
+	p.x = 150;
+	g2d_circle(img, &p, 30, c, 0);
+*/
+
+	//g2dCoord_s card = {.x = 50, .y = 40, .w = 300, .h = 120};
+	//g2d_rect_fill(img, &card, c);
+
+	p.x = 300;
+	p.y = 120;
+	g2d_circle_fill_antialiased(img, &p, 50, e);
+
+	//g2d_supersampling_alpha_to(img, 1);
+	//g2d_arc(img, &p, 30, 0, 360, c, 1);
+
+	//p.x = 150;
+	//g2d_circle_fill(img, &p, 30, c);
+
+	//g2d_supersampling_to(img, 3);
+	
+	gui_draw(gui);
+	return 0;
+}
+
+
 /*@fn*/
 void test_gui(__unused const char* argA, __unused const char* argB){
 	err_enable();
@@ -98,7 +139,8 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 		TESTEF_MAIN_H
 	); 
 	main->destroy = main_exit;
-	
+	gui_border(main, 0);
+
 	gui_s* lbl = gui_simple_label_new(main, TESTEF_LABEL_NAME, U8(TESTEF_NAME));
 	gui_simple_layout_table_add(main, lbl, TESTEF_LABEL_W, TESTEF_LABEL_H, 1);
 
@@ -112,6 +154,10 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 
 	gui_s* text = gui_simple_text_new(main, TESTEF_TEXT_NAME);
 	gui_simple_layout_table_add(main, text, TESTEF_TEXT_W, TESTEF_TEXT_H, 1);
+
+	gui_s* paint = gui_simple_paint(main, TESTEF_PAINT_NAME);
+	gui_simple_layout_table_add(main, paint, TESTEF_PAINT_W, TESTEF_PAINT_H, 1);
+	paint->redraw = paint_test;
 
 	gui_simple_apply_change(main);
 	gui_simple_show_all(main, 1);

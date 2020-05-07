@@ -65,7 +65,7 @@ gui_s* gui_text_attach(gui_s* gui, guiText_s* txt){
 	);
 	gui_composite_add(gui->img, txt->render);
 
-	guiImage_s* cursor = gui_image_fn_new(gui_text_render_cursor, txt, txt->cursor.w, txt->cursor.h, 0);
+	guiImage_s* cursor = gui_image_fn_new(gui_text_render_cursor, txt, NULL, txt->cursor.w, txt->cursor.h, 0);
 	gui_composite_add(gui->img, cursor);
 
 	return gui;
@@ -545,7 +545,7 @@ void gui_text_cursor_on_position(gui_s* gui, unsigned x, unsigned y){
 	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_CURON;
 }
 
-void gui_text_render_cursor(gui_s* gui, __unused guiImage_s* img, __unused void* ud){
+void gui_text_render_cursor(gui_s* gui, __unused guiImage_s** img, __unused void* ud){
 	iassert(gui->type == GUI_TYPE_TEXT);
 	guiText_s* txt = gui->control;
 	if( !(txt->flags & GUI_TEXT_REND_CURSOR) ) return;
@@ -809,6 +809,8 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_TEXT);
 	guiText_s* txt = gui->control;
 	int partial = 0;
+	
+	if( event->keyboard.keysym == XKB_KEY_Super_L || event->keyboard.modifier & XORG_KEY_MOD_SUPER) gui_text_unsel(gui);
 
 	if( event->keyboard.event == XORG_KEY_RELEASE ){
 		if( event->keyboard.keysym == XKB_KEY_Escape )
@@ -949,7 +951,7 @@ int gui_text_event_key(gui_s* gui, xorgEvent_s* event){
 					break;
 				}
 			}
-			else if( event->keyboard.utf){
+			else if( event->keyboard.utf ){
 				if( txt->selStart ){
 					gui_text_sel_del(gui);
 				}

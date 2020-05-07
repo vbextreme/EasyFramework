@@ -4,16 +4,6 @@
 #include <ef/err.h>
 #include <ef/guiResources.h>
 
-__private guiResource_s* bar_resource_color_get(gui_s* gui){
-	__mem_free char* name = str_printf("%s::%s.color", gui->name, gui->class);
-	return gui_resource(name);
-}
-
-__private guiResource_s* bar_resource_color_set(gui_s* gui, g2dColor_t color){
-	__mem_free char* name = str_printf("%s::%s.color", gui->name, gui->class);
-	return gui_resource_new(name, color);
-}
-
 guiBar_s* gui_bar_new(guiCaption_s* caption, guiImage_s* fill, double min, double max, double start, unsigned flags){
 	if( !caption ) return NULL;
 	guiBar_s* bar = mem_new(guiBar_s);
@@ -119,7 +109,7 @@ __private void bar_vert(gui_s* gui){
 	bar->fill->src = bar->fill->pos;
 }
 
-void gui_bar_circle_fn(gui_s* gui, __unused guiImage_s* img, void* generic){
+void gui_bar_circle_fn(gui_s* gui, __unused guiImage_s** img, void* generic){
 	iassert(gui->type == GUI_TYPE_BAR);
 	g2dColor_t* color = generic;
 	guiBar_s* bar = gui->control;
@@ -215,8 +205,9 @@ void gui_bar_mode_circle(gui_s* gui, g2dColor_t color){
 	bar->flags |= GUI_BAR_CIRCLE;
 	gui_image_free(bar->fill);
 
-	guiResource_s* res = bar_resource_color_set(gui, color);
-	bar->fill = gui_image_fn_new(gui_bar_circle_fn, &res->color, gui->surface->img->w, gui->surface->img->h, 0);
+	g2dColor_t* col = mem_new(g2dColor_t);
+	*col = color;
+	bar->fill = gui_image_fn_new(gui_bar_circle_fn, col, free, gui->surface->img->w, gui->surface->img->h, 0);
 
 	bar->flags &= ~(GUI_BAR_CIRCLE | GUI_BAR_VERTICAL);
 	bar->flags |= GUI_BAR_HORIZONTAL;
@@ -277,12 +268,10 @@ int gui_bar_event_themes(gui_s* gui, xorgEvent_s* ev){
 		else if( !strcmp(mode, "circle") ){
 			bar->flags &= ~(GUI_BAR_VERTICAL | GUI_BAR_HORIZONTAL);
 			bar->flags |= GUI_BAR_CIRCLE;
-			g2dColor_t color;
-			gui_themes_uint_set(name, GUI_THEMES_BAR_COLOR, &color);
-			guiResource_s* res = gui_resource_new(name, color);
-			if( !res ) err_fail("internal resources error"); 
+			g2dColor_t* color = mem_new(g2dColor_t);
+			gui_themes_uint_set(name, GUI_THEMES_BAR_COLOR, color);
 			gui_image_free(bar->fill);
-			bar->fill = gui_image_fn_new(gui_bar_circle_fn, &res->color, gui->surface->img->w, gui->surface->img->h, 0);
+			bar->fill = gui_image_fn_new(gui_bar_circle_fn, color, free, gui->surface->img->w, gui->surface->img->h, 0);
 		}
 	}
 
