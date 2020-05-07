@@ -712,6 +712,10 @@ void gui_fd_unregister(int fd){
 	deadpoll_unregister(dpgui, fd);
 }
 
+void gui_background_supersampling_fn(gui_s* gui, __unused guiImage_s** img, __unused void* generic){
+	g2d_supersampling_to(gui->surface->img, 1);
+}
+
 void gui_background_main_round_fn(gui_s* gui, __unused guiImage_s** img, void* generic){
 	guiRound_s* gr = generic;
 	gui_round_antialiasing_set(gui, gr->radius);
@@ -1169,6 +1173,19 @@ void gui_themes(gui_s* gui, const char* appName){
 		ev.data.data = name;
 		ev.data.size = 0;
 		gui->themes(gui, &ev);
+	}
+
+	int vbool;
+	if( !gui_themes_bool_set(name, GUI_THEME_SUPERSAMPLING, &vbool) && vbool ){
+		gui_composite_add(
+			gui->img, 
+			gui_image_fn_new(
+				gui_background_supersampling_fn,
+				NULL,
+				NULL,
+				0,0,0
+			)
+		);
 	}
 
 	unsigned round;

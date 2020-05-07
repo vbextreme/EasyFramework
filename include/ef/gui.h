@@ -8,12 +8,28 @@
 #include <ef/ft.h>
 #include <ef/guiImage.h>
 
-/*TODO 
+/*
  * 1.2.6 -----
  * 1.3.0 broken previous version
- *		themes
- *		bar
- *			circle
+ *		gui:
+ *			themes
+ *			bar:
+ *				circle
+ *			
+ *			round
+ *			simple
+ *		g2d:
+ *			arc
+ *			supersampling
+ *
+ *
+ * ??? 
+ *		option button
+ *		radio button
+ *		calendar
+ *		combobox
+ *		tinybutton
+ *		msgbox
  */
 
 #define GUI_TYPE_WINDOW 0
@@ -44,6 +60,7 @@
 
 #define GUI_THEME_BORDER           "border"
 #define GUI_THEME_ROUND            "round"
+#define GUI_THEME_SUPERSAMPLING    "supersampling"
 #define GUI_THEME_GENERIC          "generic"
 #define GUI_THEME_X                "position.x"
 #define GUI_THEME_Y                "position.y"
@@ -310,6 +327,8 @@ void gui_fd_register(gui_s* gui, int fd, int event, guiEvent_f fn);
 
 /** unregister event fd*/
 void gui_fd_unregister(int fd);
+
+void gui_background_supersampling_fn(gui_s* gui, __unused guiImage_s** img, __unused void* generic);
 
 void gui_background_main_round_fn(gui_s* gui, __unused guiImage_s** img, void* generic);
 
