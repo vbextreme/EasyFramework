@@ -317,6 +317,9 @@ void gui_deadpoll_register(deadpoll_s* dp);
 /** deadpoll */
 int gui_deadpoll_event(deadpoll_s* dp);
 
+/** consume events*/
+void gui_consume_event(void);
+
 /** loop gui*/
 void gui_loop(void);
 

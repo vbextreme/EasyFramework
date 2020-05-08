@@ -22,7 +22,8 @@
 typedef struct guiOption{
 	guiCaption_s* caption;
 	guiImage_s* state[GUI_OPTION_STATE_COUNT];
-	unsigned compindex;
+	unsigned zindex;
+	unsigned vindex;
 	guiEvent_f parentKey;
 	int flags;
 }guiOption_s;

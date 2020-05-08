@@ -113,7 +113,6 @@ xorg_s* xorg_client_new(const char* display, int defaultScreen){
 	x->dblclickms = XORG_MOUSE_DBLCLICL_MS;
 	x->_mousetime = 0;
 	x->_mousestate = 0;
-
 	dbg_info("xorg initializated");
 	return x;
 }
@@ -2183,7 +2182,7 @@ xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 		break;
 
 		default:
-			dbg_info("unknown %u: %s", event->response_type & ~0x80, xorg_atom_name(x, event->response_type & ~0x80));
+			dbg_warning("unknown %u: %s", event->response_type & ~0x80, xorg_atom_name(x, event->response_type & ~0x80));
 		break;
 	}
 

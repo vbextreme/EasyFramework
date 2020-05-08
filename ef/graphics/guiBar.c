@@ -235,10 +235,8 @@ int gui_bar_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 int gui_bar_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = gui->control;
-	gui_event_move(gui, event);
 	bar->caption->flags |= GUI_CAPTION_RENDERING;
-	gui_bar_redraw(gui);
-	gui_draw(gui);
+	gui_event_move(gui, event);
 	return 0;
 }
 

@@ -11,6 +11,7 @@
 #include <ef/utf8.h>
 #include <ef/delay.h>
 #include <ef/spawn.h>
+#include <ef/imageSvg.h>
 
 #define TESTEF_NAME       "testef"
 #define TESTEF_MAIN_NAME  "main"
@@ -41,8 +42,14 @@
 
 #define TESTEF_OPTION_NAME      "opt"
 #define TESTEF_OPTION_W         50
-#define TESTEF_OPTION_H         30
-#define TESTEF_OPTION_ELEMENT_H 15
+#define TESTEF_OPTION_H         40
+#define TESTEF_OPTION_ELEMENT_H 30
+
+#define TESTEF_CHECK_NAME      "chk"
+#define TESTEF_CHECK_W         50
+#define TESTEF_CHECK_H         40
+#define TESTEF_CHECK_ELEMENT_H 30
+
 
 #define TESTEF_THEME_RELOAD_PATH "~/testef.Xresources"
 
@@ -106,6 +113,8 @@ __private int paint_test(gui_s* gui, __unused xorgEvent_s* ev){
 	unsigned r = gui->surface->img->h / 3;
 	g2d_circle_fill_antialiased(img, &p, r, e);
 
+	//__g2d_free g2dImage_s* scaled = g2d_resize_alpha(svg, card.w, card.h);
+
 	//g2d_supersampling_alpha_to(img, 1);
 	//g2d_arc(img, &p, 30, 0, 360, c, 1);
 
@@ -158,6 +167,12 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_simple_option_add(opt, "opt.a", U8("option A"), TESTEF_OPTION_ELEMENT_H);
 	gui_simple_option_add(opt, "opt.b", U8("option B"), TESTEF_OPTION_ELEMENT_H);
 	gui_simple_option_add(opt, "opt.c", U8("option C"), TESTEF_OPTION_ELEMENT_H);
+
+	gui_s* chk = gui_simple_option_new(main, TESTEF_CHECK_NAME);
+	gui_simple_layout_table_add(main, chk, TESTEF_CHECK_W, TESTEF_CHECK_H, 0);
+	gui_simple_check_add(chk, "chk.a", U8("check A"), TESTEF_CHECK_ELEMENT_H);
+	gui_simple_check_add(chk, "chk.b", U8("check B"), TESTEF_CHECK_ELEMENT_H);
+	gui_simple_check_add(chk, "chk.c", U8("check C"), TESTEF_CHECK_ELEMENT_H);
 
 	gui_simple_apply_change(main);
 	gui_simple_show_all(main, 1);

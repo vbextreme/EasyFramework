@@ -71,6 +71,7 @@ void gui_simple_end(void){
 
 void gui_simple_show_all(gui_s* parent, int show){
 	gui_show(parent,show);
+	gui_consume_event();
 	vector_foreach(parent->childs, i){
 		gui_simple_show_all(parent->childs[i], show);
 	}
@@ -88,6 +89,7 @@ inline __private void simple_layout(gui_s* gui){
 }
 
 void gui_simple_apply_change(gui_s* main){
+	gui_consume_event();
 	if( main->type == GUI_TYPE_DIV ) simple_layout(main);
 	gui_redraw(main);
 	gui_draw(main);
@@ -298,7 +300,7 @@ gui_s* gui_simple_option_new(gui_s* parent, const char* name){
 			),
 			0, NULL
 		),
-		gui_div_new(GUI_DIV_VERTICAL, NULL, GUI_DIV_FLAGS_FIT)
+		gui_div_new(GUI_DIV_TABLE, NULL, GUI_DIV_FLAGS_FIT)
 	);
 	return gui;
 }
@@ -307,24 +309,24 @@ __private gui_s* simple_option_add(gui_s* opt, const char* name, const utf8_t* t
 	iassert(opt);
 	iassert(opt->type == GUI_TYPE_DIV);
 
-	unsigned height = (opt->surface->img->h * h)/100.0;
-
 	unsigned flags = GUI_OPTION_FLAGS_HOVER_ENABLE;
 	if( option ) flags |= GUI_OPTION_FLAGS_UNIQUE;
 	
-	guiImage_s* on = gui_image_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, height, 0);
+	guiImage_s* on = gui_image_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
 	gui_image_perc_set(on, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
-	guiImage_s* off = gui_image_color_new(GUI_SIMPLE_DEFAULT_DISABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, height, 0);
+//	guiImage_s* off = gui_image_color_new(GUI_SIMPLE_DEFAULT_DISABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
+	guiImage_s* off = gui_image_load(GUI_SIMPLE_DEFAULT_DISABLE_COLOR, "~/Immagini/test/gui/off5.svg", GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, GUI_IMAGE_FLAGS_ALPHA, 0);
+
 	gui_image_perc_set(off, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
 
 	gui_s* gui = gui_option_attach(
 		gui_new(
 			opt, name, GUI_SIMPLE_CLASS_OPTION, GUI_MODE_NORMAL,
-			GUI_SIMPLE_DEFAULT_BORDER, 0, 0, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H,
+			0, 0, 0, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H,
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
 				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, height, 0)
+				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
 			),
 			0, NULL
 		),
@@ -336,12 +338,13 @@ __private gui_s* simple_option_add(gui_s* opt, const char* name, const utf8_t* t
 			),
 			off,
 			on,
-			gui_image_color_new(GUI_SIMPLE_DEFAULT_ACTIVE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, height, 0),
+			gui_image_color_new(GUI_SIMPLE_DEFAULT_ACTIVE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0),
 			flags
 		)
 	);
 	gui_themes(gui, appName);
 	if( text ) gui_option_text_set(gui, text);
+	gui_simple_layout_table_add(opt, gui, 100.0, h, 1);
 	return gui;
 }
 

@@ -77,9 +77,7 @@ int gui_label_event_themes(gui_s* gui, xorgEvent_s* ev){
 int gui_label_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_LABEL);
 	guiLabel_s* lbl = gui->control;
-	gui_event_move(gui, event);
 	lbl->caption->flags |= GUI_CAPTION_RENDERING;
-	gui_label_redraw(gui);
-	gui_draw(gui);
+	gui_event_move(gui, event);
 	return 0;
 }

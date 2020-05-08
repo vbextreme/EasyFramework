@@ -260,11 +260,15 @@ void gui_image_free(guiImage_s* img){
 void gui_image_resize(gui_s* gui, guiImage_s* img, unsigned width, unsigned height, int ratio){
 	if( !width || !height ) return;
 
+	dbg_info("%s: %u*%u", gui->name, width, height);
+
 	if( img->flags & GUI_IMAGE_FLAGS_PERC ){
+		dbg_info("\t%u*%u per %f %f", width, height, img->per.w, img->per.h);
 		img->pos.x = (width * img->per.x) / 100.0;
  		img->pos.y = (height * img->per.y) / 100.0;
 		width = (width * img->per.w) / 100.0;
 		height = (height * img->per.h) / 100.0;
+		dbg_info("\tresize: %u %u %u*%u", img->pos.x, img->pos.y, width, height); 
 	}
 
 	switch( img->type ){
@@ -348,6 +352,7 @@ __private void gid_color(gui_s* gui, guiImage_s* img){
 }
 
 __private void gid_img(gui_s* gui, g2dCoord_s* pos, g2dImage_s* img, g2dCoord_s* src, unsigned flags){
+	dbg_error("gid: '%s' dst %u %u %u*%u src %u %u %u*%u", gui->name, pos->x, pos->y, pos->w, pos->h, src->x, src->y, src->w,src->h);
 	if( pos->x + pos->w > gui->surface->img->w ) pos->w = gui->surface->img->w - pos->x;
 	if( pos->y + pos->h > gui->surface->img->h ) pos->h = gui->surface->img->h - pos->y;
 	src->w = pos->w;
@@ -498,14 +503,6 @@ void gui_composite_redraw(gui_s* gui, guiComposite_s* cmp){
 
 void gui_composite_resize(gui_s* gui, guiComposite_s* cmp, unsigned width, unsigned height){
 	vector_foreach(cmp->img, i){
-		unsigned w = width;
-		unsigned h = height;
-		if( cmp->img[i]->pos.w != gui->surface->img->w ){
-			w = ((double)gui->surface->img->w * ((cmp->img[i]->pos.w * 100.0) / (double)gui->surface->img->w)) /100.0;
-		}
-		if( cmp->img[i]->pos.h != gui->surface->img->h ){
-			h = ((double)gui->surface->img->h * ((cmp->img[i]->pos.h * 100.0) / (double)gui->surface->img->h)) /100.0;
-		}
-		gui_image_resize(gui, cmp->img[i], w, h , -1);
+		gui_image_resize(gui, cmp->img[i], width, height , -1);
 	}
 }

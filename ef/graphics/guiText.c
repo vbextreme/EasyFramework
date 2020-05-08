@@ -1126,8 +1126,6 @@ int gui_text_event_mouse(gui_s* gui, xorgEvent_s* event){
 int gui_text_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_TEXT);
 	gui_event_move(gui, event);
-	gui_text_redraw(gui, 0);
-	gui_draw(gui);
 	return 0;
 }
 

@@ -586,14 +586,14 @@ int gui_event_call(xorgEvent_s* ev){
 		case XORG_EVENT_CLIPBOARD_PASTE:if( gui->clipboard)return gui->clipboard(gui,ev);break;
 		case XORG_EVENT_CLIPBOARD_COPY: if( gui->clipboard)return gui->clipboard(gui,ev);break;
 	}
-	dbg_warning("not event called");
+	dbg_info("not event called");
 	return 0;
 }
 
 err_t gui_deadpoll_event_callback(__unused deadpoll_s* dp, __unused int ev, __unused void* arg){
 	xorgEvent_s* event;
 	int ret = 0;
-   	while( (event = gui_event_get(1)) ){
+	while( (event = gui_event_get(1)) ){
 		ret	|= gui_event_call(event);
 		gui_event_release(event);
 	}
@@ -635,7 +635,6 @@ __private void gui_timer_timeout(guiTimer_s* timer){
 
 int gui_deadpoll_event(deadpoll_s* dp){
 	long timems = -1;
-
 	phqElement_s* el = phq_peek(timergui);
 	if( el ){
 		dbg_info("timer peek");
@@ -648,6 +647,7 @@ int gui_deadpoll_event(deadpoll_s* dp){
 		}
 	}
 	dbg_info("check event, timeout %ld", timems);
+
 	int ret = deadpoll_event(dp, &timems);
 	if( ret == DEADPOLL_TIMEOUT && el ){
 		dbg_info("timeout");
@@ -662,9 +662,18 @@ int gui_deadpoll_event(deadpoll_s* dp){
 	return -1;
 }
 
+void gui_consume_event(void){
+	xorgEvent_s* event;
+	while( (event = gui_event_get(1)) ){
+		gui_event_call(event);
+		gui_event_release(event);
+	}
+	xorg_client_flush(X);
+}
+
 void gui_loop(void){
 	xorg_client_flush(X);
-	while( gui_deadpoll_event(dpgui) > 0 ) xorg_client_flush(X);
+	while( gui_deadpoll_event(dpgui) > 0 ){ xorg_client_flush(X);}
 }
 
 guiTimer_s* gui_timer_new(gui_s* gui, size_t ms, guiTimer_f fn, void* userdata){
@@ -893,32 +902,6 @@ void gui_background_round_fn(gui_s* gui, __unused guiImage_s** img, __unused voi
 	g2d_free(mask);
 }
 
-/*
-char* gui_resource_string_get(const char* name, const char* class){
-	char* out = NULL;
-	if( xorg_resources_string_get(X, name, class,&out) ) return NULL;
-	return out;
-}
-
-long gui_resource_long_get(const char* name, const char* class){
-	long out = 0;
-	if( xorg_resources_long_get(X, name, class,&out) ){
-		errno = EINVAL;
-		return -1;
-	}
-	return out;
-}
-
-int gui_resource_bool_get(const char* name, const char* class){
-	bool out = 0;
-	if( xorg_resources_bool_get(X, name, class,&out) ){
-		errno = EINVAL;
-		return -1;
-	}
-	return out;
-}
-*/
-
 __private char* themes_name(gui_s* gui, char* name){
 	if( gui->parent ){
 		name = gui_themes_name(gui->parent, name);
@@ -1006,7 +989,7 @@ err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts){
 	sprintf(gtfnid, "%u", id);
 	sprintf(gtfsid, "%u", id++);
 	
-	dbg_error("name::%s",name);
+	dbg_info("name::%s",name);
 	__mem_free char* fontref = gui_themes_string(name, GUI_THEME_FONT_GROUP);
 	if( !fontref ) return -1;
 	guiResource_s* res = gui_resource(fontref);

@@ -138,13 +138,18 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event){
 int gui_button_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_BUTTON);
 	guiButton_s* btn = gui->control;
-	gui_event_move(gui, event);
-	if( gui->img->img[btn->compindex] != btn->state[0] ) gui_image_resize(gui, btn->state[0], event->move.w, event->move.h , -1);
-	if( gui->img->img[btn->compindex] != btn->state[1] ) gui_image_resize(gui, btn->state[1], event->move.w, event->move.h , -1);
-	if( gui->img->img[btn->compindex] != btn->state[2] ) gui_image_resize(gui, btn->state[2], event->move.w, event->move.h , -1);
+	dbg_info("button.move:%s %u*%u", gui->name, event->move.w, event->move.h);
+	if( gui->img->img[btn->compindex] != btn->state[0] ){
+		gui_image_resize(gui, btn->state[0], event->move.w, event->move.h , -1);
+	}
+	if( gui->img->img[btn->compindex] != btn->state[1] ){
+		gui_image_resize(gui, btn->state[1], event->move.w, event->move.h , -1);
+	}
+	if( gui->img->img[btn->compindex] != btn->state[2] ){
+		gui_image_resize(gui, btn->state[2], event->move.w, event->move.h , -1);
+	}
 	btn->caption->flags |= GUI_CAPTION_RENDERING;
-	gui_button_redraw(gui, 0);
-	gui_draw(gui);
+	gui_event_move(gui, event);
 	return 0;
 }
 

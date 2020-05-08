@@ -29,10 +29,11 @@ gui_s* gui_option_attach(gui_s* gui, guiOption_s* opt){
 	gui->free = gui_option_event_free;	
 	gui->move = gui_option_event_move;
 	gui->themes = gui_option_event_themes;
-	opt->compindex = vector_count(gui->img->img)-1;
-	opt->state[GUI_OPTION_STATE_Z] = gui->img->img[opt->compindex];
-	gui_composite_add(gui->img, opt->state[GUI_OPTION_STATE_OFF]);
+	opt->zindex = vector_count(gui->img->img)-1;
+	opt->state[GUI_OPTION_STATE_Z] = gui->img->img[opt->zindex];
 	gui_composite_add(gui->img, opt->caption->render);
+	gui_composite_add(gui->img, opt->state[GUI_OPTION_STATE_OFF]);
+	opt->vindex = vector_count(gui->img->img)-1;
 	return gui;
 ERR:
 	dbg_error("an error occur");
@@ -70,7 +71,9 @@ __private void option_find_and_deactivate(gui_s* parent){
 		if( child->type != GUI_TYPE_OPTION ) continue;
 		guiOption_s* chopt = child->control;
 		if( chopt->flags & GUI_OPTION_FLAGS_UNIQUE && chopt->flags & GUI_OPTION_FLAGS_ACTIVE ){
-			gui_option_active(child, 0);
+			chopt->flags &= ~ GUI_OPTION_FLAGS_ACTIVE;
+			gui_redraw(child);
+			gui_draw(child);
 		}
 	}
 }
@@ -108,19 +111,21 @@ void gui_option_redraw(gui_s* gui){
 	iassert(gui->type == GUI_TYPE_OPTION);
 	guiOption_s* opt = gui->control;
 	gui_caption_render(gui, opt->caption);
-/*	if( opt->flags & GUI_OPTION_FLAGS_HOVER ){
-		gui->img->img[opt->compindex] = opt->state[GUI_OPTION_STATE_HOVER];
+	
+	if( opt->flags & GUI_OPTION_FLAGS_HOVER ){
+		gui->img->img[opt->zindex] = opt->state[GUI_OPTION_STATE_HOVER];
 	}
 	else{
-		gui->img->img[opt->compindex] = opt->state[GUI_OPTION_STATE_Z];
+		gui->img->img[opt->zindex] = opt->state[GUI_OPTION_STATE_Z];
 	}
+
 	if( opt->flags & GUI_OPTION_FLAGS_ACTIVE ){
-		gui->img->img[opt->compindex] = opt->state[GUI_OPTION_STATE_ON];
+		gui->img->img[opt->vindex] = opt->state[GUI_OPTION_STATE_ON];
 	}
 	else{
-		gui->img->img[opt->compindex] = opt->state[GUI_OPTION_STATE_OFF];
+		gui->img->img[opt->vindex] = opt->state[GUI_OPTION_STATE_OFF];
 	}
-*/
+	
 	gui_composite_redraw(gui, gui->img);
 }
 
@@ -178,15 +183,13 @@ int gui_option_event_mouse(gui_s* gui, xorgEvent_s* event){
 int gui_option_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_OPTION);
 	guiOption_s* opt = gui->control;
-	gui_event_move(gui, event);
+	opt->caption->flags |= GUI_CAPTION_RENDERING;
 	for( size_t i = 0; i < GUI_OPTION_STATE_COUNT; ++i){
-		if( gui->img->img[opt->compindex] != opt->state[i] && gui->img->img[opt->compindex+1] != opt->state[i] ){
+		if( gui->img->img[opt->zindex] != opt->state[i] && gui->img->img[opt->vindex] != opt->state[i] ){
 			gui_image_resize(gui, opt->state[i], event->move.w, event->move.h , -1);
 		}
 	}
-	opt->caption->flags |= GUI_CAPTION_RENDERING;
-	gui_option_redraw(gui);
-	gui_draw(gui);
+	gui_event_move(gui, event);
 	return 0;
 }
 

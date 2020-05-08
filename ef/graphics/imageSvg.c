@@ -43,12 +43,18 @@ g2dImage_s* g2d_load_svg(char const* path, unsigned width, unsigned height){
         err_push("rsvg_handle_new_from_file");
         return NULL;
     }
-
+	
+	RsvgDimensionData dim;
+	rsvg_handle_get_dimensions(handle, &dim);
+	dbg_info("%u*%u", dim.width, dim.height);
     surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
-
     cr = cairo_create(surface);
+	
+	cairo_matrix_t matrix;
+	cairo_matrix_init_scale (&matrix, (double)width / (double)dim.width, (double)height / (double)dim.height);
+	cairo_transform(cr, &matrix);
 
-    rsvg_handle_render_cairo(handle, cr);
+	rsvg_handle_render_cairo(handle, cr);
 
     status = cairo_status(cr);
     if (status){
@@ -60,13 +66,17 @@ g2dImage_s* g2d_load_svg(char const* path, unsigned width, unsigned height){
     size_t stride = cairo_image_surface_get_stride(surface);
     unsigned char* buffer = cairo_image_surface_get_data(surface);
 	cairo_surface_flush(surface);
+
+	width = cairo_image_surface_get_width(surface);
+	height= cairo_image_surface_get_height(surface);
+	dbg_info("surf:%u %u // %lu", width, height, stride);
 	g2dImage_s* img = g2d_new(width, height, -1);
 	
 	for( size_t y = 0; y < height; ++y){
 		unsigned imgRow = g2d_row(img, y);
 		g2dColor_t* imgPix = g2d_color(img, imgRow, 0);
 		unsigned dataRow = y * stride;
-		g2dColor_t* dataPix = (g2dColor_t*)&buffer[dataRow];
+		g2dColor_t* dataPix = (g2dColor_t*)(&buffer[dataRow]);
 		for( size_t x = 0; x < width; ++x){
 			imgPix[x] = dataPix[x];
 		}
