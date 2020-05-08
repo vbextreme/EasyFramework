@@ -121,6 +121,15 @@ utf8_t* gui_text_str(gui_s* gui){
 	return str;
 }
 
+void gui_text_print(gui_s* gui, const utf8_t* text){
+	iassert(gui->type == GUI_TYPE_TEXT);
+	utf8Iterator_s it = utf8_iterator((utf8_t*)text, 0);
+	utf_t utf;
+	while( (utf=utf8_iterator_next(&it)) ){
+		gui_text_put(gui, utf);
+	}
+}
+
 void gui_text_sel(gui_s* gui){
 	iassert(gui->type == GUI_TYPE_TEXT);
 	guiText_s* txt = gui->control;

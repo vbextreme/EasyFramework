@@ -81,6 +81,9 @@ const utf8_t* gui_text_str_raw(gui_s* gui);
 /** get text string, remember to free*/
 utf8_t* gui_text_str(gui_s* gui);
 
+/** write a string*/
+void gui_text_print(gui_s* gui, const utf8_t* text);
+
 /** sel text*/
 void gui_text_sel(gui_s* gui);
 

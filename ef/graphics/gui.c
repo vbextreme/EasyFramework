@@ -504,8 +504,8 @@ int gui_event_move(gui_s* gui, xorgEvent_s* event){
 	dbg_info("move event:%s", gui->name);
 	if( gui->surface->img->w != event->move.w || gui->surface->img->h != event->move.h ){
 		dbg_info("resize composite && surface, redraw && draw");
-		xorg_surface_resize(X, gui->surface, event->move.w, event->move.h);
 		gui_composite_resize(gui, gui->img, event->move.w, event->move.h);
+		xorg_surface_resize(X, gui->surface, event->move.w, event->move.h);
 		gui_redraw(gui);
 		gui_draw(gui);
 	}

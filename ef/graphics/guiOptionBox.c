@@ -68,7 +68,10 @@ __private void option_find_and_deactivate(gui_s* parent){
 	vector_foreach(parent->childs, i){
 		gui_s* child = parent->childs[i];
 		if( child->type != GUI_TYPE_OPTION ) continue;
-		if( gui_option_activated(child) ) gui_option_active(child, 0);
+		guiOption_s* chopt = child->control;
+		if( chopt->flags & GUI_OPTION_FLAGS_UNIQUE && chopt->flags & GUI_OPTION_FLAGS_ACTIVE ){
+			gui_option_active(child, 0);
+		}
 	}
 }
 
@@ -105,7 +108,7 @@ void gui_option_redraw(gui_s* gui){
 	iassert(gui->type == GUI_TYPE_OPTION);
 	guiOption_s* opt = gui->control;
 	gui_caption_render(gui, opt->caption);
-	if( opt->flags & GUI_OPTION_FLAGS_HOVER ){
+/*	if( opt->flags & GUI_OPTION_FLAGS_HOVER ){
 		gui->img->img[opt->compindex] = opt->state[GUI_OPTION_STATE_HOVER];
 	}
 	else{
@@ -117,6 +120,7 @@ void gui_option_redraw(gui_s* gui){
 	else{
 		gui->img->img[opt->compindex] = opt->state[GUI_OPTION_STATE_OFF];
 	}
+*/
 	gui_composite_redraw(gui, gui->img);
 }
 

@@ -286,4 +286,80 @@ gui_s* gui_simple_bar_new(gui_s* parent, const char* name, const utf8_t* caption
 	return gui;
 }
 
+gui_s* gui_simple_option_new(gui_s* parent, const char* name){
+	gui_s* gui = gui_div_attach( 
+		gui_new(
+			parent, name, GUI_SIMPLE_CLASS_DIV, GUI_MODE_NORMAL,
+			GUI_SIMPLE_DEFAULT_BORDER, 0, 0, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H,
+			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
+			gui_composite_add(
+				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
+				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+			),
+			0, NULL
+		),
+		gui_div_new(GUI_DIV_VERTICAL, NULL, GUI_DIV_FLAGS_FIT)
+	);
+	return gui;
+}
+
+__private gui_s* simple_option_add(gui_s* opt, const char* name, const utf8_t* text, double h, int option){
+	iassert(opt);
+	iassert(opt->type == GUI_TYPE_DIV);
+
+	unsigned height = (opt->surface->img->h * h)/100.0;
+
+	unsigned flags = GUI_OPTION_FLAGS_HOVER_ENABLE;
+	if( option ) flags |= GUI_OPTION_FLAGS_UNIQUE;
+	
+	guiImage_s* on = gui_image_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, height, 0);
+	gui_image_perc_set(on, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
+	guiImage_s* off = gui_image_color_new(GUI_SIMPLE_DEFAULT_DISABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, height, 0);
+	gui_image_perc_set(off, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
+
+	gui_s* gui = gui_option_attach(
+		gui_new(
+			opt, name, GUI_SIMPLE_CLASS_OPTION, GUI_MODE_NORMAL,
+			GUI_SIMPLE_DEFAULT_BORDER, 0, 0, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H,
+			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
+			gui_composite_add(
+				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
+				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, height, 0)
+			),
+			0, NULL
+		),
+		gui_option_new(
+			gui_caption_new(
+				default_fonts_get(), 
+				GUI_SIMPLE_DEFAULT_FOREGROUND, 
+				GUI_CAPTION_CENTER_Y
+			),
+			off,
+			on,
+			gui_image_color_new(GUI_SIMPLE_DEFAULT_ACTIVE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, height, 0),
+			flags
+		)
+	);
+	gui_themes(gui, appName);
+	if( text ) gui_option_text_set(gui, text);
+	return gui;
+}
+
+gui_s* gui_simple_check_add(gui_s* opt, const char* name, const utf8_t* text, double h){
+	return simple_option_add(opt, name, text, h, 0);
+}
+
+gui_s* gui_simple_option_add(gui_s* opt, const char* name, const utf8_t* text, double h){
+	return simple_option_add(opt, name, text, h, 1);
+}
+
+
+
+
+
+
+
+
+
+
 

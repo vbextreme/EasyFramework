@@ -10,6 +10,7 @@
 #include <ef/guiBar.h>
 #include <ef/guiText.h>
 #include <ef/guiDiv.h>
+#include <ef/guiOptionBox.h>
 
 #define GUI_SIMPLE_DEFAULT_NAME_FONTS              "defaultFT"
 
@@ -19,6 +20,7 @@
 #define GUI_SIMPLE_DEFAULT_FOREGROUND              gui_color(255,0x00,0x00,0x00)
 #define GUI_SIMPLE_DEFAULT_ACTIVE_COLOR            gui_color(255,0xE0,0xE0,0xE0)
 #define GUI_SIMPLE_DEFAULT_ENABLE_COLOR            gui_color(255,0x9E,0x9E,0x9E)
+#define GUI_SIMPLE_DEFAULT_DISABLE_COLOR           gui_color(255,0x9E,0x9E,0x9E)
 #define GUI_SIMPLE_DEFAULT_CURSOR_COLOR            gui_color(255,0x21,0x21,0x21)
 #define GUI_SIMPLE_DEFAULT_BLINK                   600
 
@@ -26,12 +28,19 @@
 #define GUI_SIMPLE_DEFAULT_CONTROL_W               100
 #define GUI_SIMPLE_DEFAULT_CONTROL_H               100
 #define GUI_SIMPLE_DEFAULT_TAB                     4
+#define GUI_SIMPLE_DEFAULT_OPT_X                   70.0
+#define GUI_SIMPLE_DEFAULT_OPT_Y                   2.0
+#define GUI_SIMPLE_DEFAULT_OPT_W                   28.0
+#define GUI_SIMPLE_DEFAULT_OPT_H                   96.0
+
 
 #define GUI_SIMPLE_CLASS_WINDOW                    "window"
+#define GUI_SIMPLE_CLASS_DIV                       "div"
 #define GUI_SIMPLE_CLASS_LABEL                     "label"
 #define GUI_SIMPLE_CLASS_BUTTON                    "button"
 #define GUI_SIMPLE_CLASS_TEXT                      "text"
 #define GUI_SIMPLE_CLASS_BAR                       "bar"
+#define GUI_SIMPLE_CLASS_OPTION                    "option"
 
 #define GUI_SIMPLE_COMPOSITE_SIZE                  2
 
@@ -50,5 +59,8 @@ gui_s* gui_simple_label_new(gui_s* parent, const char* name, const utf8_t* capti
 gui_s* gui_simple_button_new(gui_s* parent, const char* name, const utf8_t* caption, guiEvent_f onclick);
 gui_s* gui_simple_text_new(gui_s* parent, const char* name);
 gui_s* gui_simple_bar_new(gui_s* parent, const char* name, const utf8_t* caption, double max);
+gui_s* gui_simple_option_new(gui_s* parent, const char* name);
+gui_s* gui_simple_check_add(gui_s* opt, const char* name, const utf8_t* text, double h);
+gui_s* gui_simple_option_add(gui_s* opt, const char* name, const utf8_t* text, double h);
 
 #endif

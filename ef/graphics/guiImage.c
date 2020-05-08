@@ -261,10 +261,10 @@ void gui_image_resize(gui_s* gui, guiImage_s* img, unsigned width, unsigned heig
 	if( !width || !height ) return;
 
 	if( img->flags & GUI_IMAGE_FLAGS_PERC ){
-		width = (gui->surface->img->w * img->per.w) / 100.0;
-		height = (gui->surface->img->h * img->per.h) / 100.0;
-		img->pos.x = (gui->surface->img->w * img->per.x) / 100.0;
- 		img->pos.y = (gui->surface->img->h * img->per.y) / 100.0;
+		img->pos.x = (width * img->per.x) / 100.0;
+ 		img->pos.y = (height * img->per.y) / 100.0;
+		width = (width * img->per.w) / 100.0;
+		height = (height * img->per.h) / 100.0;
 	}
 
 	switch( img->type ){
