@@ -18,7 +18,7 @@
 
 typedef struct guiButton{
 	guiCaption_s* caption;
-	guiImage_s* state[3];
+	guiImage_s* state[GUI_BUTTON_STATE_COUNT];
 	unsigned compindex;
 	guiEvent_f onclick;
 	guiEvent_f parentKey;

@@ -15,7 +15,7 @@
  *			themes
  *			bar:
  *				circle
- *			
+ *			option
  *			round
  *			simple
  *		g2d:
@@ -24,6 +24,7 @@
  *
  *
  * ??? 
+ *		guiImage resize in %
  *		option button
  *		radio button
  *		calendar
@@ -38,6 +39,7 @@
 #define GUI_TYPE_TEXT   4
 #define GUI_TYPE_DIV    5
 #define GUI_TYPE_BAR    6
+#define GUI_TYPE_OPTION 7
 #define GUI_TYPE_USER   999
 
 #define GUI_BK_NO_OP 0x00

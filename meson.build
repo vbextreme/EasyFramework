@@ -106,6 +106,7 @@ src += [ 'ef/graphics/guiButton.c' ]
 src += [ 'ef/graphics/guiDiv.c' ]
 src += [ 'ef/graphics/guiText.c' ]
 src += [ 'ef/graphics/guiBar.c' ]
+src += [ 'ef/graphics/guiOptionBox.c' ]
 src += [ 'ef/graphics/guiSimple.c' ]
 
 
