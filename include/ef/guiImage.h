@@ -16,6 +16,14 @@ typedef enum { GUI_IMAGE_COLOR, GUI_IMAGE_IMG, GUI_IMAGE_GIF, GUI_IMAGE_VIDEO, G
 #define GUI_IMAGE_FLAGS_ALPHA 0x01
 #define GUI_IMAGE_FLAGS_PLAY  0x02
 #define GUI_IMAGE_FLAGS_LOOP  0x04
+#define GUI_IMAGE_FLAGS_PERC  0x08
+
+typedef struct guiImagePercentage{
+	double x;
+	double y;
+	double w;
+	double h;
+}guiImagePercentage_s;
 
 typedef struct guiImage{
 	char* res;
@@ -28,6 +36,7 @@ typedef struct guiImage{
 	};
 	g2dCoord_s pos;
 	g2dCoord_s src;
+	guiImagePercentage_s per;
 	guiImageType_e type;
 	void* data;
 	guiImageFree_f free;
@@ -47,6 +56,7 @@ guiImage_s* gui_image_new(g2dColor_t color, const char* pathRelative, unsigned w
 guiImage_s* gui_image_load(g2dColor_t color, const char* pathRelative, unsigned width, unsigned height, unsigned flags, int ratio);
 void gui_image_xy_set(guiImage_s* img, unsigned x, unsigned y);
 void gui_image_src_xy_set(guiImage_s* img, unsigned x, unsigned y);
+void gui_image_perc_set(guiImage_s* img, double x, double y, double w, double h);
 void gui_image_wh_set(guiImage_s* img, unsigned w, unsigned h);
 void gui_image_redraw(gui_s* gui, guiComposite_s* cmp, unsigned id, unsigned count);
 void gui_image_free(guiImage_s* img);

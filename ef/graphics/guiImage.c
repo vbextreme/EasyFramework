@@ -71,9 +71,8 @@ guiImage_s* gui_image_custom_new(g2dImage_s* g2d, unsigned flags){
 __private guiImage_s* gui_image_color_set(guiImage_s* img, g2dColor_t color, unsigned width, unsigned height){
 	img->color = color;
 	img->type = GUI_IMAGE_COLOR;
-	img->pos.w = width;
-	img->pos.h = height;
-	img->src = img->pos;
+	img->src.w = img->pos.w = width;
+	img->src.h = img->pos.h = height;
 	if( img->res ) free(img->res);
 	img->res = NULL;
 	return img;
@@ -85,9 +84,8 @@ __private guiImage_s* gui_image_image_set(guiImage_s* img, unsigned width, unsig
 	g2dImage_s* scaled = g2d_resize(img->img, width, height);
 	if( !scaled ) err_fail("scaled image");
 	img->img = scaled;
-	img->pos.w = img->img->w;
-	img->pos.h = img->img->h;
-	img->src = img->pos;
+	img->src.w = img->pos.w = img->img->w;
+	img->src.h = img->img->h;
 	return img;
 }
 
@@ -96,17 +94,16 @@ __private guiImage_s* gui_image_gif_set(guiImage_s* img, unsigned width, unsigne
 	if( width != img->img->w || height != img->img->h ){
 		g2d_gif_resize(img->gif, width, height, ratio);
 	}
-	img->pos.w = img->gif->width;
-	img->pos.h = img->gif->height;
+	img->src.w = img->pos.w = img->gif->width;
+	img->src.h = img->pos.h = img->gif->height;
 	img->src = img->pos;
 	return img;
 }
 
 __private guiImage_s* gui_image_media_set(guiImage_s* img, unsigned width, unsigned height){
 	img->type = GUI_IMAGE_VIDEO;
-	img->pos.w = width;
-	img->pos.h = height;
-	img->src = img->pos;
+	img->src.w = img->pos.w = width;
+	img->src.h = img->pos.h = height;
 	free(img->res);
 	img->res = NULL;
 	return img;
@@ -117,8 +114,8 @@ guiImage_s* gui_image_new(g2dColor_t color, const char* pathRelative, unsigned w
 
 	guiImage_s* img = mem_new(guiImage_s);
 	img->free = NULL;
-	img->pos.x = 0;
-	img->pos.y = 0;
+	img->src.x = img->pos.x = 0;
+	img->src.y = img->pos.y = 0;
 	img->flags = flags;
 	img->res = NULL;
 	if( !pathRelative ) return gui_image_color_set(img, color, width, height);
@@ -197,8 +194,8 @@ guiImage_s* gui_image_load(g2dColor_t color, const char* pathRelative, unsigned 
 				guiImage_s* img = mem_new(guiImage_s);
 				if( !img ) err_fail("eom");
 				img->res = path;
-				img->pos.x = 0;
-				img->pos.y = 0;
+				img->src.x = img->pos.x = 0;
+				img->src.y = img->pos.y = 0;
 				img->flags = flags;
 				img->img = g2d_load_svg(img->res, width, height);
 				if( img->img ){
@@ -215,8 +212,8 @@ guiImage_s* gui_image_load(g2dColor_t color, const char* pathRelative, unsigned 
 			case GUI_RESOURCE_IMG:{
 				guiImage_s* img = mem_new(guiImage_s);
 				if( !img ) err_fail("eom");
-				img->pos.x = 0;
-				img->pos.y = 0;
+				img->src.x = img->pos.x = 0;
+				img->src.y = img->pos.y = 0;
 				img->flags = flags;
 				img->img = res->img;
 			return gui_image_image_set(img, width, height, ratio);
@@ -263,6 +260,13 @@ void gui_image_free(guiImage_s* img){
 void gui_image_resize(gui_s* gui, guiImage_s* img, unsigned width, unsigned height, int ratio){
 	if( !width || !height ) return;
 
+	if( img->flags & GUI_IMAGE_FLAGS_PERC ){
+		width = (gui->surface->img->w * img->per.w) / 100.0;
+		height = (gui->surface->img->h * img->per.h) / 100.0;
+		img->pos.x = (gui->surface->img->w * img->per.x) / 100.0;
+ 		img->pos.y = (gui->surface->img->h * img->per.y) / 100.0;
+	}
+
 	switch( img->type ){
 		default:
 		case GUI_IMAGE_COLOR:
@@ -282,18 +286,13 @@ void gui_image_resize(gui_s* gui, guiImage_s* img, unsigned width, unsigned heig
 				img->img = g2d_load_svg(img->res, width, height);
 				if( img->img ){
 					img->type = GUI_IMAGE_IMG;
-					img->pos.x = 0;
-					img->pos.y = 0;
-					img->pos.w = img->img->w;
-					img->pos.h = img->img->h;
-					img->src = img->pos;
+					img->src.w = img->pos.w = img->img->w;
+					img->src.h = img->pos.h = img->img->h;
 					return;
 				}
 				err_fail("invalid stored svg");
 			}
 			else if( res->type == GUI_RESOURCE_IMG ){
-				img->pos.x = 0;
-				img->pos.y = 0;
 				img->img = res->img;
 				gui_image_image_set(img, width, height, ratio);
 				return;
@@ -325,6 +324,14 @@ void gui_image_src_xy_set(guiImage_s* img, unsigned x, unsigned y){
 void gui_image_wh_set(guiImage_s* img, unsigned w, unsigned h){
 	img->pos.w = img->src.w = w;
 	img->pos.h = img->src.h = h;
+}
+
+void gui_image_perc_set(guiImage_s* img, double x, double y, double w, double h){
+	img->flags |= GUI_IMAGE_FLAGS_PERC;
+	img->per.w = w;
+	img->per.h = h;
+	img->per.x = x;
+ 	img->per.y = y;
 }
 
 __private void gid_color(gui_s* gui, guiImage_s* img){

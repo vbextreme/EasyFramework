@@ -504,8 +504,8 @@ int gui_event_move(gui_s* gui, xorgEvent_s* event){
 	dbg_info("move event:%s", gui->name);
 	if( gui->surface->img->w != event->move.w || gui->surface->img->h != event->move.h ){
 		dbg_info("resize composite && surface, redraw && draw");
-		gui_composite_resize(gui, gui->img, event->move.w, event->move.h);
 		xorg_surface_resize(X, gui->surface, event->move.w, event->move.h);
+		gui_composite_resize(gui, gui->img, event->move.w, event->move.h);
 		gui_redraw(gui);
 		gui_draw(gui);
 	}
@@ -987,6 +987,14 @@ err_t gui_themes_long_set(const char* name, const char* property, long* set){
 	return -1;
 }
 
+err_t gui_themes_double_set(const char* name, const char* property, double* set){
+	char* dv = gui_themes_string(name, property);
+	if( !dv ) return -1;
+	*set = strtod(dv,NULL);
+	free(dv);
+	return 0;
+}
+
 err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts){
 	int size;
 	char* fontname;
@@ -1047,6 +1055,11 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 	int dy = -1;
 	int dw = -1;
 	int dh = -1;
+	double px = 0;
+	double py = 0;
+	double pw = 0;
+	double ph = 0;
+
 	unsigned flags;
 	guiImage_s* img = NULL;
 
@@ -1068,7 +1081,16 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 	gui_themes_int_set(name, GUI_THEME_COMPOSITE_DEST_Y, &dy);
 	gui_themes_int_set(name, GUI_THEME_COMPOSITE_DEST_W, &dw);
 	gui_themes_int_set(name, GUI_THEME_COMPOSITE_DEST_H, &dh);
-		
+	
+	if( 
+		!gui_themes_double_set(name, GUI_THEME_COMPOSITE_PER_X, &px) &&
+		!gui_themes_double_set(name, GUI_THEME_COMPOSITE_PER_Y, &py) &&
+		!gui_themes_double_set(name, GUI_THEME_COMPOSITE_PER_W, &pw) &&
+		!gui_themes_double_set(name, GUI_THEME_COMPOSITE_PER_H, &ph)
+	){
+		flags |= GUI_IMAGE_FLAGS_PERC;
+	}
+	
 	if( image ){
 		int play = 0;
 		int loop = 0;
@@ -1103,6 +1125,12 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 		img = gui_image_color_new(color, dw != -1 ? dw : (int)gui->surface->img->w, dh != -1 ? dh : (int)gui->surface->img->h, flags);
 	}
 	if( !img ) return -1;
+
+	if( flags & GUI_IMAGE_FLAGS_PERC ){
+		gui_image_perc_set(img, px, py, pw, ph);
+		gui_image_resize(gui, img, img->src.w, img->src.h, -1);
+	}
+
 	if( *ptrimg ){
 		gui_image_free(*ptrimg);
 	}

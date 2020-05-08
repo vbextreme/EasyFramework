@@ -174,10 +174,12 @@ int gui_option_event_mouse(gui_s* gui, xorgEvent_s* event){
 int gui_option_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_OPTION);
 	guiOption_s* opt = gui->control;
-	for( size_t i = 0; i < GUI_OPTION_STATE_COUNT; ++i){
-		gui_image_resize(gui, opt->state[i], event->move.w, event->move.h , -1);
-	}
 	gui_event_move(gui, event);
+	for( size_t i = 0; i < GUI_OPTION_STATE_COUNT; ++i){
+		if( gui->img->img[opt->compindex] != opt->state[i] && gui->img->img[opt->compindex+1] != opt->state[i] ){
+			gui_image_resize(gui, opt->state[i], event->move.w, event->move.h , -1);
+		}
+	}
 	opt->caption->flags |= GUI_CAPTION_RENDERING;
 	gui_option_redraw(gui);
 	gui_draw(gui);

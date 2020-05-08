@@ -89,6 +89,11 @@
 #define GUI_THEME_COMPOSITE_SRC_Y  "src.y"
 #define GUI_THEME_COMPOSITE_SRC_W  "src.w"
 #define GUI_THEME_COMPOSITE_SRC_H  "src.h"
+#define GUI_THEME_COMPOSITE_PER_X  "per.x"
+#define GUI_THEME_COMPOSITE_PER_Y  "per.y"
+#define GUI_THEME_COMPOSITE_PER_W  "per.w"
+#define GUI_THEME_COMPOSITE_PER_H  "per.h"
+
 
 typedef enum {GUI_MODE_NORMAL, GUI_MODE_MODAL, GUI_MODE_DOCK_TOP, GUI_MODE_DOCK_BOTTOM, GUI_MODE_DOCK_LEFT, GUI_MODE_DOCK_RIGHT} guiMode_e;
 
@@ -353,6 +358,9 @@ err_t gui_themes_uint_set(const char* name, const char* property, unsigned* set)
 
 /** set long*/
 err_t gui_themes_long_set(const char* name, const char* property, long* set);
+
+/** set double*/
+err_t gui_themes_double_set(const char* name, const char* property, double* set);
 
 /** set fonts */
 err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts);
