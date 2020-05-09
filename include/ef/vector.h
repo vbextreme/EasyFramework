@@ -149,7 +149,7 @@ err_t vector_add_raw(void* ptrmem, const size_t index);
  */
 err_t vector_fitting(void* ptrmem);
 
-/** shuffle a vector 
+/** shuffle a vector, call mth_random_begin() before use
  * @param vector
  * @param begin begin index
  * @param end end index
