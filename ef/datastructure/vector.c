@@ -52,6 +52,7 @@ err_t vector_upsize(void* ptrmem, size_t count){
 
 	if( count + v->count > v->size ){
 		size_t rsz = v->size + ROUND_UP((count + v->count) - v->size, v->minimal);
+		v->minimal *= v->minimal;
 		void* e = vector_resize(*m, rsz);
 		if( e == NULL ) return -1;
 		*m = e;

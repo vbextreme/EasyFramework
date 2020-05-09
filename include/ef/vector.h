@@ -17,7 +17,7 @@ typedef struct vector{
 /** create new vector
  * @param sof sizeof element
  * @param size begine element size 
- * @param minimal minimal count of elements
+ * @param minimal minimal count of elements, exp resize
  * @return memory or NULL for error
  */
 void* vector_new_raw(size_t sof, size_t size, size_t minimal);
