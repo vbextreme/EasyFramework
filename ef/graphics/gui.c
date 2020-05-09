@@ -593,7 +593,7 @@ int gui_event_call(xorgEvent_s* ev){
 err_t gui_deadpoll_event_callback(__unused deadpoll_s* dp, __unused int ev, __unused void* arg){
 	xorgEvent_s* event;
 	int ret = 0;
-	while( (event = gui_event_get(1)) ){
+	while( (event = gui_event_get(0)) ){
 		ret	|= gui_event_call(event);
 		gui_event_release(event);
 	}
@@ -647,7 +647,6 @@ int gui_deadpoll_event(deadpoll_s* dp){
 		}
 	}
 	dbg_info("check event, timeout %ld", timems);
-
 	int ret = deadpoll_event(dp, &timems);
 	if( ret == DEADPOLL_TIMEOUT && el ){
 		dbg_info("timeout");
@@ -660,15 +659,6 @@ int gui_deadpoll_event(deadpoll_s* dp){
 	}
 	dbg_error("deadpoll");
 	return -1;
-}
-
-void gui_consume_event(void){
-	xorgEvent_s* event;
-	while( (event = gui_event_get(1)) ){
-		gui_event_call(event);
-		gui_event_release(event);
-	}
-	xorg_client_flush(X);
 }
 
 void gui_loop(void){

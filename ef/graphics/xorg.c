@@ -1855,11 +1855,21 @@ inline __private void keyboard_modifiers(unsigned long keysym, int set){
 xorgEvent_s* xorg_event_new(xorg_s* x, int async){
 	xcb_generic_event_t* event;
 	
-	if( !async )
-		event = xcb_wait_for_event(x->connection);
-	else
-		event = xcb_poll_for_event(x->connection);
-	
+	while(1){
+		if( !async ){
+			event = xcb_wait_for_event(x->connection);
+		}
+		else{
+			event = xcb_poll_for_event(x->connection);
+		}
+		if( event == NULL && xcb_connection_has_error(x->connection) ){
+			x->connection = xcb_connect(x->display,&x->screenDefault);
+			if( xcb_connection_has_error(x->connection) ) err_fail("xcb connection");
+			continue;
+		}
+		break;
+	};
+
 	if( !event ){
 		return NULL;
 	}

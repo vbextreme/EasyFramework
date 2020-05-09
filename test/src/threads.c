@@ -4,12 +4,18 @@
 
 /*@test -d --threads 'test threads'*/
 
+#define NWAIT 100
+
 struct fort{
-	long ms;
+	long ms[NWAIT];
 	mutex_s* mtx;
+	semaphore_s* sem;
+	event_s* ev;
 };
 
+#define N 30
 volatile long counter;
+volatile int sequence[N];
 
 void* t_print_mutex(void* arg){
 	struct fort* f = arg;
@@ -20,60 +26,126 @@ void* t_print_mutex(void* arg){
 		--counter;
 		printf("no %lu) %ld\n", thr_self_id(), counter);
 		mutex_unlock(f->mtx);
-		delay_ms(f->ms);
+		delay_ms(f->ms[0]);
 	}
 	printf("%lu) end\n", thr_self_id());
 	mutex_unlock(f->mtx);
 	return NULL;
 }
 
-void* t_print_mutexfd(void* arg){
+void* t_print_sem_consumer(void* arg){
 	struct fort* f = arg;
-	
-	while(1){
-		int fd;
-	   	while(1){
-			fd = mutex_fd_lock(f->mtx);
-			if( fd == -1 ) break;
-			fd_timeout(fd, -1);
-			fd = mutex_fd_event(f->mtx, fd);
-			if( fd == -1 ) break;
-			fd_timeout(fd, -1);
-		}
+	size_t i = 0;
 
-		if( counter == 0 ) break;
-		--counter;
-		printf("fd %lu) %ld\n", thr_self_id(), counter);
-		mutex_unlock(f->mtx);
-		delay_ms(f->ms);
+	while(1){
+		semaphore_wait(f->sem);
+		if( i >= N ) break;
+		delay_ms(f->ms[0]);
+		printf("cons:%d\n", sequence[i++]);
 	}
-	printf("fd %lu) end\n", thr_self_id());
-	mutex_unlock(f->mtx);
+	printf("end consumer\n");
+
 	return NULL;
 }
+
+void* t_print_sem_producer(void* arg){
+	struct fort* f = arg;
+	size_t i = 0;
+
+	while(1){
+		sequence[i] = i;
+		++i;
+		semaphore_post(f->sem);
+		delay_ms(f->ms[1]);
+		if( i >= N ){
+			semaphore_post(f->sem);
+			break;
+		}
+	}
+	printf("end producer\n");
+
+	return NULL;
+}
+
+void* t_print_ev_consumer(void* arg){
+	struct fort* f = arg;
+	size_t i = 0;
+
+	while(1){
+		event_wait(f->ev);
+		if( i >= N || counter == 777 ) break;
+		delay_ms(f->ms[0]);
+		printf("ev:%d\n", sequence[i++]);
+	}
+	printf("end consumer\n");
+
+	return NULL;
+}
+
+void* t_print_ev_producer(void* arg){
+	struct fort* f = arg;
+	size_t i = 0;
+
+	while(1){
+		sequence[i] = i;
+		++i;
+		event_raise(f->ev);
+		delay_ms(f->ms[1]);
+		if( i >= N ){
+			counter = 777; // not realy safe
+			event_raise(f->ev);
+			break;
+		}
+	}
+	printf("end producer\n");
+	
+
+	return NULL;
+}
+
+void vfreethr(thr_s** vt){
+	vector_foreach(vt, i){
+		thr_free(vt[i]);
+	}
+	vector_clear(vt);
+}
+
+
 
 /*@fn*/
 void test_threads(__unused const char* argA, __unused const char* argB){
 	struct fort ff = {
-		.ms = 500,
-		.mtx = mutex_new()
+		.ms = { 250, 150},
+		.mtx = mutex_new(),
+		.sem = semaphore_new(0),
+		.ev = event_new()
 	};
-	counter = 300;
+	counter = 30;
 
 	thr_s** vt = vector_new(thr_s*, 16, 4);
 
+	/* test mutex*/
 	vector_push_back(vt, thr_start(t_print_mutex, &ff));
 	vector_push_back(vt, thr_start(t_print_mutex, &ff));
-	vector_push_back(vt, thr_start(t_print_mutexfd, &ff));
-	vector_push_back(vt, thr_start(t_print_mutexfd, &ff));
+	vector_push_back(vt, thr_start(t_print_mutex, &ff));
+	thr_wait_all(vt);
+	vfreethr(vt);
 
-	thr_wait_all(vt);	
+	/* test semaphore*/
+	vector_push_back(vt, thr_start(t_print_sem_consumer, &ff));
+	vector_push_back(vt, thr_start(t_print_sem_producer, &ff));
+	thr_wait_all(vt);
+	vfreethr(vt);
+
+	/* test event*/
+	vector_push_back(vt, thr_start(t_print_ev_consumer, &ff));
+	vector_push_back(vt, thr_start(t_print_ev_producer, &ff));
+	thr_wait_all(vt);
+	vfreethr(vt);
 
 
-
-
-
-
-
+	
+	/* end test */
+	vector_free(vt);
 }
 

@@ -149,7 +149,6 @@
  */
 #define ULLBITT(V, VAL) (V[ULLBIT_INDEX(VAL)] & ULLBIT_BIT(VAL))
 
-
 /** degree to radiant
  * @param gradi degree
  * @return radiant

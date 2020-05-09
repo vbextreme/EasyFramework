@@ -149,6 +149,14 @@ err_t vector_add_raw(void* ptrmem, const size_t index);
  */
 err_t vector_fitting(void* ptrmem);
 
+/** shuffle a vector 
+ * @param vector
+ * @param begin begin index
+ * @param end end index
+ */
+void vector_shuffle(void* ptrmem, size_t begin, size_t end);
+
+#define vector_shuffle_all(V) vector_shuffle(V, 0, vector_count(V)-1)
 
 
 #endif 

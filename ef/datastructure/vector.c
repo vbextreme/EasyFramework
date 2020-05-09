@@ -79,7 +79,6 @@ void vector_remove(void* m, const size_t index){
 
 err_t vector_add_raw(void* ptrmem, const size_t index){
 	void** m = ptrmem;
-
 	vector_s* v = VECTOR(*m);
 
 	if( v->count == 0 || index >= v->count){
@@ -107,4 +106,17 @@ err_t vector_fitting(void* ptrmem){
 	*m = nm;
 	return 0;
 }
+
+void vector_shuffle(void* m, size_t begin, size_t end){
+	vector_s* v = VECTOR(m);
+
+	const size_t count = (end - begin) + 1;
+	for( size_t i = begin; i <= end; ++i ){
+		size_t j = begin + mth_random(count);
+		if( j != i ){
+			mem_swap(ADDR(m) + (i * v->sof) , v->sof, ADDR(m) + (j * v->sof), v->sof);
+		}
+	}
+}
+
 

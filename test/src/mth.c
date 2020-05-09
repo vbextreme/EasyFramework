@@ -1,4 +1,5 @@
 #include "test.h"
+#include <ef/vector.h>
 
 /*@test -M --math 'test math'*/
 
@@ -73,6 +74,16 @@ void test_math(__unused const char* argA, __unused const char* argB){
 	printf("round up pow of two 16: %u\n",ROUND_UP_POW_TWO32(16));
 	printf("round down pow of two 16: %u\n",ROUND_DOWN_POW_TWO32(16));
 	printf("round down pow of two 17: %u\n",ROUND_DOWN_POW_TWO32(17));
+
+	int* uniq = vector_new(int, 128, 2);
+	for( int i = 0; i < 100; ++i){
+		vector_push_back(uniq, i);
+	}
+	dbg_info("shuffle");
+	vector_shuffle_all(uniq);
+	vector_foreach(uniq, i){
+		printf("%lu]%3d\n", i, uniq[i]);
+	}
 
 }
 

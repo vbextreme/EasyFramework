@@ -71,7 +71,6 @@ void gui_simple_end(void){
 
 void gui_simple_show_all(gui_s* parent, int show){
 	gui_show(parent,show);
-	gui_consume_event();
 	vector_foreach(parent->childs, i){
 		gui_simple_show_all(parent->childs[i], show);
 	}
@@ -89,7 +88,6 @@ inline __private void simple_layout(gui_s* gui){
 }
 
 void gui_simple_apply_change(gui_s* main){
-	gui_consume_event();
 	if( main->type == GUI_TYPE_DIV ) simple_layout(main);
 	gui_redraw(main);
 	gui_draw(main);
