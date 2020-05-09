@@ -217,6 +217,13 @@ int gui_option_event_themes(gui_s* gui, xorgEvent_s* ev){
 	iname = str_printf("%s.%s", name, GUI_THEMES_OPTION_OFF);
 	gui_themes_gui_image(gui, iname, &opt->state[GUI_OPTION_STATE_OFF]);
 	free(iname);
+	
+	if( opt->flags & GUI_OPTION_FLAGS_ACTIVE ){
+		gui->img->img[opt->vindex] = opt->state[GUI_OPTION_STATE_ON];
+	}
+	else{
+		gui->img->img[opt->vindex] = opt->state[GUI_OPTION_STATE_OFF];
+	}
 
 	return 0;
 }

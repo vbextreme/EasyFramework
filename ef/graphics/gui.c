@@ -1044,7 +1044,10 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 	double ph = 0;
 
 	unsigned flags;
+	int perenable = 0;
 	guiImage_s* img = NULL;
+
+	dbg_error("loading image resources: '%s'", name);
 
 	if( !gui_themes_uint_set(name, GUI_THEME_COMPOSITE_COLOR, &color) ) colorset = 1;
 		
@@ -1055,6 +1058,7 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 			image = gui_themes_string(name, GUI_THEME_COMPOSITE_VIDEO);
 		}
 	}
+
 	if( !colorset && !image ) return -1;
 		
 	gui_themes_bool_set(name, GUI_THEME_COMPOSITE_ALPHA, &alpha);
@@ -1071,7 +1075,7 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 		!gui_themes_double_set(name, GUI_THEME_COMPOSITE_PER_W, &pw) &&
 		!gui_themes_double_set(name, GUI_THEME_COMPOSITE_PER_H, &ph)
 	){
-		flags |= GUI_IMAGE_FLAGS_PERC;
+		perenable = 1;
 	}
 	
 	if( image ){
@@ -1096,8 +1100,7 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 		gui_themes_int_set(name, GUI_THEME_COMPOSITE_SRC_W, &sw);
 		gui_themes_int_set(name, GUI_THEME_COMPOSITE_SRC_H, &sh);
 
-		__mem_free char* path = path_resolve(image);
-		img = gui_image_load(color, path, sw != -1 ? sw : (int)gui->surface->img->w, sh != -1 ? sh : (int)gui->surface->img->h, flags, ratio);
+		img = gui_image_load(color, image, sw != -1 ? sw : (int)gui->surface->img->w, sh != -1 ? sh : (int)gui->surface->img->h, flags, ratio);
 		if( !img ) err_fail("gui image new");
 		if( sx != -1 ) img->src.x = sx;
 		if( sy != -1 ) img->src.y = sy;
@@ -1109,7 +1112,7 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 	}
 	if( !img ) return -1;
 
-	if( flags & GUI_IMAGE_FLAGS_PERC ){
+	if( perenable ){
 		gui_image_perc_set(img, px, py, pw, ph);
 		gui_image_resize(gui, img, img->src.w, img->src.h, -1);
 	}

@@ -314,9 +314,7 @@ __private gui_s* simple_option_add(gui_s* opt, const char* name, const utf8_t* t
 	
 	guiImage_s* on = gui_image_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
 	gui_image_perc_set(on, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
-//	guiImage_s* off = gui_image_color_new(GUI_SIMPLE_DEFAULT_DISABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
-	guiImage_s* off = gui_image_load(GUI_SIMPLE_DEFAULT_DISABLE_COLOR, "~/Immagini/test/gui/off5.svg", GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, GUI_IMAGE_FLAGS_ALPHA, 0);
-
+	guiImage_s* off = gui_image_color_new(GUI_SIMPLE_DEFAULT_DISABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
 	gui_image_perc_set(off, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
 
 	gui_s* gui = gui_option_attach(

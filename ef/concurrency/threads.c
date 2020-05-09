@@ -27,7 +27,6 @@ int futex_v2(int *uaddr, int futex_op, int val, unsigned val2, int *uaddr2, int 
 void mutex_init(mutex_s* mtx){
 	mtx->futex = 0;
 	mtx->private = 0;
-	mtx->fd = -1;
 }
 
 mutex_s* mutex_new(){
@@ -42,10 +41,6 @@ mutex_s* mutex_new(){
 }
 
 void mutex_free(mutex_s* mtx){
-	if( mtx->fd != -1 ){
-		dbg_error("some threads wait a mutex");
-		close(mtx->fd);
-	}
 	free(mtx);
 }
 
@@ -76,27 +71,6 @@ int mutex_trylock(mutex_s* mtx){
 	return 0;
 }
 
-int mutex_fd_lock(mutex_s* mtx){
-	unsigned const op = FUTEX_FD | mtx->private;
-	unsigned m;
-	if( (m = __sync_val_compare_and_swap(&mtx->futex, 0, 1)) ){
-		if( m == 2 || __sync_val_compare_and_swap(&mtx->futex, 1, 2) != 0){
-			mtx->fd = futex(&mtx->futex, op, 2, NULL, NULL, 0);
-		}
-	}
-	return mtx->fd;
-}
-
-int mutex_fd_event(mutex_s* mtx){
-	unsigned const op = FUTEX_FD | mtx->private;
-	if( mtx->fd != -1 ) close(mtx->fd);
-	mtx->fd = -1;
-	if( __sync_val_compare_and_swap(&mtx->futex, 0, 2) ){
-		mtx->fd = futex(&mtx->futex, op, 2, NULL, NULL, 0);
-	}
-	return mtx->fd;
-}
-
 /*****************/
 /*** semaphore ***/
 /*****************/
@@ -104,7 +78,6 @@ int mutex_fd_event(mutex_s* mtx){
 void semaphore_init(semaphore_s* sem, int val){
 	sem->futex = val;
 	sem->private = 0;
-	sem->fd = -1;
 }
 
 semaphore_s* semaphore_new(int val){
@@ -119,10 +92,6 @@ semaphore_s* semaphore_new(int val){
 }
 
 void semaphore_free(semaphore_s* sem){
-	if( sem->fd != -1 ){
-		dbg_error("thread wait a semaphore");
-		close(sem->fd);
-	}
 	free(sem);
 }
 
@@ -149,23 +118,6 @@ int semaphore_trywait(semaphore_s* sem){
 	return 0;
 }
 
-int semaphore_fd_wait(semaphore_s* sem){
-	unsigned const op = FUTEX_FD | sem->private;
-	if( __sync_bool_compare_and_swap(&sem->futex, 0, 0) ){
-		sem->fd = futex(&sem->futex, op, 0, NULL, NULL, 0);
-	}
-	return sem->fd;
-}
-
-int semaphore_fd_event(semaphore_s* sem){
-	if( sem->fd != -1 ) close(sem->fd);
-	sem->fd = semaphore_fd_wait(sem);
-	if( sem->fd == -1 ){
-		__sync_fetch_and_sub(&sem->futex, 1);
-	}
-	return sem->fd;
-}
-
 /*************/
 /*** event ***/
 /*************/
@@ -173,7 +125,6 @@ int semaphore_fd_event(semaphore_s* sem){
 void event_init(event_s* ev){
 	ev->futex = 0;
 	ev->private = 0;
-	ev->fd = -1;
 }
 
 event_s* event_new(){
@@ -188,10 +139,6 @@ event_s* event_new(){
 }
 
 void event_free(event_s* ev){
-	if( ev->fd != -1 ){
-		dbg_error("some threads wait an event");
-		close(ev->fd);
-	}
 	free(ev);
 }
 
@@ -212,21 +159,28 @@ void event_wait(event_s* ev){
 	__sync_bool_compare_and_swap(&ev->futex,1,0);
 }
 
-int event_fd_wait(event_s* ev){
-	unsigned const op = FUTEX_FD | ev->private;
-	if( ev->fd != -1 ) close(ev->fd);
-	if( __sync_bool_compare_and_swap(&ev->futex, 0, 0) ){
-		ev->fd=futex(&ev->futex, op, 0, NULL, NULL, 0);
+/***************/
+/*** eventfd ***/
+/***************/
+
+int event_fd_new(long val, int nonblock){
+	int fd = eventfd(val, 0);
+	if( fd == -1 ) return -1;
+	if( nonblock ){
+		int flags = fcntl(fd, F_GETFL, 0);
+		fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 	}
-	if( __sync_bool_compare_and_swap(&ev->futex,1,0) ){
-		if( ev->fd ) close(ev->fd);
-		ev->fd = -1;
-	}
-	return ev->fd;
+	return fd;
 }
 
-int event_fd_event(event_s* ev){	
-	return event_fd_wait(ev);
+err_t event_fd_read(long* val, int fd){
+	if( read(fd, val, sizeof(uint64_t)) != sizeof(uint64_t)) return -1;
+    return 0;
+}
+
+err_t event_fd_write(int fd, long val){
+	if( write(fd, &val, sizeof(uint64_t)) != sizeof(uint64_t)) return -1;
+    return 0;
 }
 
 /*****************/

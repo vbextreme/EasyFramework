@@ -3,7 +3,9 @@
 
 #include <ef/type.h>
 #include <ef/list.h>
+
 #include <pthread.h>
+#include <sys/eventfd.h>
 
 /*************/
 /*** futex ***/
@@ -45,7 +47,6 @@ int futex_v2(int *uaddr, int futex_op, int val, unsigned val2, int *uaddr2, int 
 typedef struct mutex{
 	int futex;
 	int private;
-	int fd;
 }mutex_s;
 
 /** init a mutex if you have create without mutex_new*/
@@ -69,18 +70,6 @@ void mutex_lock(mutex_s* mtx);
  */
 int mutex_trylock(mutex_s* mtx);
 
-/** lock and use fd for wait with epoll, when raised event call mutex_fd_event for complete operation
- * @param mtx mutex
- * @return fd or -1 acquired
- */
-int mutex_fd_lock(mutex_s* mtx);
-
-/** when exit fronm epoll call this, -1 acquire a lock, remember to unlock before reenter in epoll
- * @param mtx mutex
- * @return  if locked is acquired return -1 otherwise return fd
- */
-int mutex_fd_event(mutex_s* mtx);
-
 /*****************/
 /*** semaphore ***/
 /*****************/
@@ -88,7 +77,6 @@ int mutex_fd_event(mutex_s* mtx);
 typedef struct semaphore{
 	int futex;
 	int private;
-	int fd;
 }semaphore_s;
 
 /** init a semaphore if you have create without semaphore_new*/
@@ -112,18 +100,6 @@ void semaphore_wait(semaphore_s* sem);
  */
 int semaphore_trywait(semaphore_s* sem);
 
-/** try to decrement semaphore but wait in epoll if needed, call semaphore_fd_event() when event raised on epoll
- * @param sem semaphore
- * @return fd or -1 acquired
- */
-int semaphore_fd_wait(semaphore_s* sem);
-
-/** if wait over semaphore, when event is raised on epoll call this function for check you can procede with semaphore or need to reenter to epoll
- * @param sem semaphore
- * @return fd for reenter to epoll, -1 you can continue
- */
-int semaphore_fd_event(semaphore_s* sem);
-
 /*************/
 /*** event ***/
 /*************/
@@ -131,7 +107,6 @@ int semaphore_fd_event(semaphore_s* sem);
 typedef struct event{
 	int futex;
 	int private;
-	int fd;
 }event_s;
 
 /** init a event if you have create without event_new*/
@@ -149,17 +124,29 @@ void event_raise(event_s* ev);
 /** wait a event raised */
 void event_wait(event_s* ev);
 
-/** try to wait event in epoll if needed, call event_fd_event() when event raised on epoll
- * @param ev event
- * @return fd or -1 acquired
- */
-int event_fd_wait(event_s* ev);
+/***************/
+/*** eventfd ***/
+/***************/
 
-/** if wait over event, when event is raised on epoll call this function for check you can procede with event or need to reenter to epoll
- * @param ev event
- * @return fd for reenter to epoll, -1 event is raised
+/** create eventfd where performe epoll
+ * @param val begin value
+ * @return fd or -1 error
  */
-int event_fd_event(event_s* ev);
+int event_fd_new(long val, int nonblock);
+
+/** read value from fd, when the eventfd counter has a nonzero value, then a read(2) returns 8 bytes containing that value, and the counter's value is reset to zero.If the eventfd counter is zero at the time of the call to read(2), then the call either blocks until the counter becomes nonzero (at which time, the read(2) proceeds as described above) or fails with the error EAGAIN if the file descriptor has been made nonblocking.
+ * @param val value to read
+ * @param fd where read
+ * @return 0 ok -1 error
+ */
+err_t event_fd_read(long* val, int fd);
+
+/** write value to fd, call adds the 8-byte integer value supplied in its buffer to the counter, The maximum value that may be stored in the counter is the largest unsigned 64-bit value minus 1, If the addition would cause the counter's value to exceed the maximum, then the write(2) either blocks until a read(2) is performed on the file descriptor, or fails with the error EAGAIN if the file descriptor has been made nonblocking, will fail with the error EINVAL if the size of the supplied buffer is less than 8 bytes, or if an attempt is made to write the value 0xffffffffffffffff.
+ * @param fd where read
+ * @param val value to read
+ * @return 0 ok -1 error
+ */
+err_t event_fd_write(int fd, long val);
 
 /***************/
 /*** message ***/
@@ -236,6 +223,8 @@ typedef struct thr{
  */
 thr_s* thr_new(thr_f fn, void* arg, unsigned stackSize, unsigned oncpu, int detach);
 
+#define thr_start(FN, ARG) thr_new(FN, ARG, 0, 0, 0)
+
 /** change thread cpu
  * @param thr thread
  * @param cpu cpu 1 to N
@@ -293,6 +282,7 @@ void thr_free(thr_s* thr);
 /** exit from thread */
 #define thr_exit(RET) pthread_exit(RET)
 
-
+/** return id from thread*/
+#define thr_self_id() pthread_self()
 
 #endif

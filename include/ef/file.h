@@ -294,7 +294,7 @@ char* fd_read_cbline(int fd, rbuffer_s* cb, int withnl);
 
 /** wait data to fd
  * @param fd fd to wait
- * @param timeoutms time to get timeout
+ * @param timeoutms time to get timeout, -1 infinite, 0 not wait, > 0 ms
  * @return -1 error, 0 data with no timeout, 1 timeout 
  */
 int fd_timeout(int fd, long timeoutms);

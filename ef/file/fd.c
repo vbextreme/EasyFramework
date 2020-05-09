@@ -311,7 +311,7 @@ int fd_timeout(int fd, long timeoutms){
 	fd_set rfd;
 	FD_ZERO(&rfd);
 	FD_SET(fd, &rfd);
-	int ret = select( fd+1, &rfd, NULL, NULL, &to);
+	int ret = select( fd+1, &rfd, NULL, NULL, timeoutms != -1 ? &to : NULL);
 	if( ret < 0 ){
 		err_pushno("select fd %d", fd);
 		return -1;

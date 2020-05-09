@@ -110,7 +110,10 @@ __private guiImage_s* gui_image_media_set(guiImage_s* img, unsigned width, unsig
 }
 
 guiImage_s* gui_image_new(g2dColor_t color, const char* pathRelative, unsigned width, unsigned height, unsigned flags, int ratio){
-	if( !width || !height ) return NULL;
+	if( !width || !height ){
+		dbg_error("wh");	
+		return NULL;
+	}
 
 	guiImage_s* img = mem_new(guiImage_s);
 	img->free = NULL;
@@ -118,10 +121,16 @@ guiImage_s* gui_image_new(g2dColor_t color, const char* pathRelative, unsigned w
 	img->src.y = img->pos.y = 0;
 	img->flags = flags;
 	img->res = NULL;
-	if( !pathRelative ) return gui_image_color_set(img, color, width, height);
+	if( !pathRelative ){
+		return	gui_image_color_set(img, color, width, height);
+	}
 
 	img->res = path_resolve(pathRelative);
-	if( !file_exists(img->res) ) return gui_image_color_set(img, color, width, height);
+	dbg_error("path:%s",img->res);
+	if( !file_exists(img->res) ){
+		dbg_error("file not exists");
+		return gui_image_color_set(img, color, width, height);
+	}
 
    	img->img = g2d_load_png(img->res);
 	if( img->img ){
@@ -148,9 +157,8 @@ guiImage_s* gui_image_new(g2dColor_t color, const char* pathRelative, unsigned w
 	if( img->img ){
 		gui_resource_new(img->res, U8(img->res));
 		img->type = GUI_IMAGE_IMG;
-		img->pos.w = img->img->w;
-		img->pos.h = img->img->h;
-		img->src = img->pos;
+		img->src.w = img->pos.w = img->img->w;
+		img->src.h = img->pos.h = img->img->h;
 		return img;
 	}
 
@@ -165,13 +173,20 @@ guiImage_s* gui_image_new(g2dColor_t color, const char* pathRelative, unsigned w
 		gui_image_media_set(img, width, height);
 		return img;
 	}
-
+	
+	dbg_error("unknow format");
 	return gui_image_color_set(img, color, width, height);
 }
 
 guiImage_s* gui_image_load(g2dColor_t color, const char* pathRelative, unsigned width, unsigned height, unsigned flags, int ratio){
-	if( !width || !height ) return NULL;
-	if( !pathRelative ) NULL;
+	if( !width || !height ){
+		dbg_error("fail, no width || height");
+		return NULL;
+	}
+	if( !pathRelative ){
+		dbg_error("no realtive path");	
+		NULL;
+	}
 
 	char* path = path_resolve(pathRelative);
 	guiResource_s* res = gui_resource(path);
@@ -352,7 +367,6 @@ __private void gid_color(gui_s* gui, guiImage_s* img){
 }
 
 __private void gid_img(gui_s* gui, g2dCoord_s* pos, g2dImage_s* img, g2dCoord_s* src, unsigned flags){
-	dbg_error("gid: '%s' dst %u %u %u*%u src %u %u %u*%u", gui->name, pos->x, pos->y, pos->w, pos->h, src->x, src->y, src->w,src->h);
 	if( pos->x + pos->w > gui->surface->img->w ) pos->w = gui->surface->img->w - pos->x;
 	if( pos->y + pos->h > gui->surface->img->h ) pos->h = gui->surface->img->h - pos->y;
 	src->w = pos->w;
