@@ -19,6 +19,11 @@
  *			exponential
  *			reduce
  *			autofree
+ *
+ *		thr:
+ *			remove FUTEX_FD
+ *			add eventfd
+ *
  * ??? 
  *		guiImage resize in %
  *		option button

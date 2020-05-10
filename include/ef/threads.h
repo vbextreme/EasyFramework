@@ -135,7 +135,7 @@ void event_wait(event_s* ev);
 int event_fd_new(long val, int nonblock);
 
 /** read value from fd, when the eventfd counter has a nonzero value, then a read(2) returns 8 bytes containing that value, and the counter's value is reset to zero.If the eventfd counter is zero at the time of the call to read(2), then the call either blocks until the counter becomes nonzero (at which time, the read(2) proceeds as described above) or fails with the error EAGAIN if the file descriptor has been made nonblocking.
- * @param val value to read
+ * @param val value to read, val is setted to writeval + prevval every time is called from write before read
  * @param fd where read
  * @return 0 ok -1 error
  */

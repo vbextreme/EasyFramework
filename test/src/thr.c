@@ -10,6 +10,7 @@ struct fort{
 	mutex_s* mtx;
 	semaphore_s* sem;
 	event_s* ev;
+	int fdev;
 };
 
 #define N 30
@@ -69,7 +70,7 @@ void* t_print_sem_producer(void* arg){
 void* t_print_ev_consumer(void* arg){
 	struct fort* f = arg;
 	size_t i = 0;
-
+	counter  = 0;
 	while(1){
 		event_wait(f->ev);
 		if( i >= N || counter == 777 ) break;
@@ -102,39 +103,95 @@ void* t_print_ev_producer(void* arg){
 	return NULL;
 }
 
+void* t_print_evfd_consumer(void* arg){
+	struct fort* f = arg;
+	size_t i = 0;
+	counter = 0;
+	while(1){
+		fd_timeout(f->fdev,-1);
+		long val = 0;
+		if( counter == 777 ) break;
+		if( event_fd_read(&val, f->fdev) ){
+			dbg_error("event");
+			continue;
+		}
+		if( counter == 777 ) break;
+		delay_ms(f->ms[0]);
+		printf("ev(%ld):%d\n", val, sequence[i++]);
+		
+	}
+	printf("end consumer\n");
+
+	return NULL;
+}
+
+void* t_print_evfd_producer(void* arg){
+	struct fort* f = arg;
+	size_t i = 0;
+
+	while(1){
+		sequence[i] = i;
+		printf("-->%lu\n", i);
+		++i;
+		event_fd_write(f->fdev, 1);
+		delay_ms(f->ms[1]);
+		if( i >= N ){
+			counter = 777;
+			event_fd_write(f->fdev, 1);
+			break;
+		}
+	}
+	printf("end producer\n");
+	
+	return NULL;
+}
+
+
 /*@fn*/
 void test_thr(__unused const char* argA, __unused const char* argB){
 	struct fort ff = {
-		.ms = { 250, 150},
+		.ms = { 250, 50},
 		.mtx = mutex_new(),
 		.sem = semaphore_new(0),
-		.ev = event_new()
+		.ev = event_new(),
+		.fdev = event_fd_new(0, 1)
 	};
 	counter = 30;
 
 	thr_s** vt = vector_new(thr_s*, 16, (vfree_f)thr_free );
 
 	/* test mutex*/
-	vector_push_back(vt, thr_start(t_print_mutex, &ff));
-	vector_push_back(vt, thr_start(t_print_mutex, &ff));
-	vector_push_back(vt, thr_start(t_print_mutex, &ff));
-	thr_wait_all(vt);
-	vector_clear(vt);
+//	vector_push_back(vt, thr_start(t_print_mutex, &ff));
+//	vector_push_back(vt, thr_start(t_print_mutex, &ff));
+//	vector_push_back(vt, thr_start(t_print_mutex, &ff));
+//	thr_wait_all(vt);
+//	vector_clear(vt);
 
 	/* test semaphore*/
-	vector_push_back(vt, thr_start(t_print_sem_consumer, &ff));
-	vector_push_back(vt, thr_start(t_print_sem_producer, &ff));
-	thr_wait_all(vt);
-	vector_clear(vt);
+//	vector_push_back(vt, thr_start(t_print_sem_consumer, &ff));
+//	vector_push_back(vt, thr_start(t_print_sem_producer, &ff));
+//	thr_wait_all(vt);
+//	vector_clear(vt);
 
 	/* test event*/
-	vector_push_back(vt, thr_start(t_print_ev_consumer, &ff));
-	vector_push_back(vt, thr_start(t_print_ev_producer, &ff));
-	thr_wait_all(vt);
-	vector_clear(vt);
+//	vector_push_back(vt, thr_start(t_print_ev_consumer, &ff));
+//	vector_push_back(vt, thr_start(t_print_ev_producer, &ff));
+//	thr_wait_all(vt);
+//	vector_clear(vt);
 
+	/* test event fd*/
+//	vector_push_back(vt, thr_start(t_print_evfd_consumer, &ff));
+//	vector_push_back(vt, thr_start(t_print_evfd_producer, &ff));
+//	thr_wait_all(vt);
+//	vector_clear(vt);
 
 	
+
+	mutex_free(ff.mtx);
+	semaphore_free(ff.sem);
+	event_free(ff.ev);
+	fd_close(ff.fdev);
+
 	/* end test */
 	vector_free(vt);
 

@@ -75,7 +75,7 @@ void test_math(__unused const char* argA, __unused const char* argB){
 	printf("round down pow of two 16: %u\n",ROUND_DOWN_POW_TWO32(16));
 	printf("round down pow of two 17: %u\n",ROUND_DOWN_POW_TWO32(17));
 
-	int* uniq = vector_new(int, 128, 2);
+	int* uniq = vector_new(int, 128, NULL);
 	for( int i = 0; i < 100; ++i){
 		vector_push_back(uniq, i);
 	}
