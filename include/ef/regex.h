@@ -76,7 +76,7 @@ const char* regex_match_get(size_t* lenout, regex_s* rx, size_t index);
  * @param str string
  * @param regex regex
  * @param global continue after match
- * @return vector for captured string, free each element before free vector, NULL error or not match
+ * @return vector for captured string, no NULL is returned
  */
 char** str_regex(const char* str, const char* regex, int global);
 

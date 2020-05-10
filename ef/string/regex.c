@@ -153,21 +153,21 @@ const char* regex_match_get(size_t* lenout, regex_s* rx, size_t index){
 
 char** str_regex(const char* str, const char* regex, int global){
 	regex_s rx = REGEX_NEW();
-	
+	char** capture = vector_new(char*, 2, free);
+
 	regex_set(&rx, regex);
 	if( regex_build(&rx) ){
-		return NULL;
+		return capture;
 	}
 
 	regex_text(&rx, str, strlen(str));
 	if( regex_match(&rx) ){
 		regex_delete(&rx);
-		return NULL;
+		return capture;
 	}
 
 	size_t count = regex_match_count(&rx);
-	char** capture = vector_new(char*, count, free);
-	if( !capture ) return NULL;
+	vector_upsize(&capture, count);
 
 	for(size_t i = 0; i < count; ++i){
 		size_t len;
