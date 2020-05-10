@@ -2454,7 +2454,7 @@ void g2d_pieslice_fill(g2dImage_s* img, g2dPoint_s* cx, unsigned r, float startA
 }
 
 void g2d_repfill(g2dImage_s* img, g2dPoint_s* st, g2dColor_t rep, g2dColor_t col){
-	g2dPoint_s* stk = vector_new(g2dPoint_s, 4096, 4096);
+	g2dPoint_s* stk = vector_new(g2dPoint_s, 4096, NULL);
 	vector_push_back(stk, *st);
 
     int8_t ract,lact;

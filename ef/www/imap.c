@@ -48,7 +48,7 @@ err_t imap_server(imap_s* ima, const char* server){
 }
 
 __private char** imap_list_parse(const char* body){
-	char** ret = vector_new(char*, 8, 8);
+	char** ret = vector_new(char*, 8, free);
 	
 	while( *body ){
 		while( *body && *body != '*' ){
@@ -58,13 +58,11 @@ __private char** imap_list_parse(const char* body){
 		if( !*body ) break;
 		++body;
 		if( *body != '/' ){
-			vector_foreach(ret,i) free(ret[i]);
 			vector_free(ret);
 			return NULL;
 		}
 		++body;
 		if( *body != '"' ){
-			vector_foreach(ret,i) free(ret[i]);
 			vector_free(ret);
 			return NULL;
 		}

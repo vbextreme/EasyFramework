@@ -54,7 +54,7 @@ void gui_begin(){
 	dpgui = deadpoll_new();
 	if( !dpgui ) err_fail("deadpoll");
 	gui_deadpoll_register(dpgui);
-	vgife = vector_new(guiInternalFocusEvent_s, 2, 1);
+	vgife = vector_new(guiInternalFocusEvent_s, 2, NULL);
 }
 
 void gui_end(){
@@ -137,7 +137,7 @@ gui_s* gui_new(
 	gui->name = NULL;
 	gui->class = NULL;
 	gui->parent = parent;
-	gui->childs = vector_new(gui_s*, GUI_CHILD_INITIAL, GUI_CHILD_INITIAL);
+	gui->childs = vector_new(gui_s*, GUI_CHILD_INITIAL, NULL);
 	xcb_window_t xcbParent = xorg_root(X);
 	if(parent){
 		gui_child_add(parent, gui);

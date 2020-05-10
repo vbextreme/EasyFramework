@@ -35,7 +35,7 @@ void ftp_cd(ftp_s* ftp, const char* path);
 
 ftpStat_s* ftp_list(ftp_s* ftp);
 
-void ftp_stat_vector_free(ftpStat_s* v);
+void ftp_stat_free(void* v);
 
 err_t ftp_rename(ftp_s* ftp, const char* from, const char* to);
 

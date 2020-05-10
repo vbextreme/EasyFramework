@@ -146,7 +146,7 @@ char** cpufreq_property_vector_string_get(const size_t cpu, const size_t propert
 	}
 	fd_seek(cpufreqfd[cpu][property], 0, SEEK_SET);
 
-	char** out = vector_new(char*, 8, 8);
+	char** out = vector_new(char*, 8, free);
 	if( !out ) return NULL;
 
 	char* parse = buf;

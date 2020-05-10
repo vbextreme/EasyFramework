@@ -4,12 +4,14 @@
 #include <ef/type.h>
 #include <ef/memory.h>
 
+typedef void (*vfree_f)(void*);
+
 typedef struct vector{
-	size_t size;    /**< size of allocated mem*/
-	size_t count;   /**< used object*/
-	size_t minimal; /**< minimal element to allocate*/
-	size_t sof;     /**< sizeof type*/
-	void* element[0];  /**< pointer to mem*/
+	size_t size;      /**< size of allocated mem*/
+	size_t count;     /**< used object*/
+	size_t sof;       /**< sizeof type*/
+	vfree_f fn;       /**< cleanup function*/
+	void* element[0]; /**< pointer to mem*/
 }vector_s;
 
 #define VECTOR(V) ((vector_s*)(ADDR(V)-sizeof(vector_s)) )
@@ -17,18 +19,18 @@ typedef struct vector{
 /** create new vector
  * @param sof sizeof element
  * @param size begine element size 
- * @param minimal minimal count of elements, exp resize
- * @return memory or NULL for error
+ * @param fn cleanup function
+ * @return memory or fail
  */
-void* vector_new_raw(size_t sof, size_t size, size_t minimal);
+void* vector_new_raw(size_t sof, size_t size, vfree_f fn);
 
 /** create new vector
  * @param T type vector
  * @param S begine element size 
- * @param M minimal count of elements
+ * @param F free function
  * @return memory or NULL for error
  */
-#define vector_new(T, S, M) (T*)vector_new_raw(sizeof(T), S, M)
+#define vector_new(T, S, F) (T*)vector_new_raw(sizeof(T), S, F)
 
 /** get vector count */
 #define vector_count(V) VECTOR(V)->count
@@ -60,21 +62,25 @@ void vector_free_auto(void* v);
 /** resize of vector
  * @param mem vector
  * @param size elements
- * @return NULL error, or new mem addr 
+ * @return new mem addr or fail
  */
 void* vector_resize(void* mem, size_t size);
 
 /** increase size of vector of count element if need
  * @param ptrmem pointer to vector mem
  * @param count elements to upsize
- * @return -1 error 0 ok
  */
-err_t vector_upsize(void* ptrmem, size_t count);
+void vector_upsize(void* ptrmem, size_t count);
 
-/** clear vector, set count to 0
- * @param M mem of vector
+/** decrease size of vector of count element if need
+ * @param ptrmem pointer to vector mem
  */
-#define vector_clear(M) (vector_count(M) = 0)
+void vector_downsize(void* ptrmem);
+
+/** clear vector, set count to 0 and call free function
+ * @param m mem of vector
+ */
+void vector_clear(void* m);
 
 /** check id vector is empty
  * @param M mem of vector
@@ -83,10 +89,16 @@ err_t vector_upsize(void* ptrmem, size_t count);
 #define vector_isempty(M) (vector_count(M)==0)
 
 /** remove element from index
- * @param m vector mem
+ * @param ptrmem address of vector mem, can be change
  * @param index element to remove
  */
-void vector_remove(void* m, const size_t index);
+void vector_remove_raw(void** ptrmem, const size_t index);
+
+/** remove element from index
+ * @param M vector, address can change
+ * @param I element to remove
+ */
+#define vector_remove(M, I) vector_remove_raw((void**)&(M), I);
 
 /** add space in index position for setting new value
  * @param ptrmem pointer to mem of vector
@@ -111,8 +123,8 @@ err_t vector_add_raw(void* ptrmem, const size_t index);
  */
 #define vector_get_push_back(M) ({\
 	void* _ret_ = NULL;\
-	if( !vector_upsize(&(M), 1) )\
-	   	_ret_ = &(M)[vector_count(M)++];\
+	vector_upsize(&(M), 1);\
+	_ret_ = &(M)[vector_count(M)++];\
 	_ret_;\
 })
 
@@ -121,8 +133,8 @@ err_t vector_add_raw(void* ptrmem, const size_t index);
  * @param ELEMENT element to copy
  */
 #define vector_push_back(M, ELEMENT) do{\
-	if( !vector_upsize(&M, 1) )\
-	   	(M)[vector_count(M)++] = ELEMENT;\
+	vector_upsize(&M, 1);\
+	(M)[vector_count(M)++] = ELEMENT;\
 }while(0)
 
 /** extract last element of vector, warning not check if vector is empty

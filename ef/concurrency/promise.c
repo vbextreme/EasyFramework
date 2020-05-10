@@ -126,7 +126,7 @@ promise_s* promise_start(int id, size_t stacksize, promise_f fn, void* arg){
 	//co->acount = 0;
 	co->status = 0;
 	co->protect = 0;
-	co->await = vector_new(promise_s*, 6, 2);
+	co->await = vector_new(promise_s*, 6, NULL);
 	if( !(co->stack = mem_heap_alloc(&co->size)) ){
 		err_push("heap alloc");
 		vector_free(co->await);

@@ -1,6 +1,35 @@
 #ifndef __EF_TYPE_H__
 #define __EF_TYPE_H__
 
+/*
+ * 1.2.6 -----
+ * 1.3.0 broken previous version
+ *		gui:
+ *			themes
+ *			bar:
+ *				circle
+ *			option
+ *			round
+ *			simple
+ *		g2d:
+ *			arc
+ *			supersampling
+ *
+ *		vector:
+ *			exponential
+ *			reduce
+ *			autofree
+ * ??? 
+ *		guiImage resize in %
+ *		option button
+ *		radio button
+ *		calendar
+ *		combobox
+ *		tinybutton
+ *		msgbox
+*/
+
+
 #ifndef _GNU_SOURCE
 	#define _GNU_SOURCE
 #endif
@@ -74,6 +103,9 @@ typedef enum { FALSE, TRUE } bool_t;
 
 /** use address for move to data*/
 #define ADDR(VAR) ((char*)(VAR))
+
+/** to address */
+#define ADDRTO(VAR, SO, I) ( ADDR(VAR) + ((SO)*(I)))
 
 #define __VA_COUNT__(...) __VA_COUNT_IMPL__(foo, ##__VA_ARGS__,9,8,7,6,5,4,3,2,1,0)
 #define __VA_COUNT_IMPL__(_0,_1,_2,_3,_4,_5,_6,_7,_8,_9,N,...) N

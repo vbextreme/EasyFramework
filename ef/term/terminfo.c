@@ -562,7 +562,7 @@ void term_begin(void){
 	localTermInfo.caupcake = NULL;
 	iassert(localTermInfo.cap);
 	localTermInfo.dbname = NULL;
-	utfCustom = vector_new(char*, 52, 4);
+	utfCustom = vector_new(char*, 52, free);
 }
 
 void term_end(void){
@@ -571,9 +571,6 @@ void term_end(void){
 	if( localTermInfo.caupcake ) trie_free(localTermInfo.caupcake);
 	localTermInfo.cap = NULL;
 	localTermInfo.dbname = NULL;
-	vector_foreach(utfCustom, i){
-		free(utfCustom[i]);
-	}
 	vector_free(utfCustom);
 }
 

@@ -23,7 +23,6 @@ void ftp_ls(char* site){
 		printf("[%4x]%s\n", lst[i].mode, lst[i].name);
 	}
 
-	ftp_stat_vector_free(lst);
 	ftp_free(ftp);
 }
 

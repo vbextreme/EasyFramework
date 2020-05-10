@@ -20,7 +20,7 @@ guiDiv_s* gui_div_new(guiDivMode_e mode, guiImage_s* select, unsigned flags){
 	div->scroll.y = 0;
 	div->flags = flags;
 	div->select = select;
-	if( mode == GUI_DIV_TABLE && !(div->vrows = vector_new(guiDivRow_s, 4, 4)) ) err_fail("eom");
+	if( mode == GUI_DIV_TABLE && !(div->vrows = vector_new(guiDivRow_s, 4, NULL)) ) err_fail("eom");
 	return div;
 }
 
@@ -121,7 +121,7 @@ guiDivRow_s* gui_div_table_create_row(gui_s* tab, double raph){
 	guiDiv_s* div = tab->control;
 	guiDivRow_s* row = vector_get_push_back(div->vrows);
 	row->proph = raph;
-	row->vcols = vector_new(guiDivCols_s, 3, 3);
+	row->vcols = vector_new(guiDivCols_s, 3, NULL);
 	if( !row->vcols ) err_fail("eom");
 	return row;
 }

@@ -43,7 +43,7 @@ gif_s* g2d_load_gif(char const* path){
 	
 	gif_s* gif = mem_new(gif_s);
 	if( !gif ) err_fail("malloc");
-	gif->frames = vector_new(gifFrame_s, raw->ImageCount, 1);
+	gif->frames = vector_new(gifFrame_s, raw->ImageCount, (vfree_f)g2d_free);
 	if( !gif->frames ) err_fail("malloc");
 	gif->width = raw->SWidth;
 	gif->height = raw->SHeight;
@@ -157,9 +157,6 @@ gif_s* g2d_load_gif(char const* path){
 }
 
 void g2d_gif_free(gif_s* gif){
-	vector_foreach(gif->frames, i){
-		g2d_free(gif->frames[i].img);
-	}
 	vector_free(gif->frames);
 	free(gif);
 }

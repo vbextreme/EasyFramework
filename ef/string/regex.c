@@ -166,7 +166,7 @@ char** str_regex(const char* str, const char* regex, int global){
 	}
 
 	size_t count = regex_match_count(&rx);
-	char** capture = vector_new(char*, count, 8);
+	char** capture = vector_new(char*, count, free);
 	if( !capture ) return NULL;
 
 	for(size_t i = 0; i < count; ++i){

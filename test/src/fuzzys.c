@@ -24,7 +24,7 @@ void test_fuzzysearch(const char* a, const char* b){
 		return;
 	}
 
-	__vector_free fzsElement_s* fzd = vector_new(fzsElement_s, 32, 32);
+	__vector_free fzsElement_s* fzd = vector_new(fzsElement_s, 32, NULL);
 	vector_foreach(edata, i){
 		fuzzyadd(&fzd, edata[i]);
 	}

@@ -1,113 +1,142 @@
 #include "test.h"
 #include <ef/threads.h>
 
-/*@test -r --thr 'test threads'*/
+/*@test -r --threads 'test threads'*/
 
-mutex_s* glock;
+#define NWAIT 100
 
-void* thrPrint(void* data){
-	puts(data);
+struct fort{
+	long ms[NWAIT];
+	mutex_s* mtx;
+	semaphore_s* sem;
+	event_s* ev;
+};
+
+#define N 30
+volatile long counter;
+volatile int sequence[N];
+
+void* t_print_mutex(void* arg){
+	struct fort* f = arg;
+	
+	while(1){
+		mutex_lock(f->mtx);
+		if( counter == 0 ) break;
+		--counter;
+		printf("no %lu) %ld\n", thr_self_id(), counter);
+		mutex_unlock(f->mtx);
+		delay_ms(f->ms[0]);
+	}
+	printf("%lu) end\n", thr_self_id());
+	mutex_unlock(f->mtx);
 	return NULL;
 }
 
-void* thrPrintLock(void* data){
-	mutex_lock(glock);
-	delay_ms(500);
-	printf("thread write: %s\n", (char*)data);
-	mutex_unlock(glock);
-	return NULL;
-}
-
-void* thrQM(void* data){
-	qmessages_s* qm = data;
+void* t_print_sem_consumer(void* arg){
+	struct fort* f = arg;
+	size_t i = 0;
 
 	while(1){
-		__message_free message_s* msg = qmessages_wait(qm);
-		if( msg->type == 1 ) break;
-		printf("message: '%s'\n", (char*)msg->data);
+		semaphore_wait(f->sem);
+		if( i >= N ) break;
+		delay_ms(f->ms[0]);
+		printf("cons:%d\n", sequence[i++]);
 	}
+	printf("end consumer\n");
+
+	return NULL;
+}
+
+void* t_print_sem_producer(void* arg){
+	struct fort* f = arg;
+	size_t i = 0;
+
+	while(1){
+		sequence[i] = i;
+		++i;
+		semaphore_post(f->sem);
+		delay_ms(f->ms[1]);
+		if( i >= N ){
+			semaphore_post(f->sem);
+			break;
+		}
+	}
+	printf("end producer\n");
+
+	return NULL;
+}
+
+void* t_print_ev_consumer(void* arg){
+	struct fort* f = arg;
+	size_t i = 0;
+
+	while(1){
+		event_wait(f->ev);
+		if( i >= N || counter == 777 ) break;
+		delay_ms(f->ms[0]);
+		printf("ev:%d\n", sequence[i++]);
+	}
+	printf("end consumer\n");
+
+	return NULL;
+}
+
+void* t_print_ev_producer(void* arg){
+	struct fort* f = arg;
+	size_t i = 0;
+
+	while(1){
+		sequence[i] = i;
+		++i;
+		event_raise(f->ev);
+		delay_ms(f->ms[1]);
+		if( i >= N ){
+			counter = 777; // not realy safe
+			event_raise(f->ev);
+			break;
+		}
+	}
+	printf("end producer\n");
+	
 
 	return NULL;
 }
 
 /*@fn*/
 void test_thr(__unused const char* argA, __unused const char* argB){
-	glock = mutex_new();
-
-	thr_s* hello = thr_new(thrPrint, "hello", 0, 0, 0);
-	thr_wait(hello, NULL);
-	thr_free(hello);
-
-	hello = thr_new(thrPrintLock, "world", 0,0,0);
-	mutex_lock(glock);
-	puts("main lock and write");
-	mutex_unlock(glock);
-	thr_wait(hello, NULL);
-	thr_free(hello);
-
-	qmessages_s* qm = qmessages_new();
-	hello = thr_new(thrQM, qm, 0,0,0);
-	char* lstmsg[] = {
-		"a",
-		"ab",
-		"abc",
-		"abcd",
-		NULL
+	struct fort ff = {
+		.ms = { 250, 150},
+		.mtx = mutex_new(),
+		.sem = semaphore_new(0),
+		.ev = event_new()
 	};
-	message_s* msg;
-	for( size_t i = 0; lstmsg[i]; ++i){
-		msg = message_new_raw(strlen(lstmsg[i])+1, NULL);
-		msg->id = i;
-		msg->type = 0;
-		strcpy((char*)msg->data, lstmsg[i]);
-		qmessages_send(qm, msg);
-	}
-	msg = message_new_raw(0, NULL);
-	msg->type = 1;
-	msg->id = -1;
-	qmessages_send(qm, msg);
-	thr_wait(hello, NULL);
-	thr_free(hello);
+	counter = 30;
+
+	thr_s** vt = vector_new(thr_s*, 16, (vfree_f)thr_free );
+
+	/* test mutex*/
+	vector_push_back(vt, thr_start(t_print_mutex, &ff));
+	vector_push_back(vt, thr_start(t_print_mutex, &ff));
+	vector_push_back(vt, thr_start(t_print_mutex, &ff));
+	thr_wait_all(vt);
+	vector_clear(vt);
+
+	/* test semaphore*/
+	vector_push_back(vt, thr_start(t_print_sem_consumer, &ff));
+	vector_push_back(vt, thr_start(t_print_sem_producer, &ff));
+	thr_wait_all(vt);
+	vector_clear(vt);
+
+	/* test event*/
+	vector_push_back(vt, thr_start(t_print_ev_consumer, &ff));
+	vector_push_back(vt, thr_start(t_print_ev_producer, &ff));
+	thr_wait_all(vt);
+	vector_clear(vt);
+
+
 	
-	thr_s** vtp = vector_new(thr_s*, 10, 2);
-	for( size_t i = 0; lstmsg[i]; ++i){
-		vector_push_back(vtp, thr_new(thrPrintLock, lstmsg[i], 0,0,0));
-	}
-	if( thr_wait_all(vtp) ){
-		dbg_error("waitall");
-	}
-	puts("end wait");
-	vector_foreach( vtp, i){
-		thr_free(vtp[i]);
-	}
-	vector_free(vtp);
-	vtp = NULL;
+	/* end test */
+	vector_free(vt);
 
-
-	vtp = vector_new(thr_s*, 10, 2);
-	for( size_t i = 0; lstmsg[i]; ++i){
-		vector_push_back(vtp, thr_new(thrPrintLock, lstmsg[i], 0,0,0));
-	}
-	thr_anyof(vtp, NULL);
-	puts("end anyoff");
-	err_disable();
-	vector_foreach( vtp, i){
-		thr_cancel(vtp[i]);
-		thr_free(vtp[i]);
-	}
-	err_restore();
-	vector_free(vtp);
-	vtp = NULL;
-
-
-	//message_s* mm;
-	//listdoubly_do(qm->queue, mm){
-	//	printf("lst:%s\n", (char*)mm->data);
-	//}listdoubly_while(qm->queue, mm);
-	//mm = list_doubly_extract(qm->queue);
-	
-	dbg_info("release memory");
-	qmessage_free(qm);
-	mutex_free(glock);
 }
 

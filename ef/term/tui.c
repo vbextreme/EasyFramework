@@ -6,7 +6,6 @@
 #include <ef/err.h>
 
 #define TUI_CHILD_INITIAL 2
-#define TUI_CHILD_RESIZE  2
 
 /*
 
@@ -132,7 +131,7 @@ tui_s* tui_new(tui_s* parent, int id, utf8_t* name, int border, int r, int c, in
 	tui->usrdata = userdata;
 	
 	tui->parent = parent;
-	tui->childs = vector_new(tui_s*, TUI_CHILD_INITIAL, TUI_CHILD_RESIZE);
+	tui->childs = vector_new(tui_s*, TUI_CHILD_INITIAL, NULL);
 	if(parent){
 		tui_child_add(parent, tui);
 	}
@@ -142,8 +141,8 @@ tui_s* tui_new(tui_s* parent, int id, utf8_t* name, int border, int r, int c, in
 	tui->eventFocus = NULL;
 	tui->eventMouse = NULL;
 
-	tui->attribute[0] = vector_new(utf_t, 2, 2);
-	tui->attribute[1] = vector_new(utf_t, 2, 2);
+	tui->attribute[0] = vector_new(utf_t, 2, NULL);
+	tui->attribute[1] = vector_new(utf_t, 2, NULL);
 	tui_attribute_add(tui, 0, tuiAtt[TUI_COLOR_RESET]);
 	tui_attribute_add(tui, 1, tuiAtt[TUI_COLOR_RESET]);
 

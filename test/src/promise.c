@@ -75,7 +75,7 @@ void* pro_server(__unused void* t){
 		return NULL;
 	}
 	
-	promise_s** allp = vector_new(promise_s*, 8, 2);
+	promise_s** allp = vector_new(promise_s*, 8, NULL);
 	while( 1 ){
 		dbg_info("process all promise");
 		vector_push_back(allp, promise_start(999, 0, pro_server_accept, server));
@@ -121,7 +121,7 @@ void test_promise(const char* argA, __unused const char* argB){
 		dbg_info("test anyof");
 		long t0 = 1300;
 		long t1 = 1100;
-		promise_s** vp = vector_new(promise_s*, 6, 2);
+		promise_s** vp = vector_new(promise_s*, 6, NULL);
 		ts = time_ms();
 		vector_push_back(vp, promise_start(2, 0, pro_time, &t0));
 		vector_push_back(vp, promise_start(3, 0, pro_time, &t1));

@@ -217,7 +217,7 @@ __private const char* ftp_list_parse_line(ftpStat_s* out, const char* line){
 }
 
 __private ftpStat_s* ftp_gnu_parse(const char* line){
-	ftpStat_s* ret = vector_new(ftpStat_s, 8,8);
+	ftpStat_s* ret = vector_new(ftpStat_s, 8, ftp_stat_free);
 	if( !ret ) return NULL;
 
 	while( *line ){
@@ -225,7 +225,7 @@ __private ftpStat_s* ftp_gnu_parse(const char* line){
 		line = ftp_list_parse_line(fs, line);
 		if( line == NULL ){
 			dbg_error("line == NULL");
-			ftp_stat_vector_free(ret);
+			vector_free(ret);
 			return NULL;
 		}
 	}
@@ -256,12 +256,10 @@ ftpStat_s* ftp_list(ftp_s* ftp){
 	return ftp_gnu_parse(ftp->www.body.buf);
 }
 
-void ftp_stat_vector_free(ftpStat_s* v){
-	vector_foreach(v, i){
-		if( v[i].name ) free(v[i].name);
-		if( v[i].link ) free(v[i].link);
-	}
-	vector_free(v);
+void ftp_stat_free(void* arg){
+	ftpStat_s* v = arg;
+	if( v->name ) free(v->name);
+	if( v->link ) free(v->link);
 }
 
 err_t ftp_rename(ftp_s* ftp, const char* from, const char* to){

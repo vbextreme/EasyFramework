@@ -8,31 +8,6 @@
 #include <ef/ft.h>
 #include <ef/guiImage.h>
 
-/*
- * 1.2.6 -----
- * 1.3.0 broken previous version
- *		gui:
- *			themes
- *			bar:
- *				circle
- *			option
- *			round
- *			simple
- *		g2d:
- *			arc
- *			supersampling
- *
- *
- * ??? 
- *		guiImage resize in %
- *		option button
- *		radio button
- *		calendar
- *		combobox
- *		tinybutton
- *		msgbox
- */
-
 #define GUI_TYPE_WINDOW 0
 #define GUI_TYPE_LABEL  1
 #define GUI_TYPE_BUTTON 2

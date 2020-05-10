@@ -492,14 +492,11 @@ guiComposite_s* gui_composite_new(unsigned count){
 	guiComposite_s* cmp = mem_new(guiComposite_s);
 	if( !cmp ) err_fail("eom");
 	cmp->flags = 0;
-	cmp->img = vector_new(guiImage_s*, count, count);
+	cmp->img = vector_new(guiImage_s*, count, (vfree_f)gui_image_free);
 	return cmp;
 }
 
 void gui_composite_free(guiComposite_s* cmp){
-	vector_foreach(cmp, i){
-		gui_image_free(cmp->img[i]);
-	}
 	vector_free(cmp->img);
 	free(cmp);
 }

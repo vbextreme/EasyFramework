@@ -37,7 +37,6 @@ src += [ 'src/socket.c' ]
 src += [ 'src/str.c' ]
 src += [ 'src/term.c' ]
 src += [ 'src/thr.c' ]
-src += [ 'src/threads.c' ]
 src += [ 'src/trie.c' ]
 src += [ 'src/vector.c' ]
 #@end

@@ -35,7 +35,7 @@ err_t ft_begin(void){
 		err_push("freetype2 error %d: %s", err, ftStrError[err]);
 		return -1;
 	}
-	utfCustom = vector_new(ftUtfCustom_s, 24, 12);
+	utfCustom = vector_new(ftUtfCustom_s, 24, NULL);
 	return 0;
 }
 
@@ -54,7 +54,7 @@ ftFonts_s* ft_fonts_new(const char* name){
 		err_pushno("malloc");
 		return NULL;
 	}
-	fonts->font = vector_new(ftFont_s, 3, 2);
+	fonts->font = vector_new(ftFont_s, 3, NULL);
 	if( !fonts->font ){
 		free(fonts);
 		return NULL;

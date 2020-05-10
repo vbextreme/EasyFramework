@@ -13,7 +13,7 @@ __private char* DATA[] = {
 };
 
 __private char** data_builtin(void){
-	char** ret = vector_new(char*, 8, 8);
+	char** ret = vector_new(char*, 8, free);
 	for( size_t i = 0; DATA[i]; ++i){
 		vector_push_back(ret, DATA[i]);
 	}
@@ -34,7 +34,7 @@ char** data_word(const char* pdata){
 		exit(1);
 	}
 	
-	char** ret = vector_new(char*, 256, 256);
+	char** ret = vector_new(char*, 256, free);
 
 	char* line;
 	size_t total = 0;
@@ -54,9 +54,6 @@ char** data_word(const char* pdata){
 
 void data_word_free(char** v, const char* pdata){
 	if( !pdata ) return;
-	vector_foreach(v, i){
-		free(v[i]);
-	}
 	vector_free(v);
 }
 

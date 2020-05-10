@@ -209,7 +209,7 @@ tui_s* tui_list_new(tui_s* parent, int id, utf8_t* name, int border, int r, int 
 	
 	lst->mode = TUI_LIST_VERTICAL;
 	lst->type = TUI_LIST_NORMAL;
-	lst->elements = vector_new(tuiListElement_s, 8, 32);
+	lst->elements = vector_new(tuiListElement_s, 8, NULL);
 	lst->sel = 0;
 	lst->scrollRow = 0;
 

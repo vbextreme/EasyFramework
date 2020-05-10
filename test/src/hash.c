@@ -4,7 +4,7 @@
 /*@test -H --hash 'test function hash, use arg-a for file data, without a use internal data'*/
 
 __private uint32_t* calcolate_hash(char** strs, rbhash_f fn, const char* prompt){
-	uint32_t* hash = vector_new(uint32_t, vector_count(strs), vector_minimal(strs));
+	uint32_t* hash = vector_new(uint32_t, vector_count(strs), NULL);
 	if( !hash ) return NULL;
 
 	vector_foreach(strs, i){

@@ -234,7 +234,7 @@ int* proc_pid_fd(pid_t pid){
 		return NULL;
 	}
 	
-	int* ret = vector_new(int, 8, 8);
+	int* ret = vector_new(int, 8, NULL);
 	if( !ret ) return NULL;
 
 	dir_foreach(d, f){
