@@ -152,40 +152,45 @@ err_t event_fd_write(int fd, long val);
 /*** message ***/
 /***************/
 
+typedef void (*qmfree_f)(void*);
+
 typedef struct message message_s;
 
 typedef struct message{
+	struct message* next;
+	qmfree_f clean;
 	int id;
 	int type;
 	void* data[0];
 }message_s;
 
 typedef struct qmessages{
-	message_s* queue;
-	semaphore_s* sem;
+	message_s* current;
+	message_s** tail;
 	mutex_s* mtx;
+	int evfd;
 }qmessages_s;
 
 /** init a queue if you have create without qmessages_new*/
-void qmessages_init(qmessages_s* q, semaphore_s* sem, mutex_s* mtx);
+void qmessages_init(qmessages_s* q, int evfd, mutex_s* mtx);
 
 /** create new queue messages*/
-qmessages_s* qmessages_new();
+qmessages_s* qmessages_new(int nonblock);
 
 /** free queue messages */
 void qmessage_free(qmessages_s* q);
 
-/** wait for new messages
+/** get new messages
  * @param q queue
- * @return messages, NULL for error
+ * @return messages, NULL for error, if blocking wait event and return NULL
  */
-message_s* qmessages_wait(qmessages_s* q);
+message_s* qmessages_get(qmessages_s* q);
 
 /** send a message */
 void qmessages_send(qmessages_s* q, message_s* msg);
 
 /** create a new message */
-message_s* message_new_raw(size_t size, listFree_f cleanup);
+message_s* message_new_raw(size_t size, qmfree_f cleanup);
 
 /** create new message */
 #define message_new(TYPE, CLEANUP) message_new_raw(sizeof(TYPE), CLEANUP)

@@ -31,10 +31,7 @@ void mutex_init(mutex_s* mtx){
 
 mutex_s* mutex_new(){
 	mutex_s* ret = mem_new(mutex_s);
-	if( !ret ){
-		err_pushno("malloc");
-		return NULL;
-	}
+	if( !ret ) err_fail("malloc");
 	mutex_init(ret);
 	ret->private = FUTEX_PRIVATE_FLAG;
 	return ret;
@@ -82,10 +79,7 @@ void semaphore_init(semaphore_s* sem, int val){
 
 semaphore_s* semaphore_new(int val){
 	semaphore_s* ret = mem_new(semaphore_s);
-	if( !ret ){
-		err_pushno("malloc");
-		return NULL;
-	}
+	if( !ret ) err_fail("malloc");
 	semaphore_init(ret, val);
 	ret->private = FUTEX_PRIVATE_FLAG;
 	return ret;
@@ -129,10 +123,7 @@ void event_init(event_s* ev){
 
 event_s* event_new(){
 	event_s* ret = mem_new(event_s);
-	if( !ret ){
-		err_pushno("malloc");
-		return NULL;
-	}
+	if( !ret ) err_fail("malloc");
 	event_init(ret);
 	ret->private = FUTEX_PRIVATE_FLAG;
 	return ret;
@@ -187,86 +178,80 @@ err_t event_fd_write(int fd, long val){
 /*** qmessages ***/
 /*****************/
 
-void qmessages_init(qmessages_s* q, semaphore_s* sem, mutex_s* mtx){
-	q->queue = NULL;
-	q->sem = sem;
+void qmessages_init(qmessages_s* q, int evfd, mutex_s* mtx){
+	q->current = NULL;
+	q->tail = NULL;
 	q->mtx = mtx;
+	q->evfd = evfd;
 }
 
-qmessages_s* qmessages_new(){
+qmessages_s* qmessages_new(int nonblock){
 	qmessages_s* ret = mem_new(qmessages_s);
-	if( !ret ){
-		err_pushno("malloc");
-		return NULL;
-	}
-	qmessages_init(ret, semaphore_new(0), mutex_new());
-	if( !ret->sem || !ret->mtx ){
-		if( ret->sem ) semaphore_free(ret->sem);
-		if( ret->mtx ) mutex_free(ret->mtx);
-		free(ret);
-		return NULL;
-	}
+	if( !ret ) err_fail("malloc");
+
+	qmessages_init(ret, event_fd_new(0,nonblock), mutex_new());
+	if( ret->evfd == -1 ) err_fail("eventfd");
+	
 	return ret;
 }
 
 void qmessage_free(qmessages_s* q){
-	semaphore_free(q->sem);
-	mutex_free(q->mtx);
-	if( q->queue ){
-		list_doubly_all_free(q->queue);
+	if( q->mtx ) mutex_free(q->mtx);
+	if( q->evfd ) close(q->evfd);
+	message_s* next;
+	while( q->current ){
+		next = q->current->next;
+		if( q->current->clean ) q->current->clean(q->current->data);
+		free(q->current);
+		q->current = next;
 	}
 	free(q);
 }
 
-message_s* qmessages_wait(qmessages_s* q){
+message_s* qmessages_get(qmessages_s* q){
 	message_s* ret;
-	
-	//dbg_info("sem wait");
-	semaphore_wait(q->sem);
+
 	mutex_lock(q->mtx);
-		//dbg_info("mutex lock");
-		if( list_doubly_only_root(q->queue) ){
-			//dbg_info("last message");
-			ret = q->queue;
-			q->queue = NULL;
-		}
-		else{
-			//dbg_info("get message");
-			ret = q->queue;
-			q->queue = LIST_DOUBLY(q->queue)->next;
-			ret = list_doubly_extract(ret);
-		}
-		//dbg_info("mutex unlock");
+	ret = q->current;
+	if( q->current ){
+		q->current = q->current->next;
+	}
 	mutex_unlock(q->mtx);
 
-	return ret;
+	if( ret ){
+		ret->next = NULL;
+		return ret;
+	}
+
+	long v;
+	event_fd_read(&v, q->evfd);
+	return NULL;
 }
 
 void qmessages_send(qmessages_s* q, message_s* msg){
 	mutex_lock(q->mtx);
-		//dbg_info("mutex lock");
-		if( q->queue ){
-			//dbg_info("add message");
-			list_doubly_add_before(q->queue, msg);
-		}
-		else{
-			//dbg_info("first message");
-			q->queue = msg;
-		}
-		//dbg_info("mutex unlock");
+	if( q->current ){
+		*(q->tail) = msg;
+	}
+	else{
+		q->current = msg;
+	}	
+	q->tail = &msg->next;
 	mutex_unlock(q->mtx);
-	//dbg_info("sem post");
-	semaphore_post(q->sem);
+	event_fd_write(q->evfd, 1);
 }
 
-message_s* message_new_raw(size_t size, listFree_f cleanup){
-	message_s* msg = list_doubly_new_raw(size + sizeof(message_s), NULL, cleanup);
-	if( !msg ) return NULL;
+message_s* message_new_raw(size_t size, qmfree_f cleanup){
+	message_s* msg = mem_flexible_structure_new(message_s, size, 1);
+	if( !msg ) err_fail("malloc");
+	msg->next = 0;
+	msg->clean = cleanup;	
 	return msg;
 }
 
 void message_free(message_s* msg){
-	list_doubly_free(msg);
+	if( msg->clean ) msg->clean(&msg->data);
+	free(msg);
 }
 
 void message_free_auto(message_s** msg){
