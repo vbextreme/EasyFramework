@@ -15,6 +15,9 @@
  *			arc
  *			supersampling
  *
+ *		svg:
+ *			optimize
+ *
  *		vector:
  *			exponential
  *			reduce
@@ -23,11 +26,10 @@
  *		thr:
  *			remove FUTEX_FD
  *			add eventfd
+ *			change qmessages
  *
  * ??? 
  *		guiImage resize in %
- *		option button
- *		radio button
  *		calendar
  *		combobox
  *		tinybutton

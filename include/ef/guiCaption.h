@@ -31,6 +31,8 @@ guiCaption_s* gui_caption_new(ftFonts_s* font, g2dColor_t foreground, unsigned f
 /** label free*/
 void gui_caption_free(guiCaption_s* lbl);
 
+void gui_caption_render_new(guiCaption_s* cap);
+
 /** caption set caption*/
 void gui_caption_text_set(gui_s* gui, guiCaption_s* cap, const utf8_t* text);
 

@@ -26,11 +26,11 @@
 
 #define TESTEF_BUTTONRR_NAME "reloadResources"
 #define TESTEF_BUTTONRR_W    50.0
-#define TESTEF_BUTTONRR_H    15.0
+#define TESTEF_BUTTONRR_H    10.0
 
 #define TESTEF_BUTTONRT_NAME "reloadTheme"
 #define TESTEF_BUTTONRT_W    50.0
-#define TESTEF_BUTTONRT_H    15.0
+#define TESTEF_BUTTONRT_H    10.0
 
 #define TESTEF_TEXT_NAME "input"
 #define TESTEF_TEXT_W    50
@@ -42,13 +42,22 @@
 
 #define TESTEF_OPTION_NAME      "opt"
 #define TESTEF_OPTION_W         50
-#define TESTEF_OPTION_H         40
-#define TESTEF_OPTION_ELEMENT_H 30
+#define TESTEF_OPTION_H         30
+#define TESTEF_OPTION_ELEMENT_H 10
 
 #define TESTEF_CHECK_NAME      "chk"
 #define TESTEF_CHECK_W         50
-#define TESTEF_CHECK_H         40
-#define TESTEF_CHECK_ELEMENT_H 30
+#define TESTEF_CHECK_H         30
+#define TESTEF_CHECK_ELEMENT_H 15
+
+#define TESTEF_BUTTONMB_NAME "test_msgbox"
+#define TESTEF_BUTTONMB_W    100.0
+#define TESTEF_BUTTONMB_H    10.0
+
+#define TESTEF_MSGBOX_NAME   "msgbox"
+#define TESTEF_MSGBOX_CAP    "successfull msgbox"
+#define TESTEF_MSGBOX_W      200
+#define TESTEF_MSGBOX_H	     150
 
 
 #define TESTEF_THEME_RELOAD_PATH "~/testef.Xresources"
@@ -127,6 +136,25 @@ __private int paint_test(gui_s* gui, __unused xorgEvent_s* ev){
 	return 0;
 }
 
+__private int testef_msgbox_ok(gui_s* btn, __unused xorgEvent_s* ev){
+	gui_s* win = gui_main_parent(btn);
+	gui_simple_show_all(win, 0);
+	gui_free(win);
+	return 0;	
+}
+
+__private int testef_button_msgbox(__unused gui_s* gui, __unused xorgEvent_s* ev){
+	guiSimpleMsgBoxButtons_s* btns = vector_new(guiSimpleMsgBoxButtons_s, 1, NULL);
+	guiSimpleMsgBoxButtons_s* bt;
+	bt = vector_get_push_back(btns);
+	bt->caption = U8("ok");
+	bt->userdata = NULL;
+	bt->ev = testef_msgbox_ok;
+	gui_s* win = gui_simple_msgbox(TESTEF_MSGBOX_NAME, TESTEF_MSGBOX_W, TESTEF_MSGBOX_H, U8(TESTEF_MSGBOX_CAP), btns, 1);
+	gui_simple_apply_change(win);
+	gui_simple_show_all(win, 1);
+	return 0;
+}
 
 /*@fn*/
 void test_gui(__unused const char* argA, __unused const char* argB){
@@ -173,6 +201,9 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_simple_check_add(chk, "chk_a", U8("check A"), TESTEF_CHECK_ELEMENT_H);
 	gui_simple_check_add(chk, "chk_b", U8("check B"), TESTEF_CHECK_ELEMENT_H);
 	gui_simple_check_add(chk, "chk_c", U8("check C"), TESTEF_CHECK_ELEMENT_H);
+
+	gui_s* tstmsgbox = gui_simple_button_new(main, TESTEF_BUTTONMB_NAME, U8(TESTEF_BUTTONMB_NAME), testef_button_msgbox);
+	gui_simple_layout_table_add(main, tstmsgbox, TESTEF_BUTTONMB_W, TESTEF_BUTTONMB_H, 1);
 
 	gui_simple_apply_change(main);
 	gui_simple_show_all(main, 1);

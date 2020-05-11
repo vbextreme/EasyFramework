@@ -28,6 +28,13 @@ void gui_caption_free(guiCaption_s* lbl){
 	free(lbl);
 }
 
+void gui_caption_render_new(guiCaption_s* cap){
+	cap->render =  gui_image_custom_new(
+		g2d_new(100, 100, -1), 
+		GUI_IMAGE_FLAGS_ALPHA
+	);
+}
+
 void gui_caption_text_set(gui_s* gui, guiCaption_s* cap, const utf8_t* text){
 	if( cap->text ) free(cap->text);
 	cap->text = (utf8_t*)str_dup((const char*)text, 0);

@@ -20,7 +20,9 @@ guiButton_s* gui_button_new(guiCaption_s* caption, guiImage_s* press, guiImage_s
 gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn){
 	if( !gui ) goto ERR;
 	if( !btn ) goto ERR;
+	
 	btn->parentKey = gui->key;
+	
 	gui->control = btn;
 	gui->type = GUI_TYPE_BUTTON;
 	gui->redraw = gui_button_event_redraw;
@@ -29,9 +31,11 @@ gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn){
 	gui->free = gui_button_event_free;	
 	gui->move = gui_button_event_move;
 	gui->themes = gui_button_event_themes;
+	
 	btn->compindex = vector_count(gui->img->img)-1;
 	btn->state[GUI_BUTTON_STATE_NORMAL] = gui->img->img[btn->compindex];
 	gui_composite_add(gui->img, btn->caption->render);
+	
 	return gui;
 ERR:
 	dbg_error("an error occur");
@@ -173,6 +177,14 @@ int gui_button_event_themes(gui_s* gui, xorgEvent_s* ev){
 	iname = str_printf("%s.%s", name, GUI_THEME_BUTTON_HOVER);
 	gui_themes_gui_image(gui, iname, &btn->state[GUI_BUTTON_STATE_HOVER]);
 	free(iname);
+
+	if( gui->img->img[btn->compindex+1] != btn->caption->render ){
+		gui_caption_render_new(btn->caption);
+		gui_composite_add(gui->img, btn->caption->render);
+	}
+
+	btn->compindex = vector_count(gui->img->img) - 2;
+	btn->state[GUI_BUTTON_STATE_NORMAL] = gui->img->img[btn->compindex];
 
 	return 0;
 }

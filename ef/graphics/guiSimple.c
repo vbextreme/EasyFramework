@@ -1,6 +1,7 @@
 #include <ef/guiSimple.h>
 #include <ef/err.h>
 #include <ef/vector.h>
+#include <ef/str.h>
 
 #define DEFAULT_FONT_SIZE 12
 
@@ -352,13 +353,63 @@ gui_s* gui_simple_option_add(gui_s* opt, const char* name, const utf8_t* text, d
 	return simple_option_add(opt, name, text, h, 1);
 }
 
+gui_s* gui_simple_msgbox(const char* name, unsigned w, unsigned h, utf8_t* caption, guiSimpleMsgBoxButtons_s* vb, int hori){
+	unsigned x = (gui_screen_width() - w) / 2;
+	unsigned y = (gui_screen_height() - w) / 2;
 
+	gui_s* win = gui_div_attach( 
+		gui_new(
+			NULL, name, GUI_SIMPLE_CLASS_WINDOW, GUI_MODE_MODAL,
+			GUI_SIMPLE_DEFAULT_BORDER, x, y, w, h,
+			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
+			gui_composite_add(
+				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
+				gui_image_color_new(GUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR, w, h, 0)
+			),
+			0, NULL
+		),
+		gui_div_new(GUI_DIV_TABLE, NULL, GUI_DIV_FLAGS_FIT)
+	);
 
+	if( caption ){
+		__mem_free char* clname = str_printf("%s_l%d", name, 0);
+		gui_simple_layout_table_add(
+			win, 
+			gui_simple_label_new(win, clname, caption),
+			GUI_SIMPLE_DEFAULT_MSGBOX_LBL_W, GUI_SIMPLE_DEFAULT_MSGBOX_LBL_H,
+			1
+		);
+	}
 
+	if( hori ){
+		double conw = w / vector_count(vb);
+		double horiw = (conw * 100.0)/ (double)w;
+		vector_foreach(vb, i){
+			__mem_free char* cbname = str_printf("%s_b%lu", name, i);		
+			gui_s* btn = gui_simple_button_new(win, cbname, vb[i].caption, vb[i].ev);
+			gui_simple_layout_table_add(
+				win,
+				btn,
+				horiw, GUI_SIMPLE_DEFAULT_MSGBOX_HORI_H,
+				i == 0
+			);
+			btn->userdata = vb[i].userdata;
+		}
+	}
+	else{
+		vector_foreach(vb, i){
+			__mem_free char* cbname = str_printf("%s_b%lu", name, i);		
+			gui_s* btn = gui_simple_button_new(win, cbname, vb[i].caption, vb[i].ev);
+			gui_simple_layout_table_add(
+				win,
+				btn,
+				GUI_SIMPLE_DEFAULT_MSGBOX_HORI_W, GUI_SIMPLE_DEFAULT_MSGBOX_HORI_H,
+				1
+			);
+			btn->userdata = vb[i].userdata;
+		}
+	}
 
-
-
-
-
-
+	return win;
+}
 

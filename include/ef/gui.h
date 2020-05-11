@@ -15,6 +15,7 @@
 #define GUI_TYPE_DIV    5
 #define GUI_TYPE_BAR    6
 #define GUI_TYPE_OPTION 7
+#define GUI_TYPE_WINSEL 8
 #define GUI_TYPE_USER   999
 
 #define GUI_BK_NO_OP 0x00
@@ -336,6 +337,9 @@ err_t gui_themes_long_set(const char* name, const char* property, long* set);
 
 /** set double*/
 err_t gui_themes_double_set(const char* name, const char* property, double* set);
+
+/** set color*/
+err_t gui_themes_color_set(const char* name, const char* property, g2dColor_t* set);
 
 /** set fonts */
 err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts);

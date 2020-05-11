@@ -963,6 +963,14 @@ err_t gui_themes_double_set(const char* name, const char* property, double* set)
 	return 0;
 }
 
+err_t gui_themes_color_set(const char* name, const char* property, g2dColor_t* set){
+	char* dv = gui_themes_string(name, property);
+	if( !dv ) return -1;
+	*set = strtoul(dv,NULL,16);
+	free(dv);
+	return 0;
+}
+
 err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts){
 	int size;
 	char* fontname;
@@ -1034,7 +1042,7 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 
 	dbg_error("loading image resources: '%s'", name);
 
-	if( !gui_themes_uint_set(name, GUI_THEME_COMPOSITE_COLOR, &color) ) colorset = 1;
+	if( !gui_themes_color_set(name, GUI_THEME_COMPOSITE_COLOR, &color) ) colorset = 1;
 		
 	image = gui_themes_string(name, GUI_THEME_COMPOSITE_IMAGE);
 	if( !image ){

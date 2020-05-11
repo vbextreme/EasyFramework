@@ -505,6 +505,11 @@ guiComposite_s* gui_composite_add(guiComposite_s* cmp, guiImage_s* img){
 	return cmp;
 }
 
+void gui_composite_remove(guiComposite_s* cmp, size_t id){
+	if( id >= vector_count(cmp->img) ) return;	
+	vector_remove(cmp->img, id);
+}
+
 void gui_composite_redraw(gui_s* gui, guiComposite_s* cmp){
 	vector_foreach(cmp->img, i){
 		gui_image_redraw(gui, cmp, i, vector_count(cmp->img));

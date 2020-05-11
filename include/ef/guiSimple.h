@@ -32,7 +32,10 @@
 #define GUI_SIMPLE_DEFAULT_OPT_Y                   4.0
 #define GUI_SIMPLE_DEFAULT_OPT_W                   29.0
 #define GUI_SIMPLE_DEFAULT_OPT_H                   95.0
-
+#define GUI_SIMPLE_DEFAULT_MSGBOX_LBL_W            100.0
+#define GUI_SIMPLE_DEFAULT_MSGBOX_LBL_H            75.0
+#define GUI_SIMPLE_DEFAULT_MSGBOX_HORI_H           25.0
+#define GUI_SIMPLE_DEFAULT_MSGBOX_HORI_W           100.0
 
 #define GUI_SIMPLE_CLASS_WINDOW                    "window"
 #define GUI_SIMPLE_CLASS_DIV                       "div"
@@ -43,6 +46,12 @@
 #define GUI_SIMPLE_CLASS_OPTION                    "option"
 
 #define GUI_SIMPLE_COMPOSITE_SIZE                  2
+
+typedef struct guiSimpleMsgBoxButtons{
+	utf8_t* caption;
+	void* userdata;
+	guiEvent_f ev;
+}guiSimpleMsgBoxButtons_s;
 
 void gui_simple_begin(const char* appname);
 void gui_simple_end(void);
@@ -62,5 +71,6 @@ gui_s* gui_simple_bar_new(gui_s* parent, const char* name, const utf8_t* caption
 gui_s* gui_simple_option_new(gui_s* parent, const char* name);
 gui_s* gui_simple_check_add(gui_s* opt, const char* name, const utf8_t* text, double h);
 gui_s* gui_simple_option_add(gui_s* opt, const char* name, const utf8_t* text, double h);
+gui_s* gui_simple_msgbox(const char* name, unsigned w, unsigned h, utf8_t* caption, guiSimpleMsgBoxButtons_s* vb, int hori);
 
 #endif

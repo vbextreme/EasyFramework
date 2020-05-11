@@ -66,6 +66,7 @@ void gui_image_resize(gui_s* gui, guiImage_s* img, unsigned width, unsigned heig
 guiComposite_s* gui_composite_new(unsigned count);
 void gui_composite_free(guiComposite_s* cmp);
 guiComposite_s* gui_composite_add(guiComposite_s* cmp, guiImage_s* img);
+void gui_composite_remove(guiComposite_s* cmp, size_t id);
 void gui_composite_redraw(gui_s* gui, guiComposite_s* cmp);
 void gui_composite_resize(gui_s* gui, guiComposite_s* cmp, unsigned width, unsigned height);
 
