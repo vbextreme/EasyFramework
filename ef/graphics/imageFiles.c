@@ -63,17 +63,6 @@ g2dImage_s* g2d_load(char const* path, unsigned width, unsigned height, int rati
 		return NULL;
 	}
 
-	errno = 0;
-	ret = g2d_load_svg(path, width, height);
-	if( ret ){
-		dbg_info("return svg");
-		return ret;
-	}
-	if( errno != 666 ){
-		err_push("on load svg");
-		return NULL;
-	}
-
 	dbg_error("unknow image format");
 	err_push("unknow image format");
 	return NULL;

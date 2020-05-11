@@ -17,6 +17,7 @@ typedef enum {
 	GUI_RESOURCE_COLOR,
 	GUI_RESOURCE_POSITION,
 	GUI_RESOURCE_IMG,
+	GUI_RESOURCE_SVG,
 	GUI_RESOURCE_GIF,
 	GUI_RESOURCE_MEDIA,
 	GUI_RESOURCE_FONTS
@@ -31,6 +32,7 @@ typedef struct guiResource{
 		g2dColor_t color;
 		g2dCoord_s position;
 		g2dImage_s* img;
+		svg_s* svg;
 		gif_s* gif;
 		media_s* media;
 		guiImage_s* image;
@@ -60,6 +62,8 @@ guiResource_s* gui_resource_position_new(const char* name, g2dCoord_s* value);
 
 guiResource_s* gui_resource_img_new(const char* name, g2dImage_s* value);
 
+guiResource_s* gui_resource_svg_new(const char* name, svg_s* value);
+
 guiResource_s* gui_resource_gif_new(const char* name, gif_s* value);
 
 guiResource_s* gui_resource_media_new(const char* name, media_s* value);
@@ -74,6 +78,7 @@ guiResource_s* gui_resource_fonts_new(const char* name, ftFonts_s* value);
 	g2dColor_t   : gui_resource_color_new,\
 	g2dCoord_s   : gui_resource_position_new,\
 	g2dImage_s*  : gui_resource_img_new,\
+	svg_s*       : gui_resource_svg_new,\
 	gif_s*       : gui_resource_gif_new,\
 	media_s*     : gui_resource_media_new,\
 	ftFonts_s*   : gui_resource_fonts_new\

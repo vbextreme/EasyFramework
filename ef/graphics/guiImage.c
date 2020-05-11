@@ -85,7 +85,17 @@ __private guiImage_s* gui_image_image_set(guiImage_s* img, unsigned width, unsig
 	if( !scaled ) err_fail("scaled image");
 	img->img = scaled;
 	img->src.w = img->pos.w = img->img->w;
-	img->src.h = img->img->h;
+	img->src.h = img->pos.h = img->img->h;
+	return img;
+}
+
+__private guiImage_s* gui_image_svg_set(guiImage_s* img, svg_s* svg, unsigned width, unsigned height){
+	img->type = GUI_IMAGE_SVG;
+	g2dImage_s* render = svg_render(svg, width, height);
+	if( !render ) err_fail("render image");
+	img->img = render;
+	img->src.w = img->pos.w = img->img->w;
+	img->src.h = img->pos.h = img->img->h;
 	return img;
 }
 
@@ -153,13 +163,10 @@ guiImage_s* gui_image_new(g2dColor_t color, const char* pathRelative, unsigned w
 		return img;
 	}
 	
-	img->img = g2d_load_svg(img->res, width, height);
-	if( img->img ){
-		gui_resource_new(img->res, U8(img->res));
-		img->type = GUI_IMAGE_IMG;
-		img->src.w = img->pos.w = img->img->w;
-		img->src.h = img->pos.h = img->img->h;
-		return img;
+	svg_s* svg = svg_load(img->res);
+	if( svg ){
+		gui_resource_new(img->res, svg);
+		return gui_image_svg_set(img, svg, width, height);
 	}
 
 	img->gif = g2d_load_gif(img->res);
@@ -200,33 +207,27 @@ guiImage_s* gui_image_load(g2dColor_t color, const char* pathRelative, unsigned 
 			case GUI_RESOURCE_UTF:
 			case GUI_RESOURCE_LONG:
 			case GUI_RESOURCE_DOUBLE:
+			case GUI_RESOURCE_TEXT:
 			case GUI_RESOURCE_POSITION:
 			case GUI_RESOURCE_GIF:
 				err_fail("wrong resources"); 
 			break;
 			
-			case GUI_RESOURCE_TEXT:{
+			case GUI_RESOURCE_SVG:{
 				guiImage_s* img = mem_new(guiImage_s);
 				if( !img ) err_fail("eom");
 				img->res = path;
 				img->src.x = img->pos.x = 0;
 				img->src.y = img->pos.y = 0;
 				img->flags = flags;
-				img->img = g2d_load_svg(img->res, width, height);
-				if( img->img ){
-					img->type = GUI_IMAGE_IMG;
-					img->pos.w = img->img->w;
-					img->pos.h = img->img->h;
-					img->src = img->pos;
-					return img;
-				}
-				err_fail("invalid stored svg");
+			return gui_image_svg_set(img, res->svg, width, height);
 			}
 			break;
 
 			case GUI_RESOURCE_IMG:{
 				guiImage_s* img = mem_new(guiImage_s);
 				if( !img ) err_fail("eom");
+				img->res = path;
 				img->src.x = img->pos.x = 0;
 				img->src.y = img->pos.y = 0;
 				img->flags = flags;
@@ -257,6 +258,7 @@ void gui_image_free(guiImage_s* img){
 
 			case GUI_IMAGE_CUSTOM:
 			case GUI_IMAGE_IMG:
+			case GUI_IMAGE_SVG:
 				g2d_free(img->img);
 			break;
 
@@ -297,27 +299,23 @@ void gui_image_resize(gui_s* gui, guiImage_s* img, unsigned width, unsigned heig
 
 		case GUI_IMAGE_CUSTOM: break;
 
+		case GUI_IMAGE_SVG:{
+			g2d_free(img->img);
+			guiResource_s* res = gui_resource(img->res);
+			if( !res ) err_fail("resize image %s", img->res);
+			iassert(res->type == GUI_RESOURCE_SVG);
+			gui_image_svg_set(img, res->svg, width, height);
+		}
+		break;
+
 		case GUI_IMAGE_IMG:{
 			g2d_free(img->img);
 			guiResource_s* res = gui_resource(img->res);
 			if( !res ) err_fail("resize image %s", img->res);
-			if( res->type == GUI_RESOURCE_TEXT ){
-				img->img = g2d_load_svg(img->res, width, height);
-				if( img->img ){
-					img->type = GUI_IMAGE_IMG;
-					img->src.w = img->pos.w = img->img->w;
-					img->src.h = img->pos.h = img->img->h;
-					return;
-				}
-				err_fail("invalid stored svg");
-			}
-			else if( res->type == GUI_RESOURCE_IMG ){
-				img->img = res->img;
-				gui_image_image_set(img, width, height, ratio);
-				return;
-			}
+			iassert( res->type == GUI_RESOURCE_IMG );
+			img->img = res->img;
+			gui_image_image_set(img, width, height, ratio);
 		}
-		err_fail("resize guiImage");
 		break;
 	
 		case GUI_IMAGE_GIF:
@@ -481,6 +479,7 @@ void gui_image_redraw(gui_s* gui, guiComposite_s* cmp, unsigned id, unsigned cou
 	switch( cmp->img[id]->type ){
 		case GUI_IMAGE_COLOR: gid_color(gui, cmp->img[id]); break;
 		case GUI_IMAGE_CUSTOM:
+		case GUI_IMAGE_SVG:
 		case GUI_IMAGE_IMG:   gid_img(gui, &cmp->img[id]->pos, cmp->img[id]->img, &cmp->img[id]->src, cmp->img[id]->flags); break;
 		case GUI_IMAGE_GIF:   gid_gif(gui, cmp, id, count); break;
 		case GUI_IMAGE_VIDEO: gid_media(gui, cmp, id, count); break;

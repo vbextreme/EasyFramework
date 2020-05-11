@@ -13,7 +13,6 @@
 #include <ef/guiResources.h>
 #include <ef/guiImage.h>
 #include <ef/spawn.h>
-#include <ef/list.h>
 
 #define GUI_CHILD_INITIAL   8
 #define GUI_KEY_SIZE        32
@@ -544,11 +543,6 @@ xorgEvent_s* gui_event_get(int async){
 	xorgEvent_s* event = xorg_event_new(X, async);
 	if( event ){
 		gui_s* gr = allgui_find(event->win);
-		if( !gr ){
-			dbg_warning("unknow window id");
-			xorg_event_free(event);
-			return NULL;
-		}
 		event->userdata = gr;
 	}
 	return event;
@@ -560,6 +554,7 @@ void gui_event_release(xorgEvent_s* ev){
 
 int gui_event_call(xorgEvent_s* ev){
 	if( !ev ) return 0;
+	if( !ev->userdata ) return 0;
 	gui_s* gui = ev->userdata;
 	iassert(gui);
 
@@ -593,7 +588,7 @@ int gui_event_call(xorgEvent_s* ev){
 err_t gui_deadpoll_event_callback(__unused deadpoll_s* dp, __unused int ev, __unused void* arg){
 	xorgEvent_s* event;
 	int ret = 0;
-	while( (event = gui_event_get(0)) ){
+	while( (event = gui_event_get(1)) ){
 		ret	|= gui_event_call(event);
 		gui_event_release(event);
 	}

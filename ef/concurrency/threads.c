@@ -195,7 +195,7 @@ qmessages_s* qmessages_new(int nonblock){
 	return ret;
 }
 
-void qmessage_free(qmessages_s* q){
+void qmessages_free(qmessages_s* q){
 	if( q->mtx ) mutex_free(q->mtx);
 	if( q->evfd ) close(q->evfd);
 	message_s* next;
@@ -208,7 +208,7 @@ void qmessage_free(qmessages_s* q){
 	free(q);
 }
 
-message_s* qmessages_get(qmessages_s* q){
+void* qmessages_get(qmessages_s* q){
 	message_s* ret;
 
 	mutex_lock(q->mtx);
@@ -220,7 +220,7 @@ message_s* qmessages_get(qmessages_s* q){
 
 	if( ret ){
 		ret->next = NULL;
-		return ret;
+		return ret->data;
 	}
 
 	long v;
@@ -228,7 +228,8 @@ message_s* qmessages_get(qmessages_s* q){
 	return NULL;
 }
 
-void qmessages_send(qmessages_s* q, message_s* msg){
+void qmessages_send(qmessages_s* q, void* m){
+	message_s* msg = MESSAGE(m);
 	mutex_lock(q->mtx);
 	if( q->current ){
 		*(q->tail) = msg;
@@ -241,20 +242,21 @@ void qmessages_send(qmessages_s* q, message_s* msg){
 	event_fd_write(q->evfd, 1);
 }
 
-message_s* message_new_raw(size_t size, qmfree_f cleanup){
+void* message_new_raw(size_t size, qmfree_f cleanup){
 	message_s* msg = mem_flexible_structure_new(message_s, size, 1);
 	if( !msg ) err_fail("malloc");
 	msg->next = 0;
 	msg->clean = cleanup;	
-	return msg;
+	return msg->data;
 }
 
-void message_free(message_s* msg){
+void message_free(void* m){
+	message_s* msg = MESSAGE(m);
 	if( msg->clean ) msg->clean(&msg->data);
 	free(msg);
 }
 
-void message_free_auto(message_s** msg){
+void message_free_auto(void** msg){
 	if( *msg ) message_free(*msg);
 }
 

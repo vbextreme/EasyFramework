@@ -153,12 +153,11 @@ void* t_print_messages_consumer(void* arg){
 	while(1){
 		printf("qm #\n");
 		fd_timeout(f->qm->evfd,-1);
-		message_s* msg;
+		int* msg;
 		while( (msg = qmessages_get(f->qm)) ){
-			int* i = (int*)&msg->data;
-			printf("qm <- %d\n", *i);
+			printf("qm <- %d\n", *msg);
 			delay_ms(f->ms[0]);
-			if( *i == 777 ){
+			if( *msg == 777 ){
 				message_free(msg);
 				goto END;
 			}
@@ -177,20 +176,14 @@ void* t_print_messages_producer(void* arg){
 	size_t i = 0;
 
 	for( i = 0; i < N; ++i){
-		message_s* msg = message_new(int, NULL);
-		msg->id = 0;
-		msg->type = 0;
-		int* k = (int*)&msg->data;
-		*k = i;
+		int* msg = message_new(int, NULL);
+		*msg = i;
 		qmessages_send(f->qm, msg);
 		delay_ms(f->ms[1]);
 		printf("-->%lu\n", i);
 	}
-	message_s* msg = message_new(int, NULL);
-	msg->id = 0;
-	msg->type = 0;
-	int* k = (int*)&msg->data;
-	*k = 777;
+	int* msg = message_new(int, NULL);
+	*msg = 777;
 	qmessages_send(f->qm, msg);
 	event_fd_write(f->fdev, 1);
 
@@ -204,10 +197,9 @@ void* t_print_messagesblock_consumer(void* arg){
 	
 	printf("qm #\n");
 	fd_timeout(f->qm->evfd,-1);
-	message_s* msg;
+	int* msg;
 	while( (msg = qmessages_get(f->qm)) ){
-		int* i = (int*)&msg->data;
-		printf("qm <- %d\n", *i);
+		printf("qm <- %d\n", *msg);
 		message_free(msg);
 	}
 	printf("qm --\n");
@@ -216,8 +208,7 @@ void* t_print_messagesblock_consumer(void* arg){
 	printf("qm #\n");
 	fd_timeout(f->qm->evfd,-1);
 	while( (msg = qmessages_get(f->qm)) ){
-		int* i = (int*)&msg->data;
-		printf("qm <- %d\n", *i);
+		printf("qm <- %d\n", *msg);
 		message_free(msg);
 	}
 	printf("end consumer\n");
@@ -229,21 +220,15 @@ void* t_print_messagesblock_producer(void* arg){
 	struct fort* f = arg;
 	size_t i = 0;
 
-	message_s* msg = message_new(int, NULL);
-	msg->id = 0;
-	msg->type = 0;
-	int* k = (int*)&msg->data;
-	*k = i;
+	int* msg = message_new(int, NULL);
+	*msg = i;
 	qmessages_send(f->qm, msg);	
 	printf("-->%lu\n", i);
 	
 	delay_ms(f->ms[1]);
 
 	msg = message_new(int, NULL);
-	msg->id = 0;
-	msg->type = 0;
-	k = (int*)&msg->data;
-	*k = 777;
+	*msg = 777;
 	qmessages_send(f->qm, msg);
 
 	printf("end producer\n");

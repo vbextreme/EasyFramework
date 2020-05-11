@@ -15,6 +15,7 @@ __private void resource_free(__unused uint32_t hash, __unused const char* name, 
 	switch( res->type ){
 		case GUI_RESOURCE_TEXT:     free(res->text);            break;
 		case GUI_RESOURCE_IMG:      g2d_free(res->img);         break;
+		case GUI_RESOURCE_SVG:      svg_free(res->svg);         break;
 		case GUI_RESOURCE_GIF:      g2d_gif_free(res->gif);     break;
 		case GUI_RESOURCE_MEDIA:    media_free(res->media);     break;
 		case GUI_RESOURCE_FONTS:    ft_fonts_free(res->fonts);  break;
@@ -94,6 +95,12 @@ guiResource_s* gui_resource_position_new(const char* name, g2dCoord_s* value){
 guiResource_s* gui_resource_img_new(const char* name, g2dImage_s* value){
 	guiResource_s* res = resource_new(GUI_RESOURCE_IMG);
 	res->img = value;
+	return resource_set(res, name);
+}
+
+guiResource_s* gui_resource_svg_new(const char* name, svg_s* value){
+	guiResource_s* res = resource_new(GUI_RESOURCE_SVG);
+	res->svg = value;
 	return resource_set(res, name);
 }
 

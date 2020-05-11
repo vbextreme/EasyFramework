@@ -3,7 +3,22 @@
 
 #include <ef/image.h>
 
+typedef struct svg{
+	size_t size;
+	unsigned char* memblock;
+	void* rsvgHandle;
+	unsigned dimW;
+	unsigned dimH;
+}svg_s;
+
 /** load svg image*/
-g2dImage_s* g2d_load_svg(char const* path, unsigned width, unsigned height);
+svg_s* svg_load(char const* path);
+
+/** render svg*/
+g2dImage_s* svg_render(svg_s* svg, unsigned width, unsigned height);
+
+/** free svg*/
+void svg_free(svg_s* svg);
+
 
 #endif 

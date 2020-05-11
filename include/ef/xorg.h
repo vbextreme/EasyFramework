@@ -4,6 +4,8 @@
 #include <ef/type.h>
 #include <ef/image.h>
 #include <ef/utf8.h>
+#include <ef/threads.h>
+
 #include <xcb/xcb.h>
 #include <xcb/xproto.h>
 #include <xcb/xcb_aux.h>
@@ -179,6 +181,7 @@ typedef struct xorg{
 	xorgAtom_e atom[XORG_ATOM_COUNT];
 	xcb_visualid_t visual;
 	xcb_xrm_database_t* resources;
+	qmessages_s* qmsgEvent;
 	long clickms;
 	long dblclickms;
 	long _mousetime;
