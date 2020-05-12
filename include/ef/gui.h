@@ -48,7 +48,8 @@
 #define GUI_THEME_FONT_NAME        "font.name."
 #define GUI_THEME_FONT_SIZE        "font.size."
 
-#define GUI_THEME_COMPOSITE        "composite"
+#define GUI_THEME_COMPOSITE_BACKGROUND "background"
+#define GUI_THEME_COMPOSITE_POST   "postproduction"
 #define GUI_THEME_COMPOSITE_COLOR  "color"
 #define GUI_THEME_COMPOSITE_IMAGE  "image"
 #define GUI_THEME_COMPOSITE_GIF    "gif"
@@ -106,6 +107,11 @@ typedef struct guiRound{
 	unsigned border;
 }guiRound_s;
 
+typedef struct guiScene{
+	guiComposite_s* background;
+	guiComposite_s* postproduction;
+}guiScene_s;
+
 typedef struct gui{
 	char* name;
 	char* class;
@@ -125,7 +131,7 @@ typedef struct gui{
 
 	xorgSurface_s* surface;
 	guiPosition_s position;
-	guiComposite_s* img;
+	guiScene_s scene;
 	guiMargin_s userMargin;
 
 	guiEvent_f create;
@@ -170,7 +176,7 @@ gui_s* gui_new(
 		gui_s* parent, 
 		const char* name, const char* class, guiMode_e mode,
 		int border, int x, int y, int width, int height, 
-		g2dColor_t colorBorder, guiComposite_s* img,
+		g2dColor_t colorBorder, guiComposite_s* background, guiComposite_s* postproduction,
 		int genericSize, void* userdata);
 
 /** free gui, remove gui from parent*/
@@ -311,11 +317,11 @@ void gui_fd_register(gui_s* gui, int fd, int event, guiEvent_f fn);
 /** unregister event fd*/
 void gui_fd_unregister(int fd);
 
-void gui_background_supersampling_fn(gui_s* gui, __unused guiImage_s** img, __unused void* generic);
+void gui_background_supersampling_fn(gui_s* gui, __unused guiLayer_s** img, __unused void* generic);
 
-void gui_background_main_round_fn(gui_s* gui, __unused guiImage_s** img, void* generic);
+void gui_background_main_round_fn(gui_s* gui, __unused guiLayer_s** img, void* generic);
 
-void gui_background_round_fn(gui_s* gui, __unused guiImage_s** img, __unused void* generic);
+void gui_background_round_fn(gui_s* gui, __unused guiLayer_s** img, __unused void* generic);
 
 /** get themes name*/
 char* gui_themes_name(gui_s* gui, const char* appName);
@@ -345,10 +351,10 @@ err_t gui_themes_color_set(const char* name, const char* property, g2dColor_t* s
 err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts);
 
 /** load gui image */
-err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg);
+err_t gui_themes_layer(gui_s* gui, const char* name, guiLayer_s** ptrimg);
 
 /** set theme composite*/
-void gui_themes_composite(gui_s* gui, const char* name, const char* compname);
+void gui_themes_composite(gui_s* gui, guiComposite_s* cmp,  const char* name, const char* compname);
 
 /** set gui themes */
 void gui_themes(gui_s* gui, const char* appName);

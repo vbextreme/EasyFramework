@@ -22,7 +22,7 @@ gui_s* gui_label_attach(gui_s* gui, guiLabel_s* lbl){
 	gui->free = gui_label_event_free;
 	gui->move = gui_label_event_move;
 	gui->focusable = 0;
-	gui_composite_add(gui->img, lbl->caption->render);
+	gui_composite_add(gui->scene.postproduction, lbl->caption->render);
 	return gui;
 ERR:
 	if( lbl ) gui_label_free(lbl);
@@ -45,7 +45,7 @@ void gui_label_redraw(gui_s* gui){
 	iassert(gui->type == GUI_TYPE_LABEL);
 	guiLabel_s* lbl = gui->control;
 	gui_caption_render(gui, lbl->caption);
-	gui_composite_redraw(gui, gui->img);
+	gui_event_redraw(gui, NULL);	
 }
 
 void gui_label_scroll(gui_s* gui, unsigned x, unsigned y){

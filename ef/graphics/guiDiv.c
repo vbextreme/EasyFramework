@@ -10,7 +10,7 @@ __private int div_internal_focus(gui_s* gui, xorgEvent_s* ev){
 	return 0;
 }
 
-guiDiv_s* gui_div_new(guiDivMode_e mode, guiImage_s* select, unsigned flags){
+guiDiv_s* gui_div_new(guiDivMode_e mode, guiLayer_s* select, unsigned flags){
 	guiDiv_s* div = mem_new(guiDiv_s);
 	if( !div ) return NULL;
 	div->mode = mode;
@@ -46,8 +46,8 @@ void gui_div_apply_select(gui_s* gui){
 	iassert( gui->type == GUI_TYPE_DIV );
 	guiDiv_s* div = gui->control;
 	if( !(div->flags & GUI_DIV_FLAGS_SELECT) ) return;
-	div->idselect = vector_count(gui->img->img);
-	gui_composite_add(gui->img, div->select);
+	div->idselect = vector_count(gui->scene.background);
+	gui_composite_add(gui->scene.background, div->select);
 	gui_register_internal_focus_event(gui, div_internal_focus);
 }
 
@@ -55,8 +55,8 @@ void gui_div_deapply_select(gui_s* gui){
 	iassert( gui->type == GUI_TYPE_DIV );
 	guiDiv_s* div = gui->control;
 	div->flags &= ~GUI_DIV_FLAGS_SELECT;
-	gui_image_free(gui->img->img[div->idselect]);
-	vector_remove(gui->img->img, div->idselect);
+	gui->scene.background->layers[div->idselect] = NULL;
+	gui_composite_remove(gui->scene.background, div->idselect);
 	gui_unregister_internal_focus_event(gui);
 }
 
@@ -65,6 +65,7 @@ void gui_div_free(guiDiv_s* div){
 		vector_free(div->vrows[i].vcols);
 	}
 	vector_free(div->vrows);
+	if( div->select ) gui_layer_free(div->select);
 	free(div);
 }
 
@@ -164,7 +165,7 @@ __private void div_child_move(gui_s* gdiv, guiDiv_s* div, gui_s* child, const gu
 		assert(div->select);
 		div->select->pos.x = guiPos->x;
 		div->select->pos.y = guiPos->y;
-		gui_image_resize(gdiv, div->select, guiPos->w, guiPos->h, -1);
+		gui_layer_resize(gdiv, div->select, guiPos->w, guiPos->h, -1);
 		gui_move(child, 
 			guiPos->x + div->selectpad.left + child->userMargin.left, 
 			guiPos->y + div->selectpad.top + child->userMargin.top
@@ -398,7 +399,7 @@ __private void div_focus_down(gui_s* gdiv, guiDiv_s* div, gui_s* gui){
 int gui_div_event_redraw(gui_s* gui, __unused xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_DIV);
 	gui_div_align(gui);
-	gui_composite_redraw(gui, gui->img);
+	gui_event_redraw(gui, NULL);
 	return 0;
 }
 
@@ -450,7 +451,7 @@ int gui_div_event_themes(gui_s* gui, xorgEvent_s* ev){
 	gui_themes_int_set(name, GUI_THEME_DIV_SEL_PAD_BOTTOM, &div->selectpad.bottom);
 
 	__mem_free char* selname = str_printf("%s.%s", name, GUI_THEME_DIV_SELECTION);
-	if( !gui_themes_gui_image(gui, selname, &div->select) ) div->flags |= GUI_DIV_FLAGS_SELECT;
+	if( !gui_themes_layer(gui, selname, &div->select) ) div->flags |= GUI_DIV_FLAGS_SELECT;
 
 	if( div->mode != GUI_DIV_TABLE ) return 0;
 

@@ -26,7 +26,7 @@ typedef struct guiDivRow{
 
 typedef struct guiDiv{
 	unsigned idselect;
-	guiImage_s* select;
+	guiLayer_s* select;
 	guiMargin_s selectpad;
 	guiDivMode_e mode;
 	guiMargin_s padding;
@@ -51,7 +51,7 @@ typedef struct guiDiv{
 #define GUI_THEME_DIV_SEL_PAD_BOTTOM "div.selection.padding.bottom"
 
 /** create new div*/
-guiDiv_s* gui_div_new(guiDivMode_e mode, guiImage_s* select, unsigned flags);
+guiDiv_s* gui_div_new(guiDivMode_e mode, guiLayer_s* select, unsigned flags);
 
 /** attach div to gui*/
 gui_s* gui_div_attach(gui_s* gui, guiDiv_s* div);

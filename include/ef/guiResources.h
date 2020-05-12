@@ -35,7 +35,6 @@ typedef struct guiResource{
 		svg_s* svg;
 		gif_s* gif;
 		media_s* media;
-		guiImage_s* image;
 		ftFonts_s* fonts;
 	};
 	guiResource_e type;

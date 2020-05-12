@@ -4,32 +4,31 @@
 #include <ef/gui.h>
 #include <ef/guiCaption.h>
 
-#define GUI_OPTION_STATE_Z     0
-#define GUI_OPTION_STATE_OFF   1
-#define GUI_OPTION_STATE_ON    2
-#define GUI_OPTION_STATE_HOVER 3
-#define GUI_OPTION_STATE_COUNT 4
+#define GUI_OPTION_STATE_OFF       0
+#define GUI_OPTION_STATE_ON        1
+#define GUI_OPTION_STATE_HOVER_OFF 2
+#define GUI_OPTION_STATE_HOVER_ON  3
+#define GUI_OPTION_STATE_COUNT     4
 
 #define GUI_OPTION_FLAGS_UNIQUE        0x01
 #define GUI_OPTION_FLAGS_ACTIVE        0x02
 #define GUI_OPTION_FLAGS_HOVER         0x04
 #define GUI_OPTION_FLAGS_HOVER_ENABLE  0x08
 
-#define GUI_THEMES_OPTION_ON     "option.on"
-#define GUI_THEMES_OPTION_OFF    "option.off"
-#define GUI_THEMES_OPTION_HOVER  "option.hover"
+#define GUI_THEME_OPTION_ON        "option.on"
+#define GUI_THEME_OPTION_HOVER_ON  "option.hover.on"
+#define GUI_THEME_OPTION_HOVER_OFF "option.hover.off"
+#define GUI_THEME_OPTION_HOVER     "option.hover"
 
 typedef struct guiOption{
 	guiCaption_s* caption;
-	guiImage_s* state[GUI_OPTION_STATE_COUNT];
-	unsigned zindex;
-	unsigned vindex;
+	guiComposite_s* state[GUI_OPTION_STATE_COUNT];
 	guiEvent_f parentKey;
 	int flags;
 }guiOption_s;
 
 /** create new option*/
-guiOption_s* gui_option_new(guiCaption_s* caption, guiImage_s* off, guiImage_s* on, guiImage_s* hover, int flags);
+guiOption_s* gui_option_new(guiCaption_s* caption, guiComposite_s* on, guiComposite_s* hoveroff, guiComposite_s* hoveron, int flags);
 
 /** attach option to gui*/
 gui_s* gui_option_attach(gui_s* gui, guiOption_s* opt);

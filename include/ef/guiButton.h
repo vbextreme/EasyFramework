@@ -11,22 +11,21 @@
 
 #define GUI_THEME_BUTTON_PRESS "press"
 #define GUI_THEME_BUTTON_HOVER "hover"
+#define GUI_THEME_BUTTON_HOVER_ENABLE "hoverEnable"
 
 #define GUI_BUTTON_FLAGS_HOVER 0x01
 
-#define GUI_THEMES_BUTTON_HOVER "button.hover"
 
 typedef struct guiButton{
 	guiCaption_s* caption;
-	guiImage_s* state[GUI_BUTTON_STATE_COUNT];
-	unsigned compindex;
+	guiComposite_s* state[GUI_BUTTON_STATE_COUNT];
 	guiEvent_f onclick;
 	guiEvent_f parentKey;
 	int flags;
 }guiButton_s;
 
 /** create new button*/
-guiButton_s* gui_button_new(guiCaption_s* caption, guiImage_s* press, guiImage_s* hover, guiEvent_f onclick, int flags);
+guiButton_s* gui_button_new(guiCaption_s* caption, guiComposite_s* press, guiComposite_s* hover, guiEvent_f onclick, int flags);
 
 /** attach button to gui*/
 gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn);

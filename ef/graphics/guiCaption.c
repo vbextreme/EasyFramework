@@ -13,9 +13,9 @@ guiCaption_s* gui_caption_new(ftFonts_s* font, g2dColor_t foreground, unsigned f
 	cap->textHeight = 0;
 	cap->fonts = font;
 	cap->foreground = foreground;
-	cap->render =  gui_image_custom_new(
+	cap->render =  gui_layer_custom_new(
 		g2d_new(100, 100, -1), 
-		GUI_IMAGE_FLAGS_ALPHA
+		GUI_LAYER_FLAGS_ALPHA
 	);
 	cap->flags = flags;
 	cap->scroll.x = 0;
@@ -26,13 +26,6 @@ guiCaption_s* gui_caption_new(ftFonts_s* font, g2dColor_t foreground, unsigned f
 void gui_caption_free(guiCaption_s* lbl){
 	if( lbl->text ) free(lbl->text);
 	free(lbl);
-}
-
-void gui_caption_render_new(guiCaption_s* cap){
-	cap->render =  gui_image_custom_new(
-		g2d_new(100, 100, -1), 
-		GUI_IMAGE_FLAGS_ALPHA
-	);
 }
 
 void gui_caption_text_set(gui_s* gui, guiCaption_s* cap, const utf8_t* text){
@@ -131,6 +124,9 @@ int gui_caption_themes(gui_s* gui, guiCaption_s* cap, const char* name){
 
 	__mem_free char* caption = gui_themes_string(name, GUI_THEME_CAPTION);
 	if( caption ) gui_caption_text_set(gui, cap, (utf8_t*)caption);
+
+	gui_themes_uint_set(name, GUI_THEME_CAPTION_X, &cap->render->pos.x);
+	gui_themes_uint_set(name, GUI_THEME_CAPTION_Y, &cap->render->pos.y);
 
 	return 0;
 }

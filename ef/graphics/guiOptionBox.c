@@ -4,15 +4,15 @@
 #include <ef/str.h>
 #include <ef/err.h>
 
-guiOption_s* gui_option_new(guiCaption_s* caption, guiImage_s* off, guiImage_s* on, guiImage_s* hover, int flags){
+guiOption_s* gui_option_new(guiCaption_s* caption, guiComposite_s* on, guiComposite_s* hoveroff, guiComposite_s* hoveron, int flags){
 	if( !caption ) return NULL;
 	guiOption_s* opt = mem_new(guiOption_s);
 	if( !opt ) err_fail("eom");
 	opt->caption = caption;
-	opt->state[GUI_OPTION_STATE_Z] = NULL;
-	opt->state[GUI_OPTION_STATE_OFF] = off;
+	opt->state[GUI_OPTION_STATE_OFF] = NULL;
 	opt->state[GUI_OPTION_STATE_ON] = on;
-	opt->state[GUI_OPTION_STATE_HOVER]  = hover;
+	opt->state[GUI_OPTION_STATE_HOVER_OFF]  = hoveroff;
+	opt->state[GUI_OPTION_STATE_HOVER_ON]  = hoveron;
 	opt->flags = flags;
 	return opt;
 }
@@ -29,11 +29,8 @@ gui_s* gui_option_attach(gui_s* gui, guiOption_s* opt){
 	gui->free = gui_option_event_free;	
 	gui->move = gui_option_event_move;
 	gui->themes = gui_option_event_themes;
-	opt->zindex = vector_count(gui->img->img)-1;
-	opt->state[GUI_OPTION_STATE_Z] = gui->img->img[opt->zindex];
-	gui_composite_add(gui->img, opt->caption->render);
-	gui_composite_add(gui->img, opt->state[GUI_OPTION_STATE_OFF]);
-	opt->vindex = vector_count(gui->img->img)-1;
+	opt->state[GUI_OPTION_STATE_OFF] = gui->scene.background;
+	gui_composite_add(gui->scene.postproduction, opt->caption->render);
 	return gui;
 ERR:
 	dbg_error("an error occur");
@@ -45,16 +42,28 @@ ERR:
 void gui_option_free(guiOption_s* opt){
 	gui_caption_free(opt->caption);
 	if( opt->flags & GUI_OPTION_FLAGS_ACTIVE ){
-		gui_image_free(opt->state[GUI_OPTION_STATE_OFF]);
+		if( opt->flags & GUI_OPTION_FLAGS_HOVER ){
+			gui_composite_free(opt->state[GUI_OPTION_STATE_OFF]);
+			gui_composite_free(opt->state[GUI_OPTION_STATE_ON]);
+			gui_composite_free(opt->state[GUI_OPTION_STATE_HOVER_OFF]);
+		}
+		else{
+			gui_composite_free(opt->state[GUI_OPTION_STATE_OFF]);
+			gui_composite_free(opt->state[GUI_OPTION_STATE_HOVER_OFF]);
+			gui_composite_free(opt->state[GUI_OPTION_STATE_HOVER_ON]);
+		}
 	}
 	else{
-		gui_image_free(opt->state[GUI_OPTION_STATE_ON]);
-	}
-	if( opt->flags & GUI_OPTION_FLAGS_HOVER ){
-		gui_image_free(opt->state[GUI_OPTION_STATE_Z]);
-	}
-	else{
-		gui_image_free(opt->state[GUI_OPTION_STATE_HOVER]);
+		if( opt->flags & GUI_OPTION_FLAGS_HOVER ){
+			gui_composite_free(opt->state[GUI_OPTION_STATE_OFF]);
+			gui_composite_free(opt->state[GUI_OPTION_STATE_ON]);
+			gui_composite_free(opt->state[GUI_OPTION_STATE_HOVER_ON]);
+		}
+		else{
+			gui_composite_free(opt->state[GUI_OPTION_STATE_ON]);
+			gui_composite_free(opt->state[GUI_OPTION_STATE_HOVER_OFF]);
+			gui_composite_free(opt->state[GUI_OPTION_STATE_HOVER_ON]);
+		}
 	}
 	free(opt);
 }
@@ -112,21 +121,24 @@ void gui_option_redraw(gui_s* gui){
 	guiOption_s* opt = gui->control;
 	gui_caption_render(gui, opt->caption);
 	
-	if( opt->flags & GUI_OPTION_FLAGS_HOVER ){
-		gui->img->img[opt->zindex] = opt->state[GUI_OPTION_STATE_HOVER];
+	if( opt->flags & GUI_OPTION_FLAGS_ACTIVE ){
+		if( opt->flags & GUI_OPTION_FLAGS_HOVER ){
+			gui->scene.background = opt->state[GUI_OPTION_STATE_HOVER_ON];
+		}
+		else{
+			gui->scene.background = opt->state[GUI_OPTION_STATE_ON];
+		}
 	}
 	else{
-		gui->img->img[opt->zindex] = opt->state[GUI_OPTION_STATE_Z];
+		if( opt->flags & GUI_OPTION_FLAGS_HOVER ){
+			gui->scene.background = opt->state[GUI_OPTION_STATE_HOVER_OFF];
+		}
+		else{
+			gui->scene.background = opt->state[GUI_OPTION_STATE_OFF];
+		}
 	}
 
-	if( opt->flags & GUI_OPTION_FLAGS_ACTIVE ){
-		gui->img->img[opt->vindex] = opt->state[GUI_OPTION_STATE_ON];
-	}
-	else{
-		gui->img->img[opt->vindex] = opt->state[GUI_OPTION_STATE_OFF];
-	}
-	
-	gui_composite_redraw(gui, gui->img);
+	gui_event_redraw(gui, NULL);
 }
 
 int gui_option_event_free(gui_s* gui, __unused xorgEvent_s* ev){
@@ -185,8 +197,8 @@ int gui_option_event_move(gui_s* gui, xorgEvent_s* event){
 	guiOption_s* opt = gui->control;
 	opt->caption->flags |= GUI_CAPTION_RENDERING;
 	for( size_t i = 0; i < GUI_OPTION_STATE_COUNT; ++i){
-		if( gui->img->img[opt->zindex] != opt->state[i] && gui->img->img[opt->vindex] != opt->state[i] ){
-			gui_image_resize(gui, opt->state[i], event->move.w, event->move.h , -1);
+		if( gui->scene.background != opt->state[i] ){
+			gui_composite_resize(gui, opt->state[i], event->move.w, event->move.h);
 		}
 	}
 	gui_event_move(gui, event);
@@ -201,28 +213,21 @@ int gui_option_event_themes(gui_s* gui, xorgEvent_s* ev){
 	gui_caption_themes(gui, opt->caption, name);
 
 	int vbool;
-	if( gui_themes_bool_set(name, GUI_THEMES_OPTION_HOVER, &vbool) ){
+	if( gui_themes_bool_set(name, GUI_THEME_OPTION_HOVER, &vbool) ){
 		if( vbool ) opt->flags |= GUI_OPTION_FLAGS_HOVER_ENABLE;
 		else        opt->flags &= ~GUI_OPTION_FLAGS_HOVER_ENABLE;
 	}
 
-	char* iname = str_printf("%s.%s", name, GUI_THEMES_OPTION_HOVER);
-	gui_themes_gui_image(gui, iname, &opt->state[GUI_OPTION_STATE_HOVER]);
-	free(iname);
+	gui_themes_composite(gui, opt->state[GUI_OPTION_STATE_ON], name, GUI_THEME_OPTION_ON);
+	gui_themes_composite(gui, opt->state[GUI_OPTION_STATE_HOVER_ON], name, GUI_THEME_OPTION_HOVER_ON);
+	gui_themes_composite(gui, opt->state[GUI_OPTION_STATE_HOVER_OFF], name, GUI_THEME_OPTION_HOVER_OFF);
 
-	iname = str_printf("%s.%s", name, GUI_THEMES_OPTION_ON);
-	gui_themes_gui_image(gui, iname, &opt->state[GUI_OPTION_STATE_ON]);
-	free(iname);
-
-	iname = str_printf("%s.%s", name, GUI_THEMES_OPTION_OFF);
-	gui_themes_gui_image(gui, iname, &opt->state[GUI_OPTION_STATE_OFF]);
-	free(iname);
 	
 	if( opt->flags & GUI_OPTION_FLAGS_ACTIVE ){
-		gui->img->img[opt->vindex] = opt->state[GUI_OPTION_STATE_ON];
+		gui->scene.background = opt->state[GUI_OPTION_STATE_ON];
 	}
 	else{
-		gui->img->img[opt->vindex] = opt->state[GUI_OPTION_STATE_OFF];
+		gui->scene.background = opt->state[GUI_OPTION_STATE_OFF];
 	}
 
 	return 0;

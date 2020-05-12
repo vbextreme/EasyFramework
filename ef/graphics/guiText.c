@@ -59,14 +59,14 @@ gui_s* gui_text_attach(gui_s* gui, guiText_s* txt){
 	if( !txt->text ) err_fail("eom");
 	*txt->text = 0;
 	txt->it = utf8_iterator(txt->text, 0);
-	txt->render = gui_image_custom_new(
+	txt->render = gui_layer_custom_new(
 			g2d_new(gui->surface->img->w, gui->surface->img->h, -1), 
-			GUI_IMAGE_FLAGS_ALPHA
+			GUI_LAYER_FLAGS_ALPHA
 	);
-	gui_composite_add(gui->img, txt->render);
+	gui_composite_add(gui->scene.postproduction, txt->render);
 
-	guiImage_s* cursor = gui_image_fn_new(gui_text_render_cursor, txt, NULL, txt->cursor.w, txt->cursor.h, 0);
-	gui_composite_add(gui->img, cursor);
+	guiLayer_s* cursor = gui_layer_fn_new(gui_text_render_cursor, txt, NULL, txt->cursor.w, txt->cursor.h, 0);
+	gui_composite_add(gui->scene.postproduction, cursor);
 
 	return gui;
 ERR:
@@ -554,7 +554,7 @@ void gui_text_cursor_on_position(gui_s* gui, unsigned x, unsigned y){
 	txt->flags |= GUI_TEXT_REND_CURSOR | GUI_TEXT_REND_CURON;
 }
 
-void gui_text_render_cursor(gui_s* gui, __unused guiImage_s** img, __unused void* ud){
+void gui_text_render_cursor(gui_s* gui, __unused guiLayer_s** img, __unused void* ud){
 	iassert(gui->type == GUI_TYPE_TEXT);
 	guiText_s* txt = gui->control;
 	if( !(txt->flags & GUI_TEXT_REND_CURSOR) ) return;
@@ -811,7 +811,7 @@ void gui_text_redraw(gui_s* gui, int partial){
 	txt->render->src.w = gui->surface->img->w;
 	txt->render->src.h = gui->surface->img->h;
 
-	gui_composite_redraw(gui, gui->img);
+	gui_event_redraw(gui, NULL);
 }
 
 int gui_text_event_key(gui_s* gui, xorgEvent_s* event){

@@ -105,8 +105,9 @@ gui_s* gui_simple_window_layout_vertical_new(const char* name, unsigned x, unsig
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
 				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-				gui_image_color_new(GUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR, w, h, 0)
+				gui_layer_color_new(GUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR, w, h, 0)
 			),
+			NULL,
 			0, NULL
 		),
 		gui_div_new(GUI_DIV_VERTICAL, NULL, GUI_DIV_FLAGS_FIT)
@@ -122,8 +123,9 @@ gui_s* gui_simple_window_layout_horizontal_new(const char* name, unsigned x, uns
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
 				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-				gui_image_color_new(GUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR, w, h, 0)
+				gui_layer_color_new(GUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR, w, h, 0)
 			),
+			gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
 			0, NULL
 		),
 		gui_div_new(GUI_DIV_HORIZONTAL, NULL, GUI_DIV_FLAGS_FIT)
@@ -139,8 +141,9 @@ gui_s* gui_simple_window_layout_table_new(const char* name, unsigned x, unsigned
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
 				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-				gui_image_color_new(GUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR, w, h, 0)
+				gui_layer_color_new(GUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR, w, h, 0)
 			),
+			gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
 			0, NULL
 		),
 		gui_div_new(GUI_DIV_TABLE, NULL, GUI_DIV_FLAGS_FIT)
@@ -169,8 +172,9 @@ gui_s* gui_simple_paint(gui_s* parent, const char* name){
 		GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 		gui_composite_add(
 			gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-			gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+			gui_layer_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
 		),
+		gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
 		0, NULL
 	);
 	gui_themes(gui, appName);
@@ -185,8 +189,9 @@ gui_s* gui_simple_label_new(gui_s* parent, const char* name, const utf8_t* capti
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
 				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+				gui_layer_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
 			),
+			gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
 			0, NULL
 		),
 		gui_label_new(
@@ -210,8 +215,9 @@ gui_s* gui_simple_button_new(gui_s* parent, const char* name, const utf8_t* capt
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
 				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+				gui_layer_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
 			),
+			gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
 			0, NULL
 		),
 		gui_button_new(
@@ -220,8 +226,14 @@ gui_s* gui_simple_button_new(gui_s* parent, const char* name, const utf8_t* capt
 				GUI_SIMPLE_DEFAULT_FOREGROUND, 
 				GUI_CAPTION_CENTER_X | GUI_CAPTION_CENTER_Y
 			),
-			gui_image_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0),
-			gui_image_color_new(GUI_SIMPLE_DEFAULT_ACTIVE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0),
+			gui_composite_add(
+				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
+				gui_layer_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+			),
+			gui_composite_add(
+				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
+				gui_layer_color_new(GUI_SIMPLE_DEFAULT_ACTIVE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+			),
 			onclick,
 			GUI_BUTTON_FLAGS_HOVER
 		)
@@ -239,8 +251,9 @@ gui_s* gui_simple_text_new(gui_s* parent, const char* name){
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
 				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+				gui_layer_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
 			),
+			gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
 			0, NULL
 		),
 		gui_text_new(
@@ -265,8 +278,9 @@ gui_s* gui_simple_bar_new(gui_s* parent, const char* name, const utf8_t* caption
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
 				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+				gui_layer_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
 			),
+			gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
 			0, NULL
 		),
 		gui_bar_new(
@@ -275,7 +289,7 @@ gui_s* gui_simple_bar_new(gui_s* parent, const char* name, const utf8_t* caption
 				GUI_SIMPLE_DEFAULT_FOREGROUND, 
 				GUI_CAPTION_CENTER_X | GUI_CAPTION_CENTER_Y
 			),
-			gui_image_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0),
+			gui_layer_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0),
 			0.0,
 			max,
 			0.0,
@@ -295,8 +309,9 @@ gui_s* gui_simple_option_new(gui_s* parent, const char* name){
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
 				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
+				gui_layer_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
 			),
+			gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
 			0, NULL
 		),
 		gui_div_new(GUI_DIV_TABLE, NULL, GUI_DIV_FLAGS_FIT)
@@ -311,20 +326,42 @@ __private gui_s* simple_option_add(gui_s* opt, const char* name, const utf8_t* t
 	unsigned flags = GUI_OPTION_FLAGS_HOVER_ENABLE;
 	if( option ) flags |= GUI_OPTION_FLAGS_UNIQUE;
 	
-	guiImage_s* on = gui_image_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
-	gui_image_perc_set(on, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
-	guiImage_s* off = gui_image_color_new(GUI_SIMPLE_DEFAULT_DISABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
-	gui_image_perc_set(off, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
+	guiLayer_s* bkon = gui_layer_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
+	guiLayer_s* bkof = gui_layer_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
+	guiLayer_s* bhon = gui_layer_color_new(GUI_SIMPLE_DEFAULT_ACTIVE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
+	guiLayer_s* bhof = gui_layer_color_new(GUI_SIMPLE_DEFAULT_ACTIVE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
+	guiLayer_s* pkon = gui_layer_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
+	gui_layer_perc_set(pkon, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
+	guiLayer_s* pkof = gui_layer_color_new(GUI_SIMPLE_DEFAULT_DISABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
+	gui_layer_perc_set(pkof, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
+	guiLayer_s* phon = gui_layer_color_new(GUI_SIMPLE_DEFAULT_ENABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
+	gui_layer_perc_set(phon, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
+	guiLayer_s* phof = gui_layer_color_new(GUI_SIMPLE_DEFAULT_DISABLE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0);
+	gui_layer_perc_set(phof, GUI_SIMPLE_DEFAULT_OPT_X, GUI_SIMPLE_DEFAULT_OPT_Y, GUI_SIMPLE_DEFAULT_OPT_W, GUI_SIMPLE_DEFAULT_OPT_H );
+	
+	guiComposite_s* cmpOff = gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE);
+	gui_composite_add(cmpOff, bkof);
+	gui_composite_add(cmpOff, pkof);
+
+	guiComposite_s* cmpOn = gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE);
+	gui_composite_add(cmpOn, bkon);
+	gui_composite_add(cmpOn, pkon);
+
+	guiComposite_s* cmpHvOff = gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE);
+	gui_composite_add(cmpHvOff, bhof);
+	gui_composite_add(cmpHvOff, phof);
+
+	guiComposite_s* cmpHvOn = gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE);
+	gui_composite_add(cmpHvOn, bhon);
+	gui_composite_add(cmpHvOn, phon);
 
 	gui_s* gui = gui_option_attach(
 		gui_new(
 			opt, name, GUI_SIMPLE_CLASS_OPTION, GUI_MODE_NORMAL,
 			0, 0, 0, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H,
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
-			gui_composite_add(
-				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-				gui_image_color_new(GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0)
-			),
+			cmpOff,
+			gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
 			0, NULL
 		),
 		gui_option_new(
@@ -333,9 +370,9 @@ __private gui_s* simple_option_add(gui_s* opt, const char* name, const utf8_t* t
 				GUI_SIMPLE_DEFAULT_FOREGROUND, 
 				GUI_CAPTION_CENTER_Y
 			),
-			off,
-			on,
-			gui_image_color_new(GUI_SIMPLE_DEFAULT_ACTIVE_COLOR, GUI_SIMPLE_DEFAULT_CONTROL_W, GUI_SIMPLE_DEFAULT_CONTROL_H, 0),
+			cmpOn,
+			cmpHvOff,
+			cmpHvOn,
 			flags
 		)
 	);
@@ -364,8 +401,9 @@ gui_s* gui_simple_msgbox(const char* name, unsigned w, unsigned h, utf8_t* capti
 			GUI_SIMPLE_DEFAULT_BORDER_COLOR,
 			gui_composite_add(
 				gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),
-				gui_image_color_new(GUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR, w, h, 0)
+				gui_layer_color_new(GUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR, w, h, 0)
 			),
+			gui_composite_new(GUI_SIMPLE_COMPOSITE_SIZE),	
 			0, NULL
 		),
 		gui_div_new(GUI_DIV_TABLE, NULL, GUI_DIV_FLAGS_FIT)

@@ -127,7 +127,7 @@ gui_s* gui_new(
 		gui_s* parent, 
 		const char* name, const char* class, guiMode_e mode, 
 		int border, int x, int y, int width, int height, 
-		g2dColor_t colorBorder, guiComposite_s* img,
+		g2dColor_t colorBorder, guiComposite_s* background, guiComposite_s* postproduction,
 		int genericSize, void* userdata)
 {
 	gui_s* gui = mem_new(gui_s);
@@ -165,7 +165,8 @@ gui_s* gui_new(
 	gui->position.y = y;
 	gui->position.w = width;
 	gui->position.h = height;
-	gui->img = img;
+	gui->scene.background = background;
+	gui->scene.postproduction = postproduction;
 	
 	gui->surface = NULL;
 	gui->type = GUI_TYPE_WINDOW;
@@ -228,7 +229,8 @@ void gui_free(gui_s* gui){
 
 	if( gui->name ) free(gui->name);
 	if( gui->class ) free(gui->class);
-	gui_composite_free(gui->img);
+	if( gui->scene.background ) gui_composite_free(gui->scene.background);
+	if( gui->scene.postproduction ) gui_composite_free(gui->scene.postproduction);
 	xorg_surface_destroy(X,  gui->surface);
 	xorg_win_destroy(X, gui->id);
 	free(gui);
@@ -464,7 +466,8 @@ void gui_remove_decoration(gui_s* gui){
 }
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
-	gui_composite_redraw(gui, gui->img);
+	if( gui->scene.background ) gui_composite_redraw(gui, gui->scene.background);
+	if( gui->scene.postproduction ) gui_composite_redraw(gui, gui->scene.postproduction);
 	return 0;
 }
 
@@ -503,7 +506,10 @@ int gui_event_move(gui_s* gui, xorgEvent_s* event){
 	dbg_info("move event:%s", gui->name);
 	if( gui->surface->img->w != event->move.w || gui->surface->img->h != event->move.h ){
 		dbg_info("resize composite && surface, redraw && draw");
-		gui_composite_resize(gui, gui->img, event->move.w, event->move.h);
+		if( gui->scene.background ) 
+			gui_composite_resize(gui, gui->scene.background, event->move.w, event->move.h);
+		if( gui->scene.postproduction ) 
+			gui_composite_resize(gui, gui->scene.postproduction, event->move.w, event->move.h);
 		xorg_surface_resize(X, gui->surface, event->move.w, event->move.h);
 		gui_redraw(gui);
 		gui_draw(gui);
@@ -706,11 +712,11 @@ void gui_fd_unregister(int fd){
 	deadpoll_unregister(dpgui, fd);
 }
 
-void gui_background_supersampling_fn(gui_s* gui, __unused guiImage_s** img, __unused void* generic){
+void gui_background_supersampling_fn(gui_s* gui, __unused guiLayer_s** img, __unused void* generic){
 	g2d_supersampling_to(gui->surface->img, 1);
 }
 
-void gui_background_main_round_fn(gui_s* gui, __unused guiImage_s** img, void* generic){
+void gui_background_main_round_fn(gui_s* gui, __unused guiLayer_s** img, void* generic){
 	guiRound_s* gr = generic;
 	gui_round_antialiasing_set(gui, gr->radius);
 }
@@ -727,7 +733,7 @@ __private void invert_alpha(g2dImage_s* quad){
 	}
 }
 
-void gui_background_round_fn(gui_s* gui, __unused guiImage_s** img, __unused void* generic){
+void gui_background_round_fn(gui_s* gui, __unused guiLayer_s** img, __unused void* generic){
 	iassert(gui->parent);
 	guiRound_s* ropt = generic;
 	
@@ -1022,7 +1028,7 @@ err_t gui_themes_fonts_set(const char* name, ftFonts_s** controlFonts){
 	return 0;
 }
 
-err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
+err_t gui_themes_layer(gui_s* gui, const char* name, guiLayer_s** ptrimg){
 	char* image = NULL;
 	int alpha = 0;
 	g2dColor_t color = gui_color(255,0,0,0);
@@ -1038,9 +1044,9 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 
 	unsigned flags;
 	int perenable = 0;
-	guiImage_s* img = NULL;
+	guiLayer_s* img = NULL;
 
-	dbg_error("loading image resources: '%s'", name);
+	dbg_error("loading layer resources: '%s'", name);
 
 	if( !gui_themes_color_set(name, GUI_THEME_COMPOSITE_COLOR, &color) ) colorset = 1;
 		
@@ -1052,10 +1058,8 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 		}
 	}
 
-	if( !colorset && !image ) return -1;
-		
 	gui_themes_bool_set(name, GUI_THEME_COMPOSITE_ALPHA, &alpha);
-	flags = alpha ? GUI_IMAGE_FLAGS_ALPHA : 0;
+	flags = alpha ? GUI_LAYER_FLAGS_ALPHA : 0;
 
 	gui_themes_int_set(name, GUI_THEME_COMPOSITE_DEST_X, &dx);
 	gui_themes_int_set(name, GUI_THEME_COMPOSITE_DEST_Y, &dy);
@@ -1081,10 +1085,10 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 		int sh = -1;
 
 		gui_themes_bool_set(name, GUI_THEME_COMPOSITE_PLAY, &play);
-		if( play ) flags |= GUI_IMAGE_FLAGS_PLAY;
+		if( play ) flags |= GUI_LAYER_FLAGS_PLAY;
 		
 		gui_themes_bool_set(name, GUI_THEME_COMPOSITE_LOOP, &loop);
-		if( loop ) flags |= GUI_IMAGE_FLAGS_LOOP;
+		if( loop ) flags |= GUI_LAYER_FLAGS_LOOP;
 
 		gui_themes_int_set(name, GUI_THEME_COMPOSITE_RATIO, &ratio);
 
@@ -1093,47 +1097,82 @@ err_t gui_themes_gui_image(gui_s* gui, const char* name, guiImage_s** ptrimg){
 		gui_themes_int_set(name, GUI_THEME_COMPOSITE_SRC_W, &sw);
 		gui_themes_int_set(name, GUI_THEME_COMPOSITE_SRC_H, &sh);
 
-		img = gui_image_load(color, image, sw != -1 ? sw : (int)gui->surface->img->w, sh != -1 ? sh : (int)gui->surface->img->h, flags, ratio);
+		img = gui_layer_load(color, image, sw != -1 ? sw : (int)gui->surface->img->w, sh != -1 ? sh : (int)gui->surface->img->h, flags, ratio);
 		if( !img ) err_fail("gui image new");
 		if( sx != -1 ) img->src.x = sx;
 		if( sy != -1 ) img->src.y = sy;
 		if( dx != -1 ) img->pos.x = dx;
 		if( dy != -1 ) img->pos.y = dy;
 	}
+	else if( colorset ){
+		img = gui_layer_color_new(color, dw != -1 ? dw : (int)gui->surface->img->w, dh != -1 ? dh : (int)gui->surface->img->h, flags);
+	}
 	else{
-		img = gui_image_color_new(color, dw != -1 ? dw : (int)gui->surface->img->w, dh != -1 ? dh : (int)gui->surface->img->h, flags);
+		img = *ptrimg;
+		if( !img ) return -1;
+		if( flags & GUI_LAYER_FLAGS_ALPHA ){
+			img->flags |= GUI_LAYER_FLAGS_ALPHA;
+		}
+		else{
+			img->flags &= ~GUI_LAYER_FLAGS_ALPHA;
+		}
+		gui_themes_uint_set(name, GUI_THEME_COMPOSITE_SRC_X, &img->src.x);
+		gui_themes_uint_set(name, GUI_THEME_COMPOSITE_SRC_Y, &img->src.y);
+		gui_themes_uint_set(name, GUI_THEME_COMPOSITE_SRC_W, &img->src.w);
+		gui_themes_uint_set(name, GUI_THEME_COMPOSITE_SRC_H, &img->src.h);
+		if( dx != -1 ) img->pos.x = dx;
+		if( dy != -1 ) img->pos.y = dy;
+		if( dw != -1 ) img->pos.w = dw;
+		if( dh != -1 ) img->pos.h = dh;
+		
+		int vb = 0;
+		if( gui_themes_bool_set(name, GUI_THEME_COMPOSITE_PLAY, &vb) ){
+			if( vb ) img->flags |= GUI_LAYER_FLAGS_PLAY;
+			else  img->flags &= ~GUI_LAYER_FLAGS_PLAY;
+		}
+
+		if( gui_themes_bool_set(name, GUI_THEME_COMPOSITE_LOOP, &vb) ){
+			if( vb ) img->flags |= GUI_LAYER_FLAGS_LOOP;
+			else  img->flags &= ~GUI_LAYER_FLAGS_LOOP;
+		}
+
+		if( perenable ){
+			gui_layer_perc_set(img, px, py, pw, ph);
+			gui_layer_resize(gui, img, img->src.w, img->src.h, -1);
+		}
+		return 0;
 	}
 	if( !img ) return -1;
 
 	if( perenable ){
-		gui_image_perc_set(img, px, py, pw, ph);
-		gui_image_resize(gui, img, img->src.w, img->src.h, -1);
+		gui_layer_perc_set(img, px, py, pw, ph);
+		gui_layer_resize(gui, img, img->src.w, img->src.h, -1);
 	}
 
 	if( *ptrimg ){
-		gui_image_free(*ptrimg);
+		gui_layer_free(*ptrimg);
 	}
 	*ptrimg = img;
 	return 0;
 }
 
-void gui_themes_composite(gui_s* gui, const char* name, const char* compname){
-	guiImage_s* img = NULL;
+void gui_themes_composite(gui_s* gui, guiComposite_s* cmp,  const char* name, const char* compname){
+	guiLayer_s* img = NULL;
 
 	dbg_info("name:%s composite:%s",name,compname);
 
-	vector_foreach(gui->img->img, i){
+	vector_foreach(cmp->layers, i){
 		__mem_free char* cname = str_printf("%s.%s.%lu", name, compname, i);
 		dbg_info("composite name:%s",cname);
-		if( gui_themes_gui_image(gui, cname, &gui->img->img[i]) ) return;
+		if( gui_themes_layer(gui, cname, &cmp->layers[i]) ) return;
 	}
 	
-	for( size_t i = vector_count(gui->img->img); i < UINT32_MAX; ++i ){
-		guiImage_s* newimg = NULL;
+	for( size_t i = vector_count(cmp->layers); i < UINT32_MAX; ++i ){
+		guiLayer_s* newimg = NULL;
 		__mem_free char* cname = str_printf("%s.%s.%lu", name, compname, i);
 		dbg_info("composite new name:%s",cname);
-		if( gui_themes_gui_image(gui, cname, &img) ) return;
-		gui_composite_add(gui->img, newimg);
+		if( gui_themes_layer(gui, cname, &img) ) return;
+		gui_composite_add(cmp, newimg);
 	}
 }
 
@@ -1171,7 +1210,8 @@ void gui_themes(gui_s* gui, const char* appName){
 		gui_resize(gui, position.w, position.h);
 	}
 
-	gui_themes_composite(gui, name, GUI_THEME_COMPOSITE);	
+	gui_themes_composite(gui, gui->scene.background, name, GUI_THEME_COMPOSITE_BACKGROUND);
+	gui_themes_composite(gui, gui->scene.postproduction, name, GUI_THEME_COMPOSITE_POST);
 
 	if( gui->themes ){
 		xorgEvent_s ev;
@@ -1185,8 +1225,8 @@ void gui_themes(gui_s* gui, const char* appName){
 	int vbool;
 	if( !gui_themes_bool_set(name, GUI_THEME_SUPERSAMPLING, &vbool) && vbool ){
 		gui_composite_add(
-			gui->img, 
-			gui_image_fn_new(
+			gui->scene.postproduction, 
+			gui_layer_fn_new(
 				gui_background_supersampling_fn,
 				NULL,
 				NULL,
@@ -1199,7 +1239,7 @@ void gui_themes(gui_s* gui, const char* appName){
 	if( !gui_themes_uint_set(name, GUI_THEME_ROUND, &round) && round > 0 ){
 		guiRound_s* gr = mem_new(guiRound_s);
 		gr->radius = round;
-		guiImageFN_f fn;
+		guiLayerFN_f fn;
 		if( gui->parent ){
 			gr->border = gui->bordersize;
 			fn = gui_background_round_fn;
@@ -1211,8 +1251,8 @@ void gui_themes(gui_s* gui, const char* appName){
 		gui_border(gui, 0);
 
 		gui_composite_add(
-			gui->img, 
-			gui_image_fn_new(
+			gui->scene.postproduction, 
+			gui_layer_fn_new(
 				fn,
 				gr,
 				free,

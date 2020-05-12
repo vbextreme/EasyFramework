@@ -4,7 +4,7 @@
 #include <ef/str.h>
 #include <ef/err.h>
 
-guiButton_s* gui_button_new(guiCaption_s* caption, guiImage_s* press, guiImage_s* hover, guiEvent_f onclick, int flags){
+guiButton_s* gui_button_new(guiCaption_s* caption, guiComposite_s* press, guiComposite_s* hover, guiEvent_f onclick, int flags){
 	if( !caption ) return NULL;
 	guiButton_s* btn = mem_new(guiButton_s);
 	if( !btn ) err_fail("eom");
@@ -32,9 +32,8 @@ gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn){
 	gui->move = gui_button_event_move;
 	gui->themes = gui_button_event_themes;
 	
-	btn->compindex = vector_count(gui->img->img)-1;
-	btn->state[GUI_BUTTON_STATE_NORMAL] = gui->img->img[btn->compindex];
-	gui_composite_add(gui->img, btn->caption->render);
+	btn->state[GUI_BUTTON_STATE_NORMAL] = gui->scene.background;
+	gui_composite_add(gui->scene.postproduction, btn->caption->render);
 	
 	return gui;
 ERR:
@@ -46,8 +45,8 @@ ERR:
 
 void gui_button_free(guiButton_s* btn){
 	gui_caption_free(btn->caption);
-	gui_image_free(btn->state[1]);
-	gui_image_free(btn->state[2]);
+	gui_composite_free(btn->state[1]);
+	gui_composite_free(btn->state[2]);
 	free(btn);
 }
 
@@ -62,15 +61,15 @@ void gui_button_redraw(gui_s* gui, unsigned normalPressHover){
 	guiButton_s* btn = gui->control;
 	gui_caption_render(gui, btn->caption);
 	if( normalPressHover < GUI_BUTTON_STATE_COUNT){
-		gui->img->img[btn->compindex] = btn->state[normalPressHover];
+		gui->scene.background = btn->state[normalPressHover];
 	}
-	gui_composite_redraw(gui, gui->img);
+	gui_event_redraw(gui, NULL);
 }
 
 int gui_button_event_free(gui_s* gui, __unused xorgEvent_s* ev){
 	iassert(gui->type == GUI_TYPE_BUTTON);
 	guiButton_s* btn = gui->control;
-	gui->img->img[btn->compindex] = btn->state[GUI_BUTTON_STATE_NORMAL];
+	gui->scene.background = btn->state[GUI_BUTTON_STATE_NORMAL];
 	gui_button_free(gui->control);
 	return 0;
 }
@@ -143,14 +142,14 @@ int gui_button_event_move(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_BUTTON);
 	guiButton_s* btn = gui->control;
 	dbg_info("button.move:%s %u*%u", gui->name, event->move.w, event->move.h);
-	if( gui->img->img[btn->compindex] != btn->state[0] ){
-		gui_image_resize(gui, btn->state[0], event->move.w, event->move.h , -1);
+	if( gui->scene.background != btn->state[0] ){
+		gui_composite_resize(gui, btn->state[0], event->move.w, event->move.h);
 	}
-	if( gui->img->img[btn->compindex] != btn->state[1] ){
-		gui_image_resize(gui, btn->state[1], event->move.w, event->move.h , -1);
+	if( gui->scene.background != btn->state[1] ){
+		gui_composite_resize(gui, btn->state[1], event->move.w, event->move.h);
 	}
-	if( gui->img->img[btn->compindex] != btn->state[2] ){
-		gui_image_resize(gui, btn->state[2], event->move.w, event->move.h , -1);
+	if( gui->scene.background != btn->state[2] ){
+		gui_composite_resize(gui, btn->state[2], event->move.w, event->move.h);
 	}
 	btn->caption->flags |= GUI_CAPTION_RENDERING;
 	gui_event_move(gui, event);
@@ -165,26 +164,13 @@ int gui_button_event_themes(gui_s* gui, xorgEvent_s* ev){
 	gui_caption_themes(gui, btn->caption, name);
 
 	int vbool;
-	if( gui_themes_bool_set(name, GUI_THEMES_BUTTON_HOVER, &vbool) ){
+	if( gui_themes_bool_set(name, GUI_THEME_BUTTON_HOVER_ENABLE, &vbool) ){
 		if( vbool ) btn->flags |= GUI_BUTTON_FLAGS_HOVER;
 		else        btn->flags &= ~GUI_BUTTON_FLAGS_HOVER;
 	}
 
-	char* iname = str_printf("%s.%s", name, GUI_THEME_BUTTON_PRESS);
-	gui_themes_gui_image(gui, iname, &btn->state[GUI_BUTTON_STATE_PRESS]);
-	free(iname);
-
-	iname = str_printf("%s.%s", name, GUI_THEME_BUTTON_HOVER);
-	gui_themes_gui_image(gui, iname, &btn->state[GUI_BUTTON_STATE_HOVER]);
-	free(iname);
-
-	if( gui->img->img[btn->compindex+1] != btn->caption->render ){
-		gui_caption_render_new(btn->caption);
-		gui_composite_add(gui->img, btn->caption->render);
-	}
-
-	btn->compindex = vector_count(gui->img->img) - 2;
-	btn->state[GUI_BUTTON_STATE_NORMAL] = gui->img->img[btn->compindex];
+	gui_themes_composite(gui, btn->state[GUI_BUTTON_STATE_PRESS], name, GUI_THEME_BUTTON_PRESS);
+	gui_themes_composite(gui, btn->state[GUI_BUTTON_STATE_HOVER], name, GUI_THEME_BUTTON_HOVER);
 
 	return 0;
 }

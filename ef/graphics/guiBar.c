@@ -4,7 +4,7 @@
 #include <ef/err.h>
 #include <ef/guiResources.h>
 
-guiBar_s* gui_bar_new(guiCaption_s* caption, guiImage_s* fill, double min, double max, double start, unsigned flags){
+guiBar_s* gui_bar_new(guiCaption_s* caption, guiLayer_s* fill, double min, double max, double start, unsigned flags){
 	if( !caption ) return NULL;
 	guiBar_s* bar = mem_new(guiBar_s);
 	if( !bar ) return NULL;
@@ -29,8 +29,8 @@ gui_s* gui_bar_attach(gui_s* gui, guiBar_s* bar){
 	gui->free = gui_bar_event_free;
 	gui->move = gui_bar_event_move;
 	gui->themes = gui_bar_event_themes;
-	gui_composite_add(gui->img, bar->fill);
-	gui_composite_add(gui->img, bar->caption->render);
+	gui_composite_add(gui->scene.postproduction, bar->fill);
+	gui_composite_add(gui->scene.postproduction, bar->caption->render);
 	return gui;
 ERR:
 	if( bar ) gui_bar_free(bar);
@@ -109,7 +109,7 @@ __private void bar_vert(gui_s* gui){
 	bar->fill->src = bar->fill->pos;
 }
 
-void gui_bar_circle_fn(gui_s* gui, __unused guiImage_s** img, void* generic){
+void gui_bar_circle_fn(gui_s* gui, __unused guiLayer_s** img, void* generic){
 	iassert(gui->type == GUI_TYPE_BAR);
 	g2dColor_t* color = generic;
 	guiBar_s* bar = gui->control;
@@ -176,24 +176,24 @@ double gui_bar_min(gui_s* gui){
 	return bar->min;
 }
 
-void gui_bar_mode_horizontal(gui_s* gui, guiImage_s* fill){
+void gui_bar_mode_horizontal(gui_s* gui, guiLayer_s* fill){
 	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = gui->control;
 	bar->flags &= ~(GUI_BAR_CIRCLE | GUI_BAR_VERTICAL);
 	bar->flags |= GUI_BAR_HORIZONTAL;
 	if( fill ){
-		if( bar->fill ) gui_image_free(bar->fill);
+		gui_composite_replace(gui->scene.postproduction, bar->fill, fill);
 		bar->fill = fill;
 	}
 }
 
-void gui_bar_mode_vertical(gui_s* gui, guiImage_s* fill){
+void gui_bar_mode_vertical(gui_s* gui, guiLayer_s* fill){
 	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = gui->control;
 	bar->flags &= ~(GUI_BAR_CIRCLE | GUI_BAR_HORIZONTAL);
 	bar->flags |= GUI_BAR_HORIZONTAL;
 	if( fill ){
-		if( bar->fill ) gui_image_free(bar->fill);
+		gui_composite_replace(gui->scene.postproduction, bar->fill, fill);
 		bar->fill = fill;
 	}
 }
@@ -203,21 +203,18 @@ void gui_bar_mode_circle(gui_s* gui, g2dColor_t color){
 	guiBar_s* bar = gui->control;
 	bar->flags &= ~(GUI_BAR_VERTICAL | GUI_BAR_HORIZONTAL);
 	bar->flags |= GUI_BAR_CIRCLE;
-	gui_image_free(bar->fill);
 
 	g2dColor_t* col = mem_new(g2dColor_t);
 	*col = color;
-	bar->fill = gui_image_fn_new(gui_bar_circle_fn, col, free, gui->surface->img->w, gui->surface->img->h, 0);
-
-	bar->flags &= ~(GUI_BAR_CIRCLE | GUI_BAR_VERTICAL);
-	bar->flags |= GUI_BAR_HORIZONTAL;
+	guiLayer_s* fill = gui_layer_fn_new(gui_bar_circle_fn, col, free, gui->surface->img->w, gui->surface->img->h, 0);
+	gui_composite_replace(gui->scene.postproduction, bar->fill, fill);
 }
 
 void gui_bar_redraw(gui_s* gui){
 	iassert(gui->type == GUI_TYPE_BAR);
 	guiBar_s* bar = gui->control;
 	gui_caption_render(gui, bar->caption);
-	gui_composite_redraw(gui, gui->img);
+	gui_event_redraw(gui, NULL);
 }
 
 int gui_bar_event_free(gui_s* gui, __unused xorgEvent_s* ev){
@@ -247,29 +244,25 @@ int gui_bar_event_themes(gui_s* gui, xorgEvent_s* ev){
 
 	gui_caption_themes(gui, bar->caption, name);
 
-	gui_themes_gui_image(gui, name, &bar->fill);
+	__mem_free char* bfname = str_printf("%s.%s", name, GUI_THEME_BAR_FILL);
+	gui_themes_layer(gui, bfname, &bar->fill);
 
-	__mem_free char* desc = gui_themes_string(name, GUI_THEMES_BAR_DESCRIPT);
-	__mem_free char* cdes = gui_themes_string(name, GUI_THEMES_BAR_CUR_DESCRIPT);
+	__mem_free char* desc = gui_themes_string(name, GUI_THEME_BAR_DESCRIPT);
+	__mem_free char* cdes = gui_themes_string(name, GUI_THEME_BAR_CUR_DESCRIPT);
 	gui_bar_text_set(gui, U8(desc), U8(cdes));
 
-	__mem_free char* mode = gui_themes_string(ev->data.data, GUI_THEMES_BAR_MODE);
+	__mem_free char* mode = gui_themes_string(ev->data.data, GUI_THEME_BAR_MODE);
 	if( mode ){
 		if( !strcmp(mode, "horizontal") ){
-		   	bar->flags &= ~(GUI_BAR_CIRCLE | GUI_BAR_VERTICAL);
-			bar->flags |= GUI_BAR_HORIZONTAL;
+		   	gui_bar_mode_horizontal(gui, NULL);
 		}
 		else if( !strcmp(mode, "vertical") ){
-			bar->flags &= ~(GUI_BAR_CIRCLE | GUI_BAR_HORIZONTAL);
-			bar->flags |= GUI_BAR_VERTICAL;
+			gui_bar_mode_vertical(gui, NULL);
 		}
 		else if( !strcmp(mode, "circle") ){
-			bar->flags &= ~(GUI_BAR_VERTICAL | GUI_BAR_HORIZONTAL);
-			bar->flags |= GUI_BAR_CIRCLE;
-			g2dColor_t* color = mem_new(g2dColor_t);
-			gui_themes_uint_set(name, GUI_THEMES_BAR_COLOR, color);
-			gui_image_free(bar->fill);
-			bar->fill = gui_image_fn_new(gui_bar_circle_fn, color, free, gui->surface->img->w, gui->surface->img->h, 0);
+			g2dColor_t color;
+			gui_themes_uint_set(name, GUI_THEME_BAR_COLOR, &color);
+			gui_bar_mode_circle(gui, color);
 		}
 	}
 

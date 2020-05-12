@@ -34,7 +34,7 @@
 #define GUI_THEME_TEXT_SCROLL_Y     "text.scroll.y"
 
 typedef struct guiText{
-	guiImage_s* render;
+	guiLayer_s* render;
 	g2dPoint_s scroll;
 	g2dCoord_s cursor;
 	int cursorOffsetX;
@@ -154,7 +154,7 @@ void gui_text_cursor_pagup(gui_s* gui);
 void gui_text_cursor_on_position(gui_s* gui, unsigned x, unsigned y);
 
 /** render cursor*/
-void gui_text_render_cursor(gui_s* gui, __unused guiImage_s** img, __unused void* ud);
+void gui_text_render_cursor(gui_s* gui, __unused guiLayer_s** img, __unused void* ud);
 
 /** render text*/
 void gui_text_render_text(gui_s* gui, int partial);

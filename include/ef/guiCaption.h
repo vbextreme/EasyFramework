@@ -8,14 +8,16 @@
 #define GUI_CAPTION_CENTER_Y  0x04
 #define GUI_CAPTION_AUTOWRAP  0x08
 
-#define GUI_THEME_CAPTION                 "caption"
-#define GUI_THEME_CAPTION_AUTOWRAP        "caption.autowrap"
-#define GUI_THEME_CAPTION_CENTER_X        "caption.center.x"
-#define GUI_THEME_CAPTION_CENTER_Y        "caption.center.y"
-#define GUI_THEME_FOREGROUND              "foreground"
+#define GUI_THEME_CAPTION          "caption"
+#define GUI_THEME_CAPTION_AUTOWRAP "caption.autowrap"
+#define GUI_THEME_CAPTION_CENTER_X "caption.center.x"
+#define GUI_THEME_CAPTION_CENTER_Y "caption.center.y"
+#define GUI_THEME_CAPTION_X        "caption.x"
+#define GUI_THEME_CAPTION_Y        "caption.y"
+#define GUI_THEME_FOREGROUND       "foreground"
 
 typedef struct guiCaption{
-	guiImage_s* render;
+	guiLayer_s* render;
 	unsigned flags;
 	g2dPoint_s scroll;
 	utf8_t* text;
@@ -30,8 +32,6 @@ guiCaption_s* gui_caption_new(ftFonts_s* font, g2dColor_t foreground, unsigned f
 
 /** label free*/
 void gui_caption_free(guiCaption_s* lbl);
-
-void gui_caption_render_new(guiCaption_s* cap);
 
 /** caption set caption*/
 void gui_caption_text_set(gui_s* gui, guiCaption_s* cap, const utf8_t* text);
