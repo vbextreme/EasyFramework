@@ -15,6 +15,7 @@
 #define GUI_OPTION_FLAGS_HOVER         0x04
 #define GUI_OPTION_FLAGS_HOVER_ENABLE  0x08
 
+#define GUI_THEME_OPTION_OFF       "option.off"
 #define GUI_THEME_OPTION_ON        "option.on"
 #define GUI_THEME_OPTION_HOVER_ON  "option.hover.on"
 #define GUI_THEME_OPTION_HOVER_OFF "option.hover.off"

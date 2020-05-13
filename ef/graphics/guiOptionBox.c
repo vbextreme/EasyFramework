@@ -218,6 +218,7 @@ int gui_option_event_themes(gui_s* gui, xorgEvent_s* ev){
 		else        opt->flags &= ~GUI_OPTION_FLAGS_HOVER_ENABLE;
 	}
 
+	gui_themes_composite(gui, opt->state[GUI_OPTION_STATE_OFF], name, GUI_THEME_OPTION_OFF);
 	gui_themes_composite(gui, opt->state[GUI_OPTION_STATE_ON], name, GUI_THEME_OPTION_ON);
 	gui_themes_composite(gui, opt->state[GUI_OPTION_STATE_HOVER_ON], name, GUI_THEME_OPTION_HOVER_ON);
 	gui_themes_composite(gui, opt->state[GUI_OPTION_STATE_HOVER_OFF], name, GUI_THEME_OPTION_HOVER_OFF);

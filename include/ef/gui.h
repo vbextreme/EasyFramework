@@ -215,6 +215,10 @@ ssize_t gui_id(gui_s* gui);
 /** get gui from name and class*/
 gui_s* gui_by_name(gui_s* gui, const char* name, const char* class);
 
+void gui_focus_store(void);
+
+void gui_focus_restore(void);
+
 /** check if gui have focus*/
 int gui_focus_have(gui_s* gui);
 

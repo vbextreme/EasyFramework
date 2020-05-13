@@ -11,6 +11,9 @@
  *			option
  *			round
  *			simple
+ *			composite layers
+ *			msgbox
+ *
  *		g2d:
  *			arc
  *			supersampling
@@ -29,11 +32,9 @@
  *			change qmessages
  *
  * ??? 
- *		guiImage resize in %
  *		calendar
  *		combobox
  *		tinybutton
- *		msgbox
 */
 
 

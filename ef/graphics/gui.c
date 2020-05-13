@@ -37,6 +37,7 @@ __private xorg_s* X;
 __private phq_s* timergui;
 __private deadpoll_s* dpgui;
 __private gui_s* focused;
+__private gui_s* storedFocus;
 __private guiInternalFocusEvent_s* vgife;
 __private const char* oldlocale;
 
@@ -316,18 +317,27 @@ gui_s* gui_by_name(gui_s* gui, const char* name, const char* class){
 	return NULL;
 }
 
+void gui_focus_store(void){
+	storedFocus = focused;
+}
+
+void gui_focus_restore(void){
+	gui_focus(storedFocus);
+}
+
 int gui_focus_have(gui_s* gui){
 	return gui == focused;
 }
 
 void gui_focus(gui_s* gui){
-	dbg_info("set focus: %s", gui->name);
+	dbg_error("set focus: %s", gui->name);
 	focused = gui;
 	gui_internal_focus_event();
 	xorg_win_focus(X, gui->id);
 }
 
 gui_s* gui_focus_next(gui_s* gui){
+	dbg_info("next focus");
 	gui_s* parent = gui->parent;
 	if( !parent ){
 		dbg_warning("no parent");
@@ -348,6 +358,7 @@ gui_s* gui_focus_next(gui_s* gui){
 }
 
 gui_s* gui_focus_prev(gui_s* gui){
+	dbg_info("prev focus");
 	gui_s* parent = gui->parent;
 	if( !parent ){
 		dbg_error("no parent");
@@ -466,8 +477,8 @@ void gui_remove_decoration(gui_s* gui){
 }
 
 int gui_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
-	if( gui->scene.background ) gui_composite_redraw(gui, gui->scene.background);
-	if( gui->scene.postproduction ) gui_composite_redraw(gui, gui->scene.postproduction);
+	gui_composite_redraw(gui, gui->scene.background);
+	gui_composite_redraw(gui, gui->scene.postproduction);
 	return 0;
 }
 
@@ -478,8 +489,10 @@ int gui_event_draw(gui_s* gui, __unused xorgEvent_s* evdamage){
 
 int gui_event_focus(__unused gui_s* gui, xorgEvent_s* event){
 	if( event->focus.outin){
-		if( focused )
+		if( focused ){
+			dbg_info("from event");
 			gui_focus(focused);
+		}
 	}
 	return 0;
 }
@@ -1058,8 +1071,12 @@ err_t gui_themes_layer(gui_s* gui, const char* name, guiLayer_s** ptrimg){
 		}
 	}
 
-	gui_themes_bool_set(name, GUI_THEME_COMPOSITE_ALPHA, &alpha);
-	flags = alpha ? GUI_LAYER_FLAGS_ALPHA : 0;
+	if( !gui_themes_bool_set(name, GUI_THEME_COMPOSITE_ALPHA, &alpha) ){
+		flags = alpha ? GUI_LAYER_FLAGS_ALPHA : 0;
+	}
+	else{
+		flags = *ptrimg ? (*ptrimg)->flags : 0;
+	}
 
 	gui_themes_int_set(name, GUI_THEME_COMPOSITE_DEST_X, &dx);
 	gui_themes_int_set(name, GUI_THEME_COMPOSITE_DEST_Y, &dy);
@@ -1109,7 +1126,9 @@ err_t gui_themes_layer(gui_s* gui, const char* name, guiLayer_s** ptrimg){
 	}
 	else{
 		img = *ptrimg;
-		if( !img ) return -1;
+		if( !img ){
+			return -1;
+		}
 		if( flags & GUI_LAYER_FLAGS_ALPHA ){
 			img->flags |= GUI_LAYER_FLAGS_ALPHA;
 		}
@@ -1157,21 +1176,19 @@ err_t gui_themes_layer(gui_s* gui, const char* name, guiLayer_s** ptrimg){
 }
 
 void gui_themes_composite(gui_s* gui, guiComposite_s* cmp,  const char* name, const char* compname){
-	guiLayer_s* img = NULL;
-
 	dbg_info("name:%s composite:%s",name,compname);
 
 	vector_foreach(cmp->layers, i){
 		__mem_free char* cname = str_printf("%s.%s.%lu", name, compname, i);
-		dbg_info("composite name:%s",cname);
+		dbg_info("composite(%lu) name:%s",i,cname);
 		if( gui_themes_layer(gui, cname, &cmp->layers[i]) ) return;
 	}
 	
 	for( size_t i = vector_count(cmp->layers); i < UINT32_MAX; ++i ){
 		guiLayer_s* newimg = NULL;
 		__mem_free char* cname = str_printf("%s.%s.%lu", name, compname, i);
-		dbg_info("composite new name:%s",cname);
-		if( gui_themes_layer(gui, cname, &img) ) return;
+		dbg_info("composite(%lu) new name:%s", i, cname);
+		if( gui_themes_layer(gui, cname, &newimg) ) return;
 		gui_composite_add(cmp, newimg);
 	}
 }

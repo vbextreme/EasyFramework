@@ -136,7 +136,7 @@ guiLayer_s* gui_layer_new(g2dColor_t color, const char* pathRelative, unsigned w
 	}
 
 	img->res = path_resolve(pathRelative);
-	dbg_error("path:%s",img->res);
+	dbg_info("path:%s",img->res);
 	if( !file_exists(img->res) ){
 		dbg_error("file not exists");
 		return gui_layer_color_set(img, color, width, height);
