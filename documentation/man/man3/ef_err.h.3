@@ -1,4 +1,4 @@
-.TH "include/ef/err.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/err.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -93,12 +93,12 @@ include/ef/err.h
 .SS "#define ERR_ENABLED   0x01"
 
 .PP
-Definition at line 18 of file err\&.h\&.
+Definition at line 19 of file err\&.h\&.
 .SS "#define err_fail(F, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
 .nf
- do{\
+  do{\
     if( gerr\&.descript && (gerr\&.flags & ERR_ENABLED) ){\
         err_pushf("fail %s->%s(%u):: ", __FILE__, __FUNCTION__, __LINE__);\
         err_pushf(F, ## arg);\
@@ -110,7 +110,7 @@ Definition at line 18 of file err\&.h\&.
 .fi
 push error, print and exit 
 .PP
-Definition at line 57 of file err\&.h\&.
+Definition at line 58 of file err\&.h\&.
 .SS "#define err_push(F, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -125,7 +125,7 @@ Definition at line 57 of file err\&.h\&.
 .fi
 push new error descript, call err_pushf with 'error: your error nl' 
 .PP
-Definition at line 39 of file err\&.h\&.
+Definition at line 40 of file err\&.h\&.
 .SS "#define err_pushno(F, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -140,15 +140,15 @@ Definition at line 39 of file err\&.h\&.
 .fi
 push new error with errno descript, call err_pushf with 'error: your error nl errno(N): descript nl' 
 .PP
-Definition at line 48 of file err\&.h\&.
+Definition at line 49 of file err\&.h\&.
 .SS "#define ERR_REALLOC   32"
 
 .PP
-Definition at line 17 of file err\&.h\&.
+Definition at line 18 of file err\&.h\&.
 .SS "#define ERR_RESTORE_STACK_SIZE   32"
 
 .PP
-Definition at line 19 of file err\&.h\&.
+Definition at line 20 of file err\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBeerr\fP \fBeerr_s\fP"

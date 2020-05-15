@@ -1,0 +1,129 @@
+.TH "guiLayer" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+guiLayer
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <guiImage\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "char * \fBres\fP"
+.br
+.ti -1c
+.RI "union {"
+.br
+.ti -1c
+.RI "   \fBg2dColor_t\fP \fBcolor\fP"
+.br
+.ti -1c
+.RI "   \fBg2dImage_s\fP * \fBimg\fP"
+.br
+.ti -1c
+.RI "   \fBgif_s\fP * \fBgif\fP"
+.br
+.ti -1c
+.RI "   \fBmedia_s\fP * \fBvideo\fP"
+.br
+.ti -1c
+.RI "   \fBguiLayerFN_f\fP \fBfn\fP"
+.br
+.ti -1c
+.RI "}; "
+.br
+.ti -1c
+.RI "\fBg2dCoord_s\fP \fBpos\fP"
+.br
+.ti -1c
+.RI "\fBg2dCoord_s\fP \fBsrc\fP"
+.br
+.ti -1c
+.RI "\fBguiLayerPercentage_s\fP \fBper\fP"
+.br
+.ti -1c
+.RI "\fBguiLayerType_e\fP \fBtype\fP"
+.br
+.ti -1c
+.RI "void * \fBdata\fP"
+.br
+.ti -1c
+.RI "\fBguiLayerFree_f\fP \fBfree\fP"
+.br
+.ti -1c
+.RI "unsigned \fBframeid\fP"
+.br
+.ti -1c
+.RI "unsigned \fBflags\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 29 of file guiImage\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "union { \&.\&.\&. } "
+
+.SS "\fBg2dColor_t\fP guiLayer::color"
+
+.PP
+Definition at line 32 of file guiImage\&.h\&.
+.SS "void* guiLayer::data"
+
+.PP
+Definition at line 42 of file guiImage\&.h\&.
+.SS "unsigned guiLayer::flags"
+
+.PP
+Definition at line 45 of file guiImage\&.h\&.
+.SS "\fBguiLayerFN_f\fP guiLayer::fn"
+
+.PP
+Definition at line 36 of file guiImage\&.h\&.
+.SS "unsigned guiLayer::frameid"
+
+.PP
+Definition at line 44 of file guiImage\&.h\&.
+.SS "\fBguiLayerFree_f\fP guiLayer::free"
+
+.PP
+Definition at line 43 of file guiImage\&.h\&.
+.SS "\fBgif_s\fP* guiLayer::gif"
+
+.PP
+Definition at line 34 of file guiImage\&.h\&.
+.SS "\fBg2dImage_s\fP* guiLayer::img"
+
+.PP
+Definition at line 33 of file guiImage\&.h\&.
+.SS "\fBguiLayerPercentage_s\fP guiLayer::per"
+
+.PP
+Definition at line 40 of file guiImage\&.h\&.
+.SS "\fBg2dCoord_s\fP guiLayer::pos"
+
+.PP
+Definition at line 38 of file guiImage\&.h\&.
+.SS "char* guiLayer::res"
+
+.PP
+Definition at line 30 of file guiImage\&.h\&.
+.SS "\fBg2dCoord_s\fP guiLayer::src"
+
+.PP
+Definition at line 39 of file guiImage\&.h\&.
+.SS "\fBguiLayerType_e\fP guiLayer::type"
+
+.PP
+Definition at line 41 of file guiImage\&.h\&.
+.SS "\fBmedia_s\fP* guiLayer::video"
+
+.PP
+Definition at line 35 of file guiImage\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

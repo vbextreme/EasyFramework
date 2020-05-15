@@ -1,4 +1,4 @@
-.TH "gui" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "gui" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -39,16 +39,16 @@ gui
 .RI "int \fBfocusable\fP"
 .br
 .ti -1c
-.RI "int \fBchildFocus\fP"
-.br
-.ti -1c
 .RI "int \fBbordersize\fP"
 .br
 .ti -1c
 .RI "int \fBbordersizefocused\fP"
 .br
 .ti -1c
-.RI "int \fBgenericSize\fP"
+.RI "int \fBvisible\fP"
+.br
+.ti -1c
+.RI "\fBg2dColor_t\fP \fBborderColor\fP"
 .br
 .ti -1c
 .RI "\fBxorgSurface_s\fP * \fBsurface\fP"
@@ -57,7 +57,10 @@ gui
 .RI "\fBguiPosition_s\fP \fBposition\fP"
 .br
 .ti -1c
-.RI "\fBguiBackground_s\fP ** \fBbackground\fP"
+.RI "\fBguiScene_s\fP \fBscene\fP"
+.br
+.ti -1c
+.RI "\fBguiMargin_s\fP \fBuserMargin\fP"
 .br
 .ti -1c
 .RI "\fBguiEvent_f\fP \fBcreate\fP"
@@ -98,128 +101,139 @@ gui
 .ti -1c
 .RI "\fBguiEvent_f\fP \fBclipboard\fP"
 .br
+.ti -1c
+.RI "\fBguiEvent_f\fP \fBthemes\fP"
+.br
 .in -1c
 .SH "Detailed Description"
 .PP 
-Definition at line 79 of file gui\&.h\&.
+Definition at line 114 of file gui\&.h\&.
 .SH "Field Documentation"
 .PP 
 .SS "\fBguiEvent_f\fP gui::atom"
 
 .PP
-Definition at line 109 of file gui\&.h\&.
-.SS "\fBguiBackground_s\fP** gui::background"
+Definition at line 146 of file gui\&.h\&.
+.SS "\fBg2dColor_t\fP gui::borderColor"
 
 .PP
-Definition at line 97 of file gui\&.h\&.
+Definition at line 129 of file gui\&.h\&.
 .SS "int gui::bordersize"
 
 .PP
-Definition at line 91 of file gui\&.h\&.
+Definition at line 126 of file gui\&.h\&.
 .SS "int gui::bordersizefocused"
 
 .PP
-Definition at line 92 of file gui\&.h\&.
-.SS "int gui::childFocus"
-
-.PP
-Definition at line 90 of file gui\&.h\&.
+Definition at line 127 of file gui\&.h\&.
 .SS "struct \fBgui\fP** gui::childs"
 
 .PP
-Definition at line 83 of file gui\&.h\&.
+Definition at line 118 of file gui\&.h\&.
 .SS "char* gui::class"
 
 .PP
-Definition at line 81 of file gui\&.h\&.
+Definition at line 116 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::client"
 
 .PP
-Definition at line 110 of file gui\&.h\&.
+Definition at line 147 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::clipboard"
 
 .PP
-Definition at line 111 of file gui\&.h\&.
+Definition at line 148 of file gui\&.h\&.
 .SS "void* gui::control"
 
 .PP
-Definition at line 84 of file gui\&.h\&.
+Definition at line 120 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::create"
 
 .PP
-Definition at line 99 of file gui\&.h\&.
+Definition at line 136 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::destroy"
 
 .PP
-Definition at line 100 of file gui\&.h\&.
+Definition at line 137 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::draw"
 
 .PP
-Definition at line 103 of file gui\&.h\&.
+Definition at line 140 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::focus"
 
 .PP
-Definition at line 106 of file gui\&.h\&.
+Definition at line 143 of file gui\&.h\&.
 .SS "int gui::focusable"
 
 .PP
-Definition at line 89 of file gui\&.h\&.
+Definition at line 125 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::free"
 
 .PP
-Definition at line 101 of file gui\&.h\&.
-.SS "int gui::genericSize"
-
-.PP
-Definition at line 93 of file gui\&.h\&.
+Definition at line 138 of file gui\&.h\&.
 .SS "xcb_window_t gui::id"
 
 .PP
-Definition at line 88 of file gui\&.h\&.
+Definition at line 124 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::key"
 
 .PP
-Definition at line 104 of file gui\&.h\&.
+Definition at line 141 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::map"
 
 .PP
-Definition at line 107 of file gui\&.h\&.
+Definition at line 144 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::mouse"
 
 .PP
-Definition at line 105 of file gui\&.h\&.
+Definition at line 142 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::move"
 
 .PP
-Definition at line 108 of file gui\&.h\&.
+Definition at line 145 of file gui\&.h\&.
 .SS "char* gui::name"
 
 .PP
-Definition at line 80 of file gui\&.h\&.
+Definition at line 115 of file gui\&.h\&.
 .SS "struct \fBgui\fP* gui::parent"
 
 .PP
-Definition at line 82 of file gui\&.h\&.
+Definition at line 117 of file gui\&.h\&.
 .SS "\fBguiPosition_s\fP gui::position"
 
 .PP
-Definition at line 96 of file gui\&.h\&.
+Definition at line 132 of file gui\&.h\&.
 .SS "\fBguiEvent_f\fP gui::redraw"
 
 .PP
-Definition at line 102 of file gui\&.h\&.
+Definition at line 139 of file gui\&.h\&.
+.SS "\fBguiScene_s\fP gui::scene"
+
+.PP
+Definition at line 133 of file gui\&.h\&.
 .SS "\fBxorgSurface_s\fP* gui::surface"
 
 .PP
-Definition at line 95 of file gui\&.h\&.
+Definition at line 131 of file gui\&.h\&.
+.SS "\fBguiEvent_f\fP gui::themes"
+
+.PP
+Definition at line 149 of file gui\&.h\&.
 .SS "int gui::type"
 
 .PP
-Definition at line 87 of file gui\&.h\&.
+Definition at line 123 of file gui\&.h\&.
 .SS "void* gui::userdata"
 
 .PP
-Definition at line 85 of file gui\&.h\&.
+Definition at line 121 of file gui\&.h\&.
+.SS "\fBguiMargin_s\fP gui::userMargin"
+
+.PP
+Definition at line 134 of file gui\&.h\&.
+.SS "int gui::visible"
+
+.PP
+Definition at line 128 of file gui\&.h\&.
 
 .SH "Author"
 .PP 

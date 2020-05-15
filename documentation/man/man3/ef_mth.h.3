@@ -1,4 +1,4 @@
-.TH "include/ef/mth.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/mth.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -206,7 +206,7 @@ include/ef/mth.h
 .SS "#define _USE_MATH_DEFINES"
 
 .PP
-Definition at line 4 of file mth\&.h\&.
+Definition at line 5 of file mth\&.h\&.
 .SS "#define FAST_BIT_COUNT(B)   __builtin_popcount(B)"
 fast way to count bit 
 .PP
@@ -217,7 +217,7 @@ fast way to count bit
 .PP
 
 .PP
-Definition at line 87 of file mth\&.h\&.
+Definition at line 88 of file mth\&.h\&.
 .SS "#define FAST_MOD_POW_TWO(N, M)   ((N) & ((M) \- 1))"
 fast version to get modulo of pwer of two value 
 .PP
@@ -230,7 +230,7 @@ fast version to get modulo of pwer of two value
 .PP
 
 .PP
-Definition at line 82 of file mth\&.h\&.
+Definition at line 83 of file mth\&.h\&.
 .SS "#define MM_AHPLA(CHANNEL, ALPHA)   ((CHANNEL/2)\-ALPHA)"
 calcolate ahpla 
 .PP
@@ -253,7 +253,7 @@ ahpla value
 .PP
 
 .PP
-Definition at line 103 of file mth\&.h\&.
+Definition at line 104 of file mth\&.h\&.
 .SS "#define MM_ALPHA(CHANNEL, COUNT)   ((CHANNEL)/((COUNT)+1))"
 get alpha value for continuate median 
 .PP
@@ -276,7 +276,7 @@ alpha value
 .PP
 
 .PP
-Definition at line 96 of file mth\&.h\&.
+Definition at line 97 of file mth\&.h\&.
 .SS "#define MM_NEXT(CHANNEL, ALPHA, AHPLA, NEWVAL, OLDVAL)   (((ALPHA)*(NEWVAL)+(AHPLA)*(OLDVAL))/(CHANNEL/2))"
 calcolate next median value 
 .PP
@@ -314,11 +314,11 @@ while(1){
 .PP
 
 .PP
-Definition at line 122 of file mth\&.h\&.
+Definition at line 123 of file mth\&.h\&.
 .SS "#define MTH_2PI   (2\&.0*\fBMTH_PI\fP)"
 PI*2 
 .PP
-Definition at line 13 of file mth\&.h\&.
+Definition at line 14 of file mth\&.h\&.
 .SS "#define MTH_3MAX(A, B, C)   \fBMTH_MAX\fP(\fBMTH_MAX\fP(A,B),C)"
 get max from three numbers 
 .PP
@@ -333,7 +333,7 @@ get max from three numbers
 .PP
 
 .PP
-Definition at line 34 of file mth\&.h\&.
+Definition at line 35 of file mth\&.h\&.
 .SS "#define MTH_3MIN(A, B, C)   \fBMTH_MIN\fP(\fBMTH_MIN\fP(A,B),C)"
 get min from three numbers 
 .PP
@@ -348,15 +348,15 @@ get min from three numbers
 .PP
 
 .PP
-Definition at line 47 of file mth\&.h\&.
+Definition at line 48 of file mth\&.h\&.
 .SS "#define MTH_ANGLE_FULL   360"
 full degree angle 
 .PP
-Definition at line 19 of file mth\&.h\&.
+Definition at line 20 of file mth\&.h\&.
 .SS "#define MTH_DOUBLE_CMP(A, B, R)   ((A) > (B) \- (R) && (A) < (B) + (R))"
 
 .PP
-Definition at line 21 of file mth\&.h\&.
+Definition at line 22 of file mth\&.h\&.
 .SS "#define MTH_MAX(A, B)   ((A>B)?A:B)"
 get max from two numbers 
 .PP
@@ -369,7 +369,7 @@ get max from two numbers
 .PP
 
 .PP
-Definition at line 27 of file mth\&.h\&.
+Definition at line 28 of file mth\&.h\&.
 .SS "#define MTH_MIN(A, B)   ((A<B)?A:B)"
 get min from two numbers 
 .PP
@@ -382,19 +382,19 @@ get min from two numbers
 .PP
 
 .PP
-Definition at line 40 of file mth\&.h\&.
+Definition at line 41 of file mth\&.h\&.
 .SS "#define MTH_PI   M_PI"
 PI 
 .PP
-Definition at line 11 of file mth\&.h\&.
+Definition at line 12 of file mth\&.h\&.
 .SS "#define MTH_RAD   (\fBMTH_PI\fP/180\&.0)"
 radiant 
 .PP
-Definition at line 15 of file mth\&.h\&.
+Definition at line 16 of file mth\&.h\&.
 .SS "#define MTH_SMALL_FLOAT   (1e\-12)"
 small float 
 .PP
-Definition at line 17 of file mth\&.h\&.
+Definition at line 18 of file mth\&.h\&.
 .SS "#define ROUND_DOWN_POW_TWO32(N)"
 \fBValue:\fP
 .PP
@@ -413,7 +413,7 @@ round number to down value as power of two, example 16 is 16, 17 is 16
 .PP
 
 .PP
-Definition at line 73 of file mth\&.h\&.
+Definition at line 74 of file mth\&.h\&.
 .SS "#define ROUND_UP(N, S)   ((((N)+(S)\-1)/(S))*(S))"
 round number to up value 
 .PP
@@ -426,7 +426,7 @@ round number to up value
 .PP
 
 .PP
-Definition at line 53 of file mth\&.h\&.
+Definition at line 54 of file mth\&.h\&.
 .SS "#define ROUND_UP_POW_TWO32(N)"
 \fBValue:\fP
 .PP
@@ -452,7 +452,7 @@ round number to up value as power of two, example 16 is 16, 17 is 32
 .PP
 
 .PP
-Definition at line 58 of file mth\&.h\&.
+Definition at line 59 of file mth\&.h\&.
 .SS "#define ULLBIT_BIT(VAL)   ((unsigned long)1<<\fBFAST_MOD_POW_TWO\fP(VAL, sizeof(unsigned long)*8))"
 unsigned long lut bit, get bit 
 .PP
@@ -463,7 +463,7 @@ unsigned long lut bit, get bit
 .PP
 
 .PP
-Definition at line 132 of file mth\&.h\&.
+Definition at line 133 of file mth\&.h\&.
 .SS "#define ULLBIT_INDEX(VAL)   ((VAL)/(sizeof(unsigned long)*8))"
 unsigned long lut bit, get index 
 .PP
@@ -474,7 +474,7 @@ unsigned long lut bit, get index
 .PP
 
 .PP
-Definition at line 127 of file mth\&.h\&.
+Definition at line 128 of file mth\&.h\&.
 .SS "#define ULLBITC(V, VAL)   (V[\fBULLBIT_INDEX\fP(VAL)] &= ~\fBULLBIT_BIT\fP(VAL))"
 unsigned long lut bit, clear bit in lut 
 .PP
@@ -487,7 +487,7 @@ unsigned long lut bit, clear bit in lut
 .PP
 
 .PP
-Definition at line 144 of file mth\&.h\&.
+Definition at line 145 of file mth\&.h\&.
 .SS "#define ULLBITS(V, VAL)   (V[\fBULLBIT_INDEX\fP(VAL)] |= \fBULLBIT_BIT\fP(VAL))"
 unsigned long lut bit, set bit in lut 
 .PP
@@ -500,7 +500,7 @@ unsigned long lut bit, set bit in lut
 .PP
 
 .PP
-Definition at line 138 of file mth\&.h\&.
+Definition at line 139 of file mth\&.h\&.
 .SS "#define ULLBITT(V, VAL)   (V[\fBULLBIT_INDEX\fP(VAL)] & \fBULLBIT_BIT\fP(VAL))"
 unsigned long lut bit, test bit in lut 
 .PP
@@ -513,7 +513,7 @@ unsigned long lut bit, test bit in lut
 .PP
 
 .PP
-Definition at line 150 of file mth\&.h\&.
+Definition at line 151 of file mth\&.h\&.
 .SH "Enumeration Type Documentation"
 .PP 
 .SS "enum \fBiecp_e\fP"
@@ -540,7 +540,7 @@ International Electrotechnical Commission
 .TP
 \fB\fIMTH_IEC_YOTTABYTE \fP\fP
 .PP
-Definition at line 342 of file mth\&.h\&.
+Definition at line 341 of file mth\&.h\&.
 .SS "enum \fBsip_e\fP"
 International_System_of_Units 
 .PP
@@ -569,7 +569,7 @@ International_System_of_Units
 .TP
 \fB\fIMTH_SIP_YOTTA \fP\fP
 .PP
-Definition at line 326 of file mth\&.h\&.
+Definition at line 325 of file mth\&.h\&.
 .SH "Function Documentation"
 .PP 
 .SS "void* base64_decode (size_t * size, const char * b64)"

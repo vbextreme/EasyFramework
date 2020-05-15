@@ -1,4 +1,4 @@
-.TH "include/ef/xorg.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/xorg.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -11,6 +11,8 @@ include/ef/xorg.h
 \fC#include <ef/image\&.h>\fP
 .br
 \fC#include <ef/utf8\&.h>\fP
+.br
+\fC#include <ef/threads\&.h>\fP
 .br
 \fC#include <xcb/xcb\&.h>\fP
 .br
@@ -84,6 +86,9 @@ include/ef/xorg.h
 .br
 .ti -1c
 .RI "struct \fBxorgClipboard\fP"
+.br
+.ti -1c
+.RI "struct \fBxorgUserData\fP"
 .br
 .ti -1c
 .RI "struct \fBxorgEvent\fP"
@@ -262,6 +267,9 @@ include/ef/xorg.h
 .RI "typedef struct \fBxorgClipboard\fP \fBxorgClipboard_s\fP"
 .br
 .ti -1c
+.RI "typedef struct \fBxorgUserData\fP \fBxorgUserData_s\fP"
+.br
+.ti -1c
 .RI "typedef struct \fBxorgEvent\fP \fBxorgEvent_s\fP"
 .br
 .in -1c
@@ -287,7 +295,7 @@ include/ef/xorg.h
 .RI "enum \fBxorgKey_e\fP { \fBXORG_KEY_RELEASE\fP, \fBXORG_KEY_PRESS\fP }"
 .br
 .ti -1c
-.RI "enum \fBxorgEvent_e\fP { \fBXORG_EVENT_CREATE\fP = XCB_CREATE_NOTIFY, \fBXORG_EVENT_DESTROY\fP = XCB_DESTROY_NOTIFY, \fBXORG_EVENT_DRAW\fP = XCB_EXPOSE, \fBXORG_EVENT_KEY_PRESS\fP = XCB_KEY_PRESS, \fBXORG_EVENT_KEY_RELEASE\fP = XCB_KEY_RELEASE, \fBXORG_EVENT_BUTTON_PRESS\fP = XCB_BUTTON_PRESS, \fBXORG_EVENT_BUTTON_RELEASE\fP = XCB_BUTTON_RELEASE, \fBXORG_EVENT_MOTION\fP = XCB_MOTION_NOTIFY, \fBXORG_EVENT_ENTER\fP = XCB_ENTER_NOTIFY, \fBXORG_EVENT_LEAVE\fP = XCB_LEAVE_NOTIFY, \fBXORG_EVENT_FOCUS_IN\fP = XCB_FOCUS_IN, \fBXORG_EVENT_FOCUS_OUT\fP = XCB_FOCUS_OUT, \fBXORG_EVENT_MAP\fP = XCB_MAP_NOTIFY, \fBXORG_EVENT_UNMAP\fP = XCB_UNMAP_NOTIFY, \fBXORG_EVENT_MOVE\fP = XCB_CONFIGURE_NOTIFY, \fBXORG_EVENT_ATOM\fP = XCB_PROPERTY_NOTIFY, \fBXORG_EVENT_CLIENT\fP = XCB_CLIENT_MESSAGE, \fBXORG_EVENT_CLIPBOARD_PASTE\fP = XCB_SELECTION_NOTIFY, \fBXORG_EVENT_CLIPBOARD_COPY\fP = XCB_SELECTION_REQUEST }"
+.RI "enum \fBxorgEvent_e\fP { \fBXORG_EVENT_CREATE\fP = XCB_CREATE_NOTIFY, \fBXORG_EVENT_DESTROY\fP = XCB_DESTROY_NOTIFY, \fBXORG_EVENT_DRAW\fP = XCB_EXPOSE, \fBXORG_EVENT_KEY_PRESS\fP = XCB_KEY_PRESS, \fBXORG_EVENT_KEY_RELEASE\fP = XCB_KEY_RELEASE, \fBXORG_EVENT_BUTTON_PRESS\fP = XCB_BUTTON_PRESS, \fBXORG_EVENT_BUTTON_RELEASE\fP = XCB_BUTTON_RELEASE, \fBXORG_EVENT_MOTION\fP = XCB_MOTION_NOTIFY, \fBXORG_EVENT_ENTER\fP = XCB_ENTER_NOTIFY, \fBXORG_EVENT_LEAVE\fP = XCB_LEAVE_NOTIFY, \fBXORG_EVENT_FOCUS_IN\fP = XCB_FOCUS_IN, \fBXORG_EVENT_FOCUS_OUT\fP = XCB_FOCUS_OUT, \fBXORG_EVENT_MAP\fP = XCB_MAP_NOTIFY, \fBXORG_EVENT_UNMAP\fP = XCB_UNMAP_NOTIFY, \fBXORG_EVENT_MOVE\fP = XCB_CONFIGURE_NOTIFY, \fBXORG_EVENT_ATOM\fP = XCB_PROPERTY_NOTIFY, \fBXORG_EVENT_CLIENT\fP = XCB_CLIENT_MESSAGE, \fBXORG_EVENT_CLIPBOARD_PASTE\fP = XCB_SELECTION_NOTIFY, \fBXORG_EVENT_CLIPBOARD_COPY\fP = XCB_SELECTION_REQUEST, \fBXORG_EVENT_USERDATA\fP = 0xFFFFFFFF }"
 .br
 .in -1c
 .SS "Functions"
@@ -576,12 +584,12 @@ include/ef/xorg.h
 .SS "#define X_COLOR_MODE   \fBG2D_MODE_ARGB\fP"
 
 .PP
-Definition at line 23 of file xorg\&.h\&.
+Definition at line 26 of file xorg\&.h\&.
 .SS "#define X_WIN_EVENT"
 \fBValue:\fP
 .PP
 .nf
-    XCB_EVENT_MASK_EXPOSURE |\
+   XCB_EVENT_MASK_EXPOSURE |\
     XCB_EVENT_MASK_KEY_PRESS |\
     XCB_EVENT_MASK_KEY_RELEASE |\
     XCB_EVENT_MASK_BUTTON_PRESS |\
@@ -596,151 +604,151 @@ Definition at line 23 of file xorg\&.h\&.
     XCB_EVENT_MASK_PROPERTY_CHANGE
 .fi
 .PP
-Definition at line 25 of file xorg\&.h\&.
+Definition at line 28 of file xorg\&.h\&.
 .SS "#define XKB_UTF_MAX   32"
 
 .PP
-Definition at line 21 of file xorg\&.h\&.
+Definition at line 24 of file xorg\&.h\&.
 .SS "#define xorg_fd(XORG)   xcb_get_file_descriptor((XORG)\->connection)"
 
 .PP
-Definition at line 368 of file xorg\&.h\&.
+Definition at line 385 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_ALT   (3<<6)"
 
 .PP
-Definition at line 270 of file xorg\&.h\&.
+Definition at line 279 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_ALT_L   0x0040"
 
 .PP
-Definition at line 268 of file xorg\&.h\&.
+Definition at line 277 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_ALT_R   0x0080"
 
 .PP
-Definition at line 269 of file xorg\&.h\&.
+Definition at line 278 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_CAPSLOCK   0x1000"
 
 .PP
-Definition at line 277 of file xorg\&.h\&.
+Definition at line 286 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_CONTROL   (3<<2)"
 
 .PP
-Definition at line 264 of file xorg\&.h\&.
+Definition at line 273 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_CONTROL_L   0x0004"
 
 .PP
-Definition at line 262 of file xorg\&.h\&.
+Definition at line 271 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_CONTROL_R   0x0008"
 
 .PP
-Definition at line 263 of file xorg\&.h\&.
+Definition at line 272 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_HYPER   (3<<10)"
 
 .PP
-Definition at line 276 of file xorg\&.h\&.
+Definition at line 285 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_HYPER_L   0x0400"
 
 .PP
-Definition at line 274 of file xorg\&.h\&.
+Definition at line 283 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_HYPER_R   0x0800"
 
 .PP
-Definition at line 275 of file xorg\&.h\&.
+Definition at line 284 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_META   (3<<4)"
 
 .PP
-Definition at line 267 of file xorg\&.h\&.
+Definition at line 276 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_META_L   0x0010"
 
 .PP
-Definition at line 265 of file xorg\&.h\&.
+Definition at line 274 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_META_R   0x0020"
 
 .PP
-Definition at line 266 of file xorg\&.h\&.
+Definition at line 275 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_SHIFT   (3<<0)"
 
 .PP
-Definition at line 261 of file xorg\&.h\&.
+Definition at line 270 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_SHIFT_L   0x0001"
 
 .PP
-Definition at line 259 of file xorg\&.h\&.
+Definition at line 268 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_SHIFT_R   0x0002"
 
 .PP
-Definition at line 260 of file xorg\&.h\&.
+Definition at line 269 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_SUPER   (3<<8)"
 
 .PP
-Definition at line 273 of file xorg\&.h\&.
+Definition at line 282 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_SUPER_L   0x0100"
 
 .PP
-Definition at line 271 of file xorg\&.h\&.
+Definition at line 280 of file xorg\&.h\&.
 .SS "#define XORG_KEY_MOD_SUPER_R   0x0200"
 
 .PP
-Definition at line 272 of file xorg\&.h\&.
+Definition at line 281 of file xorg\&.h\&.
 .SS "#define XORG_MOUSE_CLICK_MS   200"
 
 .PP
-Definition at line 39 of file xorg\&.h\&.
+Definition at line 42 of file xorg\&.h\&.
 .SS "#define XORG_MOUSE_DBLCLICL_MS   350"
 
 .PP
-Definition at line 40 of file xorg\&.h\&.
+Definition at line 43 of file xorg\&.h\&.
 .SS "#define xorg_resources_bool_get(XORG, NAME, CLASS, PTRBOOL)   xcb_xrm_resource_get_bool((XORG)\->resources, NAME, CLASS, PTRBOOL)"
 
 .PP
-Definition at line 372 of file xorg\&.h\&.
+Definition at line 389 of file xorg\&.h\&.
 .SS "#define xorg_resources_long_get(XORG, NAME, CLASS, PTRLONG)   xcb_xrm_resource_get_long((XORG)\->resources, NAME, CLASS, PTRLONG)"
 
 .PP
-Definition at line 371 of file xorg\&.h\&.
+Definition at line 388 of file xorg\&.h\&.
 .SS "#define xorg_resources_string_get(XORG, NAME, CLASS, PTRSTR)   xcb_xrm_resource_get_string((XORG)\->resources, NAME, CLASS, PTRSTR)"
 
 .PP
-Definition at line 370 of file xorg\&.h\&.
+Definition at line 387 of file xorg\&.h\&.
 .SS "#define xorg_root(XORG)   ((XORG)\->screen\->root)"
 
 .PP
-Definition at line 362 of file xorg\&.h\&.
+Definition at line 379 of file xorg\&.h\&.
 .SS "#define xorg_root_height(XORG)   ((XORG)\->monitorCurrent\->size\&.h)"
 
 .PP
-Definition at line 366 of file xorg\&.h\&.
+Definition at line 383 of file xorg\&.h\&.
 .SS "#define xorg_root_visual(XORG)   ((XORG)\->screen\->root_visual)"
 
 .PP
-Definition at line 367 of file xorg\&.h\&.
+Definition at line 384 of file xorg\&.h\&.
 .SS "#define xorg_root_width(XORG)   ((XORG)\->monitorCurrent\->size\&.w)"
 
 .PP
-Definition at line 365 of file xorg\&.h\&.
+Definition at line 382 of file xorg\&.h\&.
 .SS "#define xorg_root_x(XORG)   ((XORG)\->monitorCurrent\->size\&.x)"
 
 .PP
-Definition at line 363 of file xorg\&.h\&.
+Definition at line 380 of file xorg\&.h\&.
 .SS "#define xorg_root_y(XORG)   ((XORG)\->monitorCurrent\->size\&.y)"
 
 .PP
-Definition at line 364 of file xorg\&.h\&.
+Definition at line 381 of file xorg\&.h\&.
 .SS "#define XORG_WINDOW_HINTS_FLAGS_URGENCY(XWPTR)   ((XWPTR)\->hints\&.flags & XCB_ICCCM_WM_HINT_X_URGENCY)"
 
 .PP
-Definition at line 188 of file xorg\&.h\&.
+Definition at line 196 of file xorg\&.h\&.
 .SS "#define XORG_WINDOW_VISIBLE_MAP   XCB_MAP_STATE_VIEWABLE"
 
 .PP
-Definition at line 191 of file xorg\&.h\&.
+Definition at line 199 of file xorg\&.h\&.
 .SS "#define XORG_WINDOW_VISIBLE_UNMAP   XCB_MAP_STATE_UNMAPPED"
 
 .PP
-Definition at line 189 of file xorg\&.h\&.
+Definition at line 197 of file xorg\&.h\&.
 .SS "#define XORG_WINDOW_VISIBLE_UNVIEW   XCB_MAP_STATE_UNVIEWABLE"
 
 .PP
-Definition at line 190 of file xorg\&.h\&.
+Definition at line 198 of file xorg\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBmonitor\fP \fBmonitor_s\fP"
@@ -771,6 +779,8 @@ Definition at line 190 of file xorg\&.h\&.
 
 .SS "typedef struct \fBxorgSurface\fP \fBxorgSurface_s\fP"
 
+.SS "typedef struct \fBxorgUserData\fP \fBxorgUserData_s\fP"
+
 .SS "typedef struct \fBxorgVisible\fP \fBxorgVisible_s\fP"
 
 .SS "typedef struct \fBxorgWindow\fP \fBxorgWindow_s\fP"
@@ -778,11 +788,11 @@ Definition at line 190 of file xorg\&.h\&.
 .SS "typedef struct \fBxorgWindowStrut\fP \fBxorgWindowStrut_s\fP"
 
 .PP
-Definition at line 196 of file xorg\&.h\&.
+Definition at line 1 of file xorg\&.h\&.
 .SS "typedef struct \fBxorgWindowStrutPartial\fP \fBxorgWindowStrutPartial_s\fP"
 
 .PP
-Definition at line 205 of file xorg\&.h\&.
+Definition at line 1 of file xorg\&.h\&.
 .SH "Enumeration Type Documentation"
 .PP 
 .SS "enum \fBxorgAtom_e\fP"
@@ -903,7 +913,7 @@ Definition at line 205 of file xorg\&.h\&.
 .TP
 \fB\fIXORG_ATOM_COUNT \fP\fP
 .PP
-Definition at line 42 of file xorg\&.h\&.
+Definition at line 44 of file xorg\&.h\&.
 .SS "enum \fBxorgEvent_e\fP"
 
 .PP
@@ -947,8 +957,10 @@ Definition at line 42 of file xorg\&.h\&.
 \fB\fIXORG_EVENT_CLIPBOARD_PASTE \fP\fP
 .TP
 \fB\fIXORG_EVENT_CLIPBOARD_COPY \fP\fP
+.TP
+\fB\fIXORG_EVENT_USERDATA \fP\fP
 .PP
-Definition at line 228 of file xorg\&.h\&.
+Definition at line 235 of file xorg\&.h\&.
 .SS "enum \fBxorgKey_e\fP"
 
 .PP
@@ -959,7 +971,7 @@ Definition at line 228 of file xorg\&.h\&.
 .TP
 \fB\fIXORG_KEY_PRESS \fP\fP
 .PP
-Definition at line 227 of file xorg\&.h\&.
+Definition at line 234 of file xorg\&.h\&.
 .SS "enum \fBxorgMouse_e\fP"
 
 .PP
@@ -980,7 +992,7 @@ Definition at line 227 of file xorg\&.h\&.
 .TP
 \fB\fIXORG_MOUSE_DBLCLICK \fP\fP
 .PP
-Definition at line 226 of file xorg\&.h\&.
+Definition at line 233 of file xorg\&.h\&.
 .SS "enum \fBxorgWindowAction_e\fP"
 
 .PP
@@ -1007,7 +1019,7 @@ Definition at line 226 of file xorg\&.h\&.
 .TP
 \fB\fIXORG_WINDOW_ACTION_CLOSE \fP\fP
 .PP
-Definition at line 130 of file xorg\&.h\&.
+Definition at line 132 of file xorg\&.h\&.
 .SS "enum \fBxorgWindowState_e\fP"
 
 .PP
@@ -1044,7 +1056,7 @@ Definition at line 130 of file xorg\&.h\&.
 .TP
 \fB\fIXORG_WINDOW_STATE_ICONIZED \fP\fP
 .PP
-Definition at line 112 of file xorg\&.h\&.
+Definition at line 114 of file xorg\&.h\&.
 .SS "enum \fBxorgWindowType_e\fP"
 
 .PP
@@ -1067,7 +1079,7 @@ Definition at line 112 of file xorg\&.h\&.
 .TP
 \fB\fIXORG_WINDOW_TYPE_NORMAL \fP\fP
 .PP
-Definition at line 101 of file xorg\&.h\&.
+Definition at line 103 of file xorg\&.h\&.
 .SH "Function Documentation"
 .PP 
 .SS "xcb_atom_t xorg_atom_id (\fBxorg_s\fP * x, const char * name)"
@@ -1167,7 +1179,7 @@ send set desktop
 .SS "void xorg_send_unmap (\fBxorg_s\fP * x, xcb_window_t win)"
 send unmap/hide 
 .SS "void xorg_surface_destroy (\fBxorg_s\fP * x, \fBxorgSurface_s\fP * surface)"
-deprecate resize a surface, blitting img destroy/free sourface 
+destroy/free sourface 
 .SS "void xorg_surface_resize (\fBxorg_s\fP * X, \fBxorgSurface_s\fP * surface, unsigned w, unsigned h)"
 resize surface 
 .SS "void xorg_win_action_set (\fBxorg_s\fP * x, xcb_window_t id, \fBxorgWindowAction_e\fP action)"

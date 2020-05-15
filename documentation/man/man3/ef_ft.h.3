@@ -1,4 +1,4 @@
-.TH "include/ef/ft.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/ft.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -99,7 +99,7 @@ include/ef/ft.h
 .RI "void \fBft_end\fP (void)"
 .br
 .ti -1c
-.RI "\fBftFonts_s\fP * \fBft_fonts_new\fP (void)"
+.RI "\fBftFonts_s\fP * \fBft_fonts_new\fP (const char *name)"
 .br
 .ti -1c
 .RI "\fBftFont_s\fP * \fBft_fonts_search_name\fP (\fBftFonts_s\fP *fonts, const char *name)"
@@ -203,43 +203,43 @@ include/ef/ft.h
 .SS "#define ft_buf_line(Y, P)   ((Y)*(P))"
 
 .PP
-Definition at line 64 of file ft\&.h\&.
+Definition at line 66 of file ft\&.h\&.
 .SS "#define ft_buf_mono_get(buf, X, Y, P)   ((buf[\fBft_buf_line\fP(Y,P)] << (X)) & 0x80)"
 
 .PP
-Definition at line 65 of file ft\&.h\&.
+Definition at line 67 of file ft\&.h\&.
 .SS "#define FT_FONT_NAME_SIZE   128"
 
 .PP
-Definition at line 11 of file ft\&.h\&.
+Definition at line 12 of file ft\&.h\&.
 .SS "#define ft_pixel_bit_get(PX)   ((PX)%8)"
 
 .PP
-Definition at line 67 of file ft\&.h\&.
+Definition at line 69 of file ft\&.h\&.
 .SS "#define ft_pixel_bitval_get(BUF, PX)   (BUF[\fBft_pixel_byte_get\fP(PX)] & (1<<(7\-\fBft_pixel_bit_get\fP(PX))));"
 
 .PP
-Definition at line 68 of file ft\&.h\&.
+Definition at line 70 of file ft\&.h\&.
 .SS "#define ft_pixel_byte_get(PX)   ((PX)/8)"
 
 .PP
-Definition at line 66 of file ft\&.h\&.
+Definition at line 68 of file ft\&.h\&.
 .SS "#define FT_RENDER_ANTIALIASED   0x1"
 
 .PP
-Definition at line 58 of file ft\&.h\&.
+Definition at line 60 of file ft\&.h\&.
 .SS "#define FT_RENDER_BYTE   0x8"
 
 .PP
-Definition at line 61 of file ft\&.h\&.
+Definition at line 63 of file ft\&.h\&.
 .SS "#define FT_RENDER_VALID   0x4"
 
 .PP
-Definition at line 60 of file ft\&.h\&.
+Definition at line 62 of file ft\&.h\&.
 .SS "#define FT_RENDER_VERT   0x2"
 
 .PP
-Definition at line 59 of file ft\&.h\&.
+Definition at line 61 of file ft\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBftFont\fP \fBftFont_s\fP"
@@ -255,7 +255,7 @@ Definition at line 13 of file ft\&.h\&.
 .SS "typedef void(* ftUtfCustom_f) (\fButf_t\fP u, \fBftFonts_s\fP **fonts, unsigned *x, unsigned *y, \fBg2dColor_t\fP *fore, void *userdata)"
 
 .PP
-Definition at line 50 of file ft\&.h\&.
+Definition at line 51 of file ft\&.h\&.
 .SS "typedef struct \fBftUtfCustom\fP \fBftUtfCustom_s\fP"
 
 .SH "Function Documentation"
@@ -314,7 +314,7 @@ a font object
 .RE
 .PP
 
-.SS "\fBftFonts_s\fP* ft_fonts_new (void)"
+.SS "\fBftFonts_s\fP* ft_fonts_new (const char * name)"
 create new fonts obj 
 .SS "void ft_fonts_remove_byindex (\fBftFonts_s\fP * fonts, size_t index)"
 remove a font by index 

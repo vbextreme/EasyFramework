@@ -1,4 +1,4 @@
-.TH "include/ef/sys.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/sys.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -93,42 +93,42 @@ include/ef/sys.h
 \fBValue:\fP
 .PP
 .nf
-        _Generic(OUT,\
+      _Generic(OUT,\
         long*: cpufreq_property_long_get,\
         char**: cpufreq_property_string_get,\
         vector_s*: cpufreq_property_vector_string_get\
 )(OUT, CPU, PROPERTY)
 .fi
 .PP
-Definition at line 59 of file sys\&.h\&.
+Definition at line 60 of file sys\&.h\&.
 .SS "#define SYS_CPUFREQ_CPUINFO_MAXFQ   4"
 cpufreq property 
 .PP
-Definition at line 27 of file sys\&.h\&.
+Definition at line 28 of file sys\&.h\&.
 .SS "#define SYS_CPUFREQ_CPUINFO_MINFQ   3"
 cpufreq property 
 .PP
-Definition at line 25 of file sys\&.h\&.
+Definition at line 26 of file sys\&.h\&.
 .SS "#define SYS_CPUFREQ_GOV   5"
 cpufreq property 
 .PP
-Definition at line 29 of file sys\&.h\&.
+Definition at line 30 of file sys\&.h\&.
 .SS "#define SYS_CPUFREQ_GOV_AV   6"
 cpufreq property 
 .PP
-Definition at line 31 of file sys\&.h\&.
+Definition at line 32 of file sys\&.h\&.
 .SS "#define SYS_CPUFREQ_SCALING_CURFQ   0"
 cpufreq property 
 .PP
-Definition at line 19 of file sys\&.h\&.
+Definition at line 20 of file sys\&.h\&.
 .SS "#define SYS_CPUFREQ_SCALING_MAXFQ   2"
 cpufreq property 
 .PP
-Definition at line 23 of file sys\&.h\&.
+Definition at line 24 of file sys\&.h\&.
 .SS "#define SYS_CPUFREQ_SCALING_MINFQ   1"
 cpufreq property 
 .PP
-Definition at line 21 of file sys\&.h\&.
+Definition at line 22 of file sys\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBpowerstate\fP \fBpowerstate_s\fP"

@@ -1,4 +1,4 @@
-.TH "include/ef/vectorization.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/vectorization.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -87,48 +87,48 @@ include/ef/vectorization.h
 .SS "#define __is_aligned(EXP, N)   __builtin_assume_aligned(EXP,N)"
 
 .PP
-Definition at line 23 of file vectorization\&.h\&.
+Definition at line 24 of file vectorization\&.h\&.
 .SS "#define __is_aligned_but(EXP, N, UNALIGNED)   __builtin_assume_aligned(EXP,N,UNALIGNED)"
 
 .PP
-Definition at line 24 of file vectorization\&.h\&.
+Definition at line 25 of file vectorization\&.h\&.
 .SS "typedef float float4_v \fB__vector16\fP   __attribute__((\fBvector_size\fP(16)))"
 
 .PP
-Definition at line 19 of file vectorization\&.h\&.
+Definition at line 20 of file vectorization\&.h\&.
 .SS "typedef float float8_v \fB__vector32\fP   __attribute__((\fBvector_size\fP(32)))"
 
 .PP
-Definition at line 20 of file vectorization\&.h\&.
+Definition at line 21 of file vectorization\&.h\&.
 .SS "#define __vector4   __attribute__((\fBvector_size\fP(4)))"
 
 .PP
-Definition at line 17 of file vectorization\&.h\&.
+Definition at line 18 of file vectorization\&.h\&.
 .SS "#define __vector64   __attribute__((\fBvector_size\fP(64)))"
 
 .PP
-Definition at line 21 of file vectorization\&.h\&.
+Definition at line 22 of file vectorization\&.h\&.
 .SS "#define \fB__vector8\fP   __attribute__((\fBvector_size\fP(8)))"
 
 .PP
-Definition at line 18 of file vectorization\&.h\&.
+Definition at line 19 of file vectorization\&.h\&.
 .SS "#define __vector_aligned(N)   __attribute__((aligned(__BIGGEST_ALIGNMENT__)))"
 
 .PP
-Definition at line 22 of file vectorization\&.h\&.
+Definition at line 23 of file vectorization\&.h\&.
 .SS "#define vector16_set_all(VAL)   {VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL,VAL}"
 
 .PP
-Definition at line 80 of file vectorization\&.h\&.
+Definition at line 81 of file vectorization\&.h\&.
 .SS "#define vector4_set_all(VAL)   {VAL,VAL,VAL,VAL}"
 
 .PP
-Definition at line 79 of file vectorization\&.h\&.
+Definition at line 80 of file vectorization\&.h\&.
 .SS "#define vectorize_loop(VECTYPE, TYPE, PTR, START, END, SCALARBODY, VECTORBODY)"
 \fBValue:\fP
 .PP
 .nf
-  do{\
+   do{\
     valign_s __va__ = {\
         \&.start = START,\
         \&.end = END,\
@@ -147,7 +147,7 @@ Definition at line 79 of file vectorization\&.h\&.
 .fi
 vectorization loop 
 .PP
-Definition at line 35 of file vectorization\&.h\&.
+Definition at line 36 of file vectorization\&.h\&.
 .SS "#define vectorize_pair_loop(VECTYPE, TYPE, PTRA, STARTA, ENDA, PTRB, STARTB, ENDB, SCALARBODY, VECTORBODY)"
 \fBValue:\fP
 .PP
@@ -180,7 +180,7 @@ Definition at line 35 of file vectorization\&.h\&.
 }while(0)
 .fi
 .PP
-Definition at line 52 of file vectorization\&.h\&.
+Definition at line 53 of file vectorization\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef float float4_v \fB__vector16\fP"

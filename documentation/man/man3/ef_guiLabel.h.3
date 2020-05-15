@@ -1,4 +1,4 @@
-.TH "include/ef/guiLabel.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/guiLabel.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,25 +8,14 @@ include/ef/guiLabel.h
 .PP
 \fC#include <ef/gui\&.h>\fP
 .br
+\fC#include <ef/guiCaption\&.h>\fP
+.br
 
 .SS "Data Structures"
 
 .in +1c
 .ti -1c
 .RI "struct \fBguiLabel\fP"
-.br
-.in -1c
-.SS "Macros"
-
-.in +1c
-.ti -1c
-.RI "#define \fBGUI_LABEL_RENDERING\fP   0x01"
-.br
-.ti -1c
-.RI "#define \fBGUI_LABEL_CENTER_X\fP   0x02"
-.br
-.ti -1c
-.RI "#define \fBGUI_LABEL_CENTER_Y\fP   0x04"
 .br
 .in -1c
 .SS "Typedefs"
@@ -40,7 +29,7 @@ include/ef/guiLabel.h
 
 .in +1c
 .ti -1c
-.RI "\fBguiLabel_s\fP * \fBgui_label_new\fP (\fBftFonts_s\fP *font, int autowrap, \fBg2dColor_t\fP foreground, unsigned flags)"
+.RI "\fBguiLabel_s\fP * \fBgui_label_new\fP (\fBguiCaption_s\fP *caption)"
 .br
 .ti -1c
 .RI "\fBgui_s\fP * \fBgui_label_attach\fP (\fBgui_s\fP *\fBgui\fP, \fBguiLabel_s\fP *lbl)"
@@ -49,13 +38,13 @@ include/ef/guiLabel.h
 .RI "void \fBgui_label_free\fP (\fBguiLabel_s\fP *lbl)"
 .br
 .ti -1c
-.RI "void \fBgui_label_text_set\fP (\fB__unused\fP \fBgui_s\fP *\fBgui\fP, \fBguiLabel_s\fP *lbl, const \fButf8_t\fP *text)"
+.RI "void \fBgui_label_text_set\fP (\fBgui_s\fP *\fBgui\fP, const \fButf8_t\fP *text)"
 .br
 .ti -1c
-.RI "void \fBgui_label_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fBguiBackground_s\fP *bkg, \fBguiLabel_s\fP *lbl)"
+.RI "void \fBgui_label_redraw\fP (\fBgui_s\fP *\fBgui\fP)"
 .br
 .ti -1c
-.RI "void \fBgui_label_scroll\fP (\fBgui_s\fP *\fBgui\fP, \fBguiLabel_s\fP *lbl, unsigned x, unsigned y)"
+.RI "void \fBgui_label_scroll\fP (\fBgui_s\fP *\fBgui\fP, unsigned x, unsigned y)"
 .br
 .ti -1c
 .RI "int \fBgui_label_event_free\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *ev)"
@@ -63,21 +52,13 @@ include/ef/guiLabel.h
 .ti -1c
 .RI "int \fBgui_label_event_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *unset)"
 .br
+.ti -1c
+.RI "int \fBgui_label_event_themes\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBgui_label_event_move\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
 .in -1c
-.SH "Macro Definition Documentation"
-.PP 
-.SS "#define GUI_LABEL_CENTER_X   0x02"
-
-.PP
-Definition at line 7 of file guiLabel\&.h\&.
-.SS "#define GUI_LABEL_CENTER_Y   0x04"
-
-.PP
-Definition at line 8 of file guiLabel\&.h\&.
-.SS "#define GUI_LABEL_RENDERING   0x01"
-
-.PP
-Definition at line 6 of file guiLabel\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBguiLabel\fP \fBguiLabel_s\fP"
@@ -88,17 +69,21 @@ Definition at line 6 of file guiLabel\&.h\&.
 attach label to gui 
 .SS "int gui_label_event_free (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * ev)"
 event free 
+.SS "int gui_label_event_move (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+
 .SS "int gui_label_event_redraw (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * unset)"
 event redraw 
+.SS "int gui_label_event_themes (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * ev)"
+event themes 
 .SS "void gui_label_free (\fBguiLabel_s\fP * lbl)"
 label free 
-.SS "\fBguiLabel_s\fP* gui_label_new (\fBftFonts_s\fP * font, int autowrap, \fBg2dColor_t\fP foreground, unsigned flags)"
+.SS "\fBguiLabel_s\fP* gui_label_new (\fBguiCaption_s\fP * caption)"
 create new label 
-.SS "void gui_label_redraw (\fBgui_s\fP * gui, \fBguiBackground_s\fP * bkg, \fBguiLabel_s\fP * lbl)"
+.SS "void gui_label_redraw (\fBgui_s\fP * gui)"
 label redraw event 
-.SS "void gui_label_scroll (\fBgui_s\fP * gui, \fBguiLabel_s\fP * lbl, unsigned x, unsigned y)"
+.SS "void gui_label_scroll (\fBgui_s\fP * gui, unsigned x, unsigned y)"
 label scroll 
-.SS "void gui_label_text_set (\fB__unused\fP \fBgui_s\fP * gui, \fBguiLabel_s\fP * lbl, const \fButf8_t\fP * text)"
+.SS "void gui_label_text_set (\fBgui_s\fP * gui, const \fButf8_t\fP * text)"
 label set caption 
 .SH "Author"
 .PP 

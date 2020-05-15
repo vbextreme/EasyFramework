@@ -1,4 +1,4 @@
-.TH "include/ef/gnn.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/gnn.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -52,7 +52,7 @@ include/ef/gnn.h
 .RI "void \fBgnn_free\fP (\fBgnn_s\fP *ann)"
 .br
 .ti -1c
-.RI "const double * \fBgnn_run\fP (\fBgnn_s\fP const *ann, double const *inputs)"
+.RI "double const  * \fBgnn_run\fP (\fBgnn_s\fP const *ann, double const *inputs)"
 .br
 .ti -1c
 .RI "void \fBgnn_train\fP (\fBgnn_s\fP const *ann, double const *desired_outputs, double learning_rate)"
@@ -84,13 +84,13 @@ include/ef/gnn.h
 .SS "#define GNN_RANDOM()   (((double)rand())/RAND_MAX)"
 We use the following for uniform random numbers between 0 and 1\&. If you have a better function, redefine this macro\&. 
 .PP
-Definition at line 37 of file gnn\&.h\&.
+Definition at line 38 of file gnn\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBgnn\fP \fBgnn_s\fP"
 
 .PP
-Definition at line 40 of file gnn\&.h\&.
+Definition at line 1 of file gnn\&.h\&.
 .SS "typedef double(* gnnAct_f) (const \fBgnn_s\fP *ann, double a)"
 
 .PP
@@ -117,7 +117,7 @@ Creates and returns a new ann\&.
 Sets weights randomly\&. Called by init\&. 
 .SS "\fBgnn_s\fP* gnn_read (FILE * in)"
 Creates ANN from file saved with gnn_write\&. 
-.SS "const double* gnn_run (\fBgnn_s\fP const * ann, double const * inputs)"
+.SS "double const* gnn_run (\fBgnn_s\fP const * ann, double const * inputs)"
 Runs the feedforward algorithm to calculate the ann's output\&. 
 .SS "void gnn_train (\fBgnn_s\fP const * ann, double const * desired_outputs, double learning_rate)"
 Does a single backprop update, gnn_run before train\&. 

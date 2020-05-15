@@ -1,4 +1,4 @@
-.TH "include/ef/list.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/list.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -141,31 +141,31 @@ include/ef/list.h
 .SS "#define __listdoubly_allfree   \fB__cleanup\fP(\fBlist_doubly_all_free_auto\fP)"
 cleanup 
 .PP
-Definition at line 189 of file list\&.h\&.
+Definition at line 190 of file list\&.h\&.
 .SS "#define __listsimple_allfree   \fB__cleanup\fP(\fBlist_simple_all_free_auto\fP)"
 cleanup 
 .PP
-Definition at line 97 of file list\&.h\&.
+Definition at line 98 of file list\&.h\&.
 .SS "#define __listsimple_free   \fB__cleanup\fP(\fBlist_simple_free_auto\fP)"
 
 .PP
-Definition at line 85 of file list\&.h\&.
+Definition at line 86 of file list\&.h\&.
 .SS "#define LIST_DOUBLY(L)   ((\fBlistDouble_s\fP*)(\fBADDR\fP(L)\-sizeof(\fBlistDouble_s\fP)))"
 
 .PP
-Definition at line 137 of file list\&.h\&.
+Definition at line 138 of file list\&.h\&.
 .SS "#define list_doubly_new(TYPE, DATA, CLEAN)   (TYPE*)\fBlist_doubly_new_raw\fP(sizeof(TYPE), DATA, CLEAN)"
 list doubly new with auto sizeof 
 .PP
-Definition at line 148 of file list\&.h\&.
+Definition at line 149 of file list\&.h\&.
 .SS "#define LIST_SIMPLE(L)   ((\fBlistSimple_s\fP*)(\fBADDR\fP(L)\-sizeof(\fBlistSimple_s\fP)))"
 
 .PP
-Definition at line 23 of file list\&.h\&.
+Definition at line 24 of file list\&.h\&.
 .SS "#define list_simple_new(TYPE, DATA, CLEAN)   (TYPE*)\fBlist_simple_new_raw\fP(sizeof(TYPE), DATA, CLEAN)"
 list simple new with auto sizeof 
 .PP
-Definition at line 34 of file list\&.h\&.
+Definition at line 35 of file list\&.h\&.
 .SS "#define listdoubly_do(HEAD, IT)   do{ void* ___ ## IT ## ___ = HEAD; IT = HEAD; do"
 do while element in list, for traversing all list 
 .PP
@@ -190,11 +190,11 @@ listdoubly_do(head, iterator){
 .PP
 
 .PP
-Definition at line 206 of file list\&.h\&.
+Definition at line 207 of file list\&.h\&.
 .SS "#define listdoubly_while(HEAD, IT)   while( (IT=\fBLIST_DOUBLY\fP(IT)\->next) != ___ ## IT ## ___ );}while(0)"
 
 .PP
-Definition at line 207 of file list\&.h\&.
+Definition at line 208 of file list\&.h\&.
 .SS "#define listsimple_foreach(HEAD, IT)   for(IT = HEAD; IT; IT = (\fBLIST_SIMPLE\fP(IT)\->next))"
 foreach element in list 
 .PP
@@ -218,7 +218,7 @@ listsimple_foreach(head, element){
 .PP
 
 .PP
-Definition at line 110 of file list\&.h\&.
+Definition at line 111 of file list\&.h\&.
 .SS "#define listsimple_generic_foreach(HEAD, IT)   for(void** IT = (void**)HEAD; *IT; IT = &(\fBLIST_SIMPLE\fP(*IT)\->next))"
 foreach element in list, using void** 
 .PP
@@ -242,7 +242,7 @@ listsimple_generic_foreach(head, lst){
 .PP
 
 .PP
-Definition at line 123 of file list\&.h\&.
+Definition at line 124 of file list\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef int(* listCmp_f) (void *a, void *b)"

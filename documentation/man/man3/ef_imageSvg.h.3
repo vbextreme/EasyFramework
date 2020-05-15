@@ -1,4 +1,4 @@
-.TH "include/ef/imageSvg.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/imageSvg.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -9,17 +9,45 @@ include/ef/imageSvg.h
 \fC#include <ef/image\&.h>\fP
 .br
 
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBsvg\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBsvg\fP \fBsvg_s\fP"
+.br
+.in -1c
 .SS "Functions"
 
 .in +1c
 .ti -1c
-.RI "\fBg2dImage_s\fP * \fBg2d_load_svg\fP (char const *path, unsigned width, unsigned height)"
+.RI "\fBsvg_s\fP * \fBsvg_load\fP (char const *path)"
+.br
+.ti -1c
+.RI "\fBg2dImage_s\fP * \fBsvg_render\fP (\fBsvg_s\fP *\fBsvg\fP, unsigned width, unsigned height)"
+.br
+.ti -1c
+.RI "void \fBsvg_free\fP (\fBsvg_s\fP *\fBsvg\fP)"
 .br
 .in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBsvg\fP \fBsvg_s\fP"
+
 .SH "Function Documentation"
 .PP 
-.SS "\fBg2dImage_s\fP* g2d_load_svg (char const * path, unsigned width, unsigned height)"
+.SS "void svg_free (\fBsvg_s\fP * svg)"
+free svg 
+.SS "\fBsvg_s\fP* svg_load (char const * path)"
 load svg image 
+.SS "\fBg2dImage_s\fP* svg_render (\fBsvg_s\fP * svg, unsigned width, unsigned height)"
+render svg 
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for Easy Framework from the source code\&.

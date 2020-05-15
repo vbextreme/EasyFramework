@@ -1,4 +1,4 @@
-.TH "include/ef/terminfo.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/terminfo.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -268,11 +268,11 @@ Definition at line 25 of file terminfo\&.h\&.
 .SS "#define TERM_DATABASE_DIRECTORY   '/usr/lib/terminfo'"
 directory to find terminfo 
 .PP
-Definition at line 13 of file terminfo\&.h\&.
+Definition at line 14 of file terminfo\&.h\&.
 .SS "#define TERM_DATABASE_DIRECTORY_LOCAL   '/usr/local/lib/terminfo'"
 
 .PP
-Definition at line 14 of file terminfo\&.h\&.
+Definition at line 15 of file terminfo\&.h\&.
 .SS "#define TERM_EF_EXTEND   'ef\-term\-extend'"
 
 .PP
@@ -281,7 +281,7 @@ Definition at line 33 of file terminfo\&.h\&.
 \fBValue:\fP
 .PP
 .nf
-        term_escape_print(NAME, (tvariable_s[10]){\
+       term_escape_print(NAME, (tvariable_s[10]){\
         [1] = { \&.type = 0, \&.l = 0 }\
         }\
     )
@@ -584,12 +584,12 @@ Definition at line 154 of file terminfo\&.h\&.
 .SS "#define TERM_MAGIC   282"
 
 .PP
-Definition at line 9 of file terminfo\&.h\&.
+Definition at line 10 of file terminfo\&.h\&.
 .SS "#define term_print(STR)"
 \fBValue:\fP
 .PP
 .nf
-   _Generic((STR),\
+  _Generic((STR),\
     utf_t: term_print_utf,\
     utf8_t*: term_print_utf8,\
     const utf8_t*: term_print_utf8,\
@@ -649,17 +649,17 @@ Definition at line 207 of file terminfo\&.h\&.
 .TP
 \fB\fITI_TYPE_STR \fP\fP
 .PP
-Definition at line 35 of file terminfo\&.h\&.
+Definition at line 34 of file terminfo\&.h\&.
 .SH "Function Documentation"
 .PP 
 .SS "__always_inline \fBtvariable_s\fP __tvariable_set_numeric (long num)"
 
 .PP
-Definition at line 204 of file terminfo\&.h\&.
+Definition at line 203 of file terminfo\&.h\&.
 .SS "__always_inline \fBtvariable_s\fP __tvariable_set_string (char * str)"
 
 .PP
-Definition at line 205 of file terminfo\&.h\&.
+Definition at line 204 of file terminfo\&.h\&.
 .SS "void term_begin (void)"
 init term, call this before use other function 
 .SS "void term_end (void)"

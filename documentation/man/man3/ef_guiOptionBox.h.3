@@ -1,0 +1,214 @@
+.TH "include/ef/guiOptionBox.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/guiOptionBox.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/gui\&.h>\fP
+.br
+\fC#include <ef/guiCaption\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBguiOption\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBGUI_OPTION_STATE_OFF\fP   0"
+.br
+.ti -1c
+.RI "#define \fBGUI_OPTION_STATE_ON\fP   1"
+.br
+.ti -1c
+.RI "#define \fBGUI_OPTION_STATE_HOVER_OFF\fP   2"
+.br
+.ti -1c
+.RI "#define \fBGUI_OPTION_STATE_HOVER_ON\fP   3"
+.br
+.ti -1c
+.RI "#define \fBGUI_OPTION_STATE_COUNT\fP   4"
+.br
+.ti -1c
+.RI "#define \fBGUI_OPTION_FLAGS_UNIQUE\fP   0x01"
+.br
+.ti -1c
+.RI "#define \fBGUI_OPTION_FLAGS_ACTIVE\fP   0x02"
+.br
+.ti -1c
+.RI "#define \fBGUI_OPTION_FLAGS_HOVER\fP   0x04"
+.br
+.ti -1c
+.RI "#define \fBGUI_OPTION_FLAGS_HOVER_ENABLE\fP   0x08"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_OPTION_OFF\fP   'option\&.off'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_OPTION_ON\fP   'option\&.on'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_OPTION_HOVER_ON\fP   'option\&.hover\&.on'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_OPTION_HOVER_OFF\fP   'option\&.hover\&.off'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_OPTION_HOVER\fP   'option\&.hover'"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBguiOption\fP \fBguiOption_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBguiOption_s\fP * \fBgui_option_new\fP (\fBguiCaption_s\fP *caption, \fBguiComposite_s\fP *on, \fBguiComposite_s\fP *hoveroff, \fBguiComposite_s\fP *hoveron, int flags)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_option_attach\fP (\fBgui_s\fP *\fBgui\fP, \fBguiOption_s\fP *opt)"
+.br
+.ti -1c
+.RI "void \fBgui_option_free\fP (\fBguiOption_s\fP *opt)"
+.br
+.ti -1c
+.RI "void \fBgui_option_text_set\fP (\fBgui_s\fP *\fBgui\fP, const \fButf8_t\fP *text)"
+.br
+.ti -1c
+.RI "void \fBgui_option_active\fP (\fBgui_s\fP *\fBgui\fP, int value)"
+.br
+.ti -1c
+.RI "int \fBgui_option_activated\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_option_toggle\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_option_redraw\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_option_event_free\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBgui_option_event_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *unset)"
+.br
+.ti -1c
+.RI "int \fBgui_option_event_key\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_option_event_mouse\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_option_event_move\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_option_event_themes\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *ev)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define GUI_OPTION_FLAGS_ACTIVE   0x02"
+
+.PP
+Definition at line 15 of file guiOptionBox\&.h\&.
+.SS "#define GUI_OPTION_FLAGS_HOVER   0x04"
+
+.PP
+Definition at line 16 of file guiOptionBox\&.h\&.
+.SS "#define GUI_OPTION_FLAGS_HOVER_ENABLE   0x08"
+
+.PP
+Definition at line 17 of file guiOptionBox\&.h\&.
+.SS "#define GUI_OPTION_FLAGS_UNIQUE   0x01"
+
+.PP
+Definition at line 14 of file guiOptionBox\&.h\&.
+.SS "#define GUI_OPTION_STATE_COUNT   4"
+
+.PP
+Definition at line 12 of file guiOptionBox\&.h\&.
+.SS "#define GUI_OPTION_STATE_HOVER_OFF   2"
+
+.PP
+Definition at line 10 of file guiOptionBox\&.h\&.
+.SS "#define GUI_OPTION_STATE_HOVER_ON   3"
+
+.PP
+Definition at line 11 of file guiOptionBox\&.h\&.
+.SS "#define GUI_OPTION_STATE_OFF   0"
+
+.PP
+Definition at line 8 of file guiOptionBox\&.h\&.
+.SS "#define GUI_OPTION_STATE_ON   1"
+
+.PP
+Definition at line 9 of file guiOptionBox\&.h\&.
+.SS "#define GUI_THEME_OPTION_HOVER   'option\&.hover'"
+
+.PP
+Definition at line 23 of file guiOptionBox\&.h\&.
+.SS "#define GUI_THEME_OPTION_HOVER_OFF   'option\&.hover\&.off'"
+
+.PP
+Definition at line 22 of file guiOptionBox\&.h\&.
+.SS "#define GUI_THEME_OPTION_HOVER_ON   'option\&.hover\&.on'"
+
+.PP
+Definition at line 21 of file guiOptionBox\&.h\&.
+.SS "#define GUI_THEME_OPTION_OFF   'option\&.off'"
+
+.PP
+Definition at line 19 of file guiOptionBox\&.h\&.
+.SS "#define GUI_THEME_OPTION_ON   'option\&.on'"
+
+.PP
+Definition at line 20 of file guiOptionBox\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBguiOption\fP \fBguiOption_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "int gui_option_activated (\fBgui_s\fP * gui)"
+return 0 off or positive value for on 
+.SS "void gui_option_active (\fBgui_s\fP * gui, int value)"
+set on/off 
+.SS "\fBgui_s\fP* gui_option_attach (\fBgui_s\fP * gui, \fBguiOption_s\fP * opt)"
+attach option to gui 
+.SS "int gui_option_event_free (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * ev)"
+option free event 
+.SS "int gui_option_event_key (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+option event key 
+.SS "int gui_option_event_mouse (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+option event mouse 
+.SS "int gui_option_event_move (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+option event move 
+.SS "int gui_option_event_redraw (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * unset)"
+option redraw event 
+.SS "int gui_option_event_themes (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * ev)"
+option event theme 
+.SS "void gui_option_free (\fBguiOption_s\fP * opt)"
+free option 
+.SS "\fBguiOption_s\fP* gui_option_new (\fBguiCaption_s\fP * caption, \fBguiComposite_s\fP * on, \fBguiComposite_s\fP * hoveroff, \fBguiComposite_s\fP * hoveron, int flags)"
+create new option 
+.SS "void gui_option_redraw (\fBgui_s\fP * gui)"
+option redraw 
+.SS "void gui_option_text_set (\fBgui_s\fP * gui, const \fButf8_t\fP * text)"
+option set text 
+.SS "void gui_option_toggle (\fBgui_s\fP * gui)"
+invert 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

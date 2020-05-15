@@ -1,4 +1,4 @@
-.TH "include/ef/www.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/www.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -180,59 +180,59 @@ include/ef/www.h
 .SS "#define __www_buffer_delete   \fB__cleanup\fP(\fBwww_buffer_delete\fP)"
 cleanup function 
 .PP
-Definition at line 51 of file www\&.h\&.
+Definition at line 52 of file www\&.h\&.
 .SS "#define __www_delete   \fB__cleanup\fP(\fBwww_delete\fP)"
 cleanup 
 .PP
-Definition at line 100 of file www\&.h\&.
+Definition at line 101 of file www\&.h\&.
 .SS "#define __www_escape_free   \fB__cleanup\fP(\fBwww_curl_free\fP)"
 curl cleanup 
 .PP
-Definition at line 103 of file www\&.h\&.
+Definition at line 104 of file www\&.h\&.
 .SS "#define WWW_BUFFER_NEW(UPSIZE)   { \&.buf = NULL, \&.size = 0, \&.len = 0, \&.upto = UPSIZE }"
 for static initialization 
 .PP
-Definition at line 42 of file www\&.h\&.
+Definition at line 43 of file www\&.h\&.
 .SS "#define www_errno_str()   curl_easy_strerror(errno)"
 
 .PP
-Definition at line 31 of file www\&.h\&.
+Definition at line 32 of file www\&.h\&.
 .SS "#define WWW_FLAGS_APP_JSON   0x02"
 reply in json format 
 .PP
-Definition at line 10 of file www\&.h\&.
+Definition at line 11 of file www\&.h\&.
 .SS "#define WWW_FLAGS_BODY   0x04"
 get body as data 
 .PP
-Definition at line 12 of file www\&.h\&.
+Definition at line 13 of file www\&.h\&.
 .SS "#define WWW_FLAGS_FD   0x20"
 write on fd 
 .PP
-Definition at line 18 of file www\&.h\&.
+Definition at line 19 of file www\&.h\&.
 .SS "#define WWW_FLAGS_FOLLOW   0x10"
 follow location 
 .PP
-Definition at line 16 of file www\&.h\&.
+Definition at line 17 of file www\&.h\&.
 .SS "#define WWW_FLAGS_HEADER   0x08"
 get header as data 
 .PP
-Definition at line 14 of file www\&.h\&.
+Definition at line 15 of file www\&.h\&.
 .SS "#define WWW_FLAGS_SEND_FD   0x80"
 read on fd 
 .PP
-Definition at line 22 of file www\&.h\&.
+Definition at line 23 of file www\&.h\&.
 .SS "#define WWW_FLAGS_SENDS   0x40"
 read on buffers 
 .PP
-Definition at line 20 of file www\&.h\&.
+Definition at line 21 of file www\&.h\&.
 .SS "#define WWW_FLAGS_SSL   0x01"
 secure connection flags 
 .PP
-Definition at line 8 of file www\&.h\&.
+Definition at line 9 of file www\&.h\&.
 .SS "#define www_uri_escape(WWW, STR, LEN)   curl_easy_escape((WWW)\->h, STR, LEN)"
 escape data in uri 
 .PP
-Definition at line 107 of file www\&.h\&.
+Definition at line 108 of file www\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBwww\fP \fBwww_s\fP"

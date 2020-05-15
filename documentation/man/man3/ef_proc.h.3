@@ -1,4 +1,4 @@
-.TH "include/ef/proc.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/proc.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -19,6 +19,9 @@ include/ef/proc.h
 .br
 .ti -1c
 .RI "struct \fBnetDev\fP"
+.br
+.ti -1c
+.RI "struct \fBpidStat\fP"
 .br
 .in -1c
 .SS "Macros"
@@ -48,6 +51,9 @@ include/ef/proc.h
 .br
 .ti -1c
 .RI "typedef struct \fBnetDev\fP \fBnetDev_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBpidStat\fP \fBpidStat_s\fP"
 .br
 .in -1c
 .SS "Enumerations"
@@ -96,34 +102,39 @@ include/ef/proc.h
 .ti -1c
 .RI "int * \fBproc_pid_fd\fP (pid_t pid)"
 .br
+.ti -1c
+.RI "\fBerr_t\fP \fBproc_pid_stat\fP (\fBpidStat_s\fP *ps, pid_t pid)"
+.br
 .in -1c
 .SH "Macro Definition Documentation"
 .PP 
 .SS "#define PATH_PROC   '/proc'"
 
 .PP
-Definition at line 7 of file proc\&.h\&.
+Definition at line 8 of file proc\&.h\&.
 .SS "#define PATH_PROC_MEM   \fBPATH_PROC\fP '/meminfo'"
 
 .PP
-Definition at line 9 of file proc\&.h\&.
+Definition at line 10 of file proc\&.h\&.
 .SS "#define PATH_PROC_NET_DEV   \fBPATH_PROC\fP '/net/dev'"
 
 .PP
-Definition at line 10 of file proc\&.h\&.
+Definition at line 11 of file proc\&.h\&.
 .SS "#define PATH_PROC_STAT   \fBPATH_PROC\fP '/stat'"
 
 .PP
-Definition at line 8 of file proc\&.h\&.
+Definition at line 9 of file proc\&.h\&.
 .SS "#define PATHF_PROC_PID_FD   \fBPATH_PROC\fP '/%d/fd'"
 
 .PP
-Definition at line 11 of file proc\&.h\&.
+Definition at line 12 of file proc\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBmemInfo\fP \fBmemInfo_s\fP"
 
 .SS "typedef struct \fBnetDev\fP \fBnetDev_s\fP"
+
+.SS "typedef struct \fBpidStat\fP \fBpidStat_s\fP"
 
 .SH "Enumeration Type Documentation"
 .PP 
@@ -258,6 +269,22 @@ get list of fd open in pid
 \fBReturns\fP
 .RS 4
 vector or NULL for error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP proc_pid_stat (\fBpidStat_s\fP * ps, pid_t pid)"
+get /proc/pid/stat 
+.PP
+\fBParameters\fP
+.RS 4
+\fIps\fP structure where stored stat 
+.br
+\fIpid\fP pid to stat 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+-1 error 0 successfull 
 .RE
 .PP
 

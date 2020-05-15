@@ -1,4 +1,4 @@
-.TH "xorg" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "xorg" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -54,6 +54,9 @@ xorg
 .RI "xcb_xrm_database_t * \fBresources\fP"
 .br
 .ti -1c
+.RI "\fBqmessages_s\fP * \fBqmsgEvent\fP"
+.br
+.ti -1c
 .RI "long \fBclickms\fP"
 .br
 .ti -1c
@@ -72,98 +75,109 @@ xorg
 .RI "int \fBscreenCurrent\fP"
 .br
 .ti -1c
+.RI "int \fBshared\fP"
+.br
+.ti -1c
 .RI "uint8_t \fBdepth\fP"
 .br
 .in -1c
 .SH "Detailed Description"
 .PP 
-Definition at line 161 of file xorg\&.h\&.
+Definition at line 166 of file xorg\&.h\&.
 .SH "Field Documentation"
 .PP 
 .SS "unsigned xorg::_mousestate"
 
 .PP
-Definition at line 182 of file xorg\&.h\&.
+Definition at line 188 of file xorg\&.h\&.
 .SS "long xorg::_mousetime"
 
 .PP
-Definition at line 181 of file xorg\&.h\&.
+Definition at line 187 of file xorg\&.h\&.
 .SS "\fBxorgAtom_e\fP xorg::atom[\fBXORG_ATOM_COUNT\fP]"
 
 .PP
-Definition at line 176 of file xorg\&.h\&.
+Definition at line 181 of file xorg\&.h\&.
 .SS "long xorg::clickms"
 
 .PP
-Definition at line 179 of file xorg\&.h\&.
+Definition at line 185 of file xorg\&.h\&.
 .SS "xcb_window_t xorg::clipboard"
 
 .PP
-Definition at line 172 of file xorg\&.h\&.
+Definition at line 177 of file xorg\&.h\&.
 .SS "xcb_colormap_t xorg::colormap"
 
 .PP
-Definition at line 169 of file xorg\&.h\&.
+Definition at line 174 of file xorg\&.h\&.
 .SS "xcb_connection_t* xorg::connection"
 
 .PP
-Definition at line 162 of file xorg\&.h\&.
+Definition at line 167 of file xorg\&.h\&.
 .SS "long xorg::dblclickms"
 
 .PP
-Definition at line 180 of file xorg\&.h\&.
+Definition at line 186 of file xorg\&.h\&.
 .SS "uint8_t xorg::depth"
 
 .PP
-Definition at line 185 of file xorg\&.h\&.
+Definition at line 192 of file xorg\&.h\&.
 .SS "const char* xorg::display"
 
 .PP
-Definition at line 168 of file xorg\&.h\&.
+Definition at line 173 of file xorg\&.h\&.
 .SS "\fBxkb_s\fP xorg::key"
 
 .PP
-Definition at line 170 of file xorg\&.h\&.
+Definition at line 175 of file xorg\&.h\&.
 .SS "\fBmonitor_s\fP* xorg::monitor"
 
 .PP
-Definition at line 164 of file xorg\&.h\&.
+Definition at line 169 of file xorg\&.h\&.
 .SS "size_t xorg::monitorCount"
 
 .PP
-Definition at line 165 of file xorg\&.h\&.
+Definition at line 170 of file xorg\&.h\&.
 .SS "\fBmonitor_s\fP* xorg::monitorCurrent"
 
 .PP
-Definition at line 166 of file xorg\&.h\&.
+Definition at line 171 of file xorg\&.h\&.
 .SS "\fBmonitor_s\fP* xorg::monitorPrimary"
 
 .PP
-Definition at line 167 of file xorg\&.h\&.
+Definition at line 172 of file xorg\&.h\&.
 .SS "xcb_window_t xorg::primary"
 
 .PP
-Definition at line 171 of file xorg\&.h\&.
-.SS "xcb_xrm_database_t* xorg::resources"
-
-.PP
-Definition at line 178 of file xorg\&.h\&.
-.SS "xcb_screen_t* xorg::screen"
-
-.PP
-Definition at line 163 of file xorg\&.h\&.
-.SS "int xorg::screenCurrent"
+Definition at line 176 of file xorg\&.h\&.
+.SS "\fBqmessages_s\fP* xorg::qmsgEvent"
 
 .PP
 Definition at line 184 of file xorg\&.h\&.
-.SS "int xorg::screenDefault"
+.SS "xcb_xrm_database_t* xorg::resources"
 
 .PP
 Definition at line 183 of file xorg\&.h\&.
+.SS "xcb_screen_t* xorg::screen"
+
+.PP
+Definition at line 168 of file xorg\&.h\&.
+.SS "int xorg::screenCurrent"
+
+.PP
+Definition at line 190 of file xorg\&.h\&.
+.SS "int xorg::screenDefault"
+
+.PP
+Definition at line 189 of file xorg\&.h\&.
+.SS "int xorg::shared"
+
+.PP
+Definition at line 191 of file xorg\&.h\&.
 .SS "xcb_visualid_t xorg::visual"
 
 .PP
-Definition at line 177 of file xorg\&.h\&.
+Definition at line 182 of file xorg\&.h\&.
 
 .SH "Author"
 .PP 

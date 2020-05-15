@@ -1,4 +1,4 @@
-.TH "include/ef/file.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/file.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -449,7 +449,7 @@ preperty for auto close dire when exit from scope
 .PP
 
 .PP
-Definition at line 119 of file file\&.h\&.
+Definition at line 120 of file file\&.h\&.
 .SS "#define __fd_close   \fB__cleanup\fP(\fBfd_close_auto\fP)"
 for cleanup 
 .PP
@@ -460,11 +460,11 @@ for cleanup
 .PP
 
 .PP
-Definition at line 293 of file file\&.h\&.
+Definition at line 294 of file file\&.h\&.
 .SS "#define __file_close   \fB__cleanup\fP(\fBfile_close_auto\fP)"
 
 .PP
-Definition at line 36 of file file\&.h\&.
+Definition at line 37 of file file\&.h\&.
 .SS "#define __ftar_close   \fB__cleanup\fP(\fBftar_close_auto\fP)"
 cleanup function 
 .PP
@@ -475,7 +475,7 @@ cleanup function
 .PP
 
 .PP
-Definition at line 340 of file file\&.h\&.
+Definition at line 341 of file file\&.h\&.
 .SS "#define __stream_close   \fB__cleanup\fP(\fBstream_close_auto\fP)"
 cleanup 
 .PP
@@ -486,11 +486,11 @@ cleanup
 .PP
 
 .PP
-Definition at line 462 of file file\&.h\&.
+Definition at line 463 of file file\&.h\&.
 .SS "#define dir_close(D)   closedir(D)"
 only for conventions 
 .PP
-Definition at line 107 of file file\&.h\&.
+Definition at line 108 of file file\&.h\&.
 .SS "#define dir_foreach(DR, IT)   for( \fBdirent_s\fP* IT = \fBdir_read\fP(DR); IT; IT = \fBdir_read\fP(DR) )"
 foreach 
 .PP
@@ -503,135 +503,135 @@ foreach
 .PP
 
 .PP
-Definition at line 133 of file file\&.h\&.
+Definition at line 134 of file file\&.h\&.
 .SS "#define dir_open(PATH)   opendir(PATH)"
 only for conventions 
 .PP
-Definition at line 105 of file file\&.h\&.
+Definition at line 106 of file file\&.h\&.
 .SS "#define dir_read(D)   readdir(D)"
 only for conventions 
 .PP
-Definition at line 109 of file file\&.h\&.
+Definition at line 110 of file file\&.h\&.
 .SS "#define dirent_name(ENT)   (ENT)\->d_name"
 entity name 
 .PP
-Definition at line 122 of file file\&.h\&.
+Definition at line 123 of file file\&.h\&.
 .SS "#define dirent_type(ENT)   (ENT)\->d_type"
 entity type 
 .PP
-Definition at line 124 of file file\&.h\&.
+Definition at line 125 of file file\&.h\&.
 .SS "#define fd_close(FD)   close(FD)"
 only for name conventions 
 .PP
-Definition at line 274 of file file\&.h\&.
+Definition at line 275 of file file\&.h\&.
 .SS "#define fd_mem_create(NAME)   memfd_create(NAME,0)"
 create fd from memory with pseudoname 
 .PP
-Definition at line 286 of file file\&.h\&.
+Definition at line 287 of file file\&.h\&.
 .SS "#define fd_rewind(FD)   lseek(FD,0,SEEK_SET)"
 only for name conventions 
 .PP
-Definition at line 282 of file file\&.h\&.
+Definition at line 283 of file file\&.h\&.
 .SS "#define fd_seek(FD, POS, AT)   lseek(FD, POS, AT)"
 only for name conventions 
 .PP
-Definition at line 278 of file file\&.h\&.
+Definition at line 279 of file file\&.h\&.
 .SS "#define fd_stat(FD, PTRSTAT_S)   fstat(FD,PTRSTAT_S)"
 only for name conventions 
 .PP
-Definition at line 288 of file file\&.h\&.
+Definition at line 289 of file file\&.h\&.
 .SS "#define fd_tell(FD)   lseek(FD, 0, SEEK_CUR)"
 only for name conventions 
 .PP
-Definition at line 280 of file file\&.h\&.
+Definition at line 281 of file file\&.h\&.
 .SS "#define fd_toend(FD)   lseek(FD, 0, SEEK_END)"
 only for name conventions 
 .PP
-Definition at line 284 of file file\&.h\&.
+Definition at line 285 of file file\&.h\&.
 .SS "#define fd_truncate(FD, SIZE)   ftruncate(FD, SIZE)"
 only for name conventions 
 .PP
-Definition at line 276 of file file\&.h\&.
+Definition at line 277 of file file\&.h\&.
 .SS "#define FILE_BLOCK_DEVICES   DT_BLK"
 file is block devices 
 .PP
-Definition at line 88 of file file\&.h\&.
+Definition at line 89 of file file\&.h\&.
 .SS "#define FILE_BUFFER   4096"
 
 .PP
-Definition at line 18 of file file\&.h\&.
+Definition at line 19 of file file\&.h\&.
 .SS "#define FILE_CHARACTER_DEVICES   DT_CHR"
 file is char device 
 .PP
-Definition at line 90 of file file\&.h\&.
+Definition at line 91 of file file\&.h\&.
 .SS "#define FILE_CHUNK   4096"
 
 .PP
-Definition at line 21 of file file\&.h\&.
+Definition at line 22 of file file\&.h\&.
 .SS "#define FILE_DIRECTORY   DT_DIR"
 file is directory 
 .PP
-Definition at line 92 of file file\&.h\&.
+Definition at line 93 of file file\&.h\&.
 .SS "#define FILE_FILE   DT_REG"
 file is regular file 
 .PP
-Definition at line 98 of file file\&.h\&.
+Definition at line 99 of file file\&.h\&.
 .SS "#define FILE_NAMED_PIPE   DT_FIFO"
 file is pipe or fifo 
 .PP
-Definition at line 94 of file file\&.h\&.
+Definition at line 95 of file file\&.h\&.
 .SS "#define FILE_SOCKET   DT_SOCK"
 file is socket 
 .PP
-Definition at line 100 of file file\&.h\&.
+Definition at line 101 of file file\&.h\&.
 .SS "#define file_stat(PATH, PTRSTAT_S)   stat(PATH, PTRSTAT_S)"
 only for conventions 
 .PP
-Definition at line 162 of file file\&.h\&.
+Definition at line 163 of file file\&.h\&.
 .SS "#define FILE_SYMBOLIC_LINK   DT_LNK"
 file is symbolic link 
 .PP
-Definition at line 96 of file file\&.h\&.
+Definition at line 97 of file file\&.h\&.
 .SS "#define FILE_UNKNOWN   DT_UNKNOWN"
 file is unknown 
 .PP
-Definition at line 102 of file file\&.h\&.
+Definition at line 103 of file file\&.h\&.
 .SS "#define ftar_close(T)   tar_close(T)"
 close a tar 
 .PP
-Definition at line 330 of file file\&.h\&.
+Definition at line 331 of file file\&.h\&.
 .SS "#define ftar_get_name(T)   ((T)\->th_buf\&.name)"
 get name of current tar 
 .PP
-Definition at line 343 of file file\&.h\&.
+Definition at line 344 of file file\&.h\&.
 .SS "#define ftar_get_path(T)   th_get_pathname(tar)"
 get path of current tar 
 .PP
-Definition at line 346 of file file\&.h\&.
+Definition at line 347 of file file\&.h\&.
 .SS "#define ftar_isdir(T)   TH_ISDIR(T)"
 check if tar is dir 
 .PP
-Definition at line 352 of file file\&.h\&.
+Definition at line 353 of file file\&.h\&.
 .SS "#define ftar_isreg(T)   TH_ISREG(tar)"
 check if tar is regular file 
 .PP
-Definition at line 355 of file file\&.h\&.
+Definition at line 356 of file file\&.h\&.
 .SS "#define ftar_read(T)   th_read(T)"
 reading a tar, 1 have read 0 no more data to read 
 .PP
-Definition at line 327 of file file\&.h\&.
+Definition at line 328 of file file\&.h\&.
 .SS "#define ftar_skip_reg(T)   tar_skip_regfile(T)"
 if you not extract regular file you need to skip him 
 .PP
-Definition at line 349 of file file\&.h\&.
+Definition at line 350 of file file\&.h\&.
 .SS "#define path_current_set(PATH)   chdir(PATH)"
 set current path 
 .PP
-Definition at line 59 of file file\&.h\&.
+Definition at line 60 of file file\&.h\&.
 .SS "#define STREAM_CHUNK   4096"
 
 .PP
-Definition at line 391 of file file\&.h\&.
+Definition at line 392 of file file\&.h\&.
 .SS "#define stream_inp(STREAM, VAR, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -648,11 +648,11 @@ Definition at line 391 of file file\&.h\&.
 .fi
 overloading stream_inp* 
 .PP
-Definition at line 564 of file file\&.h\&.
+Definition at line 565 of file file\&.h\&.
 .SS "#define STREAM_NUM_MAX_DIGIT   64"
 
 .PP
-Definition at line 403 of file file\&.h\&.
+Definition at line 404 of file file\&.h\&.
 .SS "#define stream_out(STREAM, VAR, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -670,39 +670,39 @@ Definition at line 403 of file file\&.h\&.
 .fi
 overloading stream_out 
 .PP
-Definition at line 627 of file file\&.h\&.
+Definition at line 628 of file file\&.h\&.
 .SS "#define stream_skip_h(STREAM)   \fBstream_skip_anyof\fP(STREAM, ' \\t')"
 skip space and tab 
 .PP
-Definition at line 668 of file file\&.h\&.
+Definition at line 669 of file file\&.h\&.
 .SS "#define stream_skip_hnl(STREAM)   \fBstream_skip_anyof\fP(STREAM, ' \\t\\n')"
 skip space tab newline 
 .PP
-Definition at line 671 of file file\&.h\&.
+Definition at line 672 of file file\&.h\&.
 .SS "#define stream_skip_line(STREAM)   \fBstream_skip_next\fP(STREAM, '\\n')"
 skip a line 
 .PP
-Definition at line 689 of file file\&.h\&.
+Definition at line 690 of file file\&.h\&.
 .SS "#define stream_skip_n(STREAM)   \fBstream_skip_anyof\fP(STREAM, '0123456789abcdefxABCDEFX\&.')"
 skip numbers [0-9a-fA-FxX_\&.] 
 .PP
-Definition at line 677 of file file\&.h\&.
+Definition at line 678 of file file\&.h\&.
 .SS "#define stream_skip_w(STREAM)   \fBstream_skip_anyof\fP(STREAM, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_')"
 skip word [a-zA-Z_] 
 .PP
-Definition at line 674 of file file\&.h\&.
+Definition at line 675 of file file\&.h\&.
 .SS "#define stream_skip_wn(STREAM)   \fBstream_skip_anyof\fP(STREAM, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_\&.')"
 skip word and number [0-9a-zA-Z_] 
 .PP
-Definition at line 680 of file file\&.h\&.
+Definition at line 681 of file file\&.h\&.
 .SS "#define STREAM_STRING_CHUNK   4096"
 
 .PP
-Definition at line 395 of file file\&.h\&.
+Definition at line 396 of file file\&.h\&.
 .SS "#define STREAM_STRING_FIT_REALLOC   \fB_Y_\fP"
 
 .PP
-Definition at line 399 of file file\&.h\&.
+Definition at line 400 of file file\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef ssize_t(* customio_f) (\fBstream_s\fP *, void *, size_t)"
@@ -716,7 +716,7 @@ Definition at line 33 of file file\&.h\&.
 .SS "typedef struct dirent \fBdirent_s\fP"
 
 .PP
-Definition at line 32 of file file\&.h\&.
+Definition at line 31 of file file\&.h\&.
 .SS "typedef FILE \fBfile_t\fP"
 
 .PP
@@ -726,11 +726,11 @@ Definition at line 31 of file file\&.h\&.
 .SS "typedef struct stat \fBstat_s\fP"
 
 .PP
-Definition at line 29 of file file\&.h\&.
+Definition at line 1 of file file\&.h\&.
 .SS "typedef struct \fBstream\fP \fBstream_s\fP"
 
 .PP
-Definition at line 368 of file file\&.h\&.
+Definition at line 362 of file file\&.h\&.
 .SS "typedef struct \fBstreamBuffer\fP \fBstreamBuffer_s\fP"
 
 .SS "typedef TAR \fBtar_t\fP"
@@ -740,7 +740,7 @@ Definition at line 34 of file file\&.h\&.
 .SS "typedef struct utimbuf \fButimbuf_s\fP"
 
 .PP
-Definition at line 30 of file file\&.h\&.
+Definition at line 1 of file file\&.h\&.
 .SH "Function Documentation"
 .PP 
 .SS "__printf (2, 3)"
@@ -976,7 +976,7 @@ wait data to fd
 .RS 4
 \fIfd\fP fd to wait 
 .br
-\fItimeoutms\fP time to get timeout 
+\fItimeoutms\fP time to get timeout, -1 infinite, 0 not wait, > 0 ms 
 .RE
 .PP
 \fBReturns\fP

@@ -1,0 +1,237 @@
+.TH "include/ef/guiBar.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/guiBar.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/gui\&.h>\fP
+.br
+\fC#include <ef/guiCaption\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBguiBar\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBGUI_THEME_BAR_FILL\fP   'bar\&.fill'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_BAR_COLOR\fP   'bar\&.color'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_BAR_MODE\fP   'bar\&.mode'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_BAR_DESCRIPT\fP   'bar\&.descript'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_BAR_CUR_DESCRIPT\fP   'bar\&.descriptCurrent'"
+.br
+.ti -1c
+.RI "#define \fBGUI_BAR_HORIZONTAL\fP   0x0001"
+.br
+.ti -1c
+.RI "#define \fBGUI_BAR_VERTICAL\fP   0x0002"
+.br
+.ti -1c
+.RI "#define \fBGUI_BAR_CIRCLE\fP   0x0004"
+.br
+.ti -1c
+.RI "#define \fBGUI_BAR_MIN_ANGLE\fP   0x0008"
+.br
+.ti -1c
+.RI "#define \fBGUI_BAR_SHOW_CURRENT\fP   0x0010"
+.br
+.ti -1c
+.RI "#define \fBGUI_BAR_SHOW_MIN\fP   0x0020"
+.br
+.ti -1c
+.RI "#define \fBGUI_BAR_SHOW_MAX\fP   0x0040"
+.br
+.ti -1c
+.RI "#define \fBGUI_BAR_SHOW_PERCENT\fP   0x0080"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBguiBar\fP \fBguiBar_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBguiBar_s\fP * \fBgui_bar_new\fP (\fBguiCaption_s\fP *caption, \fBguiLayer_s\fP *fill, double min, double max, double start, unsigned flags)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_bar_attach\fP (\fBgui_s\fP *\fBgui\fP, \fBguiBar_s\fP *bar)"
+.br
+.ti -1c
+.RI "void \fBgui_bar_free\fP (\fBguiBar_s\fP *bar)"
+.br
+.ti -1c
+.RI "void \fBgui_bar_flags_set\fP (\fBgui_s\fP *\fBgui\fP, unsigned flags)"
+.br
+.ti -1c
+.RI "void \fBgui_bar_text_set\fP (\fBgui_s\fP *\fBgui\fP, const \fButf8_t\fP *text, const \fButf8_t\fP *aftercurrent)"
+.br
+.ti -1c
+.RI "void \fBgui_bar_circle_fn\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBguiLayer_s\fP **img, void *generic)"
+.br
+.ti -1c
+.RI "void \fBgui_bar_current_set\fP (\fBgui_s\fP *\fBgui\fP, double current)"
+.br
+.ti -1c
+.RI "double \fBgui_bar_current\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_bar_max_set\fP (\fBgui_s\fP *\fBgui\fP, double max)"
+.br
+.ti -1c
+.RI "double \fBgui_bar_max\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_bar_min_set\fP (\fBgui_s\fP *\fBgui\fP, double min)"
+.br
+.ti -1c
+.RI "double \fBgui_bar_min\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_bar_mode_horizontal\fP (\fBgui_s\fP *\fBgui\fP, \fBguiLayer_s\fP *fill)"
+.br
+.ti -1c
+.RI "void \fBgui_bar_mode_vertical\fP (\fBgui_s\fP *\fBgui\fP, \fBguiLayer_s\fP *fill)"
+.br
+.ti -1c
+.RI "void \fBgui_bar_mode_circle\fP (\fBgui_s\fP *\fBgui\fP, \fBg2dColor_t\fP color)"
+.br
+.ti -1c
+.RI "void \fBgui_bar_redraw\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_bar_event_free\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *ev)"
+.br
+.ti -1c
+.RI "int \fBgui_bar_event_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *unset)"
+.br
+.ti -1c
+.RI "int \fBgui_bar_event_move\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_bar_event_themes\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *ev)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define GUI_BAR_CIRCLE   0x0004"
+
+.PP
+Definition at line 16 of file guiBar\&.h\&.
+.SS "#define GUI_BAR_HORIZONTAL   0x0001"
+
+.PP
+Definition at line 14 of file guiBar\&.h\&.
+.SS "#define GUI_BAR_MIN_ANGLE   0x0008"
+
+.PP
+Definition at line 17 of file guiBar\&.h\&.
+.SS "#define GUI_BAR_SHOW_CURRENT   0x0010"
+
+.PP
+Definition at line 18 of file guiBar\&.h\&.
+.SS "#define GUI_BAR_SHOW_MAX   0x0040"
+
+.PP
+Definition at line 20 of file guiBar\&.h\&.
+.SS "#define GUI_BAR_SHOW_MIN   0x0020"
+
+.PP
+Definition at line 19 of file guiBar\&.h\&.
+.SS "#define GUI_BAR_SHOW_PERCENT   0x0080"
+
+.PP
+Definition at line 21 of file guiBar\&.h\&.
+.SS "#define GUI_BAR_VERTICAL   0x0002"
+
+.PP
+Definition at line 15 of file guiBar\&.h\&.
+.SS "#define GUI_THEME_BAR_COLOR   'bar\&.color'"
+
+.PP
+Definition at line 9 of file guiBar\&.h\&.
+.SS "#define GUI_THEME_BAR_CUR_DESCRIPT   'bar\&.descriptCurrent'"
+
+.PP
+Definition at line 12 of file guiBar\&.h\&.
+.SS "#define GUI_THEME_BAR_DESCRIPT   'bar\&.descript'"
+
+.PP
+Definition at line 11 of file guiBar\&.h\&.
+.SS "#define GUI_THEME_BAR_FILL   'bar\&.fill'"
+
+.PP
+Definition at line 8 of file guiBar\&.h\&.
+.SS "#define GUI_THEME_BAR_MODE   'bar\&.mode'"
+
+.PP
+Definition at line 10 of file guiBar\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBguiBar\fP \fBguiBar_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "\fBgui_s\fP* gui_bar_attach (\fBgui_s\fP * gui, \fBguiBar_s\fP * bar)"
+attach bar to gui 
+.SS "void gui_bar_circle_fn (\fBgui_s\fP * gui, \fB__unused\fP \fBguiLayer_s\fP ** img, void * generic)"
+
+.SS "double gui_bar_current (\fBgui_s\fP * gui)"
+
+.SS "void gui_bar_current_set (\fBgui_s\fP * gui, double current)"
+set current value 
+.SS "int gui_bar_event_free (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * ev)"
+bar free event 
+.SS "int gui_bar_event_move (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+
+.SS "int gui_bar_event_redraw (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * unset)"
+bar redraw event 
+.SS "int gui_bar_event_themes (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * ev)"
+button event theme 
+.SS "void gui_bar_flags_set (\fBgui_s\fP * gui, unsigned flags)"
+
+.SS "void gui_bar_free (\fBguiBar_s\fP * bar)"
+free bar 
+.SS "double gui_bar_max (\fBgui_s\fP * gui)"
+
+.SS "void gui_bar_max_set (\fBgui_s\fP * gui, double max)"
+set max value 
+.SS "double gui_bar_min (\fBgui_s\fP * gui)"
+
+.SS "void gui_bar_min_set (\fBgui_s\fP * gui, double min)"
+
+.SS "void gui_bar_mode_circle (\fBgui_s\fP * gui, \fBg2dColor_t\fP color)"
+
+.SS "void gui_bar_mode_horizontal (\fBgui_s\fP * gui, \fBguiLayer_s\fP * fill)"
+
+.SS "void gui_bar_mode_vertical (\fBgui_s\fP * gui, \fBguiLayer_s\fP * fill)"
+
+.SS "\fBguiBar_s\fP* gui_bar_new (\fBguiCaption_s\fP * caption, \fBguiLayer_s\fP * fill, double min, double max, double start, unsigned flags)"
+create new bar 
+.SS "void gui_bar_redraw (\fBgui_s\fP * gui)"
+bar redraw 
+.SS "void gui_bar_text_set (\fBgui_s\fP * gui, const \fButf8_t\fP * text, const \fButf8_t\fP * aftercurrent)"
+set bar text 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

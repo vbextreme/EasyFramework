@@ -1,4 +1,4 @@
-.TH "include/ef/termmode.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/termmode.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -66,29 +66,29 @@ include/ef/termmode.h
 .SS "#define term_settings_fdget(FD, PTR_SETTINGS)   tcgetattr(FD, PTR_SETTINGS)"
 get termios setting 
 .PP
-Definition at line 18 of file termmode\&.h\&.
+Definition at line 19 of file termmode\&.h\&.
 .SS "#define term_settings_fdset(FD, PTR_SETTINGS)   tcsetattr(FD, TCSANOW, PTR_SETTINGS)"
 set termios setting 
 .PP
-Definition at line 21 of file termmode\&.h\&.
+Definition at line 22 of file termmode\&.h\&.
 .SS "#define term_settings_get(PTR_SETTINGS)   \fBterm_settings_fdget\fP(0, PTR_SETTINGS)"
 get termios setting 
 .PP
-Definition at line 24 of file termmode\&.h\&.
+Definition at line 25 of file termmode\&.h\&.
 .SS "#define term_settings_set(PTR_SETTINGS)   \fBterm_settings_fdset\fP(0, PTR_SETTINGS)"
 set termios setting 
 .PP
-Definition at line 27 of file termmode\&.h\&.
+Definition at line 28 of file termmode\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct termios \fBtermios_s\fP"
 
 .PP
-Definition at line 8 of file termmode\&.h\&.
+Definition at line 1 of file termmode\&.h\&.
 .SS "typedef struct winsize \fBwinsize_s\fP"
 
 .PP
-Definition at line 9 of file termmode\&.h\&.
+Definition at line 1 of file termmode\&.h\&.
 .SH "Function Documentation"
 .PP 
 .SS "void term_buff_end (void)"

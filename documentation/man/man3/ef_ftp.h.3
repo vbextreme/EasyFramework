@@ -1,4 +1,4 @@
-.TH "include/ef/ftp.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/ftp.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -68,7 +68,7 @@ include/ef/ftp.h
 .RI "\fBftpStat_s\fP * \fBftp_list\fP (\fBftp_s\fP *\fBftp\fP)"
 .br
 .ti -1c
-.RI "void \fBftp_stat_vector_free\fP (\fBftpStat_s\fP *v)"
+.RI "void \fBftp_stat_free\fP (void *v)"
 .br
 .ti -1c
 .RI "\fBerr_t\fP \fBftp_rename\fP (\fBftp_s\fP *\fBftp\fP, const char *from, const char *to)"
@@ -88,15 +88,15 @@ include/ef/ftp.h
 .SS "#define FTP_FTYPE_DIR   2"
 
 .PP
-Definition at line 10 of file ftp\&.h\&.
+Definition at line 11 of file ftp\&.h\&.
 .SS "#define FTP_FTYPE_LINK   1"
 
 .PP
-Definition at line 9 of file ftp\&.h\&.
+Definition at line 10 of file ftp\&.h\&.
 .SS "#define FTP_FTYPE_REG   0"
 
 .PP
-Definition at line 8 of file ftp\&.h\&.
+Definition at line 9 of file ftp\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBftp\fP \fBftp_s\fP"
@@ -121,7 +121,7 @@ Definition at line 8 of file ftp\&.h\&.
 
 .SS "\fBerr_t\fP ftp_site (\fBftp_s\fP * ftp, const char * url)"
 
-.SS "void ftp_stat_vector_free (\fBftpStat_s\fP * v)"
+.SS "void ftp_stat_free (void * v)"
 
 .SS "\fBerr_t\fP ftp_unlink (\fBftp_s\fP * ftp, const char * fname)"
 

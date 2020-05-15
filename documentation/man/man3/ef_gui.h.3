@@ -1,4 +1,4 @@
-.TH "include/ef/gui.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/gui.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -10,11 +10,13 @@ include/ef/gui.h
 .br
 \fC#include <ef/xorg\&.h>\fP
 .br
-\fC#include <ef/guiResources\&.h>\fP
-.br
 \fC#include <ef/deadpoll\&.h>\fP
 .br
 \fC#include <ef/phq\&.h>\fP
+.br
+\fC#include <ef/ft\&.h>\fP
+.br
+\fC#include <ef/guiImage\&.h>\fP
 .br
 
 .SS "Data Structures"
@@ -24,10 +26,16 @@ include/ef/gui.h
 .RI "struct \fBguiPosition\fP"
 .br
 .ti -1c
+.RI "struct \fBguiMargin\fP"
+.br
+.ti -1c
 .RI "struct \fBguiTimer_s\fP"
 .br
 .ti -1c
-.RI "struct \fBguiBackground\fP"
+.RI "struct \fBguiRound\fP"
+.br
+.ti -1c
+.RI "struct \fBguiScene\fP"
 .br
 .ti -1c
 .RI "struct \fBgui\fP"
@@ -50,6 +58,15 @@ include/ef/gui.h
 .br
 .ti -1c
 .RI "#define \fBGUI_TYPE_DIV\fP   5"
+.br
+.ti -1c
+.RI "#define \fBGUI_TYPE_BAR\fP   6"
+.br
+.ti -1c
+.RI "#define \fBGUI_TYPE_OPTION\fP   7"
+.br
+.ti -1c
+.RI "#define \fBGUI_TYPE_WINSEL\fP   8"
 .br
 .ti -1c
 .RI "#define \fBGUI_TYPE_USER\fP   999"
@@ -82,7 +99,112 @@ include/ef/gui.h
 .RI "#define \fBGUI_TIMER_CUSTOM\fP   1"
 .br
 .ti -1c
+.RI "#define \fBGUI_SHOW_VISIBLE\fP   1"
+.br
+.ti -1c
+.RI "#define \fBGUI_SHOW_HIDE\fP   0"
+.br
+.ti -1c
 .RI "#define \fBGUI_FOCUS_BORDER_SIZE\fP   3"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_WM_ALPHA\fP   'wm\&.alpha'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_BORDER\fP   'border'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_ROUND\fP   'round'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_SUPERSAMPLING\fP   'supersampling'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_X\fP   'position\&.x'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_Y\fP   'position\&.y'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_W\fP   'position\&.w'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_H\fP   'position\&.h'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_FONT_GROUP\fP   'font\&.group'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_FONT_NAME\fP   'font\&.name\&.'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_FONT_SIZE\fP   'font\&.size\&.'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_BACKGROUND\fP   'background'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_POST\fP   'postproduction'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_COLOR\fP   'color'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_IMAGE\fP   'image'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_GIF\fP   'gif'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_VIDEO\fP   'video'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_ALPHA\fP   'alpha'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_PLAY\fP   'play'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_LOOP\fP   'loop'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_RATIO\fP   'ratio'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_DEST_X\fP   'dest\&.x'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_DEST_Y\fP   'dest\&.y'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_DEST_W\fP   'dest\&.w'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_DEST_H\fP   'dest\&.h'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_SRC_X\fP   'src\&.x'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_SRC_Y\fP   'src\&.y'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_SRC_W\fP   'src\&.w'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_SRC_H\fP   'src\&.h'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_PER_X\fP   'per\&.x'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_PER_Y\fP   'per\&.y'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_PER_W\fP   'per\&.w'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_COMPOSITE_PER_H\fP   'per\&.h'"
 .br
 .ti -1c
 .RI "#define \fBgui_color\fP(A,  R,  G,  B)   \fBg2d_color_gen\fP(\fBX_COLOR_MODE\fP, A, R, G, B)"
@@ -110,7 +232,13 @@ include/ef/gui.h
 .RI "typedef struct \fBguiPosition\fP \fBguiPosition_s\fP"
 .br
 .ti -1c
-.RI "typedef struct \fBguiBackground\fP \fBguiBackground_s\fP"
+.RI "typedef struct \fBguiMargin\fP \fBguiMargin_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBguiRound\fP \fBguiRound_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBguiScene\fP \fBguiScene_s\fP"
 .br
 .in -1c
 .SS "Enumerations"
@@ -139,7 +267,16 @@ include/ef/gui.h
 .RI "unsigned \fBgui_screen_height\fP (void)"
 .br
 .ti -1c
-.RI "\fBgui_s\fP * \fBgui_new\fP (\fBgui_s\fP *parent, const char *name, const char *class, \fBguiMode_e\fP mode, int border, int x, int y, int width, int height, \fBg2dColor_t\fP colorBorder, \fBguiBackground_s\fP *bk, int genericSize, void *userdata)"
+.RI "void \fBgui_register_internal_focus_event\fP (\fBgui_s\fP *\fBgui\fP, \fBguiEvent_f\fP fn)"
+.br
+.ti -1c
+.RI "void \fBgui_unregister_internal_focus_event\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_internal_focus_event\fP (void)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_new\fP (\fBgui_s\fP *parent, const char *name, const char *class, \fBguiMode_e\fP mode, int border, int x, int y, int width, int height, \fBg2dColor_t\fP colorBorder, \fBguiComposite_s\fP *background, \fBguiComposite_s\fP *postproduction, void *userdata)"
 .br
 .ti -1c
 .RI "void \fBgui_free\fP (\fBgui_s\fP *\fBgui\fP)"
@@ -172,25 +309,28 @@ include/ef/gui.h
 .RI "void \fBgui_border\fP (\fBgui_s\fP *\fBgui\fP, int border)"
 .br
 .ti -1c
-.RI "void \fBgui_focus_from_parent\fP (\fBgui_s\fP *\fBgui\fP, int id)"
+.RI "ssize_t \fBgui_id\fP (\fBgui_s\fP *\fBgui\fP)"
 .br
 .ti -1c
-.RI "int \fBgui_focuse_have\fP (\fBgui_s\fP *\fBgui\fP)"
+.RI "\fBgui_s\fP * \fBgui_by_name\fP (\fBgui_s\fP *\fBgui\fP, const char *name, const char *class)"
+.br
+.ti -1c
+.RI "void \fBgui_focus_store\fP (void)"
+.br
+.ti -1c
+.RI "void \fBgui_focus_restore\fP (void)"
+.br
+.ti -1c
+.RI "int \fBgui_focus_have\fP (\fBgui_s\fP *\fBgui\fP)"
 .br
 .ti -1c
 .RI "void \fBgui_focus\fP (\fBgui_s\fP *\fBgui\fP)"
 .br
 .ti -1c
-.RI "int \fBgui_focus_next_id\fP (\fBgui_s\fP *parent)"
+.RI "\fBgui_s\fP * \fBgui_focus_next\fP (\fBgui_s\fP *\fBgui\fP)"
 .br
 .ti -1c
-.RI "void \fBgui_focus_next\fP (\fBgui_s\fP *\fBgui\fP)"
-.br
-.ti -1c
-.RI "int \fBgui_focus_prev_id\fP (\fBgui_s\fP *parent)"
-.br
-.ti -1c
-.RI "void \fBgui_focus_prev\fP (\fBgui_s\fP *\fBgui\fP)"
+.RI "\fBgui_s\fP * \fBgui_focus_prev\fP (\fBgui_s\fP *\fBgui\fP)"
 .br
 .ti -1c
 .RI "void \fBgui_clipboard_copy\fP (\fBgui_s\fP *\fBgui\fP, int primary)"
@@ -253,6 +393,9 @@ include/ef/gui.h
 .RI "\fBerr_t\fP \fBgui_deadpoll_event_callback\fP (\fB__unused\fP \fBdeadpoll_s\fP *dp, \fB__unused\fP int ev, \fB__unused\fP void *arg)"
 .br
 .ti -1c
+.RI "\fBerr_t\fP \fBgui_deadpoll_fd_callback\fP (\fB__unused\fP \fBdeadpoll_s\fP *dp, int ev, void *arg)"
+.br
+.ti -1c
 .RI "void \fBgui_deadpoll_unregister\fP (\fBdeadpoll_s\fP *dp)"
 .br
 .ti -1c
@@ -274,31 +417,58 @@ include/ef/gui.h
 .RI "void \fBgui_timer_free\fP (\fBguiTimer_s\fP *timer)"
 .br
 .ti -1c
-.RI "\fBguiBackground_s\fP * \fBgui_background_new\fP (\fBg2dColor_t\fP color, \fBg2dImage_s\fP *img, \fBg2dCoord_s\fP *pos, \fBguiBackgroundFN_f\fP fn, int mode)"
+.RI "void \fBgui_fd_register\fP (\fBgui_s\fP *\fBgui\fP, int fd, int \fBevent\fP, \fBguiEvent_f\fP fn)"
 .br
 .ti -1c
-.RI "void \fBgui_background_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fBguiBackground_s\fP *bkg)"
+.RI "void \fBgui_fd_unregister\fP (int fd)"
 .br
 .ti -1c
-.RI "\fBguiBackground_s\fP * \fBgui_background_get\fP (\fBgui_s\fP *\fBgui\fP, size_t id)"
+.RI "void \fBgui_background_supersampling_fn\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBguiLayer_s\fP **img, \fB__unused\fP void *generic)"
 .br
 .ti -1c
-.RI "void \fBgui_background_add\fP (\fBgui_s\fP *\fBgui\fP, \fBguiBackground_s\fP *bk)"
+.RI "void \fBgui_background_main_round_fn\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBguiLayer_s\fP **img, void *generic)"
 .br
 .ti -1c
-.RI "void \fBgui_background_main_round_fn\fP (\fBgui_s\fP *\fBgui\fP)"
+.RI "void \fBgui_background_round_fn\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBguiLayer_s\fP **img, \fB__unused\fP void *generic)"
 .br
 .ti -1c
-.RI "void \fBgui_background_round_fn\fP (\fBgui_s\fP *\fBgui\fP)"
+.RI "char * \fBgui_themes_name\fP (\fBgui_s\fP *\fBgui\fP, const char *appName)"
 .br
 .ti -1c
-.RI "char * \fBgui_resource_string_get\fP (const char *name, const char *class)"
+.RI "char * \fBgui_themes_string\fP (const char *name, const char *property)"
 .br
 .ti -1c
-.RI "long \fBgui_resource_long_get\fP (const char *name, const char *class)"
+.RI "\fBerr_t\fP \fBgui_themes_bool_set\fP (const char *name, const char *property, int *set)"
 .br
 .ti -1c
-.RI "int \fBgui_resource_bool_get\fP (const char *name, const char *class)"
+.RI "\fBerr_t\fP \fBgui_themes_int_set\fP (const char *name, const char *property, int *set)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBgui_themes_uint_set\fP (const char *name, const char *property, unsigned *set)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBgui_themes_long_set\fP (const char *name, const char *property, long *set)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBgui_themes_double_set\fP (const char *name, const char *property, double *set)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBgui_themes_color_set\fP (const char *name, const char *property, \fBg2dColor_t\fP *set)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBgui_themes_fonts_set\fP (const char *name, \fBftFonts_s\fP **controlFonts)"
+.br
+.ti -1c
+.RI "\fBerr_t\fP \fBgui_themes_layer\fP (\fBgui_s\fP *\fBgui\fP, const char *name, \fBguiLayer_s\fP **ptrimg)"
+.br
+.ti -1c
+.RI "void \fBgui_themes_composite\fP (\fBgui_s\fP *\fBgui\fP, \fBguiComposite_s\fP *\fBcmp\fP, const char *name, const char *compname)"
+.br
+.ti -1c
+.RI "void \fBgui_themes\fP (\fBgui_s\fP *\fBgui\fP, const char *appName)"
+.br
+.ti -1c
+.RI "void \fBgui_themes_all\fP (\fBgui_s\fP *\fBgui\fP, const char *appName)"
 .br
 .in -1c
 .SH "Macro Definition Documentation"
@@ -306,97 +476,253 @@ include/ef/gui.h
 .SS "#define GUI_BK_ALPHA   0x08"
 
 .PP
-Definition at line 36 of file gui\&.h\&.
+Definition at line 26 of file gui\&.h\&.
 .SS "#define GUI_BK_COLOR   0x01"
 
 .PP
-Definition at line 33 of file gui\&.h\&.
+Definition at line 23 of file gui\&.h\&.
 .SS "#define GUI_BK_CPOS   0x02"
 
 .PP
-Definition at line 34 of file gui\&.h\&.
+Definition at line 24 of file gui\&.h\&.
 .SS "#define GUI_BK_FN   0x10"
 
 .PP
-Definition at line 37 of file gui\&.h\&.
+Definition at line 27 of file gui\&.h\&.
 .SS "#define GUI_BK_IMAGE   0x04"
 
 .PP
-Definition at line 35 of file gui\&.h\&.
+Definition at line 25 of file gui\&.h\&.
 .SS "#define GUI_BK_NO_OP   0x00"
 
 .PP
-Definition at line 32 of file gui\&.h\&.
+Definition at line 22 of file gui\&.h\&.
 .SS "#define gui_color(A, R, G, B)   \fBg2d_color_gen\fP(\fBX_COLOR_MODE\fP, A, R, G, B)"
 
 .PP
-Definition at line 114 of file gui\&.h\&.
+Definition at line 153 of file gui\&.h\&.
 .SS "#define GUI_FOCUS_BORDER_SIZE   3"
 
 .PP
-Definition at line 43 of file gui\&.h\&.
-.SS "#define GUI_TIMER_CUSTOM   1"
+Definition at line 36 of file gui\&.h\&.
+.SS "#define GUI_SHOW_HIDE   0"
 
 .PP
-Definition at line 41 of file gui\&.h\&.
-.SS "#define GUI_TIMER_FREE   \-1"
+Definition at line 34 of file gui\&.h\&.
+.SS "#define GUI_SHOW_VISIBLE   1"
 
 .PP
-Definition at line 39 of file gui\&.h\&.
-.SS "#define GUI_TIMER_NEXT   0"
+Definition at line 33 of file gui\&.h\&.
+.SS "#define GUI_THEME_BORDER   'border'"
 
 .PP
 Definition at line 40 of file gui\&.h\&.
-.SS "#define GUI_TYPE_BUTTON   2"
+.SS "#define GUI_THEME_COMPOSITE_ALPHA   'alpha'"
 
 .PP
-Definition at line 27 of file gui\&.h\&.
-.SS "#define GUI_TYPE_DIV   5"
+Definition at line 57 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_BACKGROUND   'background'"
+
+.PP
+Definition at line 51 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_COLOR   'color'"
+
+.PP
+Definition at line 53 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_DEST_H   'dest\&.h'"
+
+.PP
+Definition at line 64 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_DEST_W   'dest\&.w'"
+
+.PP
+Definition at line 63 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_DEST_X   'dest\&.x'"
+
+.PP
+Definition at line 61 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_DEST_Y   'dest\&.y'"
+
+.PP
+Definition at line 62 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_GIF   'gif'"
+
+.PP
+Definition at line 55 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_IMAGE   'image'"
+
+.PP
+Definition at line 54 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_LOOP   'loop'"
+
+.PP
+Definition at line 59 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_PER_H   'per\&.h'"
+
+.PP
+Definition at line 72 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_PER_W   'per\&.w'"
+
+.PP
+Definition at line 71 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_PER_X   'per\&.x'"
+
+.PP
+Definition at line 69 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_PER_Y   'per\&.y'"
+
+.PP
+Definition at line 70 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_PLAY   'play'"
+
+.PP
+Definition at line 58 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_POST   'postproduction'"
+
+.PP
+Definition at line 52 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_RATIO   'ratio'"
+
+.PP
+Definition at line 60 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_SRC_H   'src\&.h'"
+
+.PP
+Definition at line 68 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_SRC_W   'src\&.w'"
+
+.PP
+Definition at line 67 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_SRC_X   'src\&.x'"
+
+.PP
+Definition at line 65 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_SRC_Y   'src\&.y'"
+
+.PP
+Definition at line 66 of file gui\&.h\&.
+.SS "#define GUI_THEME_COMPOSITE_VIDEO   'video'"
+
+.PP
+Definition at line 56 of file gui\&.h\&.
+.SS "#define GUI_THEME_FONT_GROUP   'font\&.group'"
+
+.PP
+Definition at line 47 of file gui\&.h\&.
+.SS "#define GUI_THEME_FONT_NAME   'font\&.name\&.'"
+
+.PP
+Definition at line 48 of file gui\&.h\&.
+.SS "#define GUI_THEME_FONT_SIZE   'font\&.size\&.'"
+
+.PP
+Definition at line 49 of file gui\&.h\&.
+.SS "#define GUI_THEME_H   'position\&.h'"
+
+.PP
+Definition at line 46 of file gui\&.h\&.
+.SS "#define GUI_THEME_ROUND   'round'"
+
+.PP
+Definition at line 41 of file gui\&.h\&.
+.SS "#define GUI_THEME_SUPERSAMPLING   'supersampling'"
+
+.PP
+Definition at line 42 of file gui\&.h\&.
+.SS "#define GUI_THEME_W   'position\&.w'"
+
+.PP
+Definition at line 45 of file gui\&.h\&.
+.SS "#define GUI_THEME_WM_ALPHA   'wm\&.alpha'"
+
+.PP
+Definition at line 38 of file gui\&.h\&.
+.SS "#define GUI_THEME_X   'position\&.x'"
+
+.PP
+Definition at line 43 of file gui\&.h\&.
+.SS "#define GUI_THEME_Y   'position\&.y'"
+
+.PP
+Definition at line 44 of file gui\&.h\&.
+.SS "#define GUI_TIMER_CUSTOM   1"
+
+.PP
+Definition at line 31 of file gui\&.h\&.
+.SS "#define GUI_TIMER_FREE   \-1"
 
 .PP
 Definition at line 29 of file gui\&.h\&.
-.SS "#define GUI_TYPE_LABEL   1"
-
-.PP
-Definition at line 26 of file gui\&.h\&.
-.SS "#define GUI_TYPE_TEXT   4"
-
-.PP
-Definition at line 28 of file gui\&.h\&.
-.SS "#define GUI_TYPE_USER   999"
+.SS "#define GUI_TIMER_NEXT   0"
 
 .PP
 Definition at line 30 of file gui\&.h\&.
+.SS "#define GUI_TYPE_BAR   6"
+
+.PP
+Definition at line 17 of file gui\&.h\&.
+.SS "#define GUI_TYPE_BUTTON   2"
+
+.PP
+Definition at line 14 of file gui\&.h\&.
+.SS "#define GUI_TYPE_DIV   5"
+
+.PP
+Definition at line 16 of file gui\&.h\&.
+.SS "#define GUI_TYPE_LABEL   1"
+
+.PP
+Definition at line 13 of file gui\&.h\&.
+.SS "#define GUI_TYPE_OPTION   7"
+
+.PP
+Definition at line 18 of file gui\&.h\&.
+.SS "#define GUI_TYPE_TEXT   4"
+
+.PP
+Definition at line 15 of file gui\&.h\&.
+.SS "#define GUI_TYPE_USER   999"
+
+.PP
+Definition at line 20 of file gui\&.h\&.
 .SS "#define GUI_TYPE_WINDOW   0"
 
 .PP
-Definition at line 25 of file gui\&.h\&.
+Definition at line 12 of file gui\&.h\&.
+.SS "#define GUI_TYPE_WINSEL   8"
+
+.PP
+Definition at line 19 of file gui\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBgui\fP \fBgui_s\fP"
 
 .PP
-Definition at line 47 of file gui\&.h\&.
-.SS "typedef struct \fBguiBackground\fP \fBguiBackground_s\fP"
-
+Definition at line 1 of file gui\&.h\&.
 .SS "typedef void(* guiBackgroundFN_f) (\fBgui_s\fP *\fBgui\fP)"
 
 .PP
-Definition at line 49 of file gui\&.h\&.
+Definition at line 78 of file gui\&.h\&.
 .SS "typedef int(* guiEvent_f) (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
 
 .PP
-Definition at line 51 of file gui\&.h\&.
+Definition at line 80 of file gui\&.h\&.
+.SS "typedef struct \fBguiMargin\fP \fBguiMargin_s\fP"
+
 .SS "typedef struct \fBguiPosition\fP \fBguiPosition_s\fP"
+
+.SS "typedef struct \fBguiRound\fP \fBguiRound_s\fP"
+
+.SS "typedef struct \fBguiScene\fP \fBguiScene_s\fP"
 
 .SS "typedef int(* guiTimer_f) (\fBguiTimer_s\fP *timer)"
 
 .PP
-Definition at line 55 of file gui\&.h\&.
+Definition at line 84 of file gui\&.h\&.
 .SS "typedef struct \fBguiTimer_s\fP \fBguiTimer_s\fP"
 
 .PP
-Definition at line 53 of file gui\&.h\&.
+Definition at line 80 of file gui\&.h\&.
 .SH "Enumeration Type Documentation"
 .PP 
 .SS "enum \fBguiMode_e\fP"
@@ -417,25 +743,21 @@ Definition at line 53 of file gui\&.h\&.
 .TP
 \fB\fIGUI_MODE_DOCK_RIGHT \fP\fP
 .PP
-Definition at line 45 of file gui\&.h\&.
+Definition at line 74 of file gui\&.h\&.
 .SH "Function Documentation"
 .PP 
-.SS "void gui_background_add (\fBgui_s\fP * gui, \fBguiBackground_s\fP * bk)"
-add background 
-.SS "\fBguiBackground_s\fP* gui_background_get (\fBgui_s\fP * gui, size_t id)"
-get background 
-.SS "void gui_background_main_round_fn (\fBgui_s\fP * gui)"
-custom background fn for rounded border 
-.SS "\fBguiBackground_s\fP* gui_background_new (\fBg2dColor_t\fP color, \fBg2dImage_s\fP * img, \fBg2dCoord_s\fP * pos, \fBguiBackgroundFN_f\fP fn, int mode)"
-create new background 
-.SS "void gui_background_redraw (\fBgui_s\fP * gui, \fBguiBackground_s\fP * bkg)"
-redraw background 
-.SS "void gui_background_round_fn (\fBgui_s\fP * gui)"
-custom background fn for rounded border 
+.SS "void gui_background_main_round_fn (\fBgui_s\fP * gui, \fB__unused\fP \fBguiLayer_s\fP ** img, void * generic)"
+
+.SS "void gui_background_round_fn (\fBgui_s\fP * gui, \fB__unused\fP \fBguiLayer_s\fP ** img, \fB__unused\fP void * generic)"
+
+.SS "void gui_background_supersampling_fn (\fBgui_s\fP * gui, \fB__unused\fP \fBguiLayer_s\fP ** img, \fB__unused\fP void * generic)"
+
 .SS "void gui_begin (void)"
 before use gui 
 .SS "void gui_border (\fBgui_s\fP * gui, int border)"
 set border 
+.SS "\fBgui_s\fP* gui_by_name (\fBgui_s\fP * gui, const char * name, const char * class)"
+get gui from name and class 
 .SS "void gui_child_add (\fBgui_s\fP * parent, \fBgui_s\fP * child)"
 add child to gui 
 .SS "\fBgui_s\fP* gui_child_remove (\fBgui_s\fP * parent, \fBgui_s\fP * child)"
@@ -451,6 +773,8 @@ send clipboard data
 .SS "int gui_deadpoll_event (\fBdeadpoll_s\fP * dp)"
 deadpoll 
 .SS "\fBerr_t\fP gui_deadpoll_event_callback (\fB__unused\fP \fBdeadpoll_s\fP * dp, \fB__unused\fP int ev, \fB__unused\fP void * arg)"
+deadpoll 
+.SS "\fBerr_t\fP gui_deadpoll_fd_callback (\fB__unused\fP \fBdeadpoll_s\fP * dp, int ev, void * arg)"
 deadpoll 
 .SS "void gui_deadpoll_register (\fBdeadpoll_s\fP * dp)"
 deadpoll 
@@ -478,22 +802,28 @@ default event for move
 default event for redraw 
 .SS "void gui_event_release (\fBxorgEvent_s\fP * ev)"
 release event 
+.SS "void gui_fd_register (\fBgui_s\fP * gui, int fd, int event, \fBguiEvent_f\fP fn)"
+reister event fd 
+.SS "void gui_fd_unregister (int fd)"
+unregister event fd 
 .SS "void gui_focus (\fBgui_s\fP * gui)"
 set focus on gui 
-.SS "void gui_focus_from_parent (\fBgui_s\fP * gui, int id)"
-set focus id on gui 
-.SS "void gui_focus_next (\fBgui_s\fP * gui)"
-set focus on next gui 
-.SS "int gui_focus_next_id (\fBgui_s\fP * parent)"
-get next id focus 
-.SS "void gui_focus_prev (\fBgui_s\fP * gui)"
-set previous focus 
-.SS "int gui_focus_prev_id (\fBgui_s\fP * parent)"
-get id focus prev 
-.SS "int gui_focuse_have (\fBgui_s\fP * gui)"
+.SS "int gui_focus_have (\fBgui_s\fP * gui)"
 check if gui have focus 
+.SS "\fBgui_s\fP* gui_focus_next (\fBgui_s\fP * gui)"
+set focus on next gui 
+.SS "\fBgui_s\fP* gui_focus_prev (\fBgui_s\fP * gui)"
+set previous focus 
+.SS "void gui_focus_restore (void)"
+
+.SS "void gui_focus_store (void)"
+
 .SS "void gui_free (\fBgui_s\fP * gui)"
 free gui, remove gui from parent 
+.SS "ssize_t gui_id (\fBgui_s\fP * gui)"
+get id 
+.SS "void gui_internal_focus_event (void)"
+
 .SS "void gui_loop (void)"
 loop gui 
 .SS "\fBgui_s\fP* gui_main_parent (\fBgui_s\fP * gui)"
@@ -502,24 +832,20 @@ get main parent
 move gui 
 .SS "void gui_name (\fBgui_s\fP * gui, const char * name)"
 set gui name 
-.SS "\fBgui_s\fP* gui_new (\fBgui_s\fP * parent, const char * name, const char * class, \fBguiMode_e\fP mode, int border, int x, int y, int width, int height, \fBg2dColor_t\fP colorBorder, \fBguiBackground_s\fP * bk, int genericSize, void * userdata)"
+.SS "\fBgui_s\fP* gui_new (\fBgui_s\fP * parent, const char * name, const char * class, \fBguiMode_e\fP mode, int border, int x, int y, int width, int height, \fBg2dColor_t\fP colorBorder, \fBguiComposite_s\fP * background, \fBguiComposite_s\fP * postproduction, void * userdata)"
 create gui 
 .SS "void gui_opacity (\fBgui_s\fP * gui, double op)"
 set opacity 
 .SS "void gui_redraw (\fBgui_s\fP * gui)"
 redraw gui 
+.SS "void gui_register_internal_focus_event (\fBgui_s\fP * gui, \fBguiEvent_f\fP fn)"
+
 .SS "void gui_register_root_event (void)"
 grab root event 
 .SS "void gui_remove_decoration (\fBgui_s\fP * gui)"
 request to remove decorations 
 .SS "void gui_resize (\fBgui_s\fP * gui, int w, int h)"
 resize gui 
-.SS "int gui_resource_bool_get (const char * name, const char * class)"
-load bool resource 
-.SS "long gui_resource_long_get (const char * name, const char * class)"
-load long resource 
-.SS "char* gui_resource_string_get (const char * name, const char * class)"
-load string resource 
 .SS "void gui_round_antialiasing_set (\fBgui_s\fP * gui, int radius)"
 set antialiased round border 
 .SS "void gui_round_set (\fBgui_s\fP * gui, int radius)"
@@ -532,12 +858,40 @@ get screen height
 get screen width 
 .SS "void gui_show (\fBgui_s\fP * gui, int show)"
 show gui 
+.SS "void gui_themes (\fBgui_s\fP * gui, const char * appName)"
+set gui themes 
+.SS "void gui_themes_all (\fBgui_s\fP * gui, const char * appName)"
+set themes for all gui from one parent 
+.SS "\fBerr_t\fP gui_themes_bool_set (const char * name, const char * property, int * set)"
+set bool 
+.SS "\fBerr_t\fP gui_themes_color_set (const char * name, const char * property, \fBg2dColor_t\fP * set)"
+set color 
+.SS "void gui_themes_composite (\fBgui_s\fP * gui, \fBguiComposite_s\fP * cmp, const char * name, const char * compname)"
+set theme composite 
+.SS "\fBerr_t\fP gui_themes_double_set (const char * name, const char * property, double * set)"
+set double 
+.SS "\fBerr_t\fP gui_themes_fonts_set (const char * name, \fBftFonts_s\fP ** controlFonts)"
+set fonts 
+.SS "\fBerr_t\fP gui_themes_int_set (const char * name, const char * property, int * set)"
+set int 
+.SS "\fBerr_t\fP gui_themes_layer (\fBgui_s\fP * gui, const char * name, \fBguiLayer_s\fP ** ptrimg)"
+load gui image 
+.SS "\fBerr_t\fP gui_themes_long_set (const char * name, const char * property, long * set)"
+set long 
+.SS "char* gui_themes_name (\fBgui_s\fP * gui, const char * appName)"
+get themes name 
+.SS "char* gui_themes_string (const char * name, const char * property)"
+get string 
+.SS "\fBerr_t\fP gui_themes_uint_set (const char * name, const char * property, unsigned * set)"
+set uint 
 .SS "int gui_timer_change (\fBguiTimer_s\fP * timer, size_t ms)"
 change timer 
 .SS "void gui_timer_free (\fBguiTimer_s\fP * timer)"
 free timer 
 .SS "\fBguiTimer_s\fP* gui_timer_new (\fBgui_s\fP * gui, size_t ms, \fBguiTimer_f\fP fn, void * userdata)"
 create new timer 
+.SS "void gui_unregister_internal_focus_event (\fBgui_s\fP * gui)"
+
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for Easy Framework from the source code\&.

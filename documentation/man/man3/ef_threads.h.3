@@ -1,4 +1,4 @@
-.TH "include/ef/threads.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/threads.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -11,6 +11,8 @@ include/ef/threads.h
 \fC#include <ef/list\&.h>\fP
 .br
 \fC#include <pthread\&.h>\fP
+.br
+\fC#include <sys/eventfd\&.h>\fP
 .br
 
 .SS "Data Structures"
@@ -42,10 +44,19 @@ include/ef/threads.h
 .RI "#define \fBfutex\fP(\fBADDR\fP,  OP,  VAL,  V2TO,  ADDR2,  VAL3)"
 .br
 .ti -1c
-.RI "#define \fBmessage_new\fP(TYPE,  CLEANUP)   \fBmessage_new_raw\fP(sizeof(TYPE), CLEANUP)"
+.RI "#define \fBMESSAGE\fP(M)   ((\fBmessage_s\fP*)(\fBADDR\fP(M)\-sizeof(\fBmessage_s\fP)))"
+.br
+.ti -1c
+.RI "#define \fBmessage_new\fP(TYPE,  CLEANUP)   (TYPE*)\fBmessage_new_raw\fP(sizeof(TYPE), CLEANUP)"
 .br
 .ti -1c
 .RI "#define \fB__message_free\fP   \fB__cleanup\fP(\fBmessage_free_auto\fP)"
+.br
+.ti -1c
+.RI "#define \fBmessage_data\fP(M)   (&(M)\->data)"
+.br
+.ti -1c
+.RI "#define \fBthr_start\fP(FN,  ARG)   \fBthr_new\fP(FN, ARG, 0, 0, 0)"
 .br
 .ti -1c
 .RI "#define \fBthr_cleanup_push\fP(FNC,  ARG)   pthread_cleanup_push(FN, ARG)"
@@ -59,6 +70,9 @@ include/ef/threads.h
 .ti -1c
 .RI "#define \fBthr_exit\fP(RET)   pthread_exit(RET)"
 .br
+.ti -1c
+.RI "#define \fBthr_self_id\fP()   pthread_self()"
+.br
 .in -1c
 .SS "Typedefs"
 
@@ -71,6 +85,9 @@ include/ef/threads.h
 .br
 .ti -1c
 .RI "typedef struct \fBevent\fP \fBevent_s\fP"
+.br
+.ti -1c
+.RI "typedef void(* \fBqmfree_f\fP) (void *)"
 .br
 .ti -1c
 .RI "typedef struct \fBmessage\fP \fBmessage_s\fP"
@@ -113,12 +130,6 @@ include/ef/threads.h
 .RI "int \fBmutex_trylock\fP (\fBmutex_s\fP *mtx)"
 .br
 .ti -1c
-.RI "int \fBmutex_fd_lock\fP (\fBmutex_s\fP *mtx)"
-.br
-.ti -1c
-.RI "int \fBmutex_fd_event\fP (\fBmutex_s\fP *mtx)"
-.br
-.ti -1c
 .RI "void \fBsemaphore_init\fP (\fBsemaphore_s\fP *sem, int val)"
 .br
 .ti -1c
@@ -137,12 +148,6 @@ include/ef/threads.h
 .RI "int \fBsemaphore_trywait\fP (\fBsemaphore_s\fP *sem)"
 .br
 .ti -1c
-.RI "int \fBsemaphore_fd_wait\fP (\fBsemaphore_s\fP *sem)"
-.br
-.ti -1c
-.RI "int \fBsemaphore_fd_event\fP (\fBsemaphore_s\fP *sem)"
-.br
-.ti -1c
 .RI "void \fBevent_init\fP (\fBevent_s\fP *ev)"
 .br
 .ti -1c
@@ -158,34 +163,37 @@ include/ef/threads.h
 .RI "void \fBevent_wait\fP (\fBevent_s\fP *ev)"
 .br
 .ti -1c
-.RI "int \fBevent_fd_wait\fP (\fBevent_s\fP *ev)"
+.RI "int \fBevent_fd_new\fP (long val, int nonblock)"
 .br
 .ti -1c
-.RI "int \fBevent_fd_event\fP (\fBevent_s\fP *ev)"
+.RI "\fBerr_t\fP \fBevent_fd_read\fP (long *val, int fd)"
 .br
 .ti -1c
-.RI "void \fBqmessages_init\fP (\fBqmessages_s\fP *q, \fBsemaphore_s\fP *sem, \fBmutex_s\fP *mtx)"
+.RI "\fBerr_t\fP \fBevent_fd_write\fP (int fd, long val)"
 .br
 .ti -1c
-.RI "\fBqmessages_s\fP * \fBqmessages_new\fP ()"
+.RI "void \fBqmessages_init\fP (\fBqmessages_s\fP *q, int evfd, \fBmutex_s\fP *mtx)"
 .br
 .ti -1c
-.RI "void \fBqmessage_free\fP (\fBqmessages_s\fP *q)"
+.RI "\fBqmessages_s\fP * \fBqmessages_new\fP (int nonblock)"
 .br
 .ti -1c
-.RI "\fBmessage_s\fP * \fBqmessages_wait\fP (\fBqmessages_s\fP *q)"
+.RI "void \fBqmessages_free\fP (\fBqmessages_s\fP *q)"
 .br
 .ti -1c
-.RI "void \fBqmessages_send\fP (\fBqmessages_s\fP *q, \fBmessage_s\fP *msg)"
+.RI "void * \fBqmessages_get\fP (\fBqmessages_s\fP *q)"
 .br
 .ti -1c
-.RI "\fBmessage_s\fP * \fBmessage_new_raw\fP (size_t size, \fBlistFree_f\fP cleanup)"
+.RI "void \fBqmessages_send\fP (\fBqmessages_s\fP *q, void *m)"
 .br
 .ti -1c
-.RI "void \fBmessage_free\fP (\fBmessage_s\fP *msg)"
+.RI "void * \fBmessage_new_raw\fP (size_t size, \fBqmfree_f\fP cleanup)"
 .br
 .ti -1c
-.RI "void \fBmessage_free_auto\fP (\fBmessage_s\fP **msg)"
+.RI "void \fBmessage_free\fP (void *m)"
+.br
+.ti -1c
+.RI "void \fBmessage_free_auto\fP (void **m)"
 .br
 .ti -1c
 .RI "\fBthr_s\fP * \fBthr_new\fP (\fBthr_f\fP fn, void *arg, unsigned stackSize, unsigned oncpu, int detach)"
@@ -217,7 +225,7 @@ include/ef/threads.h
 .SS "#define __message_free   \fB__cleanup\fP(\fBmessage_free_auto\fP)"
 cleanup 
 .PP
-Definition at line 213 of file threads\&.h\&.
+Definition at line 207 of file threads\&.h\&.
 .SS "#define futex(\fBADDR\fP, OP, VAL, V2TO, ADDR2, VAL3)"
 \fBValue:\fP
 .PP
@@ -230,27 +238,43 @@ Definition at line 213 of file threads\&.h\&.
 .fi
 overloading for futex 
 .PP
-Definition at line 35 of file threads\&.h\&.
-.SS "#define message_new(TYPE, CLEANUP)   \fBmessage_new_raw\fP(sizeof(TYPE), CLEANUP)"
+Definition at line 38 of file threads\&.h\&.
+.SS "#define MESSAGE(M)   ((\fBmessage_s\fP*)(\fBADDR\fP(M)\-sizeof(\fBmessage_s\fP)))"
+
+.PP
+Definition at line 157 of file threads\&.h\&.
+.SS "#define message_data(M)   (&(M)\->data)"
+
+.PP
+Definition at line 209 of file threads\&.h\&.
+.SS "#define message_new(TYPE, CLEANUP)   (TYPE*)\fBmessage_new_raw\fP(sizeof(TYPE), CLEANUP)"
 create new message 
 .PP
-Definition at line 204 of file threads\&.h\&.
+Definition at line 198 of file threads\&.h\&.
 .SS "#define thr_cleanup_pop(ALWAYSCALLFNC)   pthread_cleanup_pop(ALWAYSCALLFNC)"
 cleanup function autocall before exit from thread 
 .PP
-Definition at line 288 of file threads\&.h\&.
+Definition at line 286 of file threads\&.h\&.
 .SS "#define thr_cleanup_push(FNC, ARG)   pthread_cleanup_push(FN, ARG)"
 cleanup function autocall before exit from thread 
 .PP
-Definition at line 285 of file threads\&.h\&.
+Definition at line 283 of file threads\&.h\&.
 .SS "#define thr_exit(RET)   pthread_exit(RET)"
 exit from thread 
 .PP
-Definition at line 294 of file threads\&.h\&.
+Definition at line 292 of file threads\&.h\&.
+.SS "#define thr_self_id()   pthread_self()"
+return id from thread 
+.PP
+Definition at line 295 of file threads\&.h\&.
+.SS "#define thr_start(FN, ARG)   \fBthr_new\fP(FN, ARG, 0, 0, 0)"
+
+.PP
+Definition at line 235 of file threads\&.h\&.
 .SS "#define thr_yield()   pthread_yield()"
 switch to other threads 
 .PP
-Definition at line 291 of file threads\&.h\&.
+Definition at line 289 of file threads\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBevent\fP \fBevent_s\fP"
@@ -258,46 +282,70 @@ Definition at line 291 of file threads\&.h\&.
 .SS "typedef struct \fBmessage\fP \fBmessage_s\fP"
 
 .PP
-Definition at line 168 of file threads\&.h\&.
+Definition at line 158 of file threads\&.h\&.
 .SS "typedef struct \fBmutex\fP \fBmutex_s\fP"
 
 .SS "typedef struct \fBqmessages\fP \fBqmessages_s\fP"
 
+.SS "typedef void(* qmfree_f) (void *)"
+
+.PP
+Definition at line 158 of file threads\&.h\&.
 .SS "typedef struct \fBsemaphore\fP \fBsemaphore_s\fP"
 
 .SS "typedef void*(* thr_f) (void *)"
 thread function 
 .PP
-Definition at line 220 of file threads\&.h\&.
+Definition at line 215 of file threads\&.h\&.
 .SS "typedef struct \fBthr\fP \fBthr_s\fP"
 
 .SH "Function Documentation"
 .PP 
-.SS "int event_fd_event (\fBevent_s\fP * ev)"
-if wait over event, when event is raised on epoll call this function for check you can procede with event or need to reenter to epoll 
+.SS "int event_fd_new (long val, int nonblock)"
+create eventfd where performe epoll 
 .PP
 \fBParameters\fP
 .RS 4
-\fIev\fP event 
+\fIval\fP begin value 
+.br
+\fInonblock\fP set nonblock event 
 .RE
 .PP
 \fBReturns\fP
 .RS 4
-fd for reenter to epoll, -1 event is raised 
+fd or -1 error 
 .RE
 .PP
 
-.SS "int event_fd_wait (\fBevent_s\fP * ev)"
-try to wait event in epoll if needed, call \fBevent_fd_event()\fP when event raised on epoll 
+.SS "\fBerr_t\fP event_fd_read (long * val, int fd)"
+read value from fd, when the eventfd counter has a nonzero value, then a read(2) returns 8 bytes containing that value, and the counter's value is reset to zero\&.If the eventfd counter is zero at the time of the call to read(2), then the call either blocks until the counter becomes nonzero (at which time, the read(2) proceeds as described above) or fails with the error EAGAIN if the file descriptor has been made nonblocking\&. 
 .PP
 \fBParameters\fP
 .RS 4
-\fIev\fP event 
+\fIval\fP value to read, val is setted to writeval + prevval every time is called from write before read 
+.br
+\fIfd\fP where read 
 .RE
 .PP
 \fBReturns\fP
 .RS 4
-fd or -1 acquired 
+0 ok -1 error 
+.RE
+.PP
+
+.SS "\fBerr_t\fP event_fd_write (int fd, long val)"
+write value to fd, call adds the 8-byte integer value supplied in its buffer to the counter, The maximum value that may be stored in the counter is the largest unsigned 64-bit value minus 1, If the addition would cause the counter's value to exceed the maximum, then the write(2) either blocks until a read(2) is performed on the file descriptor, or fails with the error EAGAIN if the file descriptor has been made nonblocking, will fail with the error EINVAL if the size of the supplied buffer is less than 8 bytes, or if an attempt is made to write the value 0xffffffffffffffff\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfd\fP where read 
+.br
+\fIval\fP value to read 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 ok -1 error 
 .RE
 .PP
 
@@ -359,40 +407,12 @@ waiting until a certain condition becomes true
 .RE
 .PP
 
-.SS "void message_free (\fBmessage_s\fP * msg)"
+.SS "void message_free (void * m)"
 free message, this function is called from consumer 
-.SS "void message_free_auto (\fBmessage_s\fP ** msg)"
+.SS "void message_free_auto (void ** m)"
 cleanup 
-.SS "\fBmessage_s\fP* message_new_raw (size_t size, \fBlistFree_f\fP cleanup)"
+.SS "void* message_new_raw (size_t size, \fBqmfree_f\fP cleanup)"
 create a new message 
-.SS "int mutex_fd_event (\fBmutex_s\fP * mtx)"
-when exit fronm epoll call this, -1 acquire a lock, remember to unlock before reenter in epoll 
-.PP
-\fBParameters\fP
-.RS 4
-\fImtx\fP mutex 
-.RE
-.PP
-\fBReturns\fP
-.RS 4
-if locked is acquired return -1 otherwise return fd 
-.RE
-.PP
-
-.SS "int mutex_fd_lock (\fBmutex_s\fP * mtx)"
-lock and use fd for wait with epoll, when raised event call mutex_fd_event for complete operation 
-.PP
-\fBParameters\fP
-.RS 4
-\fImtx\fP mutex 
-.RE
-.PP
-\fBReturns\fP
-.RS 4
-fd or -1 acquired 
-.RE
-.PP
-
 .SS "void mutex_free (\fBmutex_s\fP * mtx)"
 free mutex, only mutex create with mutex new 
 .SS "void mutex_init (\fBmutex_s\fP * mtx)"
@@ -417,16 +437,10 @@ try to lock mutex
 
 .SS "void mutex_unlock (\fBmutex_s\fP * mtx)"
 unlock mutex 
-.SS "void qmessage_free (\fBqmessages_s\fP * q)"
+.SS "void qmessages_free (\fBqmessages_s\fP * q)"
 free queue messages 
-.SS "void qmessages_init (\fBqmessages_s\fP * q, \fBsemaphore_s\fP * sem, \fBmutex_s\fP * mtx)"
-init a queue if you have create without qmessages_new 
-.SS "\fBqmessages_s\fP* qmessages_new ()"
-create new queue messages 
-.SS "void qmessages_send (\fBqmessages_s\fP * q, \fBmessage_s\fP * msg)"
-send a message 
-.SS "\fBmessage_s\fP* qmessages_wait (\fBqmessages_s\fP * q)"
-wait for new messages 
+.SS "void* qmessages_get (\fBqmessages_s\fP * q)"
+get new messages 
 .PP
 \fBParameters\fP
 .RS 4
@@ -435,38 +449,16 @@ wait for new messages
 .PP
 \fBReturns\fP
 .RS 4
-messages, NULL for error 
+messages, NULL for error, if blocking wait event and return NULL 
 .RE
 .PP
 
-.SS "int semaphore_fd_event (\fBsemaphore_s\fP * sem)"
-if wait over semaphore, when event is raised on epoll call this function for check you can procede with semaphore or need to reenter to epoll 
-.PP
-\fBParameters\fP
-.RS 4
-\fIsem\fP semaphore 
-.RE
-.PP
-\fBReturns\fP
-.RS 4
-fd for reenter to epoll, -1 you can continue 
-.RE
-.PP
-
-.SS "int semaphore_fd_wait (\fBsemaphore_s\fP * sem)"
-try to decrement semaphore but wait in epoll if needed, call \fBsemaphore_fd_event()\fP when event raised on epoll 
-.PP
-\fBParameters\fP
-.RS 4
-\fIsem\fP semaphore 
-.RE
-.PP
-\fBReturns\fP
-.RS 4
-fd or -1 acquired 
-.RE
-.PP
-
+.SS "void qmessages_init (\fBqmessages_s\fP * q, int evfd, \fBmutex_s\fP * mtx)"
+init a queue if you have create without qmessages_new 
+.SS "\fBqmessages_s\fP* qmessages_new (int nonblock)"
+create new queue messages 
+.SS "void qmessages_send (\fBqmessages_s\fP * q, void * m)"
+send a message 
 .SS "void semaphore_free (\fBsemaphore_s\fP * sem)"
 free semaphore, only semaphore create with semaphore_new 
 .SS "void semaphore_init (\fBsemaphore_s\fP * sem, int val)"

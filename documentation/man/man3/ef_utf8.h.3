@@ -1,4 +1,4 @@
-.TH "include/ef/utf8.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/utf8.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -453,11 +453,11 @@ include/ef/utf8.h
 .SS "#define U8(V)   (uint8_t*)(V)"
 simple way to cast 
 .PP
-Definition at line 34 of file utf8\&.h\&.
+Definition at line 35 of file utf8\&.h\&.
 .SS "#define U8I_NEW(STR)   { \&.begin = STR, \&.str = STR, \&.index = 0}"
 init iterator on stack 
 .PP
-Definition at line 512 of file utf8\&.h\&.
+Definition at line 513 of file utf8\&.h\&.
 .SS "#define utf16_cast_n(STR16, LEN, OUT, PTROUTLEN)"
 \fBValue:\fP
 .PP
@@ -469,7 +469,7 @@ Definition at line 512 of file utf8\&.h\&.
 .fi
 cast from utf16 to utf8 or 32 
 .PP
-Definition at line 68 of file utf8\&.h\&.
+Definition at line 69 of file utf8\&.h\&.
 .SS "#define utf16_f_snprintf(STR, MAX, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -480,7 +480,7 @@ Definition at line 68 of file utf8\&.h\&.
     )(STR,MAX,FORM, ## arg)
 .fi
 .PP
-Definition at line 318 of file utf8\&.h\&.
+Definition at line 319 of file utf8\&.h\&.
 .SS "#define utf16_f_snprintf_alloc(STR, MAX, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -491,7 +491,7 @@ Definition at line 318 of file utf8\&.h\&.
     )(STR,MAX,FORM, ## arg)
 .fi
 .PP
-Definition at line 358 of file utf8\&.h\&.
+Definition at line 359 of file utf8\&.h\&.
 .SS "#define utf16_f_sprintf(STR, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -502,7 +502,7 @@ Definition at line 358 of file utf8\&.h\&.
     )(STR,FORM, ## arg)
 .fi
 .PP
-Definition at line 298 of file utf8\&.h\&.
+Definition at line 299 of file utf8\&.h\&.
 .SS "#define utf16_f_sprintf_alloc(STR, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -513,7 +513,7 @@ Definition at line 298 of file utf8\&.h\&.
     )(STR,FORM, ## arg)
 .fi
 .PP
-Definition at line 338 of file utf8\&.h\&.
+Definition at line 339 of file utf8\&.h\&.
 .SS "#define utf32_cast_n(STR32, LEN, OUT, PTROUTLEN)"
 \fBValue:\fP
 .PP
@@ -525,7 +525,7 @@ Definition at line 338 of file utf8\&.h\&.
 .fi
 cast from utf32 to utf8 or 16 
 .PP
-Definition at line 74 of file utf8\&.h\&.
+Definition at line 75 of file utf8\&.h\&.
 .SS "#define utf32_f_snprintf(STR, MAX, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -536,7 +536,7 @@ Definition at line 74 of file utf8\&.h\&.
     )(STR,MAX,FORM, ## arg)
 .fi
 .PP
-Definition at line 322 of file utf8\&.h\&.
+Definition at line 323 of file utf8\&.h\&.
 .SS "#define utf32_f_snprintf_alloc(STR, MAX, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -547,7 +547,7 @@ Definition at line 322 of file utf8\&.h\&.
     )(STR,MAX,FORM, ## arg)
 .fi
 .PP
-Definition at line 362 of file utf8\&.h\&.
+Definition at line 363 of file utf8\&.h\&.
 .SS "#define utf32_f_sprintf(STR, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -558,7 +558,7 @@ Definition at line 362 of file utf8\&.h\&.
     )(STR,FORM, ## arg)
 .fi
 .PP
-Definition at line 302 of file utf8\&.h\&.
+Definition at line 303 of file utf8\&.h\&.
 .SS "#define utf32_f_sprintf_alloc(STR, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -569,7 +569,7 @@ Definition at line 302 of file utf8\&.h\&.
     )(STR,FORM, ## arg)
 .fi
 .PP
-Definition at line 342 of file utf8\&.h\&.
+Definition at line 343 of file utf8\&.h\&.
 .SS "#define utf8_cast_n(STR8, LEN, OUT, PTROUTLEN)"
 \fBValue:\fP
 .PP
@@ -581,7 +581,7 @@ Definition at line 342 of file utf8\&.h\&.
 .fi
 cast from utf8 to utf16 or 32 
 .PP
-Definition at line 62 of file utf8\&.h\&.
+Definition at line 63 of file utf8\&.h\&.
 .SS "#define utf8_f_snprintf(STR, MAX, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -592,7 +592,7 @@ Definition at line 62 of file utf8\&.h\&.
     )(STR,MAX,FORM, ## arg)
 .fi
 .PP
-Definition at line 314 of file utf8\&.h\&.
+Definition at line 315 of file utf8\&.h\&.
 .SS "#define utf8_f_snprintf_alloc(STR, MAX, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -603,7 +603,7 @@ Definition at line 314 of file utf8\&.h\&.
     )(STR,MAX,FORM, ## arg)
 .fi
 .PP
-Definition at line 354 of file utf8\&.h\&.
+Definition at line 355 of file utf8\&.h\&.
 .SS "#define utf8_f_sprintf(STR, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -614,7 +614,7 @@ Definition at line 354 of file utf8\&.h\&.
     )(STR,FORM, ## arg)
 .fi
 .PP
-Definition at line 294 of file utf8\&.h\&.
+Definition at line 295 of file utf8\&.h\&.
 .SS "#define utf8_f_sprintf_alloc(STR, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -625,15 +625,15 @@ Definition at line 294 of file utf8\&.h\&.
     )(STR,FORM, ## arg)
 .fi
 .PP
-Definition at line 334 of file utf8\&.h\&.
+Definition at line 335 of file utf8\&.h\&.
 .SS "#define utf_alnum   uc_is_alnum"
 
 .PP
-Definition at line 382 of file utf8\&.h\&.
+Definition at line 383 of file utf8\&.h\&.
 .SS "#define utf_alpha   uc_is_alpha"
 
 .PP
-Definition at line 383 of file utf8\&.h\&.
+Definition at line 384 of file utf8\&.h\&.
 .SS "#define utf_anyof(STR, ANY)"
 \fBValue:\fP
 .PP
@@ -645,7 +645,7 @@ Definition at line 383 of file utf8\&.h\&.
     )(STR,ANY)
 .fi
 .PP
-Definition at line 264 of file utf8\&.h\&.
+Definition at line 265 of file utf8\&.h\&.
 .SS "#define utf_append(DST, SRC)"
 \fBValue:\fP
 .PP
@@ -655,11 +655,11 @@ Definition at line 264 of file utf8\&.h\&.
     )(DST,SRC)
 .fi
 .PP
-Definition at line 454 of file utf8\&.h\&.
+Definition at line 455 of file utf8\&.h\&.
 .SS "#define utf_blank   uc_is_blank"
 
 .PP
-Definition at line 393 of file utf8\&.h\&.
+Definition at line 394 of file utf8\&.h\&.
 .SS "#define utf_cast_n(STRSRC, LEN, STRDEST, PTROUTLEN)"
 \fBValue:\fP
 .PP
@@ -672,7 +672,7 @@ Definition at line 393 of file utf8\&.h\&.
 .fi
 cast from 8/16/32 to 8/16/32 
 .PP
-Definition at line 80 of file utf8\&.h\&.
+Definition at line 81 of file utf8\&.h\&.
 .SS "#define utf_cat(DST, SRC)"
 \fBValue:\fP
 .PP
@@ -684,7 +684,7 @@ Definition at line 80 of file utf8\&.h\&.
     )(DST,SRC)
 .fi
 .PP
-Definition at line 216 of file utf8\&.h\&.
+Definition at line 217 of file utf8\&.h\&.
 .SS "#define utf_cat_max(DST, SRC, MAX)"
 \fBValue:\fP
 .PP
@@ -696,7 +696,7 @@ Definition at line 216 of file utf8\&.h\&.
     )(DST,SRC,MAX)
 .fi
 .PP
-Definition at line 222 of file utf8\&.h\&.
+Definition at line 223 of file utf8\&.h\&.
 .SS "#define utf_chr(STR, UTF)"
 \fBValue:\fP
 .PP
@@ -708,7 +708,7 @@ Definition at line 222 of file utf8\&.h\&.
     )(STR,UTF)
 .fi
 .PP
-Definition at line 246 of file utf8\&.h\&.
+Definition at line 247 of file utf8\&.h\&.
 .SS "#define utf_chr_n(STR, NCH, UTF)"
 \fBValue:\fP
 .PP
@@ -720,7 +720,7 @@ Definition at line 246 of file utf8\&.h\&.
     )(STR,NCH,UTF)
 .fi
 .PP
-Definition at line 149 of file utf8\&.h\&.
+Definition at line 150 of file utf8\&.h\&.
 .SS "#define utf_clone(STR)"
 \fBValue:\fP
 .PP
@@ -732,7 +732,7 @@ Definition at line 149 of file utf8\&.h\&.
     )(STR)
 .fi
 .PP
-Definition at line 240 of file utf8\&.h\&.
+Definition at line 241 of file utf8\&.h\&.
 .SS "#define utf_cmp_max(SA, SB, MAX)"
 \fBValue:\fP
 .PP
@@ -744,7 +744,7 @@ Definition at line 240 of file utf8\&.h\&.
     )(SA,SB,MAX)
 .fi
 .PP
-Definition at line 234 of file utf8\&.h\&.
+Definition at line 235 of file utf8\&.h\&.
 .SS "#define utf_cmp_n(SA, SB, NCH)"
 \fBValue:\fP
 .PP
@@ -756,11 +756,11 @@ Definition at line 234 of file utf8\&.h\&.
     )(SA,SB,NCH)
 .fi
 .PP
-Definition at line 143 of file utf8\&.h\&.
+Definition at line 144 of file utf8\&.h\&.
 .SS "#define utf_cntrl   uc_is_cntrl"
 
 .PP
-Definition at line 384 of file utf8\&.h\&.
+Definition at line 385 of file utf8\&.h\&.
 .SS "#define utf_coll(SA, SB)"
 \fBValue:\fP
 .PP
@@ -772,7 +772,7 @@ Definition at line 384 of file utf8\&.h\&.
     )(SA,SB)
 .fi
 .PP
-Definition at line 228 of file utf8\&.h\&.
+Definition at line 229 of file utf8\&.h\&.
 .SS "#define utf_cpy(DST, SRC)"
 \fBValue:\fP
 .PP
@@ -784,7 +784,7 @@ Definition at line 228 of file utf8\&.h\&.
     )(DST,SRC)
 .fi
 .PP
-Definition at line 204 of file utf8\&.h\&.
+Definition at line 205 of file utf8\&.h\&.
 .SS "#define utf_cpy_max(DST, SRC, MAX)"
 \fBValue:\fP
 .PP
@@ -796,7 +796,7 @@ Definition at line 204 of file utf8\&.h\&.
     )(DST,SRC,MAX)
 .fi
 .PP
-Definition at line 210 of file utf8\&.h\&.
+Definition at line 211 of file utf8\&.h\&.
 .SS "#define utf_cpy_n(DST, SRC, NCH)"
 \fBValue:\fP
 .PP
@@ -808,7 +808,7 @@ Definition at line 210 of file utf8\&.h\&.
     )(DST,SRC,NCH)
 .fi
 .PP
-Definition at line 118 of file utf8\&.h\&.
+Definition at line 119 of file utf8\&.h\&.
 .SS "#define utf_cpy_n_alloc(SRC, NCH)"
 \fBValue:\fP
 .PP
@@ -820,7 +820,7 @@ Definition at line 118 of file utf8\&.h\&.
     )(DST,SRC,NCH)
 .fi
 .PP
-Definition at line 161 of file utf8\&.h\&.
+Definition at line 162 of file utf8\&.h\&.
 .SS "#define utf_cspn(STR, REJECT)"
 \fBValue:\fP
 .PP
@@ -832,7 +832,7 @@ Definition at line 161 of file utf8\&.h\&.
     )(STR,REJECT)
 .fi
 .PP
-Definition at line 252 of file utf8\&.h\&.
+Definition at line 253 of file utf8\&.h\&.
 .SS "#define utf_del(STR, COUNT)"
 \fBValue:\fP
 .PP
@@ -842,7 +842,7 @@ Definition at line 252 of file utf8\&.h\&.
     )(STR,COUNT)
 .fi
 .PP
-Definition at line 482 of file utf8\&.h\&.
+Definition at line 483 of file utf8\&.h\&.
 .SS "#define utf_del_n(STR, STRLEN, COUNT)"
 \fBValue:\fP
 .PP
@@ -852,7 +852,7 @@ Definition at line 482 of file utf8\&.h\&.
     )(STR,STRLEN,COUNT)
 .fi
 .PP
-Definition at line 473 of file utf8\&.h\&.
+Definition at line 474 of file utf8\&.h\&.
 .SS "#define utf_delu(STR, COUNT)"
 \fBValue:\fP
 .PP
@@ -862,11 +862,11 @@ Definition at line 473 of file utf8\&.h\&.
     )(STR,COUNT)
 .fi
 .PP
-Definition at line 491 of file utf8\&.h\&.
+Definition at line 492 of file utf8\&.h\&.
 .SS "#define utf_digit   uc_is_digit"
 
 .PP
-Definition at line 385 of file utf8\&.h\&.
+Definition at line 386 of file utf8\&.h\&.
 .SS "#define utf_ends(STR, WITH)"
 \fBValue:\fP
 .PP
@@ -878,7 +878,7 @@ Definition at line 385 of file utf8\&.h\&.
     )(STR,WITH)
 .fi
 .PP
-Definition at line 282 of file utf8\&.h\&.
+Definition at line 283 of file utf8\&.h\&.
 .SS "#define utf_fixed_cmp_n(SA, SB, NCH)"
 \fBValue:\fP
 .PP
@@ -890,11 +890,11 @@ Definition at line 282 of file utf8\&.h\&.
     )(SA,SB,NCH)
 .fi
 .PP
-Definition at line 137 of file utf8\&.h\&.
+Definition at line 138 of file utf8\&.h\&.
 .SS "#define utf_fprintf   ulc_fprintf"
 
 .PP
-Definition at line 374 of file utf8\&.h\&.
+Definition at line 375 of file utf8\&.h\&.
 .SS "#define utf_get_unit(RET, STR, NCH)"
 \fBValue:\fP
 .PP
@@ -906,7 +906,7 @@ Definition at line 374 of file utf8\&.h\&.
     )(RET,STR)
 .fi
 .PP
-Definition at line 173 of file utf8\&.h\&.
+Definition at line 174 of file utf8\&.h\&.
 .SS "#define utf_get_unit_and_check_and_error_n(RET, STR, NCH)"
 \fBValue:\fP
 .PP
@@ -918,7 +918,7 @@ Definition at line 173 of file utf8\&.h\&.
     )(RET,STR,NCH)
 .fi
 .PP
-Definition at line 104 of file utf8\&.h\&.
+Definition at line 105 of file utf8\&.h\&.
 .SS "#define utf_get_unit_and_check_n(RET, STR, NCH)"
 \fBValue:\fP
 .PP
@@ -930,7 +930,7 @@ Definition at line 104 of file utf8\&.h\&.
     )(RET,STR,NCH)
 .fi
 .PP
-Definition at line 98 of file utf8\&.h\&.
+Definition at line 99 of file utf8\&.h\&.
 .SS "#define utf_get_unit_n(RET, STR, NCH)"
 \fBValue:\fP
 .PP
@@ -942,11 +942,11 @@ Definition at line 98 of file utf8\&.h\&.
     )(RET,STR,NCH)
 .fi
 .PP
-Definition at line 92 of file utf8\&.h\&.
+Definition at line 93 of file utf8\&.h\&.
 .SS "#define utf_graph   uc_is_graph"
 
 .PP
-Definition at line 386 of file utf8\&.h\&.
+Definition at line 387 of file utf8\&.h\&.
 .SS "#define utf_insert(DST, DLEN, SRC, SLEN)"
 \fBValue:\fP
 .PP
@@ -956,7 +956,7 @@ Definition at line 386 of file utf8\&.h\&.
     )(DST,DLEN,SRC,SLEN)
 .fi
 .PP
-Definition at line 445 of file utf8\&.h\&.
+Definition at line 446 of file utf8\&.h\&.
 .SS "#define utf_len(STR)"
 \fBValue:\fP
 .PP
@@ -968,7 +968,7 @@ Definition at line 445 of file utf8\&.h\&.
     )(STR)
 .fi
 .PP
-Definition at line 192 of file utf8\&.h\&.
+Definition at line 193 of file utf8\&.h\&.
 .SS "#define utf_len_max(STR, MAX)"
 \fBValue:\fP
 .PP
@@ -980,7 +980,7 @@ Definition at line 192 of file utf8\&.h\&.
     )(STR,MAX)
 .fi
 .PP
-Definition at line 198 of file utf8\&.h\&.
+Definition at line 199 of file utf8\&.h\&.
 .SS "#define utf_len_n(STR, NCH)"
 \fBValue:\fP
 .PP
@@ -992,11 +992,11 @@ Definition at line 198 of file utf8\&.h\&.
     )(STR,NCH)
 .fi
 .PP
-Definition at line 155 of file utf8\&.h\&.
+Definition at line 156 of file utf8\&.h\&.
 .SS "#define utf_lower   uc_is_lower"
 
 .PP
-Definition at line 387 of file utf8\&.h\&.
+Definition at line 388 of file utf8\&.h\&.
 .SS "#define utf_move_n(DST, SRC, NCH)"
 \fBValue:\fP
 .PP
@@ -1009,19 +1009,19 @@ Definition at line 387 of file utf8\&.h\&.
 .fi
 move n visible char 
 .PP
-Definition at line 125 of file utf8\&.h\&.
+Definition at line 126 of file utf8\&.h\&.
 .SS "#define UTF_NAME_INVALID   UNINAME_INVALID"
 
 .PP
-Definition at line 378 of file utf8\&.h\&.
+Definition at line 379 of file utf8\&.h\&.
 .SS "#define UTF_NAME_MAX   UNINAME_MAX"
 
 .PP
-Definition at line 377 of file utf8\&.h\&.
+Definition at line 378 of file utf8\&.h\&.
 .SS "#define utf_name_unicode   unicode_name_character"
 
 .PP
-Definition at line 380 of file utf8\&.h\&.
+Definition at line 381 of file utf8\&.h\&.
 .SS "#define utf_next(RET, STR)"
 \fBValue:\fP
 .PP
@@ -1034,11 +1034,11 @@ Definition at line 380 of file utf8\&.h\&.
     )(RET,STR)
 .fi
 .PP
-Definition at line 179 of file utf8\&.h\&.
+Definition at line 180 of file utf8\&.h\&.
 .SS "#define UTF_NOT_VALID   0xFFFD"
 
 .PP
-Definition at line 46 of file utf8\&.h\&.
+Definition at line 47 of file utf8\&.h\&.
 .SS "#define utf_prev(RET, STR, START)"
 \fBValue:\fP
 .PP
@@ -1050,39 +1050,39 @@ Definition at line 46 of file utf8\&.h\&.
     )(RET,STR, START)
 .fi
 .PP
-Definition at line 186 of file utf8\&.h\&.
+Definition at line 187 of file utf8\&.h\&.
 .SS "#define utf_print   uc_is_print"
 
 .PP
-Definition at line 388 of file utf8\&.h\&.
+Definition at line 389 of file utf8\&.h\&.
 .SS "#define utf_printf(FORM, arg\&.\&.\&.)   ulc_fprintf(stdout, FORM, ## arg)"
 
 .PP
-Definition at line 375 of file utf8\&.h\&.
+Definition at line 376 of file utf8\&.h\&.
 .SS "#define UTF_PRIVATE0_END   0xFFFD"
 
 .PP
-Definition at line 49 of file utf8\&.h\&.
+Definition at line 50 of file utf8\&.h\&.
 .SS "#define UTF_PRIVATE0_START   0xE800"
 
 .PP
-Definition at line 48 of file utf8\&.h\&.
+Definition at line 49 of file utf8\&.h\&.
 .SS "#define UTF_PRIVATE1_END   0x10FFFD"
 
 .PP
-Definition at line 51 of file utf8\&.h\&.
+Definition at line 52 of file utf8\&.h\&.
 .SS "#define UTF_PRIVATE1_START   0x100000"
 
 .PP
-Definition at line 50 of file utf8\&.h\&.
+Definition at line 51 of file utf8\&.h\&.
 .SS "#define utf_punct   uc_is_punct"
 
 .PP
-Definition at line 389 of file utf8\&.h\&.
+Definition at line 390 of file utf8\&.h\&.
 .SS "#define utf_putch(STR, UTF)   \fButf_putu_n\fP(STR, UTF, sizeof(\fButf_t\fP))"
 
 .PP
-Definition at line 116 of file utf8\&.h\&.
+Definition at line 117 of file utf8\&.h\&.
 .SS "#define utf_putu_n(STR, UTF, NCH)"
 \fBValue:\fP
 .PP
@@ -1094,7 +1094,7 @@ Definition at line 116 of file utf8\&.h\&.
     )(STR,UTF,NCH)
 .fi
 .PP
-Definition at line 110 of file utf8\&.h\&.
+Definition at line 111 of file utf8\&.h\&.
 .SS "#define utf_replace(DST, SRC)"
 \fBValue:\fP
 .PP
@@ -1104,7 +1104,7 @@ Definition at line 110 of file utf8\&.h\&.
     )(DST,SRC)
 .fi
 .PP
-Definition at line 463 of file utf8\&.h\&.
+Definition at line 464 of file utf8\&.h\&.
 .SS "#define utf_resize(PTRSTR, COUNT)"
 \fBValue:\fP
 .PP
@@ -1114,7 +1114,7 @@ Definition at line 463 of file utf8\&.h\&.
     )(PTRSTR,COUNT)
 .fi
 .PP
-Definition at line 501 of file utf8\&.h\&.
+Definition at line 502 of file utf8\&.h\&.
 .SS "#define utf_rewind(STR, WITH)"
 \fBValue:\fP
 .PP
@@ -1126,7 +1126,7 @@ Definition at line 501 of file utf8\&.h\&.
     )(STR,WITH)
 .fi
 .PP
-Definition at line 276 of file utf8\&.h\&.
+Definition at line 277 of file utf8\&.h\&.
 .SS "#define utf_search(STR, SEARCH)"
 \fBValue:\fP
 .PP
@@ -1138,7 +1138,7 @@ Definition at line 276 of file utf8\&.h\&.
     )(STR,SEARCH)
 .fi
 .PP
-Definition at line 270 of file utf8\&.h\&.
+Definition at line 271 of file utf8\&.h\&.
 .SS "#define utf_set_n(DST, UTF, NCH)"
 \fBValue:\fP
 .PP
@@ -1150,7 +1150,7 @@ Definition at line 270 of file utf8\&.h\&.
     )(DST,UTF,NCH)
 .fi
 .PP
-Definition at line 131 of file utf8\&.h\&.
+Definition at line 132 of file utf8\&.h\&.
 .SS "#define utf_snprintf(STR, MAX, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -1163,7 +1163,7 @@ Definition at line 131 of file utf8\&.h\&.
     )(STR,MAX,FORM, ## arg)
 .fi
 .PP
-Definition at line 327 of file utf8\&.h\&.
+Definition at line 328 of file utf8\&.h\&.
 .SS "#define utf_snprintf_alloc(STR, MAX, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -1176,7 +1176,7 @@ Definition at line 327 of file utf8\&.h\&.
     )(STR,MAX,FORM, ## arg)
 .fi
 .PP
-Definition at line 397 of file utf8\&.h\&.
+Definition at line 398 of file utf8\&.h\&.
 .SS "#define utf_snprintf_alloc(STR, MAX, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -1189,11 +1189,11 @@ Definition at line 397 of file utf8\&.h\&.
     )(STR,MAX,FORM, ## arg)
 .fi
 .PP
-Definition at line 397 of file utf8\&.h\&.
+Definition at line 398 of file utf8\&.h\&.
 .SS "#define utf_space   uc_is_space"
 
 .PP
-Definition at line 390 of file utf8\&.h\&.
+Definition at line 391 of file utf8\&.h\&.
 .SS "#define utf_spn(STR, ACCEPT)"
 \fBValue:\fP
 .PP
@@ -1205,7 +1205,7 @@ Definition at line 390 of file utf8\&.h\&.
     )(STR,ACCEPT)
 .fi
 .PP
-Definition at line 258 of file utf8\&.h\&.
+Definition at line 259 of file utf8\&.h\&.
 .SS "#define utf_sprintf(STR, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -1218,7 +1218,7 @@ Definition at line 258 of file utf8\&.h\&.
     )(STR,FORM, ## arg)
 .fi
 .PP
-Definition at line 307 of file utf8\&.h\&.
+Definition at line 308 of file utf8\&.h\&.
 .SS "#define utf_sprintf_alloc(STR, FORM, arg\&.\&.\&.)"
 \fBValue:\fP
 .PP
@@ -1231,7 +1231,7 @@ Definition at line 307 of file utf8\&.h\&.
     )(STR,FORM, ## arg)
 .fi
 .PP
-Definition at line 347 of file utf8\&.h\&.
+Definition at line 348 of file utf8\&.h\&.
 .SS "#define utf_to(STR, COUNT)"
 \fBValue:\fP
 .PP
@@ -1242,7 +1242,7 @@ Definition at line 347 of file utf8\&.h\&.
     )(STR,COUNT)
 .fi
 .PP
-Definition at line 433 of file utf8\&.h\&.
+Definition at line 434 of file utf8\&.h\&.
 .SS "#define utf_tok(STR, DEL, PTR)"
 \fBValue:\fP
 .PP
@@ -1254,19 +1254,19 @@ Definition at line 433 of file utf8\&.h\&.
     )(STR,DEL,PTR)
 .fi
 .PP
-Definition at line 288 of file utf8\&.h\&.
+Definition at line 289 of file utf8\&.h\&.
 .SS "#define utf_tolower   uc_tolower"
 
 .PP
-Definition at line 395 of file utf8\&.h\&.
+Definition at line 396 of file utf8\&.h\&.
 .SS "#define utf_toupper   uc_toupper"
 
 .PP
-Definition at line 394 of file utf8\&.h\&.
+Definition at line 395 of file utf8\&.h\&.
 .SS "#define utf_unicode_name   unicode_character_name"
 
 .PP
-Definition at line 379 of file utf8\&.h\&.
+Definition at line 380 of file utf8\&.h\&.
 .SS "#define utf_unit_count(STR)"
 \fBValue:\fP
 .PP
@@ -1278,7 +1278,7 @@ Definition at line 379 of file utf8\&.h\&.
     )(STR)
 .fi
 .PP
-Definition at line 167 of file utf8\&.h\&.
+Definition at line 168 of file utf8\&.h\&.
 .SS "#define utf_unit_count_n(STR, NCH)"
 \fBValue:\fP
 .PP
@@ -1290,11 +1290,11 @@ Definition at line 167 of file utf8\&.h\&.
     )(STR,NCH)
 .fi
 .PP
-Definition at line 86 of file utf8\&.h\&.
+Definition at line 87 of file utf8\&.h\&.
 .SS "#define utf_upper   uc_is_upper"
 
 .PP
-Definition at line 391 of file utf8\&.h\&.
+Definition at line 392 of file utf8\&.h\&.
 .SS "#define utf_validate_n(STR, NCH)"
 \fBValue:\fP
 .PP
@@ -1307,7 +1307,7 @@ Definition at line 391 of file utf8\&.h\&.
 .fi
 check STR is valid unicode, return NULL if is valid or first uninvalid char 
 .PP
-Definition at line 55 of file utf8\&.h\&.
+Definition at line 56 of file utf8\&.h\&.
 .SS "#define utf_width(STR)"
 \fBValue:\fP
 .PP
@@ -1320,7 +1320,7 @@ Definition at line 55 of file utf8\&.h\&.
     )(STR,lc_charset)
 .fi
 .PP
-Definition at line 404 of file utf8\&.h\&.
+Definition at line 405 of file utf8\&.h\&.
 .SS "#define utf_width_enc(STR, ENCODING)"
 \fBValue:\fP
 .PP
@@ -1333,7 +1333,7 @@ Definition at line 404 of file utf8\&.h\&.
     )(STR,ENCODING)
 .fi
 .PP
-Definition at line 411 of file utf8\&.h\&.
+Definition at line 412 of file utf8\&.h\&.
 .SS "#define utf_width_n(STR, NCH, ENCODING)"
 \fBValue:\fP
 .PP
@@ -1345,11 +1345,11 @@ Definition at line 411 of file utf8\&.h\&.
     )(STR,NCH,ENCODING)
 .fi
 .PP
-Definition at line 418 of file utf8\&.h\&.
+Definition at line 419 of file utf8\&.h\&.
 .SS "#define utf_xdigit   uc_is_xdigit"
 
 .PP
-Definition at line 392 of file utf8\&.h\&.
+Definition at line 393 of file utf8\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef uint16_t \fButf16_t\fP"

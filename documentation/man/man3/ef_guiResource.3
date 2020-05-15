@@ -1,4 +1,4 @@
-.TH "guiResource" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "guiResource" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -11,9 +11,6 @@ guiResource
 .SS "Data Fields"
 
 .in +1c
-.ti -1c
-.RI "char * \fBname\fP"
-.br
 .ti -1c
 .RI "union {"
 .br
@@ -39,6 +36,9 @@ guiResource
 .RI "   \fBg2dImage_s\fP * \fBimg\fP"
 .br
 .ti -1c
+.RI "   \fBsvg_s\fP * \fBsvg\fP"
+.br
+.ti -1c
 .RI "   \fBgif_s\fP * \fBgif\fP"
 .br
 .ti -1c
@@ -53,10 +53,13 @@ guiResource
 .ti -1c
 .RI "\fBguiResource_e\fP \fBtype\fP"
 .br
+.ti -1c
+.RI "unsigned \fBreference\fP"
+.br
 .in -1c
 .SH "Detailed Description"
 .PP 
-Definition at line 24 of file guiResources\&.h\&.
+Definition at line 26 of file guiResources\&.h\&.
 .SH "Field Documentation"
 .PP 
 .SS "union { \&.\&.\&. } "
@@ -64,51 +67,55 @@ Definition at line 24 of file guiResources\&.h\&.
 .SS "\fBg2dColor_t\fP guiResource::color"
 
 .PP
-Definition at line 31 of file guiResources\&.h\&.
+Definition at line 32 of file guiResources\&.h\&.
 .SS "double guiResource::d"
 
 .PP
-Definition at line 28 of file guiResources\&.h\&.
+Definition at line 29 of file guiResources\&.h\&.
 .SS "\fBftFonts_s\fP* guiResource::fonts"
 
 .PP
-Definition at line 36 of file guiResources\&.h\&.
+Definition at line 38 of file guiResources\&.h\&.
 .SS "\fBgif_s\fP* guiResource::gif"
 
 .PP
-Definition at line 34 of file guiResources\&.h\&.
+Definition at line 36 of file guiResources\&.h\&.
 .SS "\fBg2dImage_s\fP* guiResource::img"
 
 .PP
-Definition at line 33 of file guiResources\&.h\&.
+Definition at line 34 of file guiResources\&.h\&.
 .SS "long guiResource::l"
 
 .PP
-Definition at line 27 of file guiResources\&.h\&.
+Definition at line 28 of file guiResources\&.h\&.
 .SS "\fBmedia_s\fP* guiResource::media"
 
 .PP
-Definition at line 35 of file guiResources\&.h\&.
-.SS "char* guiResource::name"
-
-.PP
-Definition at line 25 of file guiResources\&.h\&.
+Definition at line 37 of file guiResources\&.h\&.
 .SS "\fBg2dCoord_s\fP guiResource::position"
 
 .PP
-Definition at line 32 of file guiResources\&.h\&.
+Definition at line 33 of file guiResources\&.h\&.
+.SS "unsigned guiResource::reference"
+
+.PP
+Definition at line 41 of file guiResources\&.h\&.
+.SS "\fBsvg_s\fP* guiResource::svg"
+
+.PP
+Definition at line 35 of file guiResources\&.h\&.
 .SS "\fButf8_t\fP* guiResource::text"
 
 .PP
-Definition at line 30 of file guiResources\&.h\&.
+Definition at line 31 of file guiResources\&.h\&.
 .SS "\fBguiResource_e\fP guiResource::type"
 
 .PP
-Definition at line 38 of file guiResources\&.h\&.
+Definition at line 40 of file guiResources\&.h\&.
 .SS "\fButf_t\fP guiResource::utf"
 
 .PP
-Definition at line 29 of file guiResources\&.h\&.
+Definition at line 30 of file guiResources\&.h\&.
 
 .SH "Author"
 .PP 

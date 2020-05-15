@@ -1,0 +1,151 @@
+.TH "include/ef/guiCaption.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/guiCaption.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/gui\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBguiCaption\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBGUI_CAPTION_RENDERING\fP   0x01"
+.br
+.ti -1c
+.RI "#define \fBGUI_CAPTION_CENTER_X\fP   0x02"
+.br
+.ti -1c
+.RI "#define \fBGUI_CAPTION_CENTER_Y\fP   0x04"
+.br
+.ti -1c
+.RI "#define \fBGUI_CAPTION_AUTOWRAP\fP   0x08"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_CAPTION\fP   'caption'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_CAPTION_AUTOWRAP\fP   'caption\&.autowrap'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_CAPTION_CENTER_X\fP   'caption\&.center\&.x'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_CAPTION_CENTER_Y\fP   'caption\&.center\&.y'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_CAPTION_X\fP   'caption\&.x'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_CAPTION_Y\fP   'caption\&.y'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_FOREGROUND\fP   'foreground'"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBguiCaption\fP \fBguiCaption_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBguiCaption_s\fP * \fBgui_caption_new\fP (\fBftFonts_s\fP *font, \fBg2dColor_t\fP foreground, unsigned flags)"
+.br
+.ti -1c
+.RI "void \fBgui_caption_free\fP (\fBguiCaption_s\fP *lbl)"
+.br
+.ti -1c
+.RI "void \fBgui_caption_text_set\fP (\fBgui_s\fP *\fBgui\fP, \fBguiCaption_s\fP *cap, const \fButf8_t\fP *text)"
+.br
+.ti -1c
+.RI "void \fBgui_caption_render\fP (\fBgui_s\fP *\fBgui\fP, \fBguiCaption_s\fP *cap)"
+.br
+.ti -1c
+.RI "void \fBgui_caption_scroll\fP (\fBgui_s\fP *\fBgui\fP, \fBguiCaption_s\fP *cap, unsigned x, unsigned y)"
+.br
+.ti -1c
+.RI "int \fBgui_caption_themes\fP (\fBgui_s\fP *\fBgui\fP, \fBguiCaption_s\fP *cap, const char *name)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define GUI_CAPTION_AUTOWRAP   0x08"
+
+.PP
+Definition at line 10 of file guiCaption\&.h\&.
+.SS "#define GUI_CAPTION_CENTER_X   0x02"
+
+.PP
+Definition at line 8 of file guiCaption\&.h\&.
+.SS "#define GUI_CAPTION_CENTER_Y   0x04"
+
+.PP
+Definition at line 9 of file guiCaption\&.h\&.
+.SS "#define GUI_CAPTION_RENDERING   0x01"
+
+.PP
+Definition at line 7 of file guiCaption\&.h\&.
+.SS "#define GUI_THEME_CAPTION   'caption'"
+
+.PP
+Definition at line 12 of file guiCaption\&.h\&.
+.SS "#define GUI_THEME_CAPTION_AUTOWRAP   'caption\&.autowrap'"
+
+.PP
+Definition at line 13 of file guiCaption\&.h\&.
+.SS "#define GUI_THEME_CAPTION_CENTER_X   'caption\&.center\&.x'"
+
+.PP
+Definition at line 14 of file guiCaption\&.h\&.
+.SS "#define GUI_THEME_CAPTION_CENTER_Y   'caption\&.center\&.y'"
+
+.PP
+Definition at line 15 of file guiCaption\&.h\&.
+.SS "#define GUI_THEME_CAPTION_X   'caption\&.x'"
+
+.PP
+Definition at line 16 of file guiCaption\&.h\&.
+.SS "#define GUI_THEME_CAPTION_Y   'caption\&.y'"
+
+.PP
+Definition at line 17 of file guiCaption\&.h\&.
+.SS "#define GUI_THEME_FOREGROUND   'foreground'"
+
+.PP
+Definition at line 18 of file guiCaption\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBguiCaption\fP \fBguiCaption_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "void gui_caption_free (\fBguiCaption_s\fP * lbl)"
+label free 
+.SS "\fBguiCaption_s\fP* gui_caption_new (\fBftFonts_s\fP * font, \fBg2dColor_t\fP foreground, unsigned flags)"
+create new label 
+.SS "void gui_caption_render (\fBgui_s\fP * gui, \fBguiCaption_s\fP * cap)"
+label render text 
+.SS "void gui_caption_scroll (\fBgui_s\fP * gui, \fBguiCaption_s\fP * cap, unsigned x, unsigned y)"
+caption scroll 
+.SS "void gui_caption_text_set (\fBgui_s\fP * gui, \fBguiCaption_s\fP * cap, const \fButf8_t\fP * text)"
+caption set caption 
+.SS "int gui_caption_themes (\fBgui_s\fP * gui, \fBguiCaption_s\fP * cap, const char * name)"
+set caption theme 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

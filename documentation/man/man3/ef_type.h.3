@@ -1,4 +1,4 @@
-.TH "include/ef/type.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/type.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -55,6 +55,9 @@ include/ef/type.h
 .br
 .ti -1c
 .RI "#define \fBADDR\fP(VAR)   ((char*)(VAR))"
+.br
+.ti -1c
+.RI "#define \fBADDRTO\fP(VAR,  SO,  I)   ( \fBADDR\fP(VAR) + ((SO)*(I)))"
 .br
 .ti -1c
 .RI "#define \fB__VA_COUNT__\fP(\&.\&.\&.)   \fB__VA_COUNT_IMPL__\fP(foo, ##__VA_ARGS__,9,8,7,6,5,4,3,2,1,0)"
@@ -270,47 +273,47 @@ cleanup function called when exit from scope
 .PP
 
 .PP
-Definition at line 93 of file type\&.h\&.
+Definition at line 131 of file type\&.h\&.
 .SS "#define __CONCAT__(A, B)   A##B"
 
 .PP
-Definition at line 80 of file type\&.h\&.
+Definition at line 118 of file type\&.h\&.
 .SS "#define __CONCAT_EXPAND__(A, B)   \fB__CONCAT__\fP(A,B)"
 
 .PP
-Definition at line 81 of file type\&.h\&.
+Definition at line 119 of file type\&.h\&.
 .SS "#define __const   __attribute__((const))"
 is const 
 .PP
-Definition at line 100 of file type\&.h\&.
+Definition at line 138 of file type\&.h\&.
 .SS "#define __cpu_init()   __builtin_cpu_init()"
 init cpu before use runtime optimizations 
 .PP
-Definition at line 120 of file type\&.h\&.
+Definition at line 158 of file type\&.h\&.
 .SS "#define __cpu_supports_popcount()   __builtin_cpu_supports ('popcnt')"
 test is support bitcount 
 .PP
-Definition at line 122 of file type\&.h\&.
+Definition at line 160 of file type\&.h\&.
 .SS "#define __cpu_supports_vectorization()   (__builtin_cpu_supports('mmx') || __builtin_cpu_supports('sse') || __builtin_cpu_supports('sse2') || __builtin_cpu_supports('sse3') || __builtin_cpu_supports('ssse3') || __builtin_cpu_supports('sse4\&.1') || __builtin_cpu_supports('sse4\&.2') || __builtin_cpu_supports('avx') || __builtin_cpu_supports('avx2'))"
 test is support vectorization 
 .PP
-Definition at line 124 of file type\&.h\&.
+Definition at line 162 of file type\&.h\&.
 .SS "#define __mul_overflow(R, A, B)   __builtin_mul_overflow(A,B,R)"
 
 .PP
-Definition at line 126 of file type\&.h\&.
+Definition at line 164 of file type\&.h\&.
 .SS "struct \fBxorgWindowStrutPartial\fP __packed   __attribute__((packed))"
 is packed 
 .PP
-Definition at line 102 of file type\&.h\&.
+Definition at line 140 of file type\&.h\&.
 .SS "#define __parallef"
 
 .PP
-Definition at line 148 of file type\&.h\&.
+Definition at line 186 of file type\&.h\&.
 .SS "#define __parallefc(Z)"
 
 .PP
-Definition at line 149 of file type\&.h\&.
+Definition at line 187 of file type\&.h\&.
 .SS "#define __printf(FRMT, VA)   __attribute__((\fBformat\fP (printf, FRMT, VA)))"
 is printf 
 .PP
@@ -323,187 +326,191 @@ is printf
 .PP
 
 .PP
-Definition at line 98 of file type\&.h\&.
+Definition at line 136 of file type\&.h\&.
 .SS "#define __private   static"
 private is more elegant? 
 .PP
-Definition at line 87 of file type\&.h\&.
+Definition at line 125 of file type\&.h\&.
 .SS "#define __target(T)   __attribute__((target(T)))"
 target for runtime optimization 
 .PP
-Definition at line 104 of file type\&.h\&.
+Definition at line 142 of file type\&.h\&.
 .SS "#define __target_all   \fB__target_clone\fP('default','popcnt','mmx','sse','sse2','sse3','ssse3','sse4\&.1','sse4\&.2','avx','avx2')"
 target for runtime optimization 
 .PP
-Definition at line 118 of file type\&.h\&.
+Definition at line 156 of file type\&.h\&.
 .SS "#define __target_clone(arg\&.\&.\&.)   __attribute__((target_clones(## arg)))"
 target for runtime optimization 
 .PP
-Definition at line 106 of file type\&.h\&.
+Definition at line 144 of file type\&.h\&.
 .SS "#define __target_default   \fB__target\fP('default')"
 target for runtime optimization 
 .PP
-Definition at line 108 of file type\&.h\&.
+Definition at line 146 of file type\&.h\&.
 .SS "#define __target_default_popcount   \fB__target_clone\fP('default','popcnt')"
 target for runtime optimization 
 .PP
-Definition at line 114 of file type\&.h\&.
+Definition at line 152 of file type\&.h\&.
 .SS "#define __target_default_vectorization   \fB__target_clone\fP('default','mmx','sse','sse2','sse3','ssse3','sse4\&.1','sse4\&.2','avx','avx2')"
 target for runtime optimization 
 .PP
-Definition at line 116 of file type\&.h\&.
+Definition at line 154 of file type\&.h\&.
 .SS "#define __target_popcount   \fB__target\fP('popcnt')"
 target for runtime optimization 
 .PP
-Definition at line 110 of file type\&.h\&.
+Definition at line 148 of file type\&.h\&.
 .SS "#define __target_vectorization   __attribute__((target_clones('default','mmx','sse','sse2','sse3','ssse3','sse4\&.1','sse4\&.2','avx','avx2')))"
 target for runtime optimization 
 .PP
-Definition at line 112 of file type\&.h\&.
+Definition at line 150 of file type\&.h\&.
 .SS "#define __unused   __attribute__((unused))"
 unused value 
 .PP
-Definition at line 89 of file type\&.h\&.
+Definition at line 127 of file type\&.h\&.
 .SS "#define __VA_COUNT__( \&.\&.\&.)   \fB__VA_COUNT_IMPL__\fP(foo, ##__VA_ARGS__,9,8,7,6,5,4,3,2,1,0)"
 
 .PP
-Definition at line 78 of file type\&.h\&.
+Definition at line 116 of file type\&.h\&.
 .SS "#define __VA_COUNT_IMPL__(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, N,  \&.\&.\&.)   N"
 
 .PP
-Definition at line 79 of file type\&.h\&.
+Definition at line 117 of file type\&.h\&.
 .SS "#define _GNU_SOURCE"
 
 .PP
-Definition at line 5 of file type\&.h\&.
+Definition at line 40 of file type\&.h\&.
 .SS "#define _N_   0"
 macro value no 
 .PP
-Definition at line 59 of file type\&.h\&.
+Definition at line 94 of file type\&.h\&.
 .SS "#define _XOPEN_SPURCE   600"
 
 .PP
-Definition at line 8 of file type\&.h\&.
+Definition at line 43 of file type\&.h\&.
 .SS "#define _Y_   1"
 macro value yes 
 .PP
-Definition at line 55 of file type\&.h\&.
+Definition at line 90 of file type\&.h\&.
 .SS "#define ADDR(VAR)   ((char*)(VAR))"
 use address for move to data 
 .PP
-Definition at line 76 of file type\&.h\&.
+Definition at line 111 of file type\&.h\&.
+.SS "#define ADDRTO(VAR, SO, I)   ( \fBADDR\fP(VAR) + ((SO)*(I)))"
+to address 
+.PP
+Definition at line 114 of file type\&.h\&.
 .SS "#define dbg(TYPE, FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
 
 .PP
-Definition at line 218 of file type\&.h\&.
+Definition at line 256 of file type\&.h\&.
 .SS "#define DBG_COLOR_ERROR   ''"
 
 .PP
-Definition at line 165 of file type\&.h\&.
+Definition at line 203 of file type\&.h\&.
 .SS "#define DBG_COLOR_FAIL   ''"
 
 .PP
-Definition at line 166 of file type\&.h\&.
+Definition at line 204 of file type\&.h\&.
 .SS "#define DBG_COLOR_INFO   ''"
 
 .PP
-Definition at line 163 of file type\&.h\&.
+Definition at line 201 of file type\&.h\&.
 .SS "#define DBG_COLOR_RESET   ''"
 
 .PP
-Definition at line 167 of file type\&.h\&.
+Definition at line 205 of file type\&.h\&.
 .SS "#define DBG_COLOR_WARNING   ''"
 
 .PP
-Definition at line 164 of file type\&.h\&.
-.SS "#define dbg_errno()   \fBEMPTY_MACRO\fP"
-
-.PP
-Definition at line 220 of file type\&.h\&.
+Definition at line 202 of file type\&.h\&.
 .SS "#define DBG_ERRNO   'errno'"
 
 .PP
-Definition at line 183 of file type\&.h\&.
-.SS "#define dbg_error(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+Definition at line 221 of file type\&.h\&.
+.SS "#define dbg_errno()   \fBEMPTY_MACRO\fP"
 
 .PP
-Definition at line 227 of file type\&.h\&.
+Definition at line 258 of file type\&.h\&.
 .SS "#define DBG_ERROR   'error'"
 
 .PP
-Definition at line 177 of file type\&.h\&.
-.SS "#define dbg_fail(FORMAT, arg\&.\&.\&.)   do{exit(1);}while(0)"
+Definition at line 215 of file type\&.h\&.
+.SS "#define dbg_error(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
 
 .PP
-Definition at line 219 of file type\&.h\&.
+Definition at line 265 of file type\&.h\&.
 .SS "#define DBG_FAIL   'fail'"
 
 .PP
-Definition at line 180 of file type\&.h\&.
-.SS "#define dbg_info(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+Definition at line 218 of file type\&.h\&.
+.SS "#define dbg_fail(FORMAT, arg\&.\&.\&.)   do{exit(1);}while(0)"
 
 .PP
-Definition at line 241 of file type\&.h\&.
+Definition at line 257 of file type\&.h\&.
 .SS "#define DBG_INFO   'info'"
 
 .PP
-Definition at line 171 of file type\&.h\&.
+Definition at line 209 of file type\&.h\&.
+.SS "#define dbg_info(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+
+.PP
+Definition at line 279 of file type\&.h\&.
 .SS "#define DBG_LVL_ERROR   2"
 
 .PP
-Definition at line 190 of file type\&.h\&.
+Definition at line 228 of file type\&.h\&.
 .SS "#define DBG_LVL_FAIL   1"
 
 .PP
-Definition at line 187 of file type\&.h\&.
+Definition at line 225 of file type\&.h\&.
 .SS "#define DBG_LVL_INFO   4"
 
 .PP
-Definition at line 196 of file type\&.h\&.
+Definition at line 234 of file type\&.h\&.
 .SS "#define DBG_LVL_WARNING   3"
 
 .PP
-Definition at line 193 of file type\&.h\&.
+Definition at line 231 of file type\&.h\&.
 .SS "#define DBG_OUTPUT   stderr"
 
 .PP
-Definition at line 153 of file type\&.h\&.
-.SS "#define dbg_warning(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
-
-.PP
-Definition at line 234 of file type\&.h\&.
+Definition at line 191 of file type\&.h\&.
 .SS "#define DBG_WARNING   'warning'"
 
 .PP
-Definition at line 174 of file type\&.h\&.
+Definition at line 212 of file type\&.h\&.
+.SS "#define dbg_warning(FORMAT, arg\&.\&.\&.)   \fBEMPTY_MACRO\fP"
+
+.PP
+Definition at line 272 of file type\&.h\&.
 .SS "#define DO_PRAGMA(DOP)   _Pragma(#DOP)"
 to call pragma 
 .PP
-Definition at line 136 of file type\&.h\&.
+Definition at line 174 of file type\&.h\&.
 .SS "#define EMPTY_MACRO   do{}while(0)"
 macro is empty 
 .PP
-Definition at line 63 of file type\&.h\&.
+Definition at line 98 of file type\&.h\&.
 .SS "#define forever()   for(;;)"
 forever loop 
 .PP
-Definition at line 85 of file type\&.h\&.
+Definition at line 123 of file type\&.h\&.
 .SS "#define GiB   (\fBMiB\fP*\fBMiB\fP)"
 GiB value 
 .PP
-Definition at line 133 of file type\&.h\&.
+Definition at line 171 of file type\&.h\&.
 .SS "#define iassert(C)   \fBEMPTY_MACRO\fP"
 
 .PP
-Definition at line 248 of file type\&.h\&.
+Definition at line 286 of file type\&.h\&.
 .SS "#define iassert_static(EX, MSG)   _Static_assert(EX, MSG)"
 static assert 
 .PP
-Definition at line 252 of file type\&.h\&.
+Definition at line 290 of file type\&.h\&.
 .SS "#define KiB   (1024UL)"
 KiB value 
 .PP
-Definition at line 129 of file type\&.h\&.
+Definition at line 167 of file type\&.h\&.
 .SS "#define lenght_stack_vector(V)   (sizeof(V)/sizeof(V[0]))"
 get size of array allocated in same scope and in stack 
 .PP
@@ -514,15 +521,15 @@ get size of array allocated in same scope and in stack
 .PP
 
 .PP
-Definition at line 51 of file type\&.h\&.
+Definition at line 86 of file type\&.h\&.
 .SS "#define MiB   (\fBKiB\fP*\fBKiB\fP)"
 MiB value 
 .PP
-Definition at line 131 of file type\&.h\&.
+Definition at line 169 of file type\&.h\&.
 .SS "#define scan_build_unknown_cleanup(E)"
 
 .PP
-Definition at line 257 of file type\&.h\&.
+Definition at line 295 of file type\&.h\&.
 .SS "#define SWAP(A, B)"
 \fBValue:\fP
 .PP
@@ -544,41 +551,41 @@ swap two variable
 .PP
 
 .PP
-Definition at line 69 of file type\&.h\&.
+Definition at line 104 of file type\&.h\&.
 .SS "#define UNSAFE_BEGIN(FLAGS)   \fBDO_PRAGMA\fP(GCC diagnostic push); \fBDO_PRAGMA\fP(GCC diagnostic ignored FLAGS)"
 suppress compiler warning 
 .PP
-Definition at line 138 of file type\&.h\&.
+Definition at line 176 of file type\&.h\&.
 .SS "#define UNSAFE_END   \fBDO_PRAGMA\fP(GCC diagnostic pop)"
 
 .PP
-Definition at line 139 of file type\&.h\&.
+Definition at line 177 of file type\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef char \fBbyte_t\fP"
 type for byte 
 .PP
-Definition at line 28 of file type\&.h\&.
+Definition at line 62 of file type\&.h\&.
 .SS "typedef uint32_t \fBdword_t\fP"
 type for double word 
 .PP
-Definition at line 34 of file type\&.h\&.
+Definition at line 68 of file type\&.h\&.
 .SS "typedef int \fBerr_t\fP"
 type for error 
 .PP
-Definition at line 43 of file type\&.h\&.
+Definition at line 77 of file type\&.h\&.
 .SS "typedef \fBdword_t\fP \fBflags_t\fP"
 type for flags 
 .PP
-Definition at line 40 of file type\&.h\&.
+Definition at line 74 of file type\&.h\&.
 .SS "typedef uint64_t \fBqword_t\fP"
 type for quad word 
 .PP
-Definition at line 37 of file type\&.h\&.
+Definition at line 71 of file type\&.h\&.
 .SS "typedef uint16_t \fBword_t\fP"
 type for word 
 .PP
-Definition at line 31 of file type\&.h\&.
+Definition at line 65 of file type\&.h\&.
 .SH "Enumeration Type Documentation"
 .PP 
 .SS "enum \fBbool_t\fP"
@@ -591,13 +598,13 @@ type for boolean
 .TP
 \fB\fITRUE \fP\fP
 .PP
-Definition at line 46 of file type\&.h\&.
+Definition at line 80 of file type\&.h\&.
 .SH "Variable Documentation"
 .PP 
 .SS "int(* qsort_f) (const void *a, const void *b)"
 compare function for qsort 
 .PP
-Definition at line 25 of file type\&.h\&.
+Definition at line 59 of file type\&.h\&.
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for Easy Framework from the source code\&.

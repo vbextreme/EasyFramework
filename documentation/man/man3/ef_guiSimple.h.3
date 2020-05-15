@@ -1,0 +1,374 @@
+.TH "include/ef/guiSimple.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/guiSimple.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/gui\&.h>\fP
+.br
+\fC#include <ef/guiImage\&.h>\fP
+.br
+\fC#include <ef/guiResources\&.h>\fP
+.br
+\fC#include <ef/guiCaption\&.h>\fP
+.br
+\fC#include <ef/guiLabel\&.h>\fP
+.br
+\fC#include <ef/guiButton\&.h>\fP
+.br
+\fC#include <ef/guiBar\&.h>\fP
+.br
+\fC#include <ef/guiText\&.h>\fP
+.br
+\fC#include <ef/guiDiv\&.h>\fP
+.br
+\fC#include <ef/guiOptionBox\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBguiSimpleMsgBoxButtons\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_NAME_FONTS\fP   'defaultFT'"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_BORDER_COLOR\fP   \fBgui_color\fP(255,0x8D,0x8D,0x8D)"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR\fP   \fBgui_color\fP(255,0xEF,0xEF,0xEF)"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_BACKGROUND_COLOR\fP   \fBgui_color\fP(255,0xDB,0xDB,0xDB)"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_FOREGROUND\fP   \fBgui_color\fP(255,0x00,0x00,0x00)"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_ACTIVE_COLOR\fP   \fBgui_color\fP(255,0xE0,0xE0,0xE0)"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_ENABLE_COLOR\fP   \fBgui_color\fP(255,0x60,0x7D,0x8B)"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_DISABLE_COLOR\fP   \fBgui_color\fP(255,0x9E,0x9E,0x9E)"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_CURSOR_COLOR\fP   \fBgui_color\fP(255,0x21,0x21,0x21)"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_BLINK\fP   600"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_BORDER\fP   1"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_CONTROL_W\fP   100"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_CONTROL_H\fP   100"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_TAB\fP   4"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_OPT_X\fP   70\&.0"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_OPT_Y\fP   4\&.0"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_OPT_W\fP   29\&.0"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_OPT_H\fP   95\&.0"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_MSGBOX_LBL_W\fP   100\&.0"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_MSGBOX_LBL_H\fP   75\&.0"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_MSGBOX_HORI_H\fP   25\&.0"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_MSGBOX_HORI_W\fP   100\&.0"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_DEFAULT_DIV_SEL_PAD\fP   1"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_CLASS_WINDOW\fP   'window'"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_CLASS_DIV\fP   'div'"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_CLASS_LABEL\fP   'label'"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_CLASS_BUTTON\fP   'button'"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_CLASS_TEXT\fP   'text'"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_CLASS_BAR\fP   'bar'"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_CLASS_OPTION\fP   'option'"
+.br
+.ti -1c
+.RI "#define \fBGUI_SIMPLE_COMPOSITE_SIZE\fP   2"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBguiSimpleMsgBoxButtons\fP \fBguiSimpleMsgBoxButtons_s\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBgui_simple_begin\fP (const char *appname)"
+.br
+.ti -1c
+.RI "void \fBgui_simple_end\fP (void)"
+.br
+.ti -1c
+.RI "void \fBgui_simple_show_all\fP (\fBgui_s\fP *parent, int show)"
+.br
+.ti -1c
+.RI "void \fBgui_simple_draw\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_simple_apply_change\fP (\fBgui_s\fP *main)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_window_layout_vertical_new\fP (const char *name, unsigned x, unsigned y, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_window_layout_horizontal_new\fP (const char *name, unsigned x, unsigned y, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_window_layout_table_new\fP (const char *name, unsigned x, unsigned y, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "void \fBgui_simple_layout_table_add\fP (\fBgui_s\fP *parent, \fBgui_s\fP *\fBgui\fP, double w, double h, int newline)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_paint\fP (\fBgui_s\fP *parent, const char *name)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_label_new\fP (\fBgui_s\fP *parent, const char *name, const \fButf8_t\fP *caption)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_button_new\fP (\fBgui_s\fP *parent, const char *name, const \fButf8_t\fP *caption, \fBguiEvent_f\fP onclick)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_text_new\fP (\fBgui_s\fP *parent, const char *name)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_bar_new\fP (\fBgui_s\fP *parent, const char *name, const \fButf8_t\fP *caption, double max)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_option_new\fP (\fBgui_s\fP *parent, const char *name)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_check_add\fP (\fBgui_s\fP *opt, const char *name, const \fButf8_t\fP *text, double h)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_option_add\fP (\fBgui_s\fP *opt, const char *name, const \fButf8_t\fP *text, double h)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_msgbox\fP (const char *name, unsigned w, unsigned h, \fButf8_t\fP *caption, \fBguiSimpleMsgBoxButtons_s\fP *vb, int hori)"
+.br
+.ti -1c
+.RI "\fBgui_s\fP * \fBgui_simple_combo_new\fP (\fBgui_s\fP *combo, const char *name, \fButf8_t\fP **vstr)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define GUI_SIMPLE_CLASS_BAR   'bar'"
+
+.PP
+Definition at line 47 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_CLASS_BUTTON   'button'"
+
+.PP
+Definition at line 45 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_CLASS_DIV   'div'"
+
+.PP
+Definition at line 43 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_CLASS_LABEL   'label'"
+
+.PP
+Definition at line 44 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_CLASS_OPTION   'option'"
+
+.PP
+Definition at line 48 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_CLASS_TEXT   'text'"
+
+.PP
+Definition at line 46 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_CLASS_WINDOW   'window'"
+
+.PP
+Definition at line 42 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_COMPOSITE_SIZE   2"
+
+.PP
+Definition at line 50 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_ACTIVE_COLOR   \fBgui_color\fP(255,0xE0,0xE0,0xE0)"
+
+.PP
+Definition at line 22 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_BACKGROUND_COLOR   \fBgui_color\fP(255,0xDB,0xDB,0xDB)"
+
+.PP
+Definition at line 20 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_BLINK   600"
+
+.PP
+Definition at line 27 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_BORDER   1"
+
+.PP
+Definition at line 28 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_BORDER_COLOR   \fBgui_color\fP(255,0x8D,0x8D,0x8D)"
+
+.PP
+Definition at line 18 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_CONTROL_H   100"
+
+.PP
+Definition at line 30 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_CONTROL_W   100"
+
+.PP
+Definition at line 29 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_CURSOR_COLOR   \fBgui_color\fP(255,0x21,0x21,0x21)"
+
+.PP
+Definition at line 25 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_DISABLE_COLOR   \fBgui_color\fP(255,0x9E,0x9E,0x9E)"
+
+.PP
+Definition at line 24 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_DIV_SEL_PAD   1"
+
+.PP
+Definition at line 40 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_ENABLE_COLOR   \fBgui_color\fP(255,0x60,0x7D,0x8B)"
+
+.PP
+Definition at line 23 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_FOREGROUND   \fBgui_color\fP(255,0x00,0x00,0x00)"
+
+.PP
+Definition at line 21 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_MSGBOX_HORI_H   25\&.0"
+
+.PP
+Definition at line 38 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_MSGBOX_HORI_W   100\&.0"
+
+.PP
+Definition at line 39 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_MSGBOX_LBL_H   75\&.0"
+
+.PP
+Definition at line 37 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_MSGBOX_LBL_W   100\&.0"
+
+.PP
+Definition at line 36 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_NAME_FONTS   'defaultFT'"
+
+.PP
+Definition at line 16 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_OPT_H   95\&.0"
+
+.PP
+Definition at line 35 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_OPT_W   29\&.0"
+
+.PP
+Definition at line 34 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_OPT_X   70\&.0"
+
+.PP
+Definition at line 32 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_OPT_Y   4\&.0"
+
+.PP
+Definition at line 33 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_TAB   4"
+
+.PP
+Definition at line 31 of file guiSimple\&.h\&.
+.SS "#define GUI_SIMPLE_DEFAULT_WINDOW_BACKGROUND_COLOR   \fBgui_color\fP(255,0xEF,0xEF,0xEF)"
+
+.PP
+Definition at line 19 of file guiSimple\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBguiSimpleMsgBoxButtons\fP \fBguiSimpleMsgBoxButtons_s\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "void gui_simple_apply_change (\fBgui_s\fP * main)"
+
+.SS "\fBgui_s\fP* gui_simple_bar_new (\fBgui_s\fP * parent, const char * name, const \fButf8_t\fP * caption, double max)"
+
+.SS "void gui_simple_begin (const char * appname)"
+
+.SS "\fBgui_s\fP* gui_simple_button_new (\fBgui_s\fP * parent, const char * name, const \fButf8_t\fP * caption, \fBguiEvent_f\fP onclick)"
+
+.SS "\fBgui_s\fP* gui_simple_check_add (\fBgui_s\fP * opt, const char * name, const \fButf8_t\fP * text, double h)"
+
+.SS "\fBgui_s\fP* gui_simple_combo_new (\fBgui_s\fP * combo, const char * name, \fButf8_t\fP ** vstr)"
+
+.SS "void gui_simple_draw (\fBgui_s\fP * gui)"
+
+.SS "void gui_simple_end (void)"
+
+.SS "\fBgui_s\fP* gui_simple_label_new (\fBgui_s\fP * parent, const char * name, const \fButf8_t\fP * caption)"
+
+.SS "void gui_simple_layout_table_add (\fBgui_s\fP * parent, \fBgui_s\fP * gui, double w, double h, int newline)"
+
+.SS "\fBgui_s\fP* gui_simple_msgbox (const char * name, unsigned w, unsigned h, \fButf8_t\fP * caption, \fBguiSimpleMsgBoxButtons_s\fP * vb, int hori)"
+
+.SS "\fBgui_s\fP* gui_simple_option_add (\fBgui_s\fP * opt, const char * name, const \fButf8_t\fP * text, double h)"
+
+.SS "\fBgui_s\fP* gui_simple_option_new (\fBgui_s\fP * parent, const char * name)"
+
+.SS "\fBgui_s\fP* gui_simple_paint (\fBgui_s\fP * parent, const char * name)"
+
+.SS "void gui_simple_show_all (\fBgui_s\fP * parent, int show)"
+
+.SS "\fBgui_s\fP* gui_simple_text_new (\fBgui_s\fP * parent, const char * name)"
+
+.SS "\fBgui_s\fP* gui_simple_window_layout_horizontal_new (const char * name, unsigned x, unsigned y, unsigned w, unsigned h)"
+
+.SS "\fBgui_s\fP* gui_simple_window_layout_table_new (const char * name, unsigned x, unsigned y, unsigned w, unsigned h)"
+
+.SS "\fBgui_s\fP* gui_simple_window_layout_vertical_new (const char * name, unsigned x, unsigned y, unsigned w, unsigned h)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

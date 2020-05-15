@@ -1,4 +1,4 @@
-.TH "include/ef/guiDiv.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/guiDiv.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -13,6 +13,12 @@ include/ef/guiDiv.h
 
 .in +1c
 .ti -1c
+.RI "struct \fBguiDivCols\fP"
+.br
+.ti -1c
+.RI "struct \fBguiDivRow\fP"
+.br
+.ti -1c
 .RI "struct \fBguiDiv\fP"
 .br
 .in -1c
@@ -20,15 +26,63 @@ include/ef/guiDiv.h
 
 .in +1c
 .ti -1c
-.RI "#define \fBGUI_DIV_DEFAULT_X\fP   5"
+.RI "#define \fBGUI_DIV_FLAGS_FIT\fP   0x01"
 .br
 .ti -1c
-.RI "#define \fBGUI_DIV_DEFAULT_Y\fP   5"
+.RI "#define \fBGUI_DIV_FLAGS_SELECT\fP   0x02"
+.br
+.ti -1c
+.RI "#define \fBGUI_DIV_DEFAULT_PADDING\fP   5"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_PAD_LEFT\fP   'div\&.padding\&.left'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_PAD_RIGHT\fP   'div\&.padding\&.right'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_PAD_TOP\fP   'div\&.padding\&.top'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_PAD_BOTTOM\fP   'div\&.padding\&.bottom'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_ELEMENT\fP   'div\&.element'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_PROPH\fP   'h'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_PROPW\fP   'w'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_SELECT\fP   'div\&.select'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_SELECTION\fP   'div\&.selection'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_SEL_PAD_LEFT\fP   'div\&.selection\&.padding\&.left'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_SEL_PAD_RIGHT\fP   'div\&.selection\&.padding\&.right'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_SEL_PAD_TOP\fP   'div\&.selection\&.padding\&.top'"
+.br
+.ti -1c
+.RI "#define \fBGUI_THEME_DIV_SEL_PAD_BOTTOM\fP   'div\&.selection\&.padding\&.bottom'"
 .br
 .in -1c
 .SS "Typedefs"
 
 .in +1c
+.ti -1c
+.RI "typedef struct \fBguiDivCols\fP \fBguiDivCols_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBguiDivRow\fP \fBguiDivRow_s\fP"
+.br
 .ti -1c
 .RI "typedef struct \fBguiDiv\fP \fBguiDiv_s\fP"
 .br
@@ -37,44 +91,158 @@ include/ef/guiDiv.h
 
 .in +1c
 .ti -1c
-.RI "enum \fBguiDivMode_e\fP { \fBGUI_DIV_NONE\fP, \fBGUI_DIV_VERTICAL\fP, \fBGUI_DIV_HORIZONTAL\fP, \fBGUI_DIV_GRID\fP }"
+.RI "enum \fBguiDivMode_e\fP { \fBGUI_DIV_NONE\fP, \fBGUI_DIV_VERTICAL\fP, \fBGUI_DIV_HORIZONTAL\fP, \fBGUI_DIV_TABLE\fP }"
 .br
 .in -1c
 .SS "Functions"
 
 .in +1c
 .ti -1c
-.RI "\fBguiDiv_s\fP * \fBgui_div_new\fP (\fBguiDivMode_e\fP mode)"
+.RI "\fBguiDiv_s\fP * \fBgui_div_new\fP (\fBguiDivMode_e\fP mode, \fBguiLayer_s\fP *select, unsigned flags)"
 .br
 .ti -1c
 .RI "\fBgui_s\fP * \fBgui_div_attach\fP (\fBgui_s\fP *\fBgui\fP, \fBguiDiv_s\fP *div)"
 .br
 .ti -1c
+.RI "void \fBgui_div_apply_select\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_div_deapply_select\fP (\fBgui_s\fP *\fBgui\fP)"
+.br
+.ti -1c
 .RI "void \fBgui_div_free\fP (\fBguiDiv_s\fP *div)"
 .br
 .ti -1c
-.RI "void \fBgui_div_align\fP (\fBgui_s\fP *\fBgui\fP, \fBguiDiv_s\fP *div)"
+.RI "void \fBgui_div_padding_top\fP (\fBgui_s\fP *\fBgui\fP, int top)"
+.br
+.ti -1c
+.RI "void \fBgui_div_padding_bottom\fP (\fBgui_s\fP *\fBgui\fP, int bottom)"
+.br
+.ti -1c
+.RI "void \fBgui_div_padding_left\fP (\fBgui_s\fP *\fBgui\fP, int left)"
+.br
+.ti -1c
+.RI "void \fBgui_div_padding_right\fP (\fBgui_s\fP *\fBgui\fP, int right)"
+.br
+.ti -1c
+.RI "void \fBgui_div_sel_padding_top\fP (\fBgui_s\fP *\fBgui\fP, int top)"
+.br
+.ti -1c
+.RI "void \fBgui_div_sel_padding_bottom\fP (\fBgui_s\fP *\fBgui\fP, int bottom)"
+.br
+.ti -1c
+.RI "void \fBgui_div_sel_padding_left\fP (\fBgui_s\fP *\fBgui\fP, int left)"
+.br
+.ti -1c
+.RI "void \fBgui_div_sel_padding_right\fP (\fBgui_s\fP *\fBgui\fP, int right)"
+.br
+.ti -1c
+.RI "\fBguiDivRow_s\fP * \fBgui_div_table_create_row\fP (\fBgui_s\fP *tab, double raph)"
+.br
+.ti -1c
+.RI "\fBguiDivRow_s\fP * \fBgui_div_table_row_get\fP (\fBgui_s\fP *tab, unsigned idrow)"
+.br
+.ti -1c
+.RI "\fBguiDivRow_s\fP * \fBgui_div_table_row_last\fP (\fBgui_s\fP *tab)"
+.br
+.ti -1c
+.RI "void \fBgui_div_table_col_new\fP (\fBgui_s\fP *\fBgui\fP, \fBguiDivRow_s\fP *row, \fBgui_s\fP *child, double propw, int flags)"
+.br
+.ti -1c
+.RI "void \fBgui_div_table_attach\fP (\fBguiDivRow_s\fP *row, unsigned idcol, \fBgui_s\fP *child, double propw, int flags)"
+.br
+.ti -1c
+.RI "void \fBgui_div_align\fP (\fBgui_s\fP *\fBgui\fP)"
 .br
 .ti -1c
 .RI "int \fBgui_div_event_free\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *ev)"
 .br
 .ti -1c
-.RI "int \fBgui_div_event_key\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.RI "int \fBgui_div_event_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fB__unused\fP \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_div_child_event_key\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_div_event_move\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *\fBevent\fP)"
+.br
+.ti -1c
+.RI "int \fBgui_div_event_themes\fP (\fBgui_s\fP *\fBgui\fP, \fBxorgEvent_s\fP *ev)"
 .br
 .in -1c
 .SH "Macro Definition Documentation"
 .PP 
-.SS "#define GUI_DIV_DEFAULT_X   5"
+.SS "#define GUI_DIV_DEFAULT_PADDING   5"
 
 .PP
-Definition at line 20 of file guiDiv\&.h\&.
-.SS "#define GUI_DIV_DEFAULT_Y   5"
+Definition at line 39 of file guiDiv\&.h\&.
+.SS "#define GUI_DIV_FLAGS_FIT   0x01"
 
 .PP
-Definition at line 21 of file guiDiv\&.h\&.
+Definition at line 14 of file guiDiv\&.h\&.
+.SS "#define GUI_DIV_FLAGS_SELECT   0x02"
+
+.PP
+Definition at line 15 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_ELEMENT   'div\&.element'"
+
+.PP
+Definition at line 45 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_PAD_BOTTOM   'div\&.padding\&.bottom'"
+
+.PP
+Definition at line 44 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_PAD_LEFT   'div\&.padding\&.left'"
+
+.PP
+Definition at line 41 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_PAD_RIGHT   'div\&.padding\&.right'"
+
+.PP
+Definition at line 42 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_PAD_TOP   'div\&.padding\&.top'"
+
+.PP
+Definition at line 43 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_PROPH   'h'"
+
+.PP
+Definition at line 46 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_PROPW   'w'"
+
+.PP
+Definition at line 47 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_SEL_PAD_BOTTOM   'div\&.selection\&.padding\&.bottom'"
+
+.PP
+Definition at line 53 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_SEL_PAD_LEFT   'div\&.selection\&.padding\&.left'"
+
+.PP
+Definition at line 50 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_SEL_PAD_RIGHT   'div\&.selection\&.padding\&.right'"
+
+.PP
+Definition at line 51 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_SEL_PAD_TOP   'div\&.selection\&.padding\&.top'"
+
+.PP
+Definition at line 52 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_SELECT   'div\&.select'"
+
+.PP
+Definition at line 48 of file guiDiv\&.h\&.
+.SS "#define GUI_THEME_DIV_SELECTION   'div\&.selection'"
+
+.PP
+Definition at line 49 of file guiDiv\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBguiDiv\fP \fBguiDiv_s\fP"
+
+.SS "typedef struct \fBguiDivCols\fP \fBguiDivCols_s\fP"
+
+.SS "typedef struct \fBguiDivRow\fP \fBguiDivRow_s\fP"
 
 .SH "Enumeration Type Documentation"
 .PP 
@@ -90,23 +258,59 @@ Definition at line 21 of file guiDiv\&.h\&.
 .TP
 \fB\fIGUI_DIV_HORIZONTAL \fP\fP
 .TP
-\fB\fIGUI_DIV_GRID \fP\fP
+\fB\fIGUI_DIV_TABLE \fP\fP
 .PP
 Definition at line 6 of file guiDiv\&.h\&.
 .SH "Function Documentation"
 .PP 
-.SS "void gui_div_align (\fBgui_s\fP * gui, \fBguiDiv_s\fP * div)"
+.SS "void gui_div_align (\fBgui_s\fP * gui)"
 realign div 
+.SS "void gui_div_apply_select (\fBgui_s\fP * gui)"
+
 .SS "\fBgui_s\fP* gui_div_attach (\fBgui_s\fP * gui, \fBguiDiv_s\fP * div)"
 attach div to gui 
+.SS "int gui_div_child_event_key (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+event key 
+.SS "void gui_div_deapply_select (\fBgui_s\fP * gui)"
+
 .SS "int gui_div_event_free (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * ev)"
 event free 
-.SS "int gui_div_event_key (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
-event key 
+.SS "int gui_div_event_move (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * event)"
+
+.SS "int gui_div_event_redraw (\fBgui_s\fP * gui, \fB__unused\fP \fBxorgEvent_s\fP * event)"
+redraw event 
+.SS "int gui_div_event_themes (\fBgui_s\fP * gui, \fBxorgEvent_s\fP * ev)"
+
 .SS "void gui_div_free (\fBguiDiv_s\fP * div)"
 free div 
-.SS "\fBguiDiv_s\fP* gui_div_new (\fBguiDivMode_e\fP mode)"
+.SS "\fBguiDiv_s\fP* gui_div_new (\fBguiDivMode_e\fP mode, \fBguiLayer_s\fP * select, unsigned flags)"
 create new div 
+.SS "void gui_div_padding_bottom (\fBgui_s\fP * gui, int bottom)"
+
+.SS "void gui_div_padding_left (\fBgui_s\fP * gui, int left)"
+
+.SS "void gui_div_padding_right (\fBgui_s\fP * gui, int right)"
+
+.SS "void gui_div_padding_top (\fBgui_s\fP * gui, int top)"
+
+.SS "void gui_div_sel_padding_bottom (\fBgui_s\fP * gui, int bottom)"
+
+.SS "void gui_div_sel_padding_left (\fBgui_s\fP * gui, int left)"
+
+.SS "void gui_div_sel_padding_right (\fBgui_s\fP * gui, int right)"
+
+.SS "void gui_div_sel_padding_top (\fBgui_s\fP * gui, int top)"
+
+.SS "void gui_div_table_attach (\fBguiDivRow_s\fP * row, unsigned idcol, \fBgui_s\fP * child, double propw, int flags)"
+
+.SS "void gui_div_table_col_new (\fBgui_s\fP * gui, \fBguiDivRow_s\fP * row, \fBgui_s\fP * child, double propw, int flags)"
+
+.SS "\fBguiDivRow_s\fP* gui_div_table_create_row (\fBgui_s\fP * tab, double raph)"
+
+.SS "\fBguiDivRow_s\fP* gui_div_table_row_get (\fBgui_s\fP * tab, unsigned idrow)"
+
+.SS "\fBguiDivRow_s\fP* gui_div_table_row_last (\fBgui_s\fP * tab)"
+
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for Easy Framework from the source code\&.

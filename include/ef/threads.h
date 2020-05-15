@@ -130,6 +130,7 @@ void event_wait(event_s* ev);
 
 /** create eventfd where performe epoll
  * @param val begin value
+ * @param nonblock set nonblock event
  * @return fd or -1 error
  */
 int event_fd_new(long val, int nonblock);

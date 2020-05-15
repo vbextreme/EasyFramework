@@ -1,4 +1,4 @@
-.TH "include/ef/memory.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/memory.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -150,7 +150,7 @@ attribute for auto free memory when exit from scope
 .PP
  memory is automatic free 
 .PP
-Definition at line 96 of file memory\&.h\&.
+Definition at line 97 of file memory\&.h\&.
 .SS "#define mem_clear(T, M)   do{memset(M,0,sizeof(T));}while(0)"
 set memory to 0 
 .PP
@@ -171,7 +171,7 @@ mem_clear(int, &i);
 .PP
 
 .PP
-Definition at line 134 of file memory\&.h\&.
+Definition at line 135 of file memory\&.h\&.
 .SS "#define mem_clear_many(T, M, N)   do{memset(M,0,sizeof(T)*(N));}while(0)"
 set memory to 0 
 .PP
@@ -194,19 +194,19 @@ mem_clear_many(int, i, 5);
 .PP
 
 .PP
-Definition at line 145 of file memory\&.h\&.
+Definition at line 146 of file memory\&.h\&.
 .SS "#define mem_flexible_structure_new(TYPESTRUCT, SOF, COUNT)   (TYPESTRUCT*)malloc(\fBROUND_UP\fP(sizeof(TYPESTRUCT) + SOF * (COUNT), sizeof(void*)))"
 allocate memory for flexible structure, do not use clang, this is only for scanbuild fail 
 .PP
-Definition at line 74 of file memory\&.h\&.
+Definition at line 75 of file memory\&.h\&.
 .SS "#define mem_free(OBJ)   free(OBJ)"
 only for even mem 
 .PP
-Definition at line 78 of file memory\&.h\&.
+Definition at line 79 of file memory\&.h\&.
 .SS "#define mem_free_safe(OBJ)   do{free(OBJ); OBJ=NULL;}while(0)"
 set a NULL pointer after free 
 .PP
-Definition at line 81 of file memory\&.h\&.
+Definition at line 82 of file memory\&.h\&.
 .SS "#define mem_many(TYPE, COUNT)   (TYPE*)malloc(sizeof(TYPE)*(COUNT))"
 allocate many memory 
 .PP
@@ -231,7 +231,7 @@ int* = mem_many(int,5);
 .PP
 
 .PP
-Definition at line 40 of file memory\&.h\&.
+Definition at line 41 of file memory\&.h\&.
 .SS "#define mem_many_aligned(TYPE, PTRCOUNT, ALIGNED)"
 \fBValue:\fP
 .PP
@@ -259,7 +259,7 @@ pointer of type
 .PP
 
 .PP
-Definition at line 55 of file memory\&.h\&.
+Definition at line 56 of file memory\&.h\&.
 .SS "#define mem_many_or_die(TYPE)   (TYPE*)\fBmalloc_or_die\fP(sizeof(TYPE)*(COUNT))"
 same mem_many but die if fail 
 .PP
@@ -272,7 +272,7 @@ same mem_many but die if fail
 .PP
 
 .PP
-Definition at line 111 of file memory\&.h\&.
+Definition at line 112 of file memory\&.h\&.
 .SS "#define mem_new(TYPE)   (TYPE*)malloc(sizeof(TYPE))"
 allocate memory 
 .PP
@@ -295,7 +295,7 @@ int* = mem_new(int);
 .PP
 
 .PP
-Definition at line 30 of file memory\&.h\&.
+Definition at line 31 of file memory\&.h\&.
 .SS "#define mem_new_or_die(TYPE)   (TYPE*)\fBmalloc_or_die\fP(sizeof(TYPE))"
 same mem_new but die if fail 
 .PP
@@ -308,23 +308,23 @@ same mem_new but die if fail
 .PP
 
 .PP
-Definition at line 105 of file memory\&.h\&.
+Definition at line 106 of file memory\&.h\&.
 .SS "#define MEM_PROTECT_DISABLED   0"
 
 .PP
-Definition at line 10 of file memory\&.h\&.
+Definition at line 11 of file memory\&.h\&.
 .SS "#define MEM_PROTECT_RW   PKEY_DISABLE_ACCESS"
 
 .PP
-Definition at line 16 of file memory\&.h\&.
+Definition at line 17 of file memory\&.h\&.
 .SS "#define MEM_PROTECT_WRITE   PKEY_DISABLE_WRITE"
 
 .PP
-Definition at line 15 of file memory\&.h\&.
+Definition at line 16 of file memory\&.h\&.
 .SS "#define mem_resize(VAR, TYPE, N)   \fBmem_resize_raw\fP((void**)&(VAR), sizeof(TYPE) * (N))"
 
 .PP
-Definition at line 154 of file memory\&.h\&.
+Definition at line 155 of file memory\&.h\&.
 .SS "#define mem_zero(TYPE)   (TYPE*)calloc(1,sizeof(TYPE))"
 same mem_new buf set 0 
 .PP
@@ -335,7 +335,7 @@ same mem_new buf set 0
 .PP
 
 .PP
-Definition at line 63 of file memory\&.h\&.
+Definition at line 64 of file memory\&.h\&.
 .SS "#define mem_zero_many(TYPE, COUNT)   (TYPE*)calloc(COUNT,sizeof(TYPE))"
 same mem_many buf set 0 
 .PP
@@ -346,7 +346,7 @@ same mem_many buf set 0
 .PP
 
 .PP
-Definition at line 68 of file memory\&.h\&.
+Definition at line 69 of file memory\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef int \fBpkey_t\fP"

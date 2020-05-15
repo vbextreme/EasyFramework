@@ -1,4 +1,4 @@
-.TH "include/ef/image.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/image.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -44,6 +44,9 @@ include/ef/image.h
 .br
 .ti -1c
 .RI "#define \fBg2d_color\fP(IMG,  ROW,  X)   (unsigned*)(&(IMG)\->pixel[(ROW)+((X)*4)])"
+.br
+.ti -1c
+.RI "#define \fBg2d_color_get\fP(IMG,  X,  Y)   (*(\fBg2d_color\fP(IMG, \fBg2d_row\fP(IMG, Y), X)))"
 .br
 .ti -1c
 .RI "#define \fBg2d_color_alpha\fP(IMG,  ARGB)   (((ARGB)>>(IMG)\->sa)&0xFF)"
@@ -172,7 +175,19 @@ include/ef/image.h
 .RI "\fBg2dImage_s\fP * \fBg2d_resize\fP (\fBg2dImage_s\fP *src, unsigned w, unsigned h)"
 .br
 .ti -1c
+.RI "void \fBg2d_resize_to_alpha\fP (\fBg2dImage_s\fP *dst, \fBg2dImage_s\fP *src)"
+.br
+.ti -1c
+.RI "\fBg2dImage_s\fP * \fBg2d_resize_alpha\fP (\fBg2dImage_s\fP *src, unsigned w, unsigned h)"
+.br
+.ti -1c
 .RI "\fBg2dImage_s\fP * \fBg2d_rotate\fP (\fBg2dImage_s\fP *src, unsigned cx, unsigned cy, float grad)"
+.br
+.ti -1c
+.RI "void \fBg2d_supersampling_to\fP (\fBg2dImage_s\fP *img, unsigned mul)"
+.br
+.ti -1c
+.RI "void \fBg2d_supersampling_alpha_to\fP (\fBg2dImage_s\fP *img, unsigned mul)"
 .br
 .ti -1c
 .RI "void \fBg2d_char\fP (\fBg2dImage_s\fP *dst, \fBg2dCoord_s\fP *coord, \fBg2dImage_s\fP *ch, \fBg2dColor_t\fP col)"
@@ -238,6 +253,9 @@ include/ef/image.h
 .RI "void \fBg2d_circle_fill\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned r, \fBg2dColor_t\fP col)"
 .br
 .ti -1c
+.RI "void \fBg2d_circle_fill_antialiased\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, int r, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
 .RI "void \fBg2d_ellipse_normal\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col)"
 .br
 .ti -1c
@@ -245,6 +263,24 @@ include/ef/image.h
 .br
 .ti -1c
 .RI "void \fBg2d_ellipse\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col, int antialiased)"
+.br
+.ti -1c
+.RI "void \fBg2d_ellipse_fill\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col)"
+.br
+.ti -1c
+.RI "void \fBg2d_arc_normal\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned r, float startAngle, float endAngle, \fBg2dColor_t\fP color)"
+.br
+.ti -1c
+.RI "void \fBg2d_arc_antialiased\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned r, float startAngle, float endAngle, \fBg2dColor_t\fP color)"
+.br
+.ti -1c
+.RI "void \fBg2d_arc\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned r, float startAngle, float endAngle, \fBg2dColor_t\fP color, int antialiased)"
+.br
+.ti -1c
+.RI "void \fBg2d_pieslice\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned r, float startAngle, float endAngle, \fBg2dColor_t\fP color)"
+.br
+.ti -1c
+.RI "void \fBg2d_pieslice_fill\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *cx, unsigned r, float startAngle, float endAngle, \fBg2dColor_t\fP color)"
 .br
 .ti -1c
 .RI "void \fBg2d_repfill\fP (\fBg2dImage_s\fP *img, \fBg2dPoint_s\fP *st, \fBg2dColor_t\fP rep, \fBg2dColor_t\fP col)"
@@ -255,55 +291,59 @@ include/ef/image.h
 .SS "#define __g2d_free   \fB__cleanup\fP(\fBg2d_autofree\fP)"
 cleanup 
 .PP
-Definition at line 70 of file image\&.h\&.
+Definition at line 71 of file image\&.h\&.
 .SS "#define g2d_alpha_part(ALPHA, PART, BACKGROUND)   ( ((PART) * (ALPHA)) / 255  + (BACKGROUND) *  (255 \- (ALPHA)) / 255 )"
 calcolate alpha 
 .PP
-Definition at line 133 of file image\&.h\&.
+Definition at line 137 of file image\&.h\&.
 .SS "#define g2d_color(IMG, ROW, X)   (unsigned*)(&(IMG)\->pixel[(ROW)+((X)*4)])"
 get color pointer to pixel X 
 .PP
-Definition at line 112 of file image\&.h\&.
+Definition at line 113 of file image\&.h\&.
 .SS "#define g2d_color_alpha(IMG, ARGB)   (((ARGB)>>(IMG)\->sa)&0xFF)"
 get channel alpha 
 .PP
-Definition at line 115 of file image\&.h\&.
+Definition at line 119 of file image\&.h\&.
 .SS "#define g2d_color_alpha_set(IMG, ARGB, A)   ( ((ARGB) & (~(IMG)\->ma)) | ((A)<<(IMG)\->sa) )"
 set alpha in color 
 .PP
-Definition at line 130 of file image\&.h\&.
+Definition at line 134 of file image\&.h\&.
 .SS "#define g2d_color_blue(IMG, ARGB)   (((ARGB)>>(IMG)\->sb)&0xFF)"
 get channel blue 
 .PP
-Definition at line 124 of file image\&.h\&.
+Definition at line 128 of file image\&.h\&.
+.SS "#define g2d_color_get(IMG, X, Y)   (*(\fBg2d_color\fP(IMG, \fBg2d_row\fP(IMG, Y), X)))"
+get color from position 
+.PP
+Definition at line 116 of file image\&.h\&.
 .SS "#define g2d_color_green(IMG, ARGB)   (((ARGB)>>(IMG)\->sg)&0xFF)"
 get channel green 
 .PP
-Definition at line 121 of file image\&.h\&.
+Definition at line 125 of file image\&.h\&.
 .SS "#define g2d_color_make(IMG, A, R, G, B)   ( ((A)<<(IMG)\->sa) | ((R)<<(IMG)\->sr) | ((G)<<(IMG)\->sg) | ((B)<<(IMG)\->sb) )"
 create color from image 
 .PP
-Definition at line 127 of file image\&.h\&.
+Definition at line 131 of file image\&.h\&.
 .SS "#define g2d_color_red(IMG, ARGB)   (((ARGB)>>(IMG)\->sr)&0xFF)"
 get channel red 
 .PP
-Definition at line 118 of file image\&.h\&.
+Definition at line 122 of file image\&.h\&.
 .SS "#define g2d_pixel(IMG, ROW)   (&(IMG)\->pixel[ROW])"
 get pointer to pixel 
 .PP
-Definition at line 109 of file image\&.h\&.
+Definition at line 110 of file image\&.h\&.
 .SS "#define g2d_row(IMG, Y)   (((IMG)\->p)*(Y))"
 get pointer to row 
 .PP
-Definition at line 106 of file image\&.h\&.
+Definition at line 107 of file image\&.h\&.
 .SS "#define img_clip(V)   ((V) < 0 ? 0 : (V) > 255 ? 255 : (V))"
 
 .PP
-Definition at line 28 of file image\&.h\&.
+Definition at line 29 of file image\&.h\&.
 .SS "#define img_clip_h(V)   ((V>255)?255:V)"
 
 .PP
-Definition at line 29 of file image\&.h\&.
+Definition at line 30 of file image\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef unsigned int \fBg2dColor_t\fP"
@@ -335,6 +375,12 @@ Definition at line 17 of file image\&.h\&.
 Definition at line 9 of file image\&.h\&.
 .SH "Function Documentation"
 .PP 
+.SS "void g2d_arc (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned r, float startAngle, float endAngle, \fBg2dColor_t\fP color, int antialiased)"
+draw arc 
+.SS "void g2d_arc_antialiased (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned r, float startAngle, float endAngle, \fBg2dColor_t\fP color)"
+draw antialiased arc 
+.SS "void g2d_arc_normal (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned r, float startAngle, float endAngle, \fBg2dColor_t\fP color)"
+draw normal arc 
 .SS "void g2d_autofree (\fBg2dImage_s\fP ** img)"
 cleanup 
 .SS "void g2d_bitblt (\fBg2dImage_s\fP * dst, \fBg2dCoord_s\fP * cod, \fBg2dImage_s\fP * src, \fBg2dCoord_s\fP * cos)"
@@ -384,6 +430,8 @@ draw circle antialiased
 draw circle antialiased 
 .SS "void g2d_circle_fill (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned r, \fBg2dColor_t\fP col)"
 draw circle with fill color 
+.SS "void g2d_circle_fill_antialiased (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, int r, \fBg2dColor_t\fP col)"
+draw circle fill antialiased 
 .SS "void g2d_circle_normal (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned r, \fBg2dColor_t\fP col)"
 draw circle normal 
 .SS "void g2d_clear (\fBg2dImage_s\fP * img, \fBg2dColor_t\fP color, \fBg2dCoord_s\fP * coord)"
@@ -424,6 +472,8 @@ cubeizer normal line
 draw ellipse 
 .SS "void g2d_ellipse_antialiased (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col)"
 draw ellipse antialaised 
+.SS "void g2d_ellipse_fill (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col)"
+draw ellipse and fill 
 .SS "void g2d_ellipse_normal (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned rx, unsigned ry, \fBg2dColor_t\fP col)"
 draw ellipse no antialaised 
 .SS "void g2d_free (\fBg2dImage_s\fP * img)"
@@ -452,6 +502,10 @@ new image, no error return
 .RE
 .PP
 
+.SS "void g2d_pieslice (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned r, float startAngle, float endAngle, \fBg2dColor_t\fP color)"
+draw pie slice 
+.SS "void g2d_pieslice_fill (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * cx, unsigned r, float startAngle, float endAngle, \fBg2dColor_t\fP color)"
+draw and fill g2d_pieslice 
 .SS "void g2d_point_rotate (unsigned * y, unsigned * x, unsigned cy, unsigned cx, double grad)"
 rotate a point 
 .SS "void g2d_points (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * points, \fBg2dColor_t\fP * colors, size_t count)"
@@ -483,10 +537,18 @@ draw rect with fill color
 replace color in region with new color 
 .SS "\fBg2dImage_s\fP* g2d_resize (\fBg2dImage_s\fP * src, unsigned w, unsigned h)"
 return new image resize, bicubic 
+.SS "\fBg2dImage_s\fP* g2d_resize_alpha (\fBg2dImage_s\fP * src, unsigned w, unsigned h)"
+resize new image with channel alpha 
 .SS "void g2d_resize_to (\fBg2dImage_s\fP * dst, \fBg2dImage_s\fP * src)"
 resize bicubic from src to dst 
+.SS "void g2d_resize_to_alpha (\fBg2dImage_s\fP * dst, \fBg2dImage_s\fP * src)"
+resize to with channel alpha 
 .SS "\fBg2dImage_s\fP* g2d_rotate (\fBg2dImage_s\fP * src, unsigned cx, unsigned cy, float grad)"
 return new totated image 
+.SS "void g2d_supersampling_alpha_to (\fBg2dImage_s\fP * img, unsigned mul)"
+apply supersampling antialiasing indirect 
+.SS "void g2d_supersampling_to (\fBg2dImage_s\fP * img, unsigned mul)"
+apply supersampling antialiasing 
 .SS "void g2d_triangle (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * p0, \fBg2dPoint_s\fP * p1, \fBg2dPoint_s\fP * p2, \fBg2dColor_t\fP col, int antialiased)"
 draw triangle 
 .SS "void g2d_triangle_fill (\fBg2dImage_s\fP * img, \fBg2dPoint_s\fP * p0, \fBg2dPoint_s\fP * p1, \fBg2dPoint_s\fP * p2, \fBg2dColor_t\fP col)"

@@ -1,4 +1,4 @@
-.TH "include/ef/socket.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/socket.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -207,55 +207,55 @@ cleanup function
 .PP
 
 .PP
-Definition at line 111 of file socket\&.h\&.
+Definition at line 112 of file socket\&.h\&.
 .SS "#define SOCKET_DEADPOLL_EVENT   (EPOLLIN | EPOLLET | EPOLLPRI | EPOLLHUP | EPOLLRDHUP)"
 
 .PP
-Definition at line 24 of file socket\&.h\&.
+Definition at line 25 of file socket\&.h\&.
 .SS "#define SOCKET_EPOLL_EVENTS   (EPOLLIN | EPOLLRDHUP | EPOLLHUP)"
 
 .PP
-Definition at line 20 of file socket\&.h\&.
+Definition at line 21 of file socket\&.h\&.
 .SS "#define SOCKET_EVENT_MAX   256"
 
 .PP
-Definition at line 22 of file socket\&.h\&.
+Definition at line 23 of file socket\&.h\&.
 .SS "#define socket_fd(S)   ((S)\->fd)"
 get socket fd 
 .PP
-Definition at line 83 of file socket\&.h\&.
+Definition at line 84 of file socket\&.h\&.
 .SS "#define SOCKET_IPV6_LENGHT   52"
 
 .PP
-Definition at line 19 of file socket\&.h\&.
+Definition at line 20 of file socket\&.h\&.
 .SS "#define SOCKET_SIMULTANEOUS_CONNECTION_MAX   128"
 
 .PP
-Definition at line 21 of file socket\&.h\&.
+Definition at line 22 of file socket\&.h\&.
 .SS "#define SOCKET_TLS_INSECURE   0x02"
 
 .PP
-Definition at line 27 of file socket\&.h\&.
+Definition at line 28 of file socket\&.h\&.
 .SS "#define SOCKET_TLS_PRIORITY   'NORMAL:\-VERS\-TLS\-ALL:+VERS\-TLS1\&.2'"
 
 .PP
-Definition at line 25 of file socket\&.h\&.
+Definition at line 26 of file socket\&.h\&.
 .SS "#define SOCKET_TLS_SERVER   0x01"
 
 .PP
-Definition at line 26 of file socket\&.h\&.
+Definition at line 27 of file socket\&.h\&.
 .SS "#define socket_type(S)   ((S)\->type)"
 get socket type 
 .PP
-Definition at line 86 of file socket\&.h\&.
+Definition at line 87 of file socket\&.h\&.
 .SS "#define socket_userdata(S)   ((S)\->userdata)"
 get socket userdata 
 .PP
-Definition at line 89 of file socket\&.h\&.
+Definition at line 90 of file socket\&.h\&.
 .SS "#define SOCKET_WIFI_ESSID_SIZE   IW_ESSID_MAX_SIZE"
 
 .PP
-Definition at line 23 of file socket\&.h\&.
+Definition at line 24 of file socket\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBesnet4\fP \fBesnet4_s\fP"
@@ -269,7 +269,7 @@ Definition at line 23 of file socket\&.h\&.
 .SS "typedef struct \fBesocket\fP \fBsocket_s\fP"
 
 .PP
-Definition at line 29 of file socket\&.h\&.
+Definition at line 1 of file socket\&.h\&.
 .SS "typedef int(* socketEvent_f) (\fBdeadpoll_s\fP *dp, \fBsocket_s\fP *s)"
 
 .PP

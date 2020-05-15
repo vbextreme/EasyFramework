@@ -1,4 +1,4 @@
-.TH "xorgEvent" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "xorgEvent" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -57,12 +57,15 @@ xorgEvent
 .RI "   \fBxorgClipboard_s\fP \fBclipboard\fP"
 .br
 .ti -1c
+.RI "   \fBxorgUserData_s\fP \fBdata\fP"
+.br
+.ti -1c
 .RI "}; "
 .br
 .in -1c
 .SH "Detailed Description"
 .PP 
-Definition at line 343 of file xorg\&.h\&.
+Definition at line 358 of file xorg\&.h\&.
 .SH "Field Documentation"
 .PP 
 .SS "union { \&.\&.\&. } "
@@ -70,59 +73,63 @@ Definition at line 343 of file xorg\&.h\&.
 .SS "\fBxorgClient_s\fP xorgEvent::client"
 
 .PP
-Definition at line 357 of file xorg\&.h\&.
+Definition at line 372 of file xorg\&.h\&.
 .SS "\fBxorgClipboard_s\fP xorgEvent::clipboard"
 
 .PP
-Definition at line 358 of file xorg\&.h\&.
+Definition at line 373 of file xorg\&.h\&.
 .SS "\fBxorgCreate_s\fP xorgEvent::create"
 
 .PP
-Definition at line 352 of file xorg\&.h\&.
+Definition at line 367 of file xorg\&.h\&.
+.SS "\fBxorgUserData_s\fP xorgEvent::data"
+
+.PP
+Definition at line 374 of file xorg\&.h\&.
 .SS "\fBxorgDraw_s\fP xorgEvent::draw"
 
 .PP
-Definition at line 353 of file xorg\&.h\&.
+Definition at line 368 of file xorg\&.h\&.
 .SS "\fBxorgFocus_s\fP xorgEvent::focus"
 
 .PP
-Definition at line 354 of file xorg\&.h\&.
+Definition at line 369 of file xorg\&.h\&.
 .SS "\fBxorgKeyboard_s\fP xorgEvent::keyboard"
 
 .PP
-Definition at line 350 of file xorg\&.h\&.
+Definition at line 365 of file xorg\&.h\&.
 .SS "\fBxorgMouse_s\fP xorgEvent::mouse"
 
 .PP
-Definition at line 349 of file xorg\&.h\&.
+Definition at line 364 of file xorg\&.h\&.
 .SS "\fBxorgMove_s\fP xorgEvent::move"
 
 .PP
-Definition at line 351 of file xorg\&.h\&.
+Definition at line 366 of file xorg\&.h\&.
 .SS "\fBxorgProperty_s\fP xorgEvent::property"
 
 .PP
-Definition at line 356 of file xorg\&.h\&.
+Definition at line 371 of file xorg\&.h\&.
 .SS "int xorgEvent::type"
 
 .PP
-Definition at line 344 of file xorg\&.h\&.
+Definition at line 359 of file xorg\&.h\&.
 .SS "void* xorgEvent::userdata"
 
 .PP
-Definition at line 345 of file xorg\&.h\&.
+Definition at line 360 of file xorg\&.h\&.
 .SS "\fBxorgVisible_s\fP xorgEvent::visible"
 
 .PP
-Definition at line 355 of file xorg\&.h\&.
+Definition at line 370 of file xorg\&.h\&.
 .SS "xcb_window_t xorgEvent::win"
 
 .PP
-Definition at line 347 of file xorg\&.h\&.
+Definition at line 362 of file xorg\&.h\&.
 .SS "\fBxorg_s\fP* xorgEvent::x"
 
 .PP
-Definition at line 346 of file xorg\&.h\&.
+Definition at line 361 of file xorg\&.h\&.
 
 .SH "Author"
 .PP 

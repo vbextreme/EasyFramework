@@ -1,0 +1,387 @@
+.TH "pidStat" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+pidStat
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <proc\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "pid_t \fBpid\fP"
+.br
+.ti -1c
+.RI "char \fBcomm\fP [PATH_MAX]"
+.br
+.ti -1c
+.RI "char \fBstate\fP"
+.br
+.ti -1c
+.RI "int \fBppid\fP"
+.br
+.ti -1c
+.RI "int \fBpgrp\fP"
+.br
+.ti -1c
+.RI "int \fBsession\fP"
+.br
+.ti -1c
+.RI "int \fBttynr\fP"
+.br
+.ti -1c
+.RI "int \fBtpgid\fP"
+.br
+.ti -1c
+.RI "unsigned \fBflags\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBminflt\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBcminflt\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBmajflt\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBcmajflt\fP"
+.br
+.ti -1c
+.RI "unsigned long \fButime\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBstime\fP"
+.br
+.ti -1c
+.RI "long \fBcutime\fP"
+.br
+.ti -1c
+.RI "long \fBcstime\fP"
+.br
+.ti -1c
+.RI "long \fBpriority\fP"
+.br
+.ti -1c
+.RI "long \fBnice\fP"
+.br
+.ti -1c
+.RI "long \fBnumthreads\fP"
+.br
+.ti -1c
+.RI "long \fBitrealvalue\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBstatrtime\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBvsize\fP"
+.br
+.ti -1c
+.RI "long \fBrss\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBrsslim\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBstartcode\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBendcode\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBstartstack\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBkstkesp\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBkstkeip\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBsignal\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBblocked\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBsigignore\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBsigcatch\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBwchan\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBnswap\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBcnswap\fP"
+.br
+.ti -1c
+.RI "int \fBexitsignal\fP"
+.br
+.ti -1c
+.RI "int \fBprocessor\fP"
+.br
+.ti -1c
+.RI "unsigned \fBrtpriority\fP"
+.br
+.ti -1c
+.RI "unsigned \fBpolicy\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBdelayacctblkioticks\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBguesttime\fP"
+.br
+.ti -1c
+.RI "long \fBcguesttime\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBstartdata\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBenddata\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBstartbrk\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBargstart\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBargend\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBenvstart\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBenvend\fP"
+.br
+.ti -1c
+.RI "int \fBexit_code\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 40 of file proc\&.h\&.
+.SH "Field Documentation"
+.PP 
+.SS "unsigned long pidStat::argend"
+
+.PP
+Definition at line 89 of file proc\&.h\&.
+.SS "unsigned long pidStat::argstart"
+
+.PP
+Definition at line 88 of file proc\&.h\&.
+.SS "unsigned long pidStat::blocked"
+
+.PP
+Definition at line 72 of file proc\&.h\&.
+.SS "long pidStat::cguesttime"
+
+.PP
+Definition at line 84 of file proc\&.h\&.
+.SS "unsigned long pidStat::cmajflt"
+
+.PP
+Definition at line 53 of file proc\&.h\&.
+.SS "unsigned long pidStat::cminflt"
+
+.PP
+Definition at line 51 of file proc\&.h\&.
+.SS "unsigned long pidStat::cnswap"
+
+.PP
+Definition at line 77 of file proc\&.h\&.
+.SS "char pidStat::comm[PATH_MAX]"
+
+.PP
+Definition at line 42 of file proc\&.h\&.
+.SS "long pidStat::cstime"
+
+.PP
+Definition at line 57 of file proc\&.h\&.
+.SS "long pidStat::cutime"
+
+.PP
+Definition at line 56 of file proc\&.h\&.
+.SS "unsigned long pidStat::delayacctblkioticks"
+
+.PP
+Definition at line 82 of file proc\&.h\&.
+.SS "unsigned long pidStat::endcode"
+
+.PP
+Definition at line 67 of file proc\&.h\&.
+.SS "unsigned long pidStat::enddata"
+
+.PP
+Definition at line 86 of file proc\&.h\&.
+.SS "unsigned long pidStat::envend"
+
+.PP
+Definition at line 91 of file proc\&.h\&.
+.SS "unsigned long pidStat::envstart"
+
+.PP
+Definition at line 90 of file proc\&.h\&.
+.SS "int pidStat::exit_code"
+
+.PP
+Definition at line 92 of file proc\&.h\&.
+.SS "int pidStat::exitsignal"
+
+.PP
+Definition at line 78 of file proc\&.h\&.
+.SS "unsigned pidStat::flags"
+
+.PP
+Definition at line 49 of file proc\&.h\&.
+.SS "unsigned long pidStat::guesttime"
+
+.PP
+Definition at line 83 of file proc\&.h\&.
+.SS "long pidStat::itrealvalue"
+
+.PP
+Definition at line 61 of file proc\&.h\&.
+.SS "unsigned long pidStat::kstkeip"
+
+.PP
+Definition at line 70 of file proc\&.h\&.
+.SS "unsigned long pidStat::kstkesp"
+
+.PP
+Definition at line 69 of file proc\&.h\&.
+.SS "unsigned long pidStat::majflt"
+
+.PP
+Definition at line 52 of file proc\&.h\&.
+.SS "unsigned long pidStat::minflt"
+
+.PP
+Definition at line 50 of file proc\&.h\&.
+.SS "long pidStat::nice"
+
+.PP
+Definition at line 59 of file proc\&.h\&.
+.SS "unsigned long pidStat::nswap"
+
+.PP
+Definition at line 76 of file proc\&.h\&.
+.SS "long pidStat::numthreads"
+
+.PP
+Definition at line 60 of file proc\&.h\&.
+.SS "int pidStat::pgrp"
+
+.PP
+Definition at line 45 of file proc\&.h\&.
+.SS "pid_t pidStat::pid"
+
+.PP
+Definition at line 41 of file proc\&.h\&.
+.SS "unsigned pidStat::policy"
+
+.PP
+Definition at line 81 of file proc\&.h\&.
+.SS "int pidStat::ppid"
+
+.PP
+Definition at line 44 of file proc\&.h\&.
+.SS "long pidStat::priority"
+
+.PP
+Definition at line 58 of file proc\&.h\&.
+.SS "int pidStat::processor"
+
+.PP
+Definition at line 79 of file proc\&.h\&.
+.SS "long pidStat::rss"
+
+.PP
+Definition at line 64 of file proc\&.h\&.
+.SS "unsigned long pidStat::rsslim"
+
+.PP
+Definition at line 65 of file proc\&.h\&.
+.SS "unsigned pidStat::rtpriority"
+
+.PP
+Definition at line 80 of file proc\&.h\&.
+.SS "int pidStat::session"
+
+.PP
+Definition at line 46 of file proc\&.h\&.
+.SS "unsigned long pidStat::sigcatch"
+
+.PP
+Definition at line 74 of file proc\&.h\&.
+.SS "unsigned long pidStat::sigignore"
+
+.PP
+Definition at line 73 of file proc\&.h\&.
+.SS "unsigned long pidStat::signal"
+
+.PP
+Definition at line 71 of file proc\&.h\&.
+.SS "unsigned long pidStat::startbrk"
+
+.PP
+Definition at line 87 of file proc\&.h\&.
+.SS "unsigned long pidStat::startcode"
+
+.PP
+Definition at line 66 of file proc\&.h\&.
+.SS "unsigned long pidStat::startdata"
+
+.PP
+Definition at line 85 of file proc\&.h\&.
+.SS "unsigned long pidStat::startstack"
+
+.PP
+Definition at line 68 of file proc\&.h\&.
+.SS "char pidStat::state"
+
+.PP
+Definition at line 43 of file proc\&.h\&.
+.SS "unsigned long pidStat::statrtime"
+
+.PP
+Definition at line 62 of file proc\&.h\&.
+.SS "unsigned long pidStat::stime"
+
+.PP
+Definition at line 55 of file proc\&.h\&.
+.SS "int pidStat::tpgid"
+
+.PP
+Definition at line 48 of file proc\&.h\&.
+.SS "int pidStat::ttynr"
+
+.PP
+Definition at line 47 of file proc\&.h\&.
+.SS "unsigned long pidStat::utime"
+
+.PP
+Definition at line 54 of file proc\&.h\&.
+.SS "unsigned long pidStat::vsize"
+
+.PP
+Definition at line 63 of file proc\&.h\&.
+.SS "unsigned long pidStat::wchan"
+
+.PP
+Definition at line 75 of file proc\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

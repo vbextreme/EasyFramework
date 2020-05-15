@@ -1,4 +1,4 @@
-.TH "xorgSurface" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "xorgSurface" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -15,6 +15,15 @@ xorgSurface
 .RI "xcb_gcontext_t \fBgc\fP"
 .br
 .ti -1c
+.RI "xcb_shm_segment_info_t \fBshmi\fP"
+.br
+.ti -1c
+.RI "size_t \fBshmsize\fP"
+.br
+.ti -1c
+.RI "size_t \fBoffsetAlign\fP"
+.br
+.ti -1c
 .RI "xcb_image_t * \fBximage\fP"
 .br
 .ti -1c
@@ -23,21 +32,33 @@ xorgSurface
 .in -1c
 .SH "Detailed Description"
 .PP 
-Definition at line 149 of file xorg\&.h\&.
+Definition at line 151 of file xorg\&.h\&.
 .SH "Field Documentation"
 .PP 
 .SS "xcb_gcontext_t xorgSurface::gc"
 
 .PP
-Definition at line 150 of file xorg\&.h\&.
+Definition at line 152 of file xorg\&.h\&.
 .SS "\fBg2dImage_s\fP* xorgSurface::img"
 
 .PP
-Definition at line 152 of file xorg\&.h\&.
+Definition at line 157 of file xorg\&.h\&.
+.SS "size_t xorgSurface::offsetAlign"
+
+.PP
+Definition at line 155 of file xorg\&.h\&.
+.SS "xcb_shm_segment_info_t xorgSurface::shmi"
+
+.PP
+Definition at line 153 of file xorg\&.h\&.
+.SS "size_t xorgSurface::shmsize"
+
+.PP
+Definition at line 154 of file xorg\&.h\&.
 .SS "xcb_image_t* xorgSurface::ximage"
 
 .PP
-Definition at line 151 of file xorg\&.h\&.
+Definition at line 156 of file xorg\&.h\&.
 
 .SH "Author"
 .PP 

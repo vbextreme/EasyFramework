@@ -1,4 +1,4 @@
-.TH "guiDiv" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "guiDiv" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -12,39 +12,67 @@ guiDiv
 
 .in +1c
 .ti -1c
+.RI "unsigned \fBidselect\fP"
+.br
+.ti -1c
+.RI "\fBguiLayer_s\fP * \fBselect\fP"
+.br
+.ti -1c
+.RI "\fBguiMargin_s\fP \fBselectpad\fP"
+.br
+.ti -1c
 .RI "\fBguiDivMode_e\fP \fBmode\fP"
 .br
 .ti -1c
-.RI "\fBg2dPoint_s\fP \fBsep\fP"
+.RI "\fBguiMargin_s\fP \fBpadding\fP"
 .br
 .ti -1c
 .RI "\fBg2dPoint_s\fP \fBscroll\fP"
 .br
 .ti -1c
-.RI "\fBg2dPoint_s\fP \fBlastElement\fP"
+.RI "\fBguiDivRow_s\fP * \fBvrows\fP"
+.br
+.ti -1c
+.RI "unsigned \fBflags\fP"
 .br
 .in -1c
 .SH "Detailed Description"
 .PP 
-Definition at line 13 of file guiDiv\&.h\&.
+Definition at line 27 of file guiDiv\&.h\&.
 .SH "Field Documentation"
 .PP 
-.SS "\fBg2dPoint_s\fP guiDiv::lastElement"
+.SS "unsigned guiDiv::flags"
 
 .PP
-Definition at line 17 of file guiDiv\&.h\&.
+Definition at line 35 of file guiDiv\&.h\&.
+.SS "unsigned guiDiv::idselect"
+
+.PP
+Definition at line 28 of file guiDiv\&.h\&.
 .SS "\fBguiDivMode_e\fP guiDiv::mode"
 
 .PP
-Definition at line 14 of file guiDiv\&.h\&.
+Definition at line 31 of file guiDiv\&.h\&.
+.SS "\fBguiMargin_s\fP guiDiv::padding"
+
+.PP
+Definition at line 32 of file guiDiv\&.h\&.
 .SS "\fBg2dPoint_s\fP guiDiv::scroll"
 
 .PP
-Definition at line 16 of file guiDiv\&.h\&.
-.SS "\fBg2dPoint_s\fP guiDiv::sep"
+Definition at line 33 of file guiDiv\&.h\&.
+.SS "\fBguiLayer_s\fP* guiDiv::select"
 
 .PP
-Definition at line 15 of file guiDiv\&.h\&.
+Definition at line 29 of file guiDiv\&.h\&.
+.SS "\fBguiMargin_s\fP guiDiv::selectpad"
+
+.PP
+Definition at line 30 of file guiDiv\&.h\&.
+.SS "\fBguiDivRow_s\fP* guiDiv::vrows"
+
+.PP
+Definition at line 34 of file guiDiv\&.h\&.
 
 .SH "Author"
 .PP 

@@ -1,4 +1,4 @@
-.TH "include/ef/vector.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/vector.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -25,7 +25,7 @@ include/ef/vector.h
 .RI "#define \fBVECTOR\fP(V)   ((\fBvector_s\fP*)(\fBADDR\fP(V)\-sizeof(\fBvector_s\fP)) )"
 .br
 .ti -1c
-.RI "#define \fBvector_new\fP(T,  S,  M)   (T*)\fBvector_new_raw\fP(sizeof(T), S, M)"
+.RI "#define \fBvector_new\fP(T,  S,  F)   (T*)\fBvector_new_raw\fP(sizeof(T), S, F)"
 .br
 .ti -1c
 .RI "#define \fBvector_count\fP(V)   \fBVECTOR\fP(V)\->count"
@@ -43,10 +43,10 @@ include/ef/vector.h
 .RI "#define \fB__vector_free\fP   \fB__cleanup\fP(\fBvector_free_auto\fP)"
 .br
 .ti -1c
-.RI "#define \fBvector_clear\fP(M)   (\fBvector_count\fP(M) = 0)"
+.RI "#define \fBvector_isempty\fP(M)   (\fBvector_count\fP(M)==0)"
 .br
 .ti -1c
-.RI "#define \fBvector_isempty\fP(M)   (\fBvector_count\fP(M)==0)"
+.RI "#define \fBvector_remove\fP(M,  I)   \fBvector_remove_raw\fP((void**)&(M), I);"
 .br
 .ti -1c
 .RI "#define \fBvector_add\fP(M,  I,  E)"
@@ -66,10 +66,16 @@ include/ef/vector.h
 .ti -1c
 .RI "#define \fBvector_qsort\fP(M,  CMPFN)   qsort(M, \fBvector_count\fP(M), \fBvector_sizeof\fP(M), CMPFN)"
 .br
+.ti -1c
+.RI "#define \fBvector_shuffle_all\fP(V)   \fBvector_shuffle\fP(V, 0, \fBvector_count\fP(V)\-1)"
+.br
 .in -1c
 .SS "Typedefs"
 
 .in +1c
+.ti -1c
+.RI "typedef void(* \fBvfree_f\fP) (void *)"
+.br
 .ti -1c
 .RI "typedef struct \fBvector\fP \fBvector_s\fP"
 .br
@@ -78,7 +84,7 @@ include/ef/vector.h
 
 .in +1c
 .ti -1c
-.RI "void * \fBvector_new_raw\fP (size_t sof, size_t size, size_t minimal)"
+.RI "void * \fBvector_new_raw\fP (size_t sof, size_t size, \fBvfree_f\fP fn)"
 .br
 .ti -1c
 .RI "void \fBvector_free\fP (void *v)"
@@ -90,16 +96,25 @@ include/ef/vector.h
 .RI "void * \fBvector_resize\fP (void *mem, size_t size)"
 .br
 .ti -1c
-.RI "\fBerr_t\fP \fBvector_upsize\fP (void *ptrmem, size_t count)"
+.RI "void \fBvector_upsize\fP (void *ptrmem, size_t count)"
 .br
 .ti -1c
-.RI "void \fBvector_remove\fP (void *m, const size_t index)"
+.RI "void \fBvector_downsize\fP (void *ptrmem)"
+.br
+.ti -1c
+.RI "void \fBvector_clear\fP (void *m)"
+.br
+.ti -1c
+.RI "void \fBvector_remove_raw\fP (void **ptrmem, const size_t index)"
 .br
 .ti -1c
 .RI "\fBerr_t\fP \fBvector_add_raw\fP (void *ptrmem, const size_t index)"
 .br
 .ti -1c
 .RI "\fBerr_t\fP \fBvector_fitting\fP (void *ptrmem)"
+.br
+.ti -1c
+.RI "void \fBvector_shuffle\fP (void *ptrmem, size_t begin, size_t end)"
 .br
 .in -1c
 .SH "Macro Definition Documentation"
@@ -114,16 +129,16 @@ for cleanup
 .PP
 
 .PP
-Definition at line 58 of file vector\&.h\&.
+Definition at line 61 of file vector\&.h\&.
 .SS "#define VECTOR(V)   ((\fBvector_s\fP*)(\fBADDR\fP(V)\-sizeof(\fBvector_s\fP)) )"
 
 .PP
-Definition at line 15 of file vector\&.h\&.
+Definition at line 18 of file vector\&.h\&.
 .SS "#define vector_add(M, I, E)"
 \fBValue:\fP
 .PP
 .nf
-  do{\
+ do{\
     if( !vector_add_raw(&(M), I) ){\
         (M)[I] = E;\
     }\
@@ -142,22 +157,11 @@ add element in position I, warning address of M can change
 .PP
 
 .PP
-Definition at line 102 of file vector\&.h\&.
-.SS "#define vector_clear(M)   (\fBvector_count\fP(M) = 0)"
-clear vector, set count to 0 
-.PP
-\fBParameters\fP
-.RS 4
-\fIM\fP mem of vector 
-.RE
-.PP
-
-.PP
-Definition at line 77 of file vector\&.h\&.
+Definition at line 115 of file vector\&.h\&.
 .SS "#define vector_count(V)   \fBVECTOR\fP(V)\->count"
 get vector count 
 .PP
-Definition at line 34 of file vector\&.h\&.
+Definition at line 37 of file vector\&.h\&.
 .SS "#define vector_foreach(M, I)   for(size_t I = 0; I < \fBvector_count\fP(M); ++I )"
 foreach element of vector 
 .PP
@@ -170,15 +174,15 @@ foreach element of vector
 .PP
 
 .PP
-Definition at line 138 of file vector\&.h\&.
+Definition at line 151 of file vector\&.h\&.
 .SS "#define vector_get_push_back(M)"
 \fBValue:\fP
 .PP
 .nf
- ({\
+  ({\
     void* _ret_ = NULL;\
-    if( !vector_upsize(&(M), 1) )\
-        _ret_ = &(M)[vector_count(M)++];\
+    vector_upsize(&(M), 1);\
+    _ret_ = &(M)[vector_count(M)++];\
     _ret_;\
 })
 .fi
@@ -196,7 +200,7 @@ prt of new element
 .PP
 
 .PP
-Definition at line 112 of file vector\&.h\&.
+Definition at line 125 of file vector\&.h\&.
 .SS "#define vector_isempty(M)   (\fBvector_count\fP(M)==0)"
 check id vector is empty 
 .PP
@@ -207,12 +211,12 @@ check id vector is empty
 .PP
 
 .PP
-Definition at line 83 of file vector\&.h\&.
+Definition at line 90 of file vector\&.h\&.
 .SS "#define vector_minimal(V)   \fBVECTOR\fP(V)\->minimal"
 get vector minimal 
 .PP
-Definition at line 40 of file vector\&.h\&.
-.SS "#define vector_new(T, S, M)   (T*)\fBvector_new_raw\fP(sizeof(T), S, M)"
+Definition at line 43 of file vector\&.h\&.
+.SS "#define vector_new(T, S, F)   (T*)\fBvector_new_raw\fP(sizeof(T), S, F)"
 create new vector 
 .PP
 \fBParameters\fP
@@ -221,7 +225,7 @@ create new vector
 .br
 \fIS\fP begine element size 
 .br
-\fIM\fP minimal count of elements 
+\fIF\fP free function 
 .RE
 .PP
 \fBReturns\fP
@@ -231,7 +235,7 @@ memory or NULL for error
 .PP
 
 .PP
-Definition at line 31 of file vector\&.h\&.
+Definition at line 34 of file vector\&.h\&.
 .SS "#define vector_pull_back(M)   (M)[\-\-\fBvector_count\fP(M)]"
 extract last element of vector, warning not check if vector is empty 
 .PP
@@ -247,14 +251,14 @@ ELEMENT element to copy
 .PP
 
 .PP
-Definition at line 132 of file vector\&.h\&.
+Definition at line 145 of file vector\&.h\&.
 .SS "#define vector_push_back(M, ELEMENT)"
 \fBValue:\fP
 .PP
 .nf
  do{\
-    if( !vector_upsize(&M, 1) )\
-        (M)[vector_count(M)++] = ELEMENT;\
+    vector_upsize(&M, 1);\
+    (M)[vector_count(M)++] = ELEMENT;\
 }while(0)
 .fi
 copy element to new last element in vector 
@@ -268,7 +272,7 @@ copy element to new last element in vector
 .PP
 
 .PP
-Definition at line 123 of file vector\&.h\&.
+Definition at line 136 of file vector\&.h\&.
 .SS "#define vector_qsort(M, CMPFN)   qsort(M, \fBvector_count\fP(M), \fBvector_sizeof\fP(M), CMPFN)"
 qsort vector 
 .PP
@@ -281,19 +285,40 @@ qsort vector
 .PP
 
 .PP
-Definition at line 144 of file vector\&.h\&.
+Definition at line 157 of file vector\&.h\&.
+.SS "#define vector_remove(M, I)   \fBvector_remove_raw\fP((void**)&(M), I);"
+remove element from index 
+.PP
+\fBParameters\fP
+.RS 4
+\fIM\fP vector, address can change 
+.br
+\fII\fP element to remove 
+.RE
+.PP
+
+.PP
+Definition at line 102 of file vector\&.h\&.
+.SS "#define vector_shuffle_all(V)   \fBvector_shuffle\fP(V, 0, \fBvector_count\fP(V)\-1)"
+
+.PP
+Definition at line 172 of file vector\&.h\&.
 .SS "#define vector_size(V)   \fBVECTOR\fP(V)\->size"
 get vector size 
 .PP
-Definition at line 37 of file vector\&.h\&.
+Definition at line 40 of file vector\&.h\&.
 .SS "#define vector_sizeof(V)   \fBVECTOR\fP(V)\->sof"
 get sizeof 
 .PP
-Definition at line 43 of file vector\&.h\&.
+Definition at line 46 of file vector\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBvector\fP \fBvector_s\fP"
 
+.SS "typedef void(* vfree_f) (void *)"
+
+.PP
+Definition at line 7 of file vector\&.h\&.
 .SH "Function Documentation"
 .PP 
 .SS "\fBerr_t\fP vector_add_raw (void * ptrmem, const size_t index)"
@@ -304,6 +329,24 @@ add space in index position for setting new value
 \fIptrmem\fP pointer to mem of vector 
 .br
 \fIindex\fP position where add new space 
+.RE
+.PP
+
+.SS "void vector_clear (void * m)"
+clear vector, set count to 0 and call free function 
+.PP
+\fBParameters\fP
+.RS 4
+\fIm\fP mem of vector 
+.RE
+.PP
+
+.SS "void vector_downsize (void * ptrmem)"
+decrease size of vector of count element if need 
+.PP
+\fBParameters\fP
+.RS 4
+\fIptrmem\fP pointer to vector mem 
 .RE
 .PP
 
@@ -339,7 +382,7 @@ for cleanup
 .RE
 .PP
 
-.SS "void* vector_new_raw (size_t sof, size_t size, size_t minimal)"
+.SS "void* vector_new_raw (size_t sof, size_t size, \fBvfree_f\fP fn)"
 create new vector 
 .PP
 \fBParameters\fP
@@ -348,21 +391,21 @@ create new vector
 .br
 \fIsize\fP begine element size 
 .br
-\fIminimal\fP minimal count of elements 
+\fIfn\fP cleanup function 
 .RE
 .PP
 \fBReturns\fP
 .RS 4
-memory or NULL for error 
+memory or fail 
 .RE
 .PP
 
-.SS "void vector_remove (void * m, const size_t index)"
+.SS "void vector_remove_raw (void ** ptrmem, const size_t index)"
 remove element from index 
 .PP
 \fBParameters\fP
 .RS 4
-\fIm\fP vector mem 
+\fIptrmem\fP address of vector mem, can be change 
 .br
 \fIindex\fP element to remove 
 .RE
@@ -380,11 +423,24 @@ resize of vector
 .PP
 \fBReturns\fP
 .RS 4
-NULL error, or new mem addr 
+new mem addr or fail 
 .RE
 .PP
 
-.SS "\fBerr_t\fP vector_upsize (void * ptrmem, size_t count)"
+.SS "void vector_shuffle (void * ptrmem, size_t begin, size_t end)"
+shuffle a vector, call \fBmth_random_begin()\fP before use 
+.PP
+\fBParameters\fP
+.RS 4
+\fIptrmem\fP pointer to vector 
+.br
+\fIbegin\fP begin index 
+.br
+\fIend\fP end index 
+.RE
+.PP
+
+.SS "void vector_upsize (void * ptrmem, size_t count)"
 increase size of vector of count element if need 
 .PP
 \fBParameters\fP
@@ -392,11 +448,6 @@ increase size of vector of count element if need
 \fIptrmem\fP pointer to vector mem 
 .br
 \fIcount\fP elements to upsize 
-.RE
-.PP
-\fBReturns\fP
-.RS 4
--1 error 0 ok 
 .RE
 .PP
 

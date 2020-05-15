@@ -1,4 +1,4 @@
-.TH "message" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "message" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -12,10 +12,10 @@ message
 
 .in +1c
 .ti -1c
-.RI "int \fBid\fP"
+.RI "struct \fBmessage\fP * \fBnext\fP"
 .br
 .ti -1c
-.RI "int \fBtype\fP"
+.RI "\fBqmfree_f\fP \fBclean\fP"
 .br
 .ti -1c
 .RI "void * \fBdata\fP [0]"
@@ -23,21 +23,21 @@ message
 .in -1c
 .SH "Detailed Description"
 .PP 
-Definition at line 170 of file threads\&.h\&.
+Definition at line 162 of file threads\&.h\&.
 .SH "Field Documentation"
 .PP 
+.SS "\fBqmfree_f\fP message::clean"
+
+.PP
+Definition at line 164 of file threads\&.h\&.
 .SS "void* message::data[0]"
 
 .PP
-Definition at line 173 of file threads\&.h\&.
-.SS "int message::id"
+Definition at line 165 of file threads\&.h\&.
+.SS "struct \fBmessage\fP* message::next"
 
 .PP
-Definition at line 171 of file threads\&.h\&.
-.SS "int message::type"
-
-.PP
-Definition at line 172 of file threads\&.h\&.
+Definition at line 163 of file threads\&.h\&.
 
 .SH "Author"
 .PP 

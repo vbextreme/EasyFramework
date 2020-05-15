@@ -1,0 +1,244 @@
+.TH "include/ef/guiImage.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ef/guiImage.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ef/type\&.h>\fP
+.br
+\fC#include <ef/image\&.h>\fP
+.br
+\fC#include <ef/imageSvg\&.h>\fP
+.br
+\fC#include <ef/imageGif\&.h>\fP
+.br
+\fC#include <ef/media\&.h>\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBguiLayerPercentage\fP"
+.br
+.ti -1c
+.RI "struct \fBguiLayer\fP"
+.br
+.ti -1c
+.RI "struct \fBguiComposite\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBGUI_LAYER_FLAGS_ALPHA\fP   0x01"
+.br
+.ti -1c
+.RI "#define \fBGUI_LAYER_FLAGS_PLAY\fP   0x02"
+.br
+.ti -1c
+.RI "#define \fBGUI_LAYER_FLAGS_LOOP\fP   0x04"
+.br
+.ti -1c
+.RI "#define \fBGUI_LAYER_FLAGS_PERC\fP   0x08"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBguiLayer\fP \fBguiLayer_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBgui\fP \fBgui_s\fP"
+.br
+.ti -1c
+.RI "typedef void(* \fBguiLayerFN_f\fP) (\fBgui_s\fP *\fBgui\fP, \fBguiLayer_s\fP **, void *generic)"
+.br
+.ti -1c
+.RI "typedef void(* \fBguiLayerFree_f\fP) (void *generic)"
+.br
+.ti -1c
+.RI "typedef struct \fBguiLayerPercentage\fP \fBguiLayerPercentage_s\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBguiComposite\fP \fBguiComposite_s\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBguiLayerType_e\fP { \fBGUI_LAYER_COLOR\fP, \fBGUI_LAYER_IMG\fP, \fBGUI_LAYER_SVG\fP, \fBGUI_LAYER_GIF\fP, \fBGUI_LAYER_VIDEO\fP, \fBGUI_LAYER_FN\fP, \fBGUI_LAYER_CUSTOM\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBguiLayer_s\fP * \fBgui_layer_color_new\fP (\fBg2dColor_t\fP color, unsigned width, unsigned height, unsigned flags)"
+.br
+.ti -1c
+.RI "\fBguiLayer_s\fP * \fBgui_layer_fn_new\fP (\fBguiLayerFN_f\fP fn, void *data, \fBguiLayerFree_f\fP freefn, unsigned width, unsigned height, unsigned flags)"
+.br
+.ti -1c
+.RI "\fBguiLayer_s\fP * \fBgui_layer_custom_new\fP (\fBg2dImage_s\fP *g2d, unsigned flags)"
+.br
+.ti -1c
+.RI "\fBguiLayer_s\fP * \fBgui_layer_new\fP (\fBg2dColor_t\fP color, const char *pathRelative, unsigned width, unsigned height, unsigned flags, int ratio)"
+.br
+.ti -1c
+.RI "\fBguiLayer_s\fP * \fBgui_layer_load\fP (\fBg2dColor_t\fP color, const char *pathRelative, unsigned width, unsigned height, unsigned flags, int ratio)"
+.br
+.ti -1c
+.RI "void \fBgui_layer_xy_set\fP (\fBguiLayer_s\fP *img, unsigned x, unsigned y)"
+.br
+.ti -1c
+.RI "void \fBgui_layer_src_xy_set\fP (\fBguiLayer_s\fP *img, unsigned x, unsigned y)"
+.br
+.ti -1c
+.RI "void \fBgui_layer_perc_set\fP (\fBguiLayer_s\fP *img, double x, double y, double w, double h)"
+.br
+.ti -1c
+.RI "void \fBgui_layer_wh_set\fP (\fBguiLayer_s\fP *img, unsigned w, unsigned h)"
+.br
+.ti -1c
+.RI "void \fBgui_layer_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fBguiComposite_s\fP *\fBcmp\fP, unsigned id, unsigned count)"
+.br
+.ti -1c
+.RI "void \fBgui_layer_free\fP (\fBguiLayer_s\fP *img)"
+.br
+.ti -1c
+.RI "void \fBgui_layer_resize\fP (\fBgui_s\fP *\fBgui\fP, \fBguiLayer_s\fP *img, unsigned width, unsigned height, int ratio)"
+.br
+.ti -1c
+.RI "\fBguiComposite_s\fP * \fBgui_composite_new\fP (unsigned count)"
+.br
+.ti -1c
+.RI "void \fBgui_composite_free\fP (\fBguiComposite_s\fP *\fBcmp\fP)"
+.br
+.ti -1c
+.RI "\fBguiComposite_s\fP * \fBgui_composite_add\fP (\fBguiComposite_s\fP *\fBcmp\fP, \fBguiLayer_s\fP *img)"
+.br
+.ti -1c
+.RI "void \fBgui_composite_remove\fP (\fBguiComposite_s\fP *\fBcmp\fP, size_t id)"
+.br
+.ti -1c
+.RI "void \fBgui_composite_replace\fP (\fBguiComposite_s\fP *\fBcmp\fP, \fBguiLayer_s\fP *oldl, \fBguiLayer_s\fP *newl)"
+.br
+.ti -1c
+.RI "void \fBgui_composite_redraw\fP (\fBgui_s\fP *\fBgui\fP, \fBguiComposite_s\fP *\fBcmp\fP)"
+.br
+.ti -1c
+.RI "void \fBgui_composite_resize\fP (\fBgui_s\fP *\fBgui\fP, \fBguiComposite_s\fP *\fBcmp\fP, unsigned width, unsigned height)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define GUI_LAYER_FLAGS_ALPHA   0x01"
+
+.PP
+Definition at line 18 of file guiImage\&.h\&.
+.SS "#define GUI_LAYER_FLAGS_LOOP   0x04"
+
+.PP
+Definition at line 20 of file guiImage\&.h\&.
+.SS "#define GUI_LAYER_FLAGS_PERC   0x08"
+
+.PP
+Definition at line 21 of file guiImage\&.h\&.
+.SS "#define GUI_LAYER_FLAGS_PLAY   0x02"
+
+.PP
+Definition at line 19 of file guiImage\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBgui\fP \fBgui_s\fP"
+
+.PP
+Definition at line 1 of file guiImage\&.h\&.
+.SS "typedef struct \fBguiComposite\fP \fBguiComposite_s\fP"
+
+.SS "typedef struct \fBguiLayer\fP \fBguiLayer_s\fP"
+
+.PP
+Definition at line 1 of file guiImage\&.h\&.
+.SS "typedef void(* guiLayerFN_f) (\fBgui_s\fP *\fBgui\fP, \fBguiLayer_s\fP **, void *generic)"
+
+.PP
+Definition at line 12 of file guiImage\&.h\&.
+.SS "typedef void(* guiLayerFree_f) (void *generic)"
+
+.PP
+Definition at line 13 of file guiImage\&.h\&.
+.SS "typedef struct \fBguiLayerPercentage\fP \fBguiLayerPercentage_s\fP"
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBguiLayerType_e\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIGUI_LAYER_COLOR \fP\fP
+.TP
+\fB\fIGUI_LAYER_IMG \fP\fP
+.TP
+\fB\fIGUI_LAYER_SVG \fP\fP
+.TP
+\fB\fIGUI_LAYER_GIF \fP\fP
+.TP
+\fB\fIGUI_LAYER_VIDEO \fP\fP
+.TP
+\fB\fIGUI_LAYER_FN \fP\fP
+.TP
+\fB\fIGUI_LAYER_CUSTOM \fP\fP
+.PP
+Definition at line 15 of file guiImage\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "\fBguiComposite_s\fP* gui_composite_add (\fBguiComposite_s\fP * cmp, \fBguiLayer_s\fP * img)"
+
+.SS "void gui_composite_free (\fBguiComposite_s\fP * cmp)"
+
+.SS "\fBguiComposite_s\fP* gui_composite_new (unsigned count)"
+
+.SS "void gui_composite_redraw (\fBgui_s\fP * gui, \fBguiComposite_s\fP * cmp)"
+
+.SS "void gui_composite_remove (\fBguiComposite_s\fP * cmp, size_t id)"
+
+.SS "void gui_composite_replace (\fBguiComposite_s\fP * cmp, \fBguiLayer_s\fP * oldl, \fBguiLayer_s\fP * newl)"
+
+.SS "void gui_composite_resize (\fBgui_s\fP * gui, \fBguiComposite_s\fP * cmp, unsigned width, unsigned height)"
+
+.SS "\fBguiLayer_s\fP* gui_layer_color_new (\fBg2dColor_t\fP color, unsigned width, unsigned height, unsigned flags)"
+
+.SS "\fBguiLayer_s\fP* gui_layer_custom_new (\fBg2dImage_s\fP * g2d, unsigned flags)"
+
+.SS "\fBguiLayer_s\fP* gui_layer_fn_new (\fBguiLayerFN_f\fP fn, void * data, \fBguiLayerFree_f\fP freefn, unsigned width, unsigned height, unsigned flags)"
+
+.SS "void gui_layer_free (\fBguiLayer_s\fP * img)"
+
+.SS "\fBguiLayer_s\fP* gui_layer_load (\fBg2dColor_t\fP color, const char * pathRelative, unsigned width, unsigned height, unsigned flags, int ratio)"
+
+.SS "\fBguiLayer_s\fP* gui_layer_new (\fBg2dColor_t\fP color, const char * pathRelative, unsigned width, unsigned height, unsigned flags, int ratio)"
+
+.SS "void gui_layer_perc_set (\fBguiLayer_s\fP * img, double x, double y, double w, double h)"
+
+.SS "void gui_layer_redraw (\fBgui_s\fP * gui, \fBguiComposite_s\fP * cmp, unsigned id, unsigned count)"
+
+.SS "void gui_layer_resize (\fBgui_s\fP * gui, \fBguiLayer_s\fP * img, unsigned width, unsigned height, int ratio)"
+
+.SS "void gui_layer_src_xy_set (\fBguiLayer_s\fP * img, unsigned x, unsigned y)"
+
+.SS "void gui_layer_wh_set (\fBguiLayer_s\fP * img, unsigned w, unsigned h)"
+
+.SS "void gui_layer_xy_set (\fBguiLayer_s\fP * img, unsigned x, unsigned y)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Easy Framework from the source code\&.

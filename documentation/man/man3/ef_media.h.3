@@ -1,4 +1,4 @@
-.TH "include/ef/media.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/media.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -29,6 +29,9 @@ include/ef/media.h
 .RI "void \fBmedia_resize_set\fP (\fBmedia_s\fP *media, \fBg2dImage_s\fP *img)"
 .br
 .ti -1c
+.RI "void \fBmedia_redraw\fP (\fBmedia_s\fP *media)"
+.br
+.ti -1c
 .RI "int \fBmedia_decode\fP (\fBmedia_s\fP *media)"
 .br
 .ti -1c
@@ -40,29 +43,61 @@ include/ef/media.h
 .ti -1c
 .RI "long \fBmedia_delay_get\fP (\fBmedia_s\fP *media)"
 .br
+.ti -1c
+.RI "unsigned \fBmedia_width\fP (\fBmedia_s\fP *media)"
+.br
+.ti -1c
+.RI "unsigned \fBmedia_height\fP (\fBmedia_s\fP *media)"
+.br
+.ti -1c
+.RI "double \fBmedia_duration\fP (\fBmedia_s\fP *media)"
+.br
+.ti -1c
+.RI "double \fBmedia_fps\fP (\fBmedia_s\fP *media)"
+.br
+.ti -1c
+.RI "void \fBmedia_seek\fP (\fBmedia_s\fP *media, double s)"
+.br
+.ti -1c
+.RI "double \fBmedia_time\fP (\fBmedia_s\fP *media)"
+.br
 .in -1c
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct media \fBmedia_s\fP"
 
 .PP
-Definition at line 6 of file media\&.h\&.
+Definition at line 1 of file media\&.h\&.
 .SH "Function Documentation"
 .PP 
 .SS "int media_decode (\fBmedia_s\fP * media)"
-decode a frame 
+decode a frame, -1 end or error, 0 recall decode for frame, 1 frame decoded 
 .SS "long media_delay_get (\fBmedia_s\fP * media)"
-get time for sync 
+get time for sync in us 
+.SS "double media_duration (\fBmedia_s\fP * media)"
+get durate in ms 
+.SS "double media_fps (\fBmedia_s\fP * media)"
+get fps 
 .SS "\fBg2dImage_s\fP* media_frame_get (\fBmedia_s\fP * media)"
 get frame 
 .SS "void media_free (\fBmedia_s\fP * media)"
 free media 
+.SS "unsigned media_height (\fBmedia_s\fP * media)"
+get height 
 .SS "\fBmedia_s\fP* media_load (const char * path)"
 load media 
+.SS "void media_redraw (\fBmedia_s\fP * media)"
+redraw decoded frame 
 .SS "void media_resize_set (\fBmedia_s\fP * media, \fBg2dImage_s\fP * img)"
 set resize media 
+.SS "void media_seek (\fBmedia_s\fP * media, double s)"
+seeking to ms from start, use workaround because av_seek_frame won't works 
 .SS "void media_sleep (\fBmedia_s\fP * media)"
 sleep for sync 
+.SS "double media_time (\fBmedia_s\fP * media)"
+get current video time in s 
+.SS "unsigned media_width (\fBmedia_s\fP * media)"
+get width 
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for Easy Framework from the source code\&.

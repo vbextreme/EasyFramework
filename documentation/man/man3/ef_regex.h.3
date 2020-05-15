@@ -1,4 +1,4 @@
-.TH "include/ef/regex.h" 3 "Fri Apr 24 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
+.TH "include/ef/regex.h" 3 "Fri May 15 2020" "Version 0.4.5" "Easy Framework" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -81,7 +81,7 @@ include/ef/regex.h
 .SS "#define PCRE2_CODE_UNIT_WIDTH   8"
 
 .PP
-Definition at line 7 of file regex\&.h\&.
+Definition at line 8 of file regex\&.h\&.
 .SS "#define REGEX_NEW()"
 \fBValue:\fP
 .PP
@@ -101,7 +101,7 @@ Definition at line 7 of file regex\&.h\&.
 .fi
 for init new regex on stack 
 .PP
-Definition at line 24 of file regex\&.h\&.
+Definition at line 25 of file regex\&.h\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBregex\fP \fBregex_s\fP"
@@ -165,7 +165,7 @@ execute regex on str and return capture in vector vector contain copy of capture
 .PP
 \fBReturns\fP
 .RS 4
-vector for captured string, free each element before free vector, NULL error or not match 
+vector for captured string, no NULL is returned 
 .RE
 .PP
 
