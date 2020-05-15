@@ -32,9 +32,6 @@
  *			add eventfd
  *			change qmessages
  *
- * ??? 
- *		calendar
- *		tinybutton
 */
 
 
