@@ -5,8 +5,8 @@ Little framework created during the study of language c.<br/>
 State:
 ======
 * 1.3.1 accidental remove typedef
-* 1.3.0 gui:new control, thr, g2d
-* 1.2.5 workaround media seek, av_seek not working
+* 1.3.0 broke previus version,gui:new control, thr, g2d
+* 1.2.5 workaround media seek, av seek not working
 * 1.2.4 fix aur, media.seek but not working
 * 1.2.3 test and fix
 * 1.2.2 fix

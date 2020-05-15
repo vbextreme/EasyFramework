@@ -1,40 +1,6 @@
 #ifndef __EF_TYPE_H__
 #define __EF_TYPE_H__
 
-/*
- * 1.2.6 -----
- * 1.3.0 broken previous version
- *		gui:
- *			themes
- *			bar:
- *				circle
- *			option
- *			round
- *			simple
- *			composite layers
- *			msgbox
- *			combo
- *
- *		g2d:
- *			arc
- *			supersampling
- *
- *		svg:
- *			optimize
- *
- *		vector:
- *			exponential
- *			reduce
- *			autofree
- *
- *		thr:
- *			remove FUTEX_FD
- *			add eventfd
- *			change qmessages
- *
-*/
-
-
 #ifndef _GNU_SOURCE
 	#define _GNU_SOURCE
 #endif
