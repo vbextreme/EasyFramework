@@ -56,7 +56,7 @@
 #include <pthread.h>
 
 /** compare function for qsort */
-int (*qsort_f)(const void* a, const void* b);
+typedef int (*qsort_f)(const void* a, const void* b);
 
 /** type for byte*/
 typedef char byte_t;
