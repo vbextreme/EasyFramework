@@ -139,29 +139,54 @@ __private int paint_test(gui_s* gui, __unused xorgEvent_s* ev){
 
 __private int testef_msgbox_ok(gui_s* btn, __unused xorgEvent_s* ev){
 	gui_s* win = gui_main_parent(btn);
-	gui_simple_show_all(win, 0);
-	gui_free(win);
 	gui_focus_restore();
+	gui_simple_show_all(win, 0);
 	return 0;	
 }
 
 __private int testef_button_msgbox(__unused gui_s* gui, __unused xorgEvent_s* ev){
-	guiSimpleMsgBoxButtons_s* btns = vector_new(guiSimpleMsgBoxButtons_s, 1, NULL);
-	guiSimpleMsgBoxButtons_s* bt;
-	bt = vector_get_push_back(btns);
-	bt->caption = U8("ok");
-	bt->userdata = NULL;
-	bt->ev = testef_msgbox_ok;
-	gui_s* win = gui_simple_msgbox(TESTEF_MSGBOX_NAME, TESTEF_MSGBOX_W, TESTEF_MSGBOX_H, U8(TESTEF_MSGBOX_CAP), btns, 1);
-	gui_simple_apply_change(win);
-	gui_simple_show_all(win, 1);
-	gui_s* okbt = gui_by_name(win, "msgbox_b0", GUI_SIMPLE_CLASS_BUTTON);
-	iassert(okbt);
-	gui_focus_store();
-	gui_focus(okbt);
+	static gui_s* win = NULL;
+	if( !win ){
+		guiSimpleMsgBoxButtons_s* btns = vector_new(guiSimpleMsgBoxButtons_s, 1, NULL);
+		guiSimpleMsgBoxButtons_s* bt;
+		bt = vector_get_push_back(btns);
+		bt->caption = U8("ok");
+		bt->userdata = NULL;
+		bt->ev = testef_msgbox_ok;
+		win = gui_simple_msgbox(TESTEF_MSGBOX_NAME, TESTEF_MSGBOX_W, TESTEF_MSGBOX_H, U8(TESTEF_MSGBOX_CAP), btns, 1);
+	}
+	else{
+		if( !win->visible ){
+			gui_simple_show_all(win, 1);
+			gui_focus_store();
+		}
+		gui_focus(win->childs[1]);
+	}
 
 	return 0;
 }
+
+__private int testef_combo_click(gui_s* gui, __unused xorgEvent_s* ev){
+	static gui_s* sel = NULL;
+	
+	__vector_free utf8_t** lst = vector_new(utf8_t*, 5, NULL);
+	vector_push_back(lst, U8("uno"));
+	vector_push_back(lst, U8("due"));
+	vector_push_back(lst, U8("tre"));
+	vector_push_back(lst, U8("quattro"));
+	vector_push_back(lst, U8("cinque"));
+	vector_push_back(lst, U8("sei"));
+
+	if( sel ){
+		gui_simple_show_all(sel, 0);
+		gui_free(sel);
+		sel = NULL;
+	}
+	sel = gui_simple_combo_new(gui,"unoduetre",lst);
+
+	return 0;
+}
+
 
 /*@fn*/
 void test_gui(__unused const char* argA, __unused const char* argB){
@@ -211,6 +236,9 @@ void test_gui(__unused const char* argA, __unused const char* argB){
 	gui_simple_check_add(chk, "chk_a", U8("check A"), TESTEF_CHECK_ELEMENT_H);
 	gui_simple_check_add(chk, "chk_b", U8("check B"), TESTEF_CHECK_ELEMENT_H);
 	gui_simple_check_add(chk, "chk_c", U8("check C"), TESTEF_CHECK_ELEMENT_H);
+
+	gui_s* combo = gui_simple_button_new(main, "combo", U8("combo"), testef_combo_click);
+	gui_simple_layout_table_add(main, combo, 100, 15, 1);
 
 	gui_simple_apply_change(main);
 	gui_simple_show_all(main, 1);

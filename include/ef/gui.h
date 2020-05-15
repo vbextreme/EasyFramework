@@ -39,7 +39,6 @@
 #define GUI_THEME_BORDER           "border"
 #define GUI_THEME_ROUND            "round"
 #define GUI_THEME_SUPERSAMPLING    "supersampling"
-#define GUI_THEME_GENERIC          "generic"
 #define GUI_THEME_X                "position.x"
 #define GUI_THEME_Y                "position.y"
 #define GUI_THEME_W                "position.w"
@@ -126,7 +125,7 @@ typedef struct gui{
 	int focusable;
 	int bordersize;
 	int bordersizefocused;
-	int genericSize;
+	int visible;
 	g2dColor_t borderColor;
 
 	xorgSurface_s* surface;
@@ -177,7 +176,7 @@ gui_s* gui_new(
 		const char* name, const char* class, guiMode_e mode,
 		int border, int x, int y, int width, int height, 
 		g2dColor_t colorBorder, guiComposite_s* background, guiComposite_s* postproduction,
-		int genericSize, void* userdata);
+		void* userdata);
 
 /** free gui, remove gui from parent*/
 void gui_free(gui_s* gui);

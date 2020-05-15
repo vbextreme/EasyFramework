@@ -44,6 +44,7 @@ typedef struct guiDiv{
 #define GUI_THEME_DIV_ELEMENT        "div.element"
 #define GUI_THEME_DIV_PROPH          "h"
 #define GUI_THEME_DIV_PROPW          "w"
+#define GUI_THEME_DIV_SELECT         "div.select"
 #define GUI_THEME_DIV_SELECTION      "div.selection"
 #define GUI_THEME_DIV_SEL_PAD_LEFT   "div.selection.padding.left"
 #define GUI_THEME_DIV_SEL_PAD_RIGHT  "div.selection.padding.right"

@@ -22,8 +22,8 @@
 #define GUI_SIMPLE_DEFAULT_ENABLE_COLOR            gui_color(255,0x60,0x7D,0x8B)
 #define GUI_SIMPLE_DEFAULT_DISABLE_COLOR           gui_color(255,0x9E,0x9E,0x9E)
 #define GUI_SIMPLE_DEFAULT_CURSOR_COLOR            gui_color(255,0x21,0x21,0x21)
-#define GUI_SIMPLE_DEFAULT_BLINK                   600
 
+#define GUI_SIMPLE_DEFAULT_BLINK                   600
 #define GUI_SIMPLE_DEFAULT_BORDER                  1
 #define GUI_SIMPLE_DEFAULT_CONTROL_W               100
 #define GUI_SIMPLE_DEFAULT_CONTROL_H               100
@@ -36,6 +36,7 @@
 #define GUI_SIMPLE_DEFAULT_MSGBOX_LBL_H            75.0
 #define GUI_SIMPLE_DEFAULT_MSGBOX_HORI_H           25.0
 #define GUI_SIMPLE_DEFAULT_MSGBOX_HORI_W           100.0
+#define GUI_SIMPLE_DEFAULT_DIV_SEL_PAD             1
 
 #define GUI_SIMPLE_CLASS_WINDOW                    "window"
 #define GUI_SIMPLE_CLASS_DIV                       "div"
@@ -72,5 +73,6 @@ gui_s* gui_simple_option_new(gui_s* parent, const char* name);
 gui_s* gui_simple_check_add(gui_s* opt, const char* name, const utf8_t* text, double h);
 gui_s* gui_simple_option_add(gui_s* opt, const char* name, const utf8_t* text, double h);
 gui_s* gui_simple_msgbox(const char* name, unsigned w, unsigned h, utf8_t* caption, guiSimpleMsgBoxButtons_s* vb, int hori);
+gui_s* gui_simple_combo_new(gui_s* combo, const char* name, utf8_t** vstr);
 
 #endif

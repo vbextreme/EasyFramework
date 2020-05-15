@@ -13,6 +13,7 @@
  *			simple
  *			composite layers
  *			msgbox
+ *			combo
  *
  *		g2d:
  *			arc
@@ -33,7 +34,6 @@
  *
  * ??? 
  *		calendar
- *		combobox
  *		tinybutton
 */
 

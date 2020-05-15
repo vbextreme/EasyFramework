@@ -17,7 +17,7 @@
 #define GUI_CHILD_INITIAL   8
 #define GUI_KEY_SIZE        32
 #define GUI_HASH_SIZE       32
-#define GUI_HASH_MIN        10
+#define GUI_HASH_MIN        20
 #define GUI_TIMERS_SIZE     16
 #define GUI_BACKGROUND_SIZE 3
 
@@ -72,6 +72,7 @@ __private void allgui_add(gui_s* gui){
 	dbg_info("register gui(%u): %s", gui->id, gui->name);
 	char key[32];
 	int len = sprintf(key,"%u",(uint32_t)gui->id);
+	dbg_info("add gui %d::%s::%s on allgui", (uint32_t)gui->id, gui->name, gui->class);
 	if( rbhash_add_hash(allgui, gui->id, key, len, gui) ){
 		err_fail("add gui %d::%s::%s on allgui", (uint32_t)gui->id, gui->name, gui->class);
 	}
@@ -81,7 +82,7 @@ __private void allgui_remove(gui_s* gui){
 	char key[32];
 	int len = sprintf(key,"%u",(uint32_t)gui->id);
 	if( rbhash_remove_hash(allgui, gui->id, key, len) ){
-		err_fail("add gui %d::%s::%s on allgui", (uint32_t)gui->id, gui->name, gui->class);
+		err_fail("remove gui %d::%s::%s on allgui", (uint32_t)gui->id, gui->name, gui->class);
 	}
 }
 
@@ -129,7 +130,7 @@ gui_s* gui_new(
 		const char* name, const char* class, guiMode_e mode, 
 		int border, int x, int y, int width, int height, 
 		g2dColor_t colorBorder, guiComposite_s* background, guiComposite_s* postproduction,
-		int genericSize, void* userdata)
+		void* userdata)
 {
 	gui_s* gui = mem_new(gui_s);
 	if( !gui ) err_fail("malloc");
@@ -178,7 +179,7 @@ gui_s* gui_new(
 	gui->id = xorg_win_new(&gui->surface, X, xcbParent, x, y, width, height, border, colorBorder, colorBorder);
 	gui_name(gui, name);
 	gui_class(gui, class);
-	gui->genericSize = genericSize;
+	gui->visible = 0;
 
 	allgui_add(gui);
 
@@ -273,6 +274,7 @@ void gui_class(gui_s* gui, const char* class){
 }
 
 void gui_show(gui_s* gui, int show){
+	gui->visible = show;
 	xorg_win_show(X, gui->id, show);
 	xorg_win_state_set(X, gui->id, XORG_WINDOW_STATE_INVISIBLE + show);
 }
@@ -330,7 +332,7 @@ int gui_focus_have(gui_s* gui){
 }
 
 void gui_focus(gui_s* gui){
-	dbg_error("set focus: %s", gui->name);
+	dbg_info("set focus: %s", gui->name);
 	focused = gui;
 	gui_internal_focus_event();
 	xorg_win_focus(X, gui->id);
@@ -1059,7 +1061,7 @@ err_t gui_themes_layer(gui_s* gui, const char* name, guiLayer_s** ptrimg){
 	int perenable = 0;
 	guiLayer_s* img = NULL;
 
-	dbg_error("loading layer resources: '%s'", name);
+	dbg_info("loading layer resources: '%s'", name);
 
 	if( !gui_themes_color_set(name, GUI_THEME_COMPOSITE_COLOR, &color) ) colorset = 1;
 		
@@ -1209,7 +1211,6 @@ void gui_themes(gui_s* gui, const char* appName){
 	}
 
 	if( !gui_themes_long_set(name, GUI_THEME_BORDER, &vlong) ) gui_border(gui, vlong);
-	gui_themes_int_set(name, GUI_THEME_GENERIC, &gui->genericSize);
 
 	gui_themes_uint_set(name, GUI_THEME_X, &position.x);
 	gui_themes_uint_set(name, GUI_THEME_Y, &position.y);

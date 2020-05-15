@@ -135,7 +135,10 @@ err_t gui_resource_release(const char* name){
 	guiResource_s* res = rbhash_find(resources, name, 0);
 	if( res ){
 		if( res->reference > 0 ) --res->reference;
-		if( !res->reference ) rbhash_remove(resources, name, 0);
+		if( !res->reference ){
+			dbg_info("no other reference, remove");
+			rbhash_remove(resources, name, 0);
+		}
 		return 0;
 	}
 	return -1;

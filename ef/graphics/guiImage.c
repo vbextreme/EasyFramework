@@ -243,11 +243,13 @@ guiLayer_s* gui_layer_load(g2dColor_t color, const char* pathRelative, unsigned 
 
 void gui_layer_free(guiLayer_s* img){
 	if( !img ) return;	
-	if( img->free ) img->free(img->data);
+	if( img->free ){
+		img->free(img->data);
+	}
 
 	if( img->res ){
+		dbg_info("release:'%s'", img->res);
 		gui_resource_release(img->res);
-		free(img->res);	
 	}
 	else{
 		switch( img->type ){

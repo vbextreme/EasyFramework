@@ -33,8 +33,11 @@ gui_s* gui_button_attach(gui_s* gui, guiButton_s* btn);
 /** free button*/
 void gui_button_free(guiButton_s* btn);
 
-/** get button set text */
+/** button set text */
 void gui_button_text_set(gui_s* gui, const utf8_t* text);
+
+/** get button text*/
+const utf8_t* gui_button_text_get(gui_s* gui);
 
 /** button redraw */
 void gui_button_redraw(gui_s* gui, unsigned normalPressHover);

@@ -11,7 +11,7 @@ typedef struct rbhashElement{
 	void* data;        /**< user data*/
 	uint32_t hash;     /**< hash */
 	uint32_t len;      /**< len of key*/
-	uint16_t distance; /**< distance from hash*/
+	uint32_t distance; /**< distance from hash*/
 	char key[];        /**< flexible key*/
 }rbhashElement_s;
 

@@ -56,6 +56,12 @@ void gui_button_text_set(gui_s* gui, const utf8_t* text){
 	gui_caption_text_set(gui, btn->caption, text);
 }
 
+const utf8_t* gui_button_text_get(gui_s* gui){
+	iassert(gui->type == GUI_TYPE_BUTTON);
+	guiButton_s* btn = gui->control;
+	return btn->caption->text;
+}
+
 void gui_button_redraw(gui_s* gui, unsigned normalPressHover){
 	iassert(gui->type == GUI_TYPE_BUTTON);
 	guiButton_s* btn = gui->control;
@@ -82,7 +88,6 @@ int gui_button_event_redraw(gui_s* gui, __unused xorgEvent_s* unset){
 
 int gui_button_event_key(gui_s* gui, xorgEvent_s* event){
 	iassert(gui->type == GUI_TYPE_BUTTON);
-
 	if( event->keyboard.event == XORG_KEY_PRESS && event->keyboard.keysym == XKB_KEY_Return ){
 		gui_button_redraw(gui, 1);
 		gui_draw(gui);
@@ -92,13 +97,14 @@ int gui_button_event_key(gui_s* gui, xorgEvent_s* event){
 		gui_button_redraw(gui, 0);
 		gui_draw(gui);
 		guiButton_s* btn = gui->control;
-		if( btn->onclick ) btn->onclick(gui, event);
+		if( btn->onclick ) return btn->onclick(gui, event);
 		return 0;
 	}
 
 	guiButton_s* btn = gui->control;
-	if( btn->parentKey && gui->parent ) btn->parentKey(gui, event);
-
+	if( btn->parentKey && gui->parent ){
+		return btn->parentKey(gui, event);
+	}
 	return 0;
 }
 
@@ -119,7 +125,7 @@ int gui_button_event_mouse(gui_s* gui, xorgEvent_s* event){
 		gui_button_redraw(gui, 0);
 		gui_draw(gui);
 		guiButton_s* btn = gui->control;
-		if( btn->onclick ) btn->onclick(gui, event);
+		if( btn->onclick ) return btn->onclick(gui, event);
 	}
 	else if( event->mouse.event == XORG_MOUSE_ENTER ){
 		guiButton_s* btn = gui->control;

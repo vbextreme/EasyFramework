@@ -45,18 +45,20 @@ ERR:
 void gui_div_apply_select(gui_s* gui){
 	iassert( gui->type == GUI_TYPE_DIV );
 	guiDiv_s* div = gui->control;
-	if( !(div->flags & GUI_DIV_FLAGS_SELECT) ) return;
-	div->idselect = vector_count(gui->scene.background);
-	gui_composite_add(gui->scene.background, div->select);
+	if( !div->select || !(div->flags & GUI_DIV_FLAGS_SELECT) ) return;
+	iassert(gui->scene.background);
+	div->idselect = vector_count(gui->scene.postproduction->layers);
+	gui_composite_add(gui->scene.postproduction, div->select);
 	gui_register_internal_focus_event(gui, div_internal_focus);
 }
 
 void gui_div_deapply_select(gui_s* gui){
 	iassert( gui->type == GUI_TYPE_DIV );
 	guiDiv_s* div = gui->control;
+	if( !div->select || !(div->flags & GUI_DIV_FLAGS_SELECT) ) return;
 	div->flags &= ~GUI_DIV_FLAGS_SELECT;
-	gui->scene.background->layers[div->idselect] = NULL;
-	gui_composite_remove(gui->scene.background, div->idselect);
+	gui->scene.postproduction->layers[div->idselect] = NULL;
+	gui_composite_remove(gui->scene.postproduction, div->idselect);
 	gui_unregister_internal_focus_event(gui);
 }
 
@@ -326,7 +328,7 @@ __private void div_focus_right(gui_s* gdiv, guiDiv_s* div, gui_s* gui){
 			c = 0;
 		}
 		gui = div->vrows[r].vcols[c].gui;
-		gui_focus(gui);
+		if( gui ) gui_focus(gui);
 	}
 	else{
 		gui_focus_next(gui);
@@ -351,6 +353,7 @@ __private void div_focus_left(gui_s* gdiv, guiDiv_s* div, gui_s* gui){
 			c = vector_count(div->vrows[r].vcols) - 1;
 		}
 		gui = div->vrows[r].vcols[c].gui;
+		if( gui ) gui_focus(gui);
 	}
 	else{
 		gui = gui_focus_prev(gui);
@@ -370,6 +373,7 @@ __private void div_focus_up(gui_s* gdiv, guiDiv_s* div, gui_s* gui){
 		}
 		if( c >= vector_count(div->vrows[r].vcols) ) c = vector_count(div->vrows[r].vcols) -1;
 		gui = div->vrows[r].vcols[c].gui;
+		if( gui ) gui_focus(gui);
 	}
 	else{
 		gui = gui_focus_prev(gui);
@@ -389,6 +393,8 @@ __private void div_focus_down(gui_s* gdiv, guiDiv_s* div, gui_s* gui){
 		}
 		if( c >= vector_count(div->vrows[r].vcols) ) c = vector_count(div->vrows[r].vcols) -1;
 		gui = div->vrows[r].vcols[c].gui;
+		if( gui ) gui_focus(gui);
+
 	}
 	else{
 		gui = gui_focus_next(gui);
@@ -416,17 +422,20 @@ int gui_div_child_event_key(gui_s* gui, xorgEvent_s* event){
 			(event->keyboard.keysym == XKB_KEY_Right || event->keyboard.keysym == XKB_KEY_Tab)
 	){
 		div_focus_right(div, div->control, gui);
+		gui_event_redraw(div, NULL);
 	}
 	else if( event->keyboard.event == XORG_KEY_PRESS && event->keyboard.keysym == XKB_KEY_Left ){
 		div_focus_left(div, div->control, gui);
+		gui_event_redraw(div, NULL);
 	}
 	else if( event->keyboard.event == XORG_KEY_PRESS && event->keyboard.keysym == XKB_KEY_Up ){
 		div_focus_up(div, div->control, gui);
+		gui_event_redraw(div, NULL);
 	}
 	else if( event->keyboard.event == XORG_KEY_PRESS && event->keyboard.keysym == XKB_KEY_Down ){
 		div_focus_down(div, div->control, gui);
+		gui_event_redraw(div, NULL);
 	}
-
 	return 0;
 }
 
@@ -451,7 +460,13 @@ int gui_div_event_themes(gui_s* gui, xorgEvent_s* ev){
 	gui_themes_int_set(name, GUI_THEME_DIV_SEL_PAD_BOTTOM, &div->selectpad.bottom);
 
 	__mem_free char* selname = str_printf("%s.%s", name, GUI_THEME_DIV_SELECTION);
-	if( !gui_themes_layer(gui, selname, &div->select) ) div->flags |= GUI_DIV_FLAGS_SELECT;
+	gui_themes_layer(gui, selname, &div->select);
+
+	int vbool;
+	if( !gui_themes_bool_set(name, selname, &vbool) ){
+		if( vbool ) div->flags |= GUI_DIV_FLAGS_SELECT;
+		else  div->flags &= ~GUI_DIV_FLAGS_SELECT;
+	}
 
 	if( div->mode != GUI_DIV_TABLE ) return 0;
 

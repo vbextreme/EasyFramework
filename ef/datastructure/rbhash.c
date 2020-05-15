@@ -77,6 +77,7 @@ __private void rbhash_swapdown(rbhashElement_s* table, const size_t size, const 
 		if( nw->distance > *maxdistance ) *maxdistance = nw->distance;
 	}
 	if( tbl->key[0] != 0 ){
+		err_push("hash size: %lu, no slot available, nwdistance: %u", size, nw->distance);
 		err_fail("hash lose element, the hash table is to small");
 	}
 	memcpy(tbl,nw,esize);
@@ -85,15 +86,15 @@ __private void rbhash_swapdown(rbhashElement_s* table, const size_t size, const 
 __private err_t rbhash_upsize(rbhash_s* rbh){
 	const size_t p = ((rbh->size * rbh->min) / 100) + 1;
 	const size_t pm = rbh->count + p;
+	dbg_info("upsize: required available %lu, used %lu, size %lu", p, rbh->count, rbh->size);
 	if( rbh->size > pm ) return 0;
 	
 	const size_t newsize = ROUND_UP_POW_TWO32(pm);
-	
+	dbg_info("resize to %lu", pm);
+
 	rbhashElement_s* newtable =  malloc(rbh->elementSize * newsize);
-	if( newtable == NULL ){
-		err_pushno("malloc");
-		return -1;
-	}
+	if( newtable == NULL ) err_fail("malloc");
+	
 	rbhashElement_s* table = newtable;
 	for( size_t i = 0; i < rbh->size; ++i, table = rbhash_element_next(table,rbh->elementSize)){
 		table->key[0] = 0;
@@ -162,7 +163,7 @@ __private long rbhash_find_bucket(rbhash_s* rbh, uint32_t hash, const char* key,
 		slot = rbhash_slot_next(slot, rbh->size);
 		table = rbhash_element_slot(rbh->table, rbh->elementSize, slot);
 	}
-	err_push("not find key %.*s",(int)len, key);
+	dbg_warning("not find key %.*s",(int)len, key);
 	errno = ESRCH;
 	return -1;
 }
