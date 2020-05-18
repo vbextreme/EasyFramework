@@ -49,6 +49,7 @@ typedef struct json{
 	long usrstat;                     /**< user status*/
 	void* usrval;                     /**< user value*/
 	size_t usrit;                     /**< user iterator*/
+	void* usrgarbage;                 /**< user garbage*/
 	size_t cline;                     /**< private numbers of current line*/
 	char const* text;                 /**< private text*/
 	char const* beginLine;            /**< private begin line*/
@@ -56,6 +57,18 @@ typedef struct json{
 	jsonError_e err;                  /**< error */
 	char** usrError;                  /**< user error*/
 }json_s;
+
+typedef enum {JSON_DEF_INT, JSON_DEF_UINT, JSON_DEF_LONG, JSON_DEF_ULONG, JSON_DEF_STRING, JSON_DEF_NUMBER, JSON_DEF_VECTOR, JSON_DEF_OBJECT} jsonDef_e;
+
+typedef struct jsonDef{
+	struct jsonDef* vintrospect;
+	struct jsonDef* parent;
+	const char* name;
+	jsonDef_e type;
+	size_t offof;
+	size_t size;
+}jsonDef_s;
+
 
 /**before use json, disable locale for correct parsing double value*/
 void json_begin(void);
@@ -102,5 +115,39 @@ err_t json_long_validation(long* ret, const char* number, size_t len);
  * @return 0 successfull, -1 error
  */
 err_t json_float_validation(double* ret, const char* number, size_t len);
+
+
+
+jsonDef_s* json_parse_new_object(size_t size);
+jsonDef_s* json_parse_new_vector(void);
+jsonDef_s* json_parse_declare_number(jsonDef_s* def, const char* name, size_t offof, size_t size, jsonDef_e typeNum);
+jsonDef_s* json_parse_declare_int(jsonDef_s* def, const char* name, size_t offof);
+jsonDef_s* json_parse_declare_uint(jsonDef_s* def, const char* name, size_t offof);
+jsonDef_s* json_parse_declare_long(jsonDef_s* def, const char* name, size_t offof);
+jsonDef_s* json_parse_declare_ulong(jsonDef_s* def, const char* name, size_t offof);
+jsonDef_s* json_parse_declare_double(jsonDef_s* def, const char* name, size_t offof);
+jsonDef_s* json_parse_declare_string(jsonDef_s* def, const char* name, size_t offof);
+jsonDef_s* json_parse_declare_vector(jsonDef_s* def, const char* name, size_t offof);
+jsonDef_s* json_parse_declare_object(jsonDef_s* def, const char* name, size_t offof, size_t size);
+jsonDef_s* json_parse_declare_def(jsonDef_s* def, jsonDef_s* sub);
+void json_def_free(jsonDef_s* def);
+void* json_parse(jsonDef_s* def, const char* data);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif
 

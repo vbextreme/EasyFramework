@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <stddef.h>
 #include <errno.h>
 #include <limits.h>
 #include <errno.h>

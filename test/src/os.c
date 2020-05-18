@@ -2,6 +2,7 @@
 #include <ef/sys.h>
 #include <ef/proc.h>
 #include <ef/spawn.h>
+#include <ef/os.h>
 
 /*@test -o --os 'test os'*/
 
@@ -13,6 +14,25 @@ __private void printps(const char* name, size_t val){
 
 /*@fn*/
 void test_os(__unused const char* argA, __unused const char* argB){
+	sdbus_s* sd = sdbus_new();
+	if( !sd ) err_fail("sdbus");
+
+	sdbusBusNames_s* bn = sdbus_bus_names(sd);
+	vector_foreach(bn->acquired,i){
+		printf("acquired:'%s'\n", bn->acquired[i]);
+	}
+	vector_foreach(bn->activable, i){
+		printf("activable:'%s'\n", bn->activable[i]);
+	}
+	sdbus_bus_names_free(bn);
+
+	char* xml = sdbus_introspect_raw(sd, "org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager");
+	printf("<XML>%s</XML>\n", xml);
+	//free(xml);
+
+	sdbus_free(sd);
+	return;
+	
 	cpu_auto_load_average_begin();	
 	printf("core count:%d\n", cpu_core_count());
 	

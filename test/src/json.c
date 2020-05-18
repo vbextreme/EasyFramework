@@ -32,11 +32,83 @@ __private void jinit(json_s* js){
 	js->valueInteger = js_integer;
 }
 
+
 /*@fn*/
 void test_json(const char* argA, const char* argB){
 	err_enable();
 	json_begin();
 
+struct atest{
+	int* a;
+	long* b;
+	char* str;
+	int** v;
+};
+
+//char* btest = "{ \"a\": 123, \"b\": 456 }";
+//char* btest = "{ \"a\": 123, \"b\": 456, \"str\": \"hello\"}";
+//char* btest = "{ \"a\": 123, \"b\": 456, \"str\": \"hello\", \"v\": [ 1, 2, 3] }";
+char* btest = "[{ \"a\": 123, \"k\": 5, \"b\": 456, \"str\": \"hello\", \"v\": [ 7, 8, 9] },{ \"a\": 101112, \"b\": 131415, \"str\": \"world\", \"v\": [ 16, 17, 18] }]";
+
+
+//jsonDef_s* jd = json_parse_new_object(sizeof(struct atest));
+jsonDef_s* jvv = json_parse_new_vector();
+jsonDef_s* jd = json_parse_declare_object(jvv, "atest", 0, sizeof(struct atest));
+
+json_parse_declare_int(jd, "a", offsetof(struct atest, a));
+json_parse_declare_long(jd, "b", offsetof(struct atest, b));
+json_parse_declare_string(jd, "str", offsetof(struct atest, str));
+jsonDef_s* jv = json_parse_declare_vector(jd, "v", offsetof(struct atest, v));
+json_parse_declare_int(jv, "v.int", 0);
+
+/*
+struct atest* foo = json_parse(jd, btest);
+if( !foo ){
+	dbg_error("No foo");
+	err_fail("foo");
+	return;
+}
+
+json_def_free(jd);
+
+dbg_info("dump");
+dbg_info("&foo: %p", foo);
+dbg_info("&foo->a: %p", foo->a);
+dbg_info("foo->a: %d", *foo->a);
+dbg_info("&foo->b: %p", foo->b);
+dbg_info("foo->b: %ld", *foo->b);
+dbg_info("&foo->str: %p", foo->str);
+dbg_info("foo->str: %s", foo->str);
+dbg_info("&foo->v: %p", foo->v);
+dbg_info("foo->v.count: %lu", vector_count(foo->v));
+vector_foreach(foo->v, i){
+	dbg_info("foo->v[%lu]::%d", i, *foo->v[i]);
+}
+*/
+
+struct atest** foo = json_parse(jvv, btest);
+if( !foo ){
+	dbg_error("No foo");
+	err_fail("foo");
+	return;
+}
+
+json_def_free(jvv);
+
+dbg_info("dump %lu", vector_count(foo));
+vector_foreach(foo,i){
+	if( foo[i]->a ) dbg_info("foo->a: %d", *foo[i]->a);
+	if( foo[i]->b ) dbg_info("foo->b: %ld", *foo[i]->b);
+	if( foo[i]->str ) dbg_info("foo->str: %s", foo[i]->str);
+	if( foo[i]->v ){
+		dbg_info("foo->v.count: %lu", vector_count(foo[i]->v));
+		vector_foreach(foo[i]->v, j){
+			dbg_info("foo->v[%lu]::%d", j, *(foo[i]->v[j]));
+		}
+	}
+}
+
+return;
 	char* ts = "hello world \\n \\tok\\n\\u2764 love it";
 	char* test = json_unescape(NULL, ts, strlen(ts));
 	if( test ){

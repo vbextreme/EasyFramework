@@ -58,11 +58,13 @@ src += [ 'ef/os/spawn.c' ]
 src += [ 'ef/os/inutility.c' ]
 src += [ 'ef/os/vectorization.c' ]
 src += [ 'ef/os/signal.c' ]
+src += [ 'ef/os/services.c' ]
 
 src += [ 'ef/concurrency/threads.c' ]
 src += [ 'ef/concurrency/promise.c' ]
 
 src += [ 'ef/parser/json.c' ]
+src += [ 'ef/parser/autojson.c' ]
 
 src += [ 'ef/www/socket.c' ]
 src += [ 'ef/www/www.c' ]
@@ -108,7 +110,6 @@ src += [ 'ef/graphics/guiText.c' ]
 src += [ 'ef/graphics/guiBar.c' ]
 src += [ 'ef/graphics/guiOptionBox.c' ]
 src += [ 'ef/graphics/guiSimple.c' ]
-
 
 ##################
 # compiler flags #
@@ -225,6 +226,7 @@ libDeps += [ dependency('xcb-randr', required: true) ]
 libDeps += [ dependency('xcb-shape', required: true) ]
 libDeps += [ dependency('xkbcommon', required: true) ]
 libDeps += [ dependency('xkbcommon-x11', required: true) ]
+libDeps += [ dependency('libsystemd', required: true) ]
 
 xcb_error_dep = dependency('xcb-errors', required: false)
 if xcb_error_dep.found()
