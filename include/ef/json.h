@@ -116,21 +116,89 @@ err_t json_long_validation(long* ret, const char* number, size_t len);
  */
 err_t json_float_validation(double* ret, const char* number, size_t len);
 
-
-
+/** create new definition begin with object
+ * @param size sizeof struct
+ * @return new def
+ */
 jsonDef_s* json_parse_new_object(size_t size);
+
+/** create new definition begin with vector, next declare is type of vector
+ * @param size sizeof struct
+ * @return new def
+ */
 jsonDef_s* json_parse_new_vector(void);
+
+/** declare type as num*/
 jsonDef_s* json_parse_declare_number(jsonDef_s* def, const char* name, size_t offof, size_t size, jsonDef_e typeNum);
+
+/** declare type int
+ * @param def parent
+ * @param name name of property if is object
+ * @param offof offsetof of var if is a struct
+ */
 jsonDef_s* json_parse_declare_int(jsonDef_s* def, const char* name, size_t offof);
+
+/** declare type uint
+ * @param def parent
+ * @param name name of property if is object
+ * @param offof offsetof of var if is a struct
+ */
 jsonDef_s* json_parse_declare_uint(jsonDef_s* def, const char* name, size_t offof);
+
+/** declare type long
+ * @param def parent
+ * @param name name of property if is object
+ * @param offof offsetof of var if is a struct
+ */
 jsonDef_s* json_parse_declare_long(jsonDef_s* def, const char* name, size_t offof);
+
+/** declare type ulong
+ * @param def parent
+ * @param name name of property if is object
+ * @param offof offsetof of var if is a struct
+ */
 jsonDef_s* json_parse_declare_ulong(jsonDef_s* def, const char* name, size_t offof);
+
+/** declare type double
+ * @param def parent
+ * @param name name of property if is object
+ * @param offof offsetof of var if is a struct
+ */
 jsonDef_s* json_parse_declare_double(jsonDef_s* def, const char* name, size_t offof);
+
+/** declare type string
+ * @param def parent
+ * @param name name of property if is object
+ * @param offof offsetof of var if is a struct
+ */
 jsonDef_s* json_parse_declare_string(jsonDef_s* def, const char* name, size_t offof);
+
+/** declare type vector, need child element than declare type of vector
+ * @param def parent
+ * @param name name of property if is object
+ * @param offof offsetof of var if is a struct
+ */
 jsonDef_s* json_parse_declare_vector(jsonDef_s* def, const char* name, size_t offof);
+
+/** declare type object
+ * @param def parent
+ * @param name name of property if is object
+ * @param offof offsetof of var if is a struct
+ * @param size sizeof struct
+ */
 jsonDef_s* json_parse_declare_object(jsonDef_s* def, const char* name, size_t offof, size_t size);
+
+/** add previous definition in def*/
 jsonDef_s* json_parse_declare_def(jsonDef_s* def, jsonDef_s* sub);
+
+/** free def*/
 void json_def_free(jsonDef_s* def);
+
+/** parse json, each element is a pointer to type, but not char*
+ * @param def definition, free after parse
+ * @param data json string
+ * @return NULL for error otherwise object or vector
+ */
 void* json_parse(jsonDef_s* def, const char* data);
 
 
