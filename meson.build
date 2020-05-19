@@ -65,6 +65,7 @@ src += [ 'ef/concurrency/promise.c' ]
 
 src += [ 'ef/parser/json.c' ]
 src += [ 'ef/parser/autojson.c' ]
+src += [ 'ef/parser/xml.c' ]
 
 src += [ 'ef/www/socket.c' ]
 src += [ 'ef/www/www.c' ]
@@ -227,6 +228,7 @@ libDeps += [ dependency('xcb-shape', required: true) ]
 libDeps += [ dependency('xkbcommon', required: true) ]
 libDeps += [ dependency('xkbcommon-x11', required: true) ]
 libDeps += [ dependency('libsystemd', required: true) ]
+libDeps += [ dependency('libxml-2.0', required: true) ]
 
 xcb_error_dep = dependency('xcb-errors', required: false)
 if xcb_error_dep.found()
