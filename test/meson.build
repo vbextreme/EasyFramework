@@ -39,6 +39,7 @@ src += [ 'src/term.c' ]
 src += [ 'src/thr.c' ]
 src += [ 'src/trie.c' ]
 src += [ 'src/vector.c' ]
+src += [ 'src/xml.c' ]
 #@end
 
 ##################

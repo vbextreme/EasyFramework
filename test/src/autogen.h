@@ -21,7 +21,8 @@
 { 0, 'E', "term", ARGDEF_NOARG, NULL, "test terminal"},\
 { 0, 'r', "threads", ARGDEF_NOARG, NULL, "test threads"},\
 { 0, 'T', "trie", ARGDEF_NOARG, NULL, "test trie, use arg-a for file data, without use internal data set"},\
-{ 0, 'v', "vector", ARGDEF_NOARG, NULL, "test vector"},
+{ 0, 'v', "vector", ARGDEF_NOARG, NULL, "test vector"},\
+{ 0, 'x', "xml", ARGDEF_NOARG, NULL, "test xml"},
 #define AUTOGEN_PROTO \
 void test_code(__unused const char* argA, __unused const char* argB);\
 void test_err(__unused const char* argA, __unused const char* argB);\
@@ -43,7 +44,8 @@ void test_str(__unused const char* argA, __unused const char* argB);\
 void test_term(__unused const char* argA, __unused const char* argB);\
 void test_thr(__unused const char* argA, __unused const char* argB);\
 void test_trie(const char* a, __unused const char* b);\
-void test_vector(__unused const char* argA, __unused const char* argB);
+void test_vector(__unused const char* argA, __unused const char* argB);\
+void test_xml(__unused const char* argA, __unused const char* argB);
 #define AUTOGEN_FN \
 test_code,\
 test_err,\
@@ -65,5 +67,6 @@ test_str,\
 test_term,\
 test_thr,\
 test_trie,\
-test_vector,
+test_vector,\
+test_xml,
 #endif

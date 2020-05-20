@@ -58,7 +58,16 @@ typedef struct json{
 	char** usrError;                  /**< user error*/
 }json_s;
 
-typedef enum {JSON_DEF_INT, JSON_DEF_UINT, JSON_DEF_LONG, JSON_DEF_ULONG, JSON_DEF_STRING, JSON_DEF_NUMBER, JSON_DEF_VECTOR, JSON_DEF_OBJECT} jsonDef_e;
+typedef enum {
+	JSON_DEF_INT,
+	JSON_DEF_UINT,
+	JSON_DEF_LONG,
+	JSON_DEF_ULONG,
+	JSON_DEF_STRING,
+	JSON_DEF_NUMBER,
+	JSON_DEF_VECTOR,
+	JSON_DEF_OBJECT
+}jsonDef_e;
 
 typedef struct jsonDef{
 	struct jsonDef* vintrospect;
