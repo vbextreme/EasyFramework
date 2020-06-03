@@ -70,8 +70,10 @@ void* mem_many_aligned_raw(size_t* size, size_t alignedto);
 /** allocate memory for flexible structure, do not use clang, this is only for scanbuild fail */
 #ifdef __clang__
 	#define mem_flexible_structure_new(TYPESTRUCT, SOF, COUNT) (TYPESTRUCT*)malloc(ROUND_UP(sizeof(TYPESTRUCT) + SOF * (COUNT), 8))
+	#define mem_flexible_structure_realloc(MEM, TYPESTRUCT, SOF, COUNT) (TYPESTRUCT*)realloc(MEM,ROUND_UP(sizeof(TYPESTRUCT) + SOF * (COUNT), 8))
 #else
 	#define mem_flexible_structure_new(TYPESTRUCT, SOF, COUNT) (TYPESTRUCT*)malloc(ROUND_UP(sizeof(TYPESTRUCT) + SOF * (COUNT), sizeof(void*)))
+	#define mem_flexible_structure_realloc(MEM, TYPESTRUCT, SOF, COUNT) (TYPESTRUCT*)realloc(MEM,ROUND_UP(sizeof(TYPESTRUCT) + SOF * (COUNT), sizeof(void*)))
 #endif
 
 /** only for even mem*/

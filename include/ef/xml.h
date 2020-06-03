@@ -17,22 +17,19 @@ typedef enum {
 	XML_DEF_OBJECT
 }xmlDef_e;
 
-typedef struct xmlDef{
-	struct xmlDef* vintrospect;
-	struct xmlDef* parent;
-	const char* name;
-	xmlDef_e type;
-	size_t offof;
-	size_t size;
-}xmlDef_s;
-
 void xml_begin(void);
 
 void xml_end(void);
 
 xml_s* xml_load(const char* path);
+xml_s* xml_parse(const char* str);
+
 
 void xml_free(xml_s* xml);
+
+void xml_userdata_set(xml_s* xml, void* ud);
+
+void* xml_userdata_get(xml_s* xml);
 
 void xml_node_reset(xml_s* xml);
 	

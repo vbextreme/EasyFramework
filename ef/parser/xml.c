@@ -16,6 +16,7 @@ typedef struct xml{
 	xmlNs* namespace;
 	xmlAttr* attr;
 	xmlNs* attrnamespace;
+	void* userdata;
 }xml_s;
 
 #define xml_subset(XML) do{\
@@ -83,9 +84,41 @@ xml_s* xml_load(const char* path){
 	return xml;
 }
 
+xml_s* xml_parse(const char* str){
+	xml_s* xml = mem_new(xml_s);
+	if( !xml ) err_fail("eom");
+
+	xml->doc = xmlParseDoc(U8(str));
+	if( xml->doc == NULL ){
+		free(xml);
+		err_push("could not parse string");
+		return NULL;
+	}
+
+	xml->root = xmlDocGetRootElement(xml->doc);
+	if( !xml->root ){
+		xmlFreeDoc(xml->doc);
+		free(xml);
+		err_push("could not get root element");
+		return NULL;
+	}
+	xml->nav = xml->root;
+	node_first(xml);
+
+	return xml;
+}
+
 void xml_free(xml_s* xml){
 	xmlFreeDoc(xml->doc);
 	free(xml);
+}
+
+void xml_userdata_set(xml_s* xml, void* ud){
+	xml->userdata = ud;
+}
+
+void* xml_userdata_get(xml_s* xml){
+	return xml->userdata;
 }
 
 void xml_node_reset(xml_s* xml){

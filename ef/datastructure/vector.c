@@ -3,8 +3,6 @@
 #include <ef/mth.h>
 #include <ef/err.h>
 
-
-
 void* vector_new_raw(size_t sof, size_t size, vfree_f fn){
 	vector_s* v = mem_flexible_structure_new(vector_s, sof, size);
 	if( v == NULL ) err_fail("eom");

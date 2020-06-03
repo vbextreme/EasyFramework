@@ -72,26 +72,6 @@ char* str_cpy(char* dst, size_t lend, const char* src);
  */
 const char* str_chr(const char* str, const char ch);
 
-/** append string in dst, realloc if need
- * @param dst destination
- * @param len len of dest
- * @param size size of dest
- * @param src source
- * @param lenSrc len of src, 0 automatic strlen
- * @return dst or new address if need
- */
-char* string_append(char* dst, size_t* len, size_t* size, const char* src, size_t lenSrc);
-
-/** append string in head of dst, realloc if need
- * @param dst destination
- * @param len len of dest
- * @param size size of dest
- * @param src source
- * @param lenSrc len of src, 0 automatic strlen
- * @return dst or new address if need
- */
-char* string_head(char* dst, size_t* len, size_t* size, const char* src, size_t lenSrc);
-
 /** create string from formst
  * @param format same printf
  * @param va1 vaarg
@@ -126,5 +106,8 @@ void str_toupper(char* dst, const char* src);
 
 /** convert to lower*/
 void str_tolower(char* dst, const char* src);
+
+/** search any of char in find and replace all */
+void str_tr(char* str, const char* find, const char replace);
 
 #endif

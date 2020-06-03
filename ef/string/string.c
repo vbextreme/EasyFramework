@@ -74,42 +74,6 @@ const char* str_chr(const char* str, const char ch){
 	return ret;
 }
 
-char* string_append(char* dst, size_t* len, size_t* size, const char* src, size_t lenSrc){
-	if( lenSrc == 0 ) lenSrc = strlen(src);
-
-	if( lenSrc > (*size - *len)-1){
-		size_t n = ROUND_UP(lenSrc+1, 128);
-		*size += n;
-		dst = realloc(dst, sizeof(char) * *size);
-		if( dst == NULL ){
-			dbg_fail("realloc");
-		}
-	}
-	memcpy(&dst[*len], src, lenSrc);
-	*len += lenSrc;
-	dst[*len] = 0;
-	return dst;
-}
-
-char* string_head(char* dst, size_t* len, size_t* size, const char* src, size_t lenSrc){
-	if( lenSrc == 0 ) lenSrc = strlen(src);
-
-	if( lenSrc > (*size - *len)-1){
-		dbg_info("realloc");
-		size_t n = ROUND_UP(lenSrc+1, 128);
-		*size += n;
-		dst = realloc(dst, sizeof(char) * *size);
-		if( dst == NULL ){
-			dbg_fail("realloc");
-		}
-	}
-	memmove(&dst[lenSrc], dst, *len);
-	memcpy(dst, src, lenSrc);
-	*len += lenSrc;
-	dst[*len] = 0;
-	return dst;
-}
-
 char* str_vprintf(const char* format, va_list va1, va_list va2){
 	size_t len = vsnprintf(NULL, 0, format, va1);
 	if( len == 0 ){
@@ -196,4 +160,8 @@ void str_toupper(char* dst, const char* src){
 
 void str_tolower(char* dst, const char* src){
 	while( (*dst++=toupper(*src++)) );
+}
+
+void str_tr(char* str, const char* find, const char replace){
+	while( (str=strpbrk(str,find)) ) *str++ = replace;
 }

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+INCLUDE="../../include"
+CPREFIX="../../ef/os/services/"
+CSUFFIX=".c"
+HPREFIX="ef/services/"
+HSUFFIX=".h"
+SPREFIX="org.freedesktop."
+
+SERVICES=("NetworkManager")
+
+ninja -C build
+
+for index in ${!SERVICES[*]}; do
+	service=${SERVICES[$index]}
+	S="${SPREFIX}${service}"
+	H="${HPREFIX}${service}${HSUFFIX}"
+	C="${CPREFIX}${service}${CSUFFIX}"
+	./build/systemmake -stIHCm "$S" "$INCLUDE" "$H" "$C"
+done

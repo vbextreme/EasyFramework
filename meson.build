@@ -37,6 +37,7 @@ src += [ 'ef/math/math.c' ]
 src += [ 'ef/math/gnn.c' ]
 
 src += [ 'ef/string/string.c' ]
+src += [ 'ef/string/ostr.c' ]
 src += [ 'ef/string/regex.c' ]
 src += [ 'ef/string/utf8.c' ]
 
@@ -59,6 +60,8 @@ src += [ 'ef/os/inutility.c' ]
 src += [ 'ef/os/vectorization.c' ]
 src += [ 'ef/os/signal.c' ]
 src += [ 'ef/os/services.c' ]
+
+src += [ 'ef/os/services/NetworkManager.c' ]
 
 src += [ 'ef/concurrency/threads.c' ]
 src += [ 'ef/concurrency/promise.c' ]
